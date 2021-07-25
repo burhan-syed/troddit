@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Post from "./Post";
+import axios from "axios";
 
 const Feed = () => {
   const [loading, setLoading] = useState(true);
@@ -18,20 +19,23 @@ const Feed = () => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     setLoading(true);
-    fetch(`${BASE_URL}.json?&after=${after}`)
-      .then((response) => {
-        return response.json();
+    axios
+      .get(`${BASE_URL}.json?&after=${after}`, {
+        params: {
+          raw_json: 1,
+        },
       })
-      .then((data) => {
+      .then((response) => {
+        //console.log(response);
         const posts = [];
-        data.data.children.forEach((post) => {
+        response.data.data.children.forEach((post) => {
           const apost = {
             ...[post.data],
           };
           posts.push(apost);
         });
         setLoading(false);
-        setAfter(data.data.after);
+        setAfter(response.data.data.after);
         setPosts(posts);
         //posts.map(post => (console.log(post[0].title)));
       });
@@ -39,7 +43,7 @@ const Feed = () => {
 
   const loadmore = () => {
     setLoadingMore(true);
-    console.log(after);
+    //console.log(after);
     fetch(`${BASE_URL}.json?&after=${after}`)
       .then((response) => {
         return response.json();
@@ -64,9 +68,11 @@ const Feed = () => {
   return (
     <section>
       <h1>Posts</h1>
-      {posts.map((post) => (
-        <Post key={post[0].id} post={post[0]} />
-      ))}
+      <div className="flex-wrap justify-center px-5 my-10 sm:grid md:grid-cols-2 xl:grid-cols-3 3xl:flex">
+        {posts.map((post) => (
+          <Post key={post[0].id} post={post[0]} />
+        ))}
+      </div>
       {loadingMore ? <h1>Loading More</h1> : <div></div>}
       <button onClick={loadmore}>Load More</button>
     </section>
