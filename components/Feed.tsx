@@ -20,7 +20,7 @@ const Feed = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${BASE_URL}.json?&after=${after}`, {
+      .get(`${BASE_URL}.json`, {
         params: {
           raw_json: 1,
         },
@@ -44,19 +44,17 @@ const Feed = () => {
   const loadmore = () => {
     setLoadingMore(true);
     //console.log(after);
-    fetch(`${BASE_URL}.json?&after=${after}`)
+    axios.get(`${BASE_URL}.json?&after=${after}`,
+    {params: {raw_json: 1}})
       .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        data.data.children.forEach((post) => {
+        response.data.data.children.forEach((post) => {
           const apost = {
             ...[post.data],
           };
           posts.push(apost);
         });
         setLoadingMore(false);
-        setAfter(data.data.after);
+        setAfter(response.data.data.after);
         setPosts(posts);
         //posts.map(post => (console.log(post[0].title)));
       });
