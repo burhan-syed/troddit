@@ -9,7 +9,7 @@ const Post = ({ post }) => {
     if (post.preview) {
       if (post.preview.images) {
         if (post.preview.images[0]) {
-          console.log(post.preview.images[0].source.url.replace('amp;', ''));
+          //console.log(post.preview.images[0].source.url.replace('amp;', ''));
           setImageInfo({
             url: post.preview.images[0].source.url.replace('amp;', ''),
             height: post.preview.images[0].source.height,
@@ -23,7 +23,7 @@ const Post = ({ post }) => {
   }, [post]);
   
   return (
-    <div>
+    <div className="outline-black">
       {loadImage ? <Image 
       src={imageInfo.url}
       height={imageInfo.height}
