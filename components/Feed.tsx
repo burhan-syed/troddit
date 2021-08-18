@@ -4,14 +4,14 @@ import Image from "next/image";
 import Post from "./Post";
 import axios from "axios";
 import Masonry from "react-masonry-css";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
   const [after, setAfter] = useState("");
-  const [subreddits, setSubreddits] = useState(['wallpapers','earthporn']);
+  const [subreddits, setSubreddits] = useState(["wallpapers", "earthporn"]);
   const [subURL, setSubURL] = useState("");
   const BASE_URL = "https://www.reddit.com";
 
@@ -19,7 +19,7 @@ const Feed = () => {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1
+    500: 1,
   };
 
   // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
@@ -55,19 +55,24 @@ const Feed = () => {
     let substring = "/r/";
     console.log(subs);
     subs.forEach((sub) => {
-      if (substring === "/r/") {substring = substring+sub}
-      else {substring = substring + "+" + sub}
+      if (substring === "/r/") {
+        substring = substring + sub;
+      } else {
+        substring = substring + "+" + sub;
+      }
     });
     console.log(substring);
-    if (substring.length <=3 ) return "";
+    if (substring.length <= 3) return "";
     else return substring;
-  }
+  };
 
   const loadmore = () => {
     setLoadingMore(true);
     //console.log(after);
-    axios.get(`${BASE_URL}${subURL}.json?&after=${after}`,
-    {params: {raw_json: 1}})
+    axios
+      .get(`${BASE_URL}/${subURL}.json?&after=${after}`, {
+        params: { raw_json: 1 },
+      })
       .then((response) => {
         response.data.data.children.forEach((post) => {
           const apost = {
@@ -93,15 +98,21 @@ const Feed = () => {
         next={loadmore}
         hasMore={after ? true : false}
         loader={<h1>Loading More..</h1>}
-        endMessage={<p className="text-align-center"><b>You have reached the end</b></p>}>
-      <Masonry 
-        breakpointCols={breakpointColumnsObj}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column">
-        {posts.map((post) => (
-          <Post  key={post[0].id} post={post[0]} />
-        ))}
-      </Masonry>
+        endMessage={
+          <p className="text-align-center">
+            <b>You have reached the end</b>
+          </p>
+        }
+      >
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {posts.map((post) => (
+            <Post key={post[0].id} post={post[0]} />
+          ))}
+        </Masonry>
       </InfiniteScroll>
       <button onClick={loadmore}>Load More</button>
     </section>

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Feed from "../components/Feed";
+import Login from "../components/Login";
 
 export const index = () => {
   return (
@@ -7,6 +8,7 @@ export const index = () => {
       <Head>
         <title>Next-Reddit</title>
       </Head>
+      <Login/>
       <Feed/>
     </div>
   );
