@@ -5,6 +5,7 @@ import Post from "./Post";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { getAccessToken } from "../accessToken";
 
 const Feed = () => {
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,7 @@ const Feed = () => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     setLoading(true);
+    
     axios
       .get(`${BASE_URL}/${configureSubs(subreddits)}.json`, {
         params: {
@@ -87,12 +89,26 @@ const Feed = () => {
       });
   };
 
+  const getsubs = () => {
+    const token = getAccessToken();
+    if (token){
+      axios.get('https://oauth.reddit.com/subreddits/mine/subscriber', {
+        headers: {
+          authorization: `bearer ${token}`
+        }
+      }).then(res => console.log(res)).catch(err => console.log(err));
+    } else{
+      console.log('no token..');
+    }
+  }
+
   if (loading) {
     return <section>Loading...</section>;
   }
   return (
     <section>
       <h1>Posts</h1>
+      <button onClick={getsubs}>getsubs</button>
       <InfiniteScroll
         dataLength={posts.length}
         next={loadmore}
@@ -118,5 +134,7 @@ const Feed = () => {
     </section>
   );
 };
+
+
 
 export default Feed;

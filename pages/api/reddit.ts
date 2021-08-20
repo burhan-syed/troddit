@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getAccessToken, setAccessToken } from "../../accessToken";
 function b2a(a) {
   var c,
     d,
@@ -50,9 +50,25 @@ export default function handler(req, res) {
         }
       )
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
+        if(res.data && res.data.access_token){
+          console.log(res.data.access_token);
+          //redirect(res.data.access_token, res);
+        }
         return res.data;
       })
       .catch((err) => console.log(err));
+      res.redirect('/');
   }
 }
+
+const setToken = async(token) => {
+  setAccessToken(token);
+}
+
+const redirect = async(token, res) => {
+  await setToken(token)
+  res.redirect('/');
+}
+
+
