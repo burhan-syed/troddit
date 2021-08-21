@@ -11,9 +11,9 @@ const Post = ({ post }) => {
         if (post.preview.images[0]) {
           //console.log(post.preview.images[0].source.url.replace('amp;', ''));
           setImageInfo({
-            url: post.preview.images[0].resolutions[3].url.replace('amp;', ''),
-            height: post.preview.images[0].resolutions[3].height,
-            width: post.preview.images[0].resolutions[3].width,
+            url: post.preview.images[0]?.resolutions[3].url.replace("amp;", ""),
+            height: post.preview.images[0]?.resolutions[3].height,
+            width: post.preview.images[0]?.resolutions[3].width,
           });
           //console.log(imageInfo);
           setLoadImage(true);
@@ -21,15 +21,19 @@ const Post = ({ post }) => {
       }
     }
   }, [post]);
-  
+
   return (
     <div className="outline-black">
-      {loadImage ? <Image 
-      src={imageInfo.url}
-      height={imageInfo.height}
-      width={imageInfo.width}
-      alt="thumbnail"
-      /> : ""}
+      {loadImage ? (
+        <Image
+          src={imageInfo.url}
+          height={imageInfo.height}
+          width={imageInfo.width}
+          alt="thumbnail"
+        />
+      ) : (
+        ""
+      )}
 
       <p className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
         {post.title}

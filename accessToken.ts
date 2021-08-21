@@ -1,14 +1,14 @@
-let accessToken="";
+let accessToken = "";
 
 export const setAccessToken = (s: string) => {
-  console.log(`set ${s}`)
- accessToken = s; 
-}
+  console.log(`set ${s}`);
+  accessToken = s;
+};
 
-export const getAccessToken = () => {
-  console.log(`get ${accessToken}`)
+export const getAccessToken = async () => {
+  console.log(`get ${accessToken}`);
   return accessToken;
-}
+};
 
 export function b2a(a) {
   var c,

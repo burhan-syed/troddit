@@ -1,36 +1,26 @@
-import axios from "axios";
-import { getAccessToken } from "../accessToken";
-const snoowrap = require('snoowrap');
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
+import { useState } from "react";
 
-const r = new snoowrap({
-  userAgent: 'put your user-agent string here',
-  clientId: 'put your client id here',
-  clientSecret: 'put your client secret here',
-  refreshToken: 'put your refresh token here'
-});
+export default function Login() {
+  const [session, loading] = useSession();
+  const [token, setToken] = useState("");
 
-const Login = () => {
-  let RANDOM_STRING="RADFADFASDF"
-  const link = `https://www.reddit.com/api/v1/authorize?
-client_id=${process.env.CLIENT_ID}
-&response_type=code&state=${RANDOM_STRING}
-&redirect_uri=${process.env.REDDIT_REDIRECT}
-&duration=permanent&scope=read identity mysubreddits`;
-
-
-  if (getAccessToken()) {return (
-    <div>
-      <h1>Logout</h1>
-    </div>
-  )}
   return (
-    <div>
-      <a href={link}>Login</a>
-    </div>
-  )
+    <>
+      <p>login</p>
+      {!session && (
+        <>
+          Not signed in <br />
+          <button onClick={() => signIn()}>Sign in</button>
+        </>
+      )}
+      {session && (
+        <>
+          Signed in as {session?.user.name} <br />
+          <button onClick={() => signOut()}>Sign out</button>
+        </>
+      )}
+      <p>{token}</p>
+    </>
+  );
 }
-
-
-
-
-export default Login

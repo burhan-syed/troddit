@@ -16,6 +16,8 @@ const Feed = () => {
   const [subURL, setSubURL] = useState("");
   const BASE_URL = "https://www.reddit.com";
 
+  const [mysubs, setMySubs] = useState([]);
+
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
@@ -30,7 +32,7 @@ const Feed = () => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     setLoading(true);
-    
+
     axios
       .get(`${BASE_URL}/${configureSubs(subreddits)}.json`, {
         params: {
@@ -89,26 +91,34 @@ const Feed = () => {
       });
   };
 
-  const getsubs = () => {
-    const token = getAccessToken();
-    if (token){
-      axios.get('https://oauth.reddit.com/subreddits/mine/subscriber', {
-        headers: {
-          authorization: `bearer ${token}`
-        }
-      }).then(res => console.log(res)).catch(err => console.log(err));
-    } else{
-      console.log('no token..');
-    }
-  }
+  const getsubs = async () => {
+    let subs = await (await axios.get("/api/reddit/mysubreddits")).data.data;
+    console.log(subs);
+    // let allsubs = [];
+    // subs.forEach((sub) => {
+    //   allsubs.push(sub.data.url);
+    // });
+    // setMySubs(allsubs);
+  };
+  const getfrontpage = async () => {
+    let posts = await (await axios.get("/api/reddit/frontpage")).data;
+    console.log(posts);
+    let displayposts = [];
+    posts.data.forEach((post) => {
+      displayposts.push(post);
+    });
+    setPosts(displayposts);
+  };
 
   if (loading) {
     return <section>Loading...</section>;
   }
   return (
     <section>
+      <div>{mysubs}</div>
       <h1>Posts</h1>
       <button onClick={getsubs}>getsubs</button>
+      <button onClick={getfrontpage}>getfrontpage</button>
       <InfiniteScroll
         dataLength={posts.length}
         next={loadmore}
@@ -126,7 +136,7 @@ const Feed = () => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post) => (
-            <Post key={post[0].id} post={post[0]} />
+            <Post key={post[0].id ?? post.id} post={post[0] ?? post} />
           ))}
         </Masonry>
       </InfiniteScroll>
@@ -134,7 +144,5 @@ const Feed = () => {
     </section>
   );
 };
-
-
 
 export default Feed;

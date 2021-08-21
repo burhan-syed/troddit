@@ -34,13 +34,13 @@ function b2a(a) {
   );
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const params = new URL(req.url, "http://localhost:3000").searchParams;
   const approvalCode = params.get("code") ? params.get("code") : false;
   if (approvalCode !== false) {
     const encode = b2a(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
-    axios
-      .post(
+    try {
+      const response = await axios.post(
         "https://www.reddit.com/api/v1/access_token",
         `grant_type=authorization_code&code=${approvalCode}&redirect_uri=${process.env.REDDIT_REDIRECT}`,
         {
@@ -48,27 +48,26 @@ export default function handler(req, res) {
             Authorization: `Basic ${encode}`,
           },
         }
-      )
-      .then((res) => {
-        //console.log(res.data);
-        if(res.data && res.data.access_token){
-          console.log(res.data.access_token);
-          //redirect(res.data.access_token, res);
-        }
-        return res.data;
-      })
-      .catch((err) => console.log(err));
-      res.redirect('/');
+      );
+      if (response.data && response.data.access_token) {
+        console.log(response.data);
+        res.redirect("/");
+      }
+      res.status(200).end();
+    } catch (err) {
+      res.json(err);
+      res.status(405).end();
+    }
+    res.status(405).end();
   }
 }
 
-const setToken = async(token) => {
+const setToken = async (token) => {
   setAccessToken(token);
-}
+};
 
-const redirect = async(token, res) => {
-  await setToken(token)
-  res.redirect('/');
-}
-
-
+const redirect = async (token, res) => {
+  await setToken(token);
+  getAccessToken();
+  //res.redirect("/");
+};
