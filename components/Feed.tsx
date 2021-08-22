@@ -5,18 +5,20 @@ import Post from "./Post";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { getAccessToken } from "../accessToken";
+import { b2a } from "../accessToken";
+import Snoowrap from "snoowrap";
+import { getSession } from "next-auth/client";
+import { getToken } from "next-auth/jwt";
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
+//import { fetchFrontPage } from "../redditapi/frontpage";
 
-const Feed = () => {
+const Feed = ({ subreddits, sort }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
   const [after, setAfter] = useState("");
-  const [subreddits, setSubreddits] = useState(["wallpapers", "earthporn"]);
   const [subURL, setSubURL] = useState("");
   const BASE_URL = "https://www.reddit.com";
-
-  const [mysubs, setMySubs] = useState([]);
 
   const breakpointColumnsObj = {
     default: 4,
@@ -31,58 +33,47 @@ const Feed = () => {
   // let countUrl     = (count == 0) ? "" : "&count="+count;
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
-    setLoading(true);
+    console.log(subreddits);
+    fetchPage();
+  }, [subreddits, sort]);
 
-    axios
-      .get(`${BASE_URL}/${configureSubs(subreddits)}.json`, {
-        params: {
-          raw_json: 1,
-        },
-      })
-      .then((response) => {
-        //console.log(response);
-        const posts = [];
-        response.data.data.children.forEach((post) => {
-          const apost = {
-            ...[post.data],
-          };
-          posts.push(apost);
-        });
-        setLoading(false);
-        setAfter(response.data.data.after);
-        setPosts(posts);
-        //posts.map(post => (console.log(post[0].title)));
-      });
-  }, [subreddits]);
-
-  const configureSubs = (subs) => {
-    let substring = "/r/";
-    console.log(subs);
-    subs.forEach((sub) => {
-      if (substring === "/r/") {
-        substring = substring + sub;
-      } else {
-        substring = substring + "+" + sub;
-      }
-    });
-    console.log(substring);
-    if (substring.length <= 3) return "";
-    else return substring;
+  const fetchPage = async () => {
+    subreddits
+      ? axios
+          .get(`${BASE_URL}/r/${subreddits}/${sort}/.json`, {
+            params: {
+              raw_json: 1,
+            },
+          })
+          .then((response) => {
+            //console.log(response);
+            const posts = [];
+            response.data.data.children.forEach((post) => {
+              posts.push(post.data);
+            });
+            setLoading(false);
+            setAfter(response.data.data.after);
+            setPosts(posts);
+            console.log(posts);
+            //posts.map(post => (console.log(post[0].title)));
+          })
+          .catch((err) => console.log(err))
+      : "";
   };
 
   const loadmore = () => {
     setLoadingMore(true);
     //console.log(after);
     axios
-      .get(`${BASE_URL}/${subURL}.json?&after=${after}`, {
-        params: { raw_json: 1 },
-      })
+      .get(
+        `${BASE_URL}/r/${subreddits}/${sort}/.json?&after=${after}&count=${posts.length}`,
+        {
+          params: { raw_json: 1 },
+        }
+      )
       .then((response) => {
         response.data.data.children.forEach((post) => {
-          const apost = {
-            ...[post.data],
-          };
-          posts.push(apost);
+          posts.push(post.data);
         });
         setLoadingMore(false);
         setAfter(response.data.data.after);
@@ -91,34 +82,12 @@ const Feed = () => {
       });
   };
 
-  const getsubs = async () => {
-    let subs = await (await axios.get("/api/reddit/mysubreddits")).data.data;
-    console.log(subs);
-    // let allsubs = [];
-    // subs.forEach((sub) => {
-    //   allsubs.push(sub.data.url);
-    // });
-    // setMySubs(allsubs);
-  };
-  const getfrontpage = async () => {
-    let posts = await (await axios.get("/api/reddit/frontpage")).data;
-    console.log(posts);
-    let displayposts = [];
-    posts.data.forEach((post) => {
-      displayposts.push(post);
-    });
-    setPosts(displayposts);
-  };
-
   if (loading) {
     return <section>Loading...</section>;
   }
   return (
     <section>
-      <div>{mysubs}</div>
       <h1>Posts</h1>
-      <button onClick={getsubs}>getsubs</button>
-      <button onClick={getfrontpage}>getfrontpage</button>
       <InfiniteScroll
         dataLength={posts.length}
         next={loadmore}
@@ -135,8 +104,8 @@ const Feed = () => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {posts.map((post) => (
-            <Post key={post[0].id ?? post.id} post={post[0] ?? post} />
+          {posts.map((post, i) => (
+            <Post key={`${post.id}_${i}`} post={post} />
           ))}
         </Masonry>
       </InfiniteScroll>

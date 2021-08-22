@@ -14,7 +14,8 @@ module.exports = {
       "www.theguardian.com",
       "en.wikipedia.org",
       "www.newsweek.com",
-      "www.independent.co.uk"
+      "www.independent.co.uk",
+      "i.imgur.com",
     ],
   },
 };

@@ -1,9 +1,8 @@
 import axios from "axios";
 import Head from "next/head";
 import Feed from "../components/Feed";
+import FrontPage from "../components/FrontPage";
 import Login from "../components/Login";
-
-import { b2a, getAccessToken, setAccessToken } from "../accessToken";
 
 export const index = () => {
   return (
@@ -12,7 +11,7 @@ export const index = () => {
         <title>Next-Reddit</title>
       </Head>
       <Login />
-      <Feed />
+      <FrontPage />
     </div>
   );
 };

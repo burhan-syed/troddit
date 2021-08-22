@@ -1,16 +1,29 @@
+import axios from "axios";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Snoowrap from "snoowrap";
 
 export default function Login() {
   const [session, loading] = useSession();
-  const [token, setToken] = useState("");
+  const [accessToken, setAccessToken] = useState("");
+  const [refreshtoken, setRefreshToken] = useState("");
+  useEffect(() => {
+    if (session) {
+      getToken();
+    }
+  }, [session]);
+
+  const getToken = async () => {
+    let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
+    //console.log(tokendata);
+    setAccessToken(tokendata.data.accessToken);
+    setRefreshToken(tokendata.data.refreshtoken);
+  };
 
   return (
     <>
-      <p>login</p>
       {!session && (
         <>
-          Not signed in <br />
           <button onClick={() => signIn()}>Sign in</button>
         </>
       )}
@@ -20,7 +33,6 @@ export default function Login() {
           <button onClick={() => signOut()}>Sign out</button>
         </>
       )}
-      <p>{token}</p>
     </>
   );
 }
