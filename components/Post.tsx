@@ -4,8 +4,11 @@ import Link from "next/link";
 import LazyLoad from "react-lazyload";
 import { useEffect, useState } from "react";
 import Placeholder from "./Placeholder";
+import Gallery from "./Gallery";
 const Post = ({ post }) => {
   const [loaded, setLoaded] = useState(false);
+  const [isGallery, setIsGallery] = useState(false);
+  const [galleryInfo, setGalleryInfo] = useState([]);
   const [loadImage, setLoadImage] = useState(false);
   const [isMP4, setIsMP4] = useState(false);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
@@ -37,7 +40,31 @@ const Post = ({ post }) => {
   }, [loaded]);
 
   const findImage = () => {
-    if (post.preview) {
+    //galleries
+    if (post.media_metadata){
+      let gallery = [];
+      for (let i in post.media_metadata){
+        let image = post.media_metadata[i]
+        if (image.p.length > 0) {
+        
+          let num = image.p.length - 1;
+          //console.log(num);
+          gallery.push({
+            url: image.p[num].u.replace(
+              "amp;",
+              ""
+            ),
+            height: image.p[num].y,
+            width: image.p[num].x
+          })
+      }
+      }
+      setGalleryInfo(gallery);
+      //console.log(galleryInfo);
+      setIsGallery(true);
+      setLoaded(true);
+    }
+    else if (post.preview) {
       //vreddits
       if (post.preview.reddit_video_preview) {
         setImageInfo({
@@ -92,6 +119,14 @@ const Post = ({ post }) => {
 
   return (
     <div className="outline-black">
+      <h1 className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
+        {post.title}
+      </h1>
+
+      {isGallery ? (
+        <Gallery images={galleryInfo}/> ): (""
+      )}
+
       {loadImage ? (
         <Image
           src={imageInfo.url}
@@ -126,11 +161,11 @@ const Post = ({ post }) => {
         ""
       )}
 
-      <p className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
-        {post.title}
-      </p>
       <p>{post.url}</p>
-      <Link href={`r/${post.subreddit}`}>
+      <Link href={{
+              pathname: '/r/[slug]',
+              query: { slug: post.subreddit },
+            }}>
         <a>r/{post.subreddit}</a>
       </Link>
       <p>{post.score}</p>
