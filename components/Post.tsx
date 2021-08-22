@@ -109,6 +109,11 @@ const Post = ({ post }) => {
             height: post.preview?.images[0]?.resolutions[num].height,
             width: post.preview?.images[0]?.resolutions[num].width,
           });
+          setPlaceholder({
+            url: post.thumbnail,
+            height: post.thumbnail_height,
+            width: post.thumbnail_width,
+          });
           //console.log(imageInfo);
           setLoadImage(true);
           setLoaded(true);
@@ -133,6 +138,9 @@ const Post = ({ post }) => {
           height={imageInfo.height}
           width={imageInfo.width}
           alt="thumbnail"
+          layout="responsive"
+          placeholder="blur"
+          blurDataURL={placeholder.url}
         />
       ) : (
         // <LazyLoad height={imageInfo.height}>
@@ -147,7 +155,7 @@ const Post = ({ post }) => {
           placeholder={<Placeholder url={placeholder.url} />}
         >
           <video
-            autoPlay
+            autoPlay={false}
             muted
             loop
             playsInline

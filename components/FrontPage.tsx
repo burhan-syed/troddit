@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Post from "./Post";
+import Search from "./Search";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -155,6 +156,7 @@ const FrontPage = () => {
     <section>
       <div>{accessToken}</div>
       <div>{mysubs}</div>
+      <Search/>
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
