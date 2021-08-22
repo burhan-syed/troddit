@@ -1,8 +1,9 @@
 import axios from "axios";
 import Head from "next/head";
-import Feed from "../components/Feed";
-import FrontPage from "../components/FrontPage";
 import Login from "../components/Login";
+
+import { b2a, getAccessToken, setAccessToken } from "../accessToken";
+import FrontPage from "../components/FrontPage";
 
 export const index = () => {
   return (
