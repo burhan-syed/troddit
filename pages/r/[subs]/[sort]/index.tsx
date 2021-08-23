@@ -10,7 +10,7 @@ const Sort = () => {
         query: {subs}
         {sort}
       </p>
-      <Feed subreddits={subs} sort={sort} />
+      <Feed subreddits={subs} sort={sort} isUser={false}/>
     </div>
   );
 };

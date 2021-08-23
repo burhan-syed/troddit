@@ -7,7 +7,7 @@ const Subs = () => {
   return (
     <div>
       <p>sub: {subs}</p>
-      <Feed subreddits={subs} sort="hot" />
+      <Feed subreddits={subs} sort="hot" isUser={false}/>
     </div>
   );
 };

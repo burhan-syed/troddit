@@ -12,7 +12,7 @@ import { getToken } from "next-auth/jwt";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
-const Feed = ({ subreddits, sort }) => {
+const Feed = ({ subreddits, sort, isUser }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -22,9 +22,9 @@ const Feed = ({ subreddits, sort }) => {
 
   const breakpointColumnsObj = {
     default: 4,
-    1100: 3,
-    700: 2,
-    500: 1,
+    1400: 3,
+    1280: 2,
+    767: 1,
   };
 
   // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
@@ -34,13 +34,27 @@ const Feed = ({ subreddits, sort }) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     console.log(subreddits);
-    fetchPage();
-  }, [subreddits, sort]);
+    initialize();
+  }, [subreddits, sort, subURL]);
+
+  const initialize = async() => {
+    await configureURL();
+    console.log(subURL);
+    if(!subURL.includes('undefined')) {fetchPage();}
+  }
+  const configureURL = async() => {
+    if(isUser){
+      console.log(">>>",`u/${subreddits}`);
+      setSubURL(`u/${subreddits}`)
+    } else {
+      setSubURL(`r/${subreddits}`)
+    }
+  }
 
   const fetchPage = async () => {
     subreddits
       ? axios
-          .get(`${BASE_URL}/r/${subreddits}/${sort}/.json`, {
+          .get(`${BASE_URL}/${subURL}/${sort}/.json`, {
             params: {
               raw_json: 1,
             },
@@ -66,7 +80,7 @@ const Feed = ({ subreddits, sort }) => {
     //console.log(after);
     axios
       .get(
-        `${BASE_URL}/r/${subreddits}/${sort}/.json?&after=${after}&count=${posts.length}`,
+        `${BASE_URL}/${subURL}/${sort}/.json?&after=${after}&count=${posts.length}`,
         {
           params: { raw_json: 1 },
         }

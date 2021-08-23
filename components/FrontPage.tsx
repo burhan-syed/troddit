@@ -28,7 +28,7 @@ const FrontPage = () => {
 
   const breakpointColumnsObj = {
     default: 4,
-    1920: 3,
+    1400: 3,
     1280: 2,
     767: 1,
   };
