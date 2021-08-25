@@ -44,7 +44,7 @@ const Post = ({ post }) => {
         });
 
         setPlaceholder({
-          url: post.thumbnail,
+          url: post?.thumbnail,
           height: post.thumbnail_height,
           width: post.thumbnail_width,
         });
@@ -162,7 +162,7 @@ const Post = ({ post }) => {
       {isMP4 ? (
         <LazyLoad
           height={videoInfo.height}
-          placeholder={<Placeholder imageInfo={imageInfo} />}
+          // placeholder={<Placeholder imageInfo={imageInfo} />}
         >
           <video
             className=""

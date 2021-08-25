@@ -3,18 +3,15 @@ import { useEffect } from "react";
 import FrontPage from "../../components/FrontPage";
 import Sort from "../../components/Sort"
 
-const Subs = ({query: {t}}) => {
+const Subs = ({query}) => {
   const router = useRouter();
   const { frontsort } = router.query;
 
-  useEffect(() => {
-    
-  }, [t])
   return (
     <div>
       <p>sort: {frontsort}</p>
       <Sort/>
-      <FrontPage sort={frontsort} range={t}/>
+      <FrontPage sort={frontsort ?? "best"} range={query.t ?? ""}/>
     </div>
   );
 };

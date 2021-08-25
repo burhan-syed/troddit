@@ -11,6 +11,7 @@ import Snoowrap from "snoowrap";
 import { getSession } from "next-auth/client";
 import { getToken } from "next-auth/jwt";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
+import { useRouter } from "next/router";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
 const FrontPage = ({sort, range}) => {
@@ -26,6 +27,7 @@ const FrontPage = ({sort, range}) => {
   const [accessToken, setAccessToken] = useState("");
   const [refreshtoken, setRefreshToken] = useState("");
 
+  const route = useRouter();
   const breakpointColumnsObj = {
     default: 4,
     1400: 3,
@@ -40,22 +42,21 @@ const FrontPage = ({sort, range}) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     initialLoad();
-  }, [accessToken]);
+  }, [accessToken, route]);
 
   const initialLoad = async () => {
-    setLoading(true);
     //const snoowrap = new Snoowrap();
     const session = await getSession();
     if (session) {
       await getToken();
     }
-    console.log(sort);
     if (sort != undefined) {fetchFrontPage(accessToken,sort)};
   };
 
   const fetchFrontPage = async (token?: string, sort?: string) => {
     if (token) {
       console.log("token!");
+      console.log(range);
       axios
         .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
@@ -63,6 +64,7 @@ const FrontPage = ({sort, range}) => {
           },
           params: {
             raw_json: 1,
+            t: range
           },
         })
         .then((response) => {
@@ -109,6 +111,7 @@ const FrontPage = ({sort, range}) => {
     setLoadingMore(true);
     //console.log(after);
     if (accessToken) {
+      console.log(range);
       axios
         .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
@@ -118,6 +121,7 @@ const FrontPage = ({sort, range}) => {
             after: after,
             count: posts.length,
             raw_json: 1,
+            t: range
           },
         })
         .then((response) => {

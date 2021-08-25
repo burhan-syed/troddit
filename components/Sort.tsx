@@ -8,9 +8,9 @@ const Sort = () => {
   const [sort, setSort] = useState<any>("");
   const router = useRouter();
   useEffect(() => {
-    console.log(router.query);
+    //console.log(router.query);
     if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
-    if (router.query?.frontsort) setSort(router.query.frontsort);
+    if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
   }, [router.query]);
 
   const updateSort = (e, s) => {

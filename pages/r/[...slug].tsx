@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Feed from "../../components/Feed";
 import Link from "next/link";
 import FrontPage from "../../components/FrontPage";
-const Sort = () => {
+const Sort = ({query}) => {
   const router = useRouter();
   const [subs, sort]= router.query?.slug ?? [];
   return (
@@ -12,10 +12,14 @@ const Sort = () => {
         query: {subs}
         {sort}
       </p>
-      {subs ? <Feed subreddits={subs} sort={sort ?? "hot"} isUser={false}/> : <FrontPage sort="best" range=""/>}
+      <Feed subreddits={subs} sort={sort ?? "hot"} isUser={false} range={query?.t ?? ""}/>
       
     </div>
   );
+};
+
+Sort.getInitialProps = ({query}) => {
+  return {query}
 };
 
 export default Sort;

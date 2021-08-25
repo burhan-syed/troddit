@@ -6,6 +6,7 @@ const SortRange = () => {
   const router = useRouter();
   const updateRange = (e, r) => {
     e.preventDefault();
+    console.log(router.query);
     setRange(r);
     if (router.query?.slug?.[0] ?? false) {
       router.push({

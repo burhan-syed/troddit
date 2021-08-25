@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Post from "./Post";
-import Sort from './Sort';
+import Sort from "./Sort";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -13,13 +13,15 @@ import { getToken } from "next-auth/jwt";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
-const Feed = ({ subreddits, sort, isUser }) => {
+const Feed = ({ subreddits, sort, range, isUser }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
   const [after, setAfter] = useState("");
   const [subURL, setSubURL] = useState("");
   const BASE_URL = "https://www.reddit.com";
+
+  let componentMounted = true;
 
   const breakpointColumnsObj = {
     default: 4,
@@ -35,39 +37,54 @@ const Feed = ({ subreddits, sort, isUser }) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     initialize();
-  }, [subreddits, sort,subURL]);
+    return () => {
+      setPosts([]);
+      setAfter("");
+      componentMounted = false;
+    };
+  }, [subreddits, sort, subURL]);
 
-  const initialize = async() => {
+  const initialize = async () => {
     await configureURL();
-    console.log(`${BASE_URL}/${subURL}/${sort}/.json?&after=${after}&count=${posts.length}`);
-    if(!subURL.includes('undefined')) {fetchPage();}
-  }
-  const configureURL = async() => {
-    if(isUser){
-      console.log(">>>",`u/${subreddits}`);
-      setSubURL(`u/${subreddits}`)
-    } else {
-      setSubURL(`r/${subreddits}`)
+    console.log(
+      `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`
+    );
+    if (!subURL.includes("undefined")) {
+      fetchPage();
     }
-  }
+  };
+  const configureURL = async () => {
+    if (isUser) {
+      console.log(">>>", `u/${subreddits}`);
+      componentMounted ? setSubURL(`u/${subreddits}`) : "";
+    } else {
+      componentMounted ? setSubURL(`r/${subreddits}`) : "";
+    }
+  };
 
   const fetchPage = async () => {
     subreddits
       ? axios
-          .get(`${BASE_URL}/${subURL}/${sort}/.json`, {
-            params: {
-              raw_json: 1,
-            },
-          })
+          .get(
+            `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}`,
+            {
+              params: {
+                raw_json: 1,
+              },
+            }
+          )
           .then((response) => {
             //console.log(response);
             const posts = [];
             response.data.data.children.forEach((post) => {
               posts.push(post.data);
             });
-            setLoading(false);
-            setAfter(response.data.data.after);
-            setPosts(posts);
+            console.log(response.data.data);
+            if (componentMounted) {
+              setAfter(response.data.data.after);
+              setPosts(posts);
+              setLoading(false);
+            }
             //console.log(posts);
             //posts.map(post => (console.log(post[0].title)));
           })
@@ -80,7 +97,7 @@ const Feed = ({ subreddits, sort, isUser }) => {
     //console.log(after);
     axios
       .get(
-        `${BASE_URL}/${subURL}/${sort}/.json?&after=${after}&count=${posts.length}`,
+        `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`,
         {
           params: { raw_json: 1 },
         }
@@ -89,9 +106,12 @@ const Feed = ({ subreddits, sort, isUser }) => {
         response.data.data.children.forEach((post) => {
           posts.push(post.data);
         });
-        setLoadingMore(false);
-        setAfter(response.data.data.after);
-        setPosts(posts);
+
+        if (componentMounted) {
+          setAfter(response.data.data.after);
+          setPosts(posts);
+          setLoadingMore(false);
+        }
         //posts.map(post => (console.log(post[0].title)));
       });
   };
@@ -101,7 +121,7 @@ const Feed = ({ subreddits, sort, isUser }) => {
   }
   return (
     <section>
-      <Sort/>
+      <Sort />
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
