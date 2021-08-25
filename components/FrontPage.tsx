@@ -13,7 +13,7 @@ import { getToken } from "next-auth/jwt";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
-const FrontPage = () => {
+const FrontPage = ({sort, range}) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -49,14 +49,15 @@ const FrontPage = () => {
     if (session) {
       await getToken();
     }
-    fetchFrontPage(accessToken);
+    console.log(sort);
+    if (sort != undefined) {fetchFrontPage(accessToken,sort)};
   };
 
   const fetchFrontPage = async (token?: string, sort?: string) => {
     if (token) {
       console.log("token!");
       axios
-        .get(`https://oauth.reddit.com/hot`, {
+        .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
             authorization: `bearer ${token}`,
           },
@@ -77,7 +78,7 @@ const FrontPage = () => {
         .catch((err) => console.log(err));
     } else {
       axios
-        .get(`${BASE_URL}/.json`, {
+        .get(`${BASE_URL}/${sort}.json?t=${range}`, {
           params: {
             raw_json: 1,
           },
@@ -109,7 +110,7 @@ const FrontPage = () => {
     //console.log(after);
     if (accessToken) {
       axios
-        .get(`https://oauth.reddit.com/hot`, {
+        .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
             authorization: `bearer ${accessToken}`,
           },
@@ -132,7 +133,7 @@ const FrontPage = () => {
     } else {
       axios
         .get(
-          `${BASE_URL}/${subURL}.json?&after=${after}&count=${posts.length}`,
+          `${BASE_URL}/${sort}.json??t=${range}&after=${after}&count=${posts.length}`,
           {
             params: { raw_json: 1 },
           }

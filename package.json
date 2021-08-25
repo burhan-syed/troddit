@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/react-lazyload": "^3.1.1",
     "axios": "^0.21.1",
     "firebase": "^8.8.0",
     "image-to-base64": "^2.2.0",
@@ -24,7 +23,9 @@
     "snoowrap": "^1.23.0"
   },
   "devDependencies": {
+    "@types/node": "^16.7.1",
     "@types/react": "^17.0.14",
+    "@types/react-lazyload": "^3.1.1",
     "autoprefixer": "^10.3.1",
     "eslint": "7.31.0",
     "eslint-config-next": "11.0.1",

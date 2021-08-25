@@ -1,7 +1,7 @@
 import Image from "next/image";
 const Placeholder = ({ imageInfo }) => {
   return (
-    <div>
+    <div className="object-fill">
       <Image
           src={imageInfo.url}
           height={imageInfo.height}

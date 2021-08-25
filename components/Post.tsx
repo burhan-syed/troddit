@@ -81,7 +81,7 @@ const Post = ({ post }) => {
       let gallery = [];
       for (let i in post.media_metadata) {
         let image = post.media_metadata[i];
-        if (image.p.length > 0) {
+        if (image.p) {if (image.p.length > 0) {
           let num = image.p.length - 1;
           //console.log(num);
           gallery.push({
@@ -89,7 +89,7 @@ const Post = ({ post }) => {
             height: image.p[num].y,
             width: image.p[num].x,
           });
-        }
+        }}
       }
       setGalleryInfo(gallery);
       setIsGallery(true);
@@ -165,6 +165,7 @@ const Post = ({ post }) => {
           placeholder={<Placeholder imageInfo={imageInfo} />}
         >
           <video
+            className=""
             autoPlay={true}
             muted
             loop

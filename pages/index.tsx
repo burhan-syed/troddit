@@ -4,6 +4,7 @@ import Login from "../components/Login";
 
 import { b2a, getAccessToken, setAccessToken } from "../accessToken";
 import FrontPage from "../components/FrontPage";
+import Sort from "../components/Sort";
 
 export const index = () => {
   return (
@@ -12,7 +13,8 @@ export const index = () => {
         <title>Next-Reddit</title>
       </Head>
       <Login />
-      <FrontPage />
+      <Sort/>
+      <FrontPage sort="best"/>
     </div>
   );
 };

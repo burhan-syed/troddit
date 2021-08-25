@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Post from "./Post";
+import Sort from './Sort';
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -33,13 +34,12 @@ const Feed = ({ subreddits, sort, isUser }) => {
   // let countUrl     = (count == 0) ? "" : "&count="+count;
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
-    console.log(subreddits);
     initialize();
-  }, [subreddits, sort, subURL]);
+  }, [subreddits, sort,subURL]);
 
   const initialize = async() => {
     await configureURL();
-    console.log(subURL);
+    console.log(`${BASE_URL}/${subURL}/${sort}/.json?&after=${after}&count=${posts.length}`);
     if(!subURL.includes('undefined')) {fetchPage();}
   }
   const configureURL = async() => {
@@ -68,7 +68,7 @@ const Feed = ({ subreddits, sort, isUser }) => {
             setLoading(false);
             setAfter(response.data.data.after);
             setPosts(posts);
-            console.log(posts);
+            //console.log(posts);
             //posts.map(post => (console.log(post[0].title)));
           })
           .catch((err) => console.log(err))
@@ -101,6 +101,7 @@ const Feed = ({ subreddits, sort, isUser }) => {
   }
   return (
     <section>
+      <Sort/>
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
