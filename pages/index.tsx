@@ -14,7 +14,7 @@ export const index = () => {
       </Head>
       <Login />
       <Sort/>
-      <FrontPage sort="best"/>
+      <FrontPage sort="best" range=""/>
     </div>
   );
 };

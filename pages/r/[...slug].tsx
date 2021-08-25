@@ -12,7 +12,7 @@ const Sort = () => {
         query: {subs}
         {sort}
       </p>
-      {subs ? <Feed subreddits={subs} sort={sort ?? "hot"} isUser={false}/> : <FrontPage sort="best"/>}
+      {subs ? <Feed subreddits={subs} sort={sort ?? "hot"} isUser={false}/> : <FrontPage sort="best" range=""/>}
       
     </div>
   );
