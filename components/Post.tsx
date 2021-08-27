@@ -135,7 +135,7 @@ const Post = ({ post }) => {
   return (
     <div className="outline-black">
       <h1 className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
-        <a href={`https://old.reddit.com/${post.permalink}`} target="_blank" rel="noreferrer">{post.title}</a>
+        <a href={`https://www.reddit.com/${post.permalink}`} target="_blank" rel="noreferrer">{post.title}</a>
       </h1>
 
       {isGallery ? <Gallery images={galleryInfo} /> : ""}

@@ -3,6 +3,7 @@ import Autosuggest from "react-autosuggest";
 import { useState } from "react";
 import axios from "axios";
 import Snoowrap from "snoowrap";
+import router from "next/router";
 
 const languages = [
   {
@@ -58,10 +59,6 @@ const Search = ({ accessToken }) => {
             },
           }
         );
-        let subs = [];
-        res.data.subreddits.forEach(s => {
-          subs.push(s.name);
-        })
         console.log(res.data.subreddits);
         return(res.data.subreddits)
         
@@ -82,8 +79,17 @@ const Search = ({ accessToken }) => {
 
   const renderSuggestion = (suggestion) => {
     console.log(suggestion);
-    return (<div>{suggestion.name}</div>);
+    return (<div onClick={e => goToSub(e, suggestion.name)}>{suggestion.name}</div>);
   };
+
+  const goToSub = (e, suggestion) => {
+    e.preventDefault();
+    router.push({
+      pathname: "/r/[subs]",
+      query: {subs: suggestion}
+    })
+
+  }
 
   const onChange = (event, { newValue }) => {
     setValue(newValue);
