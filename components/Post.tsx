@@ -170,7 +170,7 @@ const Post = ({ post }) => {
             muted
             loop
             preload="none"
-            poster={imageInfo.url}
+            // poster={imageInfo.url}
             playsInline
           >
             <source src={videoInfo.url} type="video/mp4" />

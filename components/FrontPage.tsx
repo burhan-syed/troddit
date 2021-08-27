@@ -161,7 +161,7 @@ const FrontPage = ({sort, range}) => {
     <section>
       <div>{accessToken}</div>
       <div>{mysubs}</div>
-      <Search/>
+      <Search accessToken={accessToken}/>
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
