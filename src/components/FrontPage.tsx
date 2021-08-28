@@ -5,10 +5,8 @@ import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { getSession } from "next-auth/client";
-import { getToken } from "next-auth/jwt";
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
+import { useMainContext } from "../MainContext";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
 const FrontPage = ({ sort, range }) => {
@@ -20,9 +18,8 @@ const FrontPage = ({ sort, range }) => {
   const BASE_URL = "https://www.reddit.com";
 
   const [mysubs, setMySubs] = useState([]);
-  const [session, sessionloading] = useSession();
-  const [accessToken, setAccessToken] = useState("");
-  const [refreshtoken, setRefreshToken] = useState("");
+
+  const context:any = useMainContext();
 
   const route = useRouter();
   const breakpointColumnsObj = {
@@ -39,27 +36,22 @@ const FrontPage = ({ sort, range }) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     initialLoad();
-  }, [accessToken, route]);
+  }, [route]);
 
   const initialLoad = async () => {
-    //const snoowrap = new Snoowrap();
-    const session = await getSession();
-    if (session) {
-      await getToken();
-    }
     if (sort != undefined) {
-      fetchFrontPage(accessToken, sort);
+      fetchFrontPage(sort);
     }
   };
 
-  const fetchFrontPage = async (token?: string, sort?: string) => {
-    if (token) {
-      console.log("token!");
-      console.log(range);
+  const fetchFrontPage = async (sort?: string) => {
+    if (context?.token?.accessToken ?? false) {
+      //console.log("token!");
+      //console.log(range);
       axios
         .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
-            authorization: `bearer ${token}`,
+            authorization: `bearer ${context.token.accessToken}`,
           },
           params: {
             raw_json: 1,
@@ -74,7 +66,7 @@ const FrontPage = ({ sort, range }) => {
           setLoading(false);
           setAfter(response.data.data.after);
           setPosts(posts);
-          console.log(posts);
+          //console.log(posts);
         })
         .catch((err) => console.log(err));
     } else {
@@ -93,28 +85,22 @@ const FrontPage = ({ sort, range }) => {
           setLoading(false);
           setAfter(response.data.data.after);
           setPosts(posts);
-          console.log(posts);
+          //console.log(posts);
           //posts.map(post => (console.log(post[0].title)));
         });
     }
   };
 
-  const getToken = async () => {
-    let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
-    console.log(tokendata);
-    setAccessToken(tokendata.data.accessToken);
-    setRefreshToken(tokendata.data.refreshtoken);
-  };
 
   const loadmore = () => {
     setLoadingMore(true);
     //console.log(after);
-    if (accessToken) {
-      console.log(range);
+    if (context?.token?.accessToken ?? false) {
+      //console.log(range);
       axios
         .get(`https://oauth.reddit.com/${sort}`, {
           headers: {
-            authorization: `bearer ${accessToken}`,
+            authorization: `bearer ${context.token.accessToken}`,
           },
           params: {
             after: after,
@@ -130,7 +116,7 @@ const FrontPage = ({ sort, range }) => {
           setLoading(false);
           setAfter(response.data.data.after);
           setPosts(posts);
-          console.log(posts);
+          //console.log(posts);
         })
         .catch((err) => console.log(err));
     } else {
@@ -158,9 +144,7 @@ const FrontPage = ({ sort, range }) => {
   }
   return (
     <section>
-      <div>{accessToken}</div>
       <div>{mysubs}</div>
-      <Search accessToken={accessToken} />
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}

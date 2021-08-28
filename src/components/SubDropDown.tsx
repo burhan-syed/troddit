@@ -1,19 +1,22 @@
 import axios from "axios";
 import { useState } from "react";
+import { useMainContext } from "../MainContext";
 
-const SubDropDown = ({ accessToken }) => {
+const SubDropDown = () => {
   const [mySubs, setMySubs] = useState([]);
+
+  const context:any = useMainContext();
 
   const getSubs = async (after?) => {
     console.log("getsubs");
-    if (accessToken) {
-      console.log(accessToken);
+    if (context?.token?.accessToken ?? false) {
+      console.log(context.token.accessToken);
       try {
         let data = await axios.get(
           "https://oauth.reddit.com/api/subreddits/mine/subscriber",
           {
             headers: {
-              authorization: `bearer ${accessToken}`,
+              authorization: `bearer ${context.token.accessToken}`,
             },
             params: {
               after: "",

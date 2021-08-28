@@ -2,9 +2,13 @@ import Search from "./Search";
 import { useEffect, useState } from "react";
 import Login from "./Login";
 import SubDropDown from "./SubDropDown";
-const NavBar = ({ accessToken }) => {
+ 
+
+const NavBar = () => {
+
   const [hidden, setHidden] = useState("");
   const [prevScrollpos, setScrollpos] = useState(0);
+
   useEffect(() => {
     window.addEventListener("scroll", onScroll);
     setScrollpos(window.pageYOffset);
@@ -25,14 +29,14 @@ const NavBar = ({ accessToken }) => {
 
   return (
     <header
-      className={`sticky top-0 z-50 flex items-center ${hidden} px-4 py-4 bg-white shadow-md`}
+      className={`sticky top-0 z-50 flex items-center px-4 py-4 bg-white shadow-md`}
     >
       <h1>ReddAll</h1>
       <div className="flex items-center flex-grow px-5 py-2 mx-5 text-gray-600 bg-gray-100 rounded-lg focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
-        <Search accessToken={accessToken} />
+        <Search/>
       </div>
       <div>
-        <SubDropDown accessToken={accessToken} />
+        <SubDropDown />
       </div>
       <Login />
     </header>

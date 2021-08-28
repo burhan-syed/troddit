@@ -2,33 +2,17 @@ import Link from "next/link";
 import Autosuggest from "react-autosuggest";
 import { useState } from "react";
 import axios from "axios";
-import Snoowrap from "snoowrap";
 import router from "next/router";
+import { useMainContext } from "../MainContext";
 
-const languages = [
-  {
-    name: "C",
-    year: 1972,
-  },
-  {
-    name: "Elm",
-    year: 2012,
-  },
-];
 
-const Search = ({ accessToken }) => {
+const Search = () => {
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
 
-  // const [r, setR] = useState(
-  //   new Snoowrap({
-  //     userAgent: "search wrapper",
-  //     clientId: process.env.CLIENT_ID,
-  //     clientSecret: process.env.CLIENT_SECRET,
-  //     accessToken: accessToken,
-  //   })
-  // );
+  const context:any = useMainContext();
+
 
   const onSuggestionsFetchRequested = async ({ value }) => {
     const suggestions = await getSuggestions({ value });
@@ -36,20 +20,14 @@ const Search = ({ accessToken }) => {
   };
 
   const getSuggestions = async (value) => {
-    if (accessToken) {
-      // const subs = await r.searchSubredditNames({
-      //   query: value,
-      //   exact: false,
-      //   includeNsfw: true,
-      // });
-      // console.log(subs);
+    if (context?.token?.accessToken ?? false) {
       try {
-        console.log(value);
+        
         let res = await axios.get(
           "https://oauth.reddit.com/api/subreddit_autocomplete",
           {
             headers: {
-              authorization: `bearer ${accessToken}`,
+              authorization: `bearer ${context.token.accessToken}`,
             },
             params: {
               include_over_18: true,
@@ -59,7 +37,6 @@ const Search = ({ accessToken }) => {
             },
           }
         );
-        console.log(res.data.subreddits);
         return res.data.subreddits;
       } catch (err) {
         console.log(err);
