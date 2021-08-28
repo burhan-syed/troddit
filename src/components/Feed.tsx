@@ -1,17 +1,9 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import Post from "./Post";
 import Sort from "./Sort";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { b2a } from "../accessToken";
-import Snoowrap from "snoowrap";
-import { getSession } from "next-auth/client";
-import { getToken } from "next-auth/jwt";
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
-//import { fetchFrontPage } from "../redditapi/frontpage";
 
 const Feed = ({ subreddits, sort, range, isUser }) => {
   const [loading, setLoading] = useState(true);

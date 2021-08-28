@@ -25,7 +25,7 @@ const Post = ({ post }) => {
   );
   //console.log(post);
   useEffect(() => {
-   initialize();
+    initialize();
   }, [loaded]);
 
   const initialize = async () => {
@@ -81,15 +81,17 @@ const Post = ({ post }) => {
       let gallery = [];
       for (let i in post.media_metadata) {
         let image = post.media_metadata[i];
-        if (image.p) {if (image.p.length > 0) {
-          let num = image.p.length - 1;
-          //console.log(num);
-          gallery.push({
-            url: image.p[num].u.replace("amp;", ""),
-            height: image.p[num].y,
-            width: image.p[num].x,
-          });
-        }}
+        if (image.p) {
+          if (image.p.length > 0) {
+            let num = image.p.length - 1;
+            //console.log(num);
+            gallery.push({
+              url: image.p[num].u.replace("amp;", ""),
+              height: image.p[num].y,
+              width: image.p[num].x,
+            });
+          }
+        }
       }
       setGalleryInfo(gallery);
       setIsGallery(true);
@@ -135,7 +137,13 @@ const Post = ({ post }) => {
   return (
     <div className="outline-black">
       <h1 className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
-        <a href={`https://www.reddit.com/${post.permalink}`} target="_blank" rel="noreferrer">{post.title}</a>
+        <a
+          href={`https://www.reddit.com/${post.permalink}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {post.title}
+        </a>
       </h1>
 
       {isGallery ? <Gallery images={galleryInfo} /> : ""}
@@ -189,10 +197,12 @@ const Post = ({ post }) => {
       >
         <a>r/{post.subreddit}</a>
       </Link>
-      <Link href={{
+      <Link
+        href={{
           pathname: "/u/[slug]",
           query: { slug: post.author },
-        }}>
+        }}
+      >
         <a>u/{post.author}</a>
       </Link>
       <p>{post.score}</p>

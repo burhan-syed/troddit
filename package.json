@@ -14,6 +14,7 @@
     "image-to-base64": "^2.2.0",
     "next": "11.0.1",
     "next-auth": "^3.27.3",
+    "next-cookies": "^2.0.3",
     "plaiceholder": "^2.0.1",
     "react": "17.0.2",
     "react-autosuggest": "^10.1.0",

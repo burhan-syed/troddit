@@ -60,13 +60,12 @@ const Search = ({ accessToken }) => {
           }
         );
         console.log(res.data.subreddits);
-        return(res.data.subreddits)
-        
+        return res.data.subreddits;
       } catch (err) {
         console.log(err);
       }
     }
-    return [{name: "Login for search complete"}];
+    return [{ name: "Login for search complete" }];
   };
 
   const onSuggestionsClearRequested = () => {
@@ -79,17 +78,24 @@ const Search = ({ accessToken }) => {
 
   const renderSuggestion = (suggestion) => {
     console.log(suggestion);
-    return (<div onClick={e => goToSub(e, suggestion.name)}>{suggestion.name}</div>);
+    return (
+      <ul
+        onClick={(e) => goToSub(e, suggestion.name)}
+        onSubmit={(e) => goToSub(e, suggestion.name)}
+      >
+        {suggestion.name}
+      </ul>
+    );
   };
 
   const goToSub = (e, suggestion) => {
     e.preventDefault();
+    console.log(suggestions);
     router.push({
       pathname: "/r/[subs]",
-      query: {subs: suggestion}
-    })
-
-  }
+      query: { subs: suggestion },
+    });
+  };
 
   const onChange = (event, { newValue }) => {
     setValue(newValue);
@@ -104,6 +110,7 @@ const Search = ({ accessToken }) => {
   return (
     <>
       <Autosuggest
+        className="flex"
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}

@@ -1,20 +1,17 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Post from "./Post";
 import Search from "./Search";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { b2a } from "../accessToken";
-import Snoowrap from "snoowrap";
+
 import { getSession } from "next-auth/client";
 import { getToken } from "next-auth/jwt";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
-const FrontPage = ({sort, range}) => {
+const FrontPage = ({ sort, range }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -50,7 +47,9 @@ const FrontPage = ({sort, range}) => {
     if (session) {
       await getToken();
     }
-    if (sort != undefined) {fetchFrontPage(accessToken,sort)};
+    if (sort != undefined) {
+      fetchFrontPage(accessToken, sort);
+    }
   };
 
   const fetchFrontPage = async (token?: string, sort?: string) => {
@@ -64,7 +63,7 @@ const FrontPage = ({sort, range}) => {
           },
           params: {
             raw_json: 1,
-            t: range
+            t: range,
           },
         })
         .then((response) => {
@@ -121,7 +120,7 @@ const FrontPage = ({sort, range}) => {
             after: after,
             count: posts.length,
             raw_json: 1,
-            t: range
+            t: range,
           },
         })
         .then((response) => {
@@ -161,7 +160,7 @@ const FrontPage = ({sort, range}) => {
     <section>
       <div>{accessToken}</div>
       <div>{mysubs}</div>
-      <Search accessToken={accessToken}/>
+      <Search accessToken={accessToken} />
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}

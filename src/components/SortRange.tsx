@@ -17,17 +17,15 @@ const SortRange = () => {
           t: encodeURI(r),
         },
       });
-    } 
-    else if (router.query.frontsort) {
+    } else if (router.query.frontsort) {
       router.push({
         pathname: "/[frontsort]",
         query: {
           frontsort: router.query.frontsort,
-          t: encodeURI(r)
-        }
-      })
-    }
-    else {
+          t: encodeURI(r),
+        },
+      });
+    } else {
       router.push({
         pathname: "/[sort]",
         query: { sort: router.query?.slug?.[1] ?? "", t: encodeURI(r) },
