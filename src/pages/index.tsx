@@ -2,8 +2,7 @@ import axios from "axios";
 import Head from "next/head";
 
 import FrontPage from "../components/FrontPage";
-import Sort from "../components/Sort";
-import Main from "../components/Main";
+import NavBar from "../components/NavBar";
 
 export const index = () => {
   return (
@@ -11,8 +10,7 @@ export const index = () => {
       <Head>
         <title>Next-Reddit</title>
       </Head>
-      <Main />
-      <Sort />
+      <NavBar/>
       <FrontPage sort="best" range="" />
     </div>
   );

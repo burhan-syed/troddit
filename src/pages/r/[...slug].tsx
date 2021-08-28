@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
 import Feed from "../../components/Feed";
 import Link from "next/link";
+import NavBar from "../../components/NavBar";
 
 const Sort = ({ query }) => {
   const router = useRouter();
   const [subs, sort] = router.query?.slug ?? [];
   return (
     <div>
-      <Link href="/">Home</Link>
+      <NavBar/>
       <p>
         query: {subs}
         {sort}

@@ -36,7 +36,7 @@ const FrontPage = ({ sort, range }) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     initialLoad();
-  }, [route]);
+  }, [route, context]);
 
   const initialLoad = async () => {
     if (sort != undefined) {
@@ -45,6 +45,7 @@ const FrontPage = ({ sort, range }) => {
   };
 
   const fetchFrontPage = async (sort?: string) => {
+    console.log(context);
     if (context?.token?.accessToken ?? false) {
       //console.log("token!");
       //console.log(range);

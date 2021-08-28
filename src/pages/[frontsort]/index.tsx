@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import FrontPage from "../../components/FrontPage";
+import NavBar from "../../components/NavBar";
 import Sort from "../../components/Sort";
 
 const Subs = ({ query }) => {
@@ -9,6 +10,7 @@ const Subs = ({ query }) => {
 
   return (
     <div>
+      <NavBar/>
       <p>sort: {frontsort}</p>
       <Sort />
       <FrontPage sort={frontsort ?? "best"} range={query.t ?? ""} />

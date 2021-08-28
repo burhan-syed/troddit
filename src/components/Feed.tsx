@@ -113,7 +113,6 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
   }
   return (
     <section>
-      <Sort />
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
