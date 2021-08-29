@@ -59,7 +59,7 @@ async function refreshAccessToken(token) {
     });
 
     const refreshedTokens = await response.json();
-
+    console.log('refreshed token', refreshedTokens);
     if (!response.ok) {
       throw refreshedTokens;
     }

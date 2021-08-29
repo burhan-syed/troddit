@@ -7,6 +7,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
+import { getSession, useSession } from "next-auth/client";
 //import { fetchFrontPage } from "../redditapi/frontpage";
 
 const FrontPage = ({ sort, range }) => {
@@ -20,6 +21,8 @@ const FrontPage = ({ sort, range }) => {
   const [mysubs, setMySubs] = useState([]);
 
   const context:any = useMainContext();
+
+  const [session, sessionLoading] = useSession();
 
   const route = useRouter();
   const breakpointColumnsObj = {
@@ -36,7 +39,12 @@ const FrontPage = ({ sort, range }) => {
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
     initialLoad();
-  }, [route, context]);
+    return (() => {
+      setPosts([]);
+      setAfter("");
+      setLoading(false);
+    })
+  }, [route, context, session]);
 
   const initialLoad = async () => {
     if (sort != undefined) {
@@ -60,16 +68,19 @@ const FrontPage = ({ sort, range }) => {
           },
         })
         .then((response) => {
-          const posts = [];
-          response.data.data.children.forEach((post) => {
-            posts.push(post.data);
-          });
+          // const posts = [];
+          // response.data.data.children.forEach((post) => {
+          //   posts.push(post.data);
+          // });
           setLoading(false);
           setAfter(response.data.data.after);
-          setPosts(posts);
+          setPosts(response.data.data.children);
           //console.log(posts);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          const token = getSession();
+          console.log(err)
+        });
     } else {
       axios
         .get(`${BASE_URL}/${sort}.json?t=${range}`, {
@@ -79,15 +90,13 @@ const FrontPage = ({ sort, range }) => {
         })
         .then((response) => {
           //console.log(response);
-          const posts = [];
-          response.data.data.children.forEach((post) => {
-            posts.push(post.data);
-          });
+          // const posts = [];
+          // response.data.data.children.forEach((post) => {
+          //   posts.push(post.data);
+          // });
           setLoading(false);
           setAfter(response.data.data.after);
-          setPosts(posts);
-          //console.log(posts);
-          //posts.map(post => (console.log(post[0].title)));
+          setPosts(response.data.data.children);
         });
     }
   };
@@ -111,12 +120,12 @@ const FrontPage = ({ sort, range }) => {
           },
         })
         .then((response) => {
-          response.data.data.children.forEach((post) => {
-            posts.push(post.data);
-          });
+          // response.data.data.children.forEach((post) => {
+          //   posts.push(post.data);
+          // });
           setLoading(false);
           setAfter(response.data.data.after);
-          setPosts(posts);
+          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
           //console.log(posts);
         })
         .catch((err) => console.log(err));
@@ -129,12 +138,12 @@ const FrontPage = ({ sort, range }) => {
           }
         )
         .then((response) => {
-          response.data.data.children.forEach((post) => {
-            posts.push(post.data);
-          });
+          // response.data.data.children.forEach((post) => {
+          //   posts.push(post.data);
+          // });
           setLoadingMore(false);
           setAfter(response.data.data.after);
-          setPosts(posts);
+          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
           //posts.map(post => (console.log(post[0].title)));
         });
     }
@@ -164,7 +173,7 @@ const FrontPage = ({ sort, range }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`} post={post} />
+            <Post key={`${post.id}_${i}`} post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

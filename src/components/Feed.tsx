@@ -66,15 +66,9 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
             }
           )
           .then((response) => {
-            //console.log(response);
-            const posts = [];
-            response.data.data.children.forEach((post) => {
-              posts.push(post.data);
-            });
-            console.log(response.data.data);
             if (componentMounted) {
               setAfter(response.data.data.after);
-              setPosts(posts);
+              setPosts(response.data.data.children);
               setLoading(false);
             }
             //console.log(posts);
@@ -95,16 +89,11 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
         }
       )
       .then((response) => {
-        response.data.data.children.forEach((post) => {
-          posts.push(post.data);
-        });
-
         if (componentMounted) {
           setAfter(response.data.data.after);
-          setPosts(posts);
+          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
           setLoadingMore(false);
         }
-        //posts.map(post => (console.log(post[0].title)));
       });
   };
 
@@ -131,7 +120,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`} post={post} />
+            <Post key={`${post.id}_${i}`} post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

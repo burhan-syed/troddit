@@ -14,11 +14,13 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
         // className={`${
         //   videoLoaded ? "opacity-100" : "opacity-0"
         // }  h-full w-full`}
-        className="absolute top-0 left-0 blur-xl"
+        className="absolute top-0 left-0 blur-3xl"
         src={placeholder.url}
         height={placeholder.height}
         width={placeholder.width}
         alt="placeholder"
+        placeholder="blur"
+        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
         onError={() => {
           console.log("ERR: ", placeholder, videoInfo);
           setUseFallback(true);

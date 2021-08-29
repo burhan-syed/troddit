@@ -13,6 +13,7 @@ import ImageHandler from "./ImageHandler";
 
 const Post = ({ post }) => {
   const [loaded, setLoaded] = useState(false);
+  const [toLoad, setToLoad] = useState(false);
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);
@@ -27,8 +28,23 @@ const Post = ({ post }) => {
 
   //console.log(post);
   useEffect(() => {
-    initialize();
+    if (shouldLoad()) {
+      initialize();
+      setToLoad(true);
+    } else {
+      console.log("ERRRRRR")
+    }
+
   }, []);
+
+  const shouldLoad = () => {
+    if (!post) return false; 
+    if (!(post.url)) return false;
+    if (!(post.title)) return false;
+    if (!(post.subreddit)) return false;
+    //console.log(post);
+    return true;
+  };
 
   const initialize = async () => {
     const a = await findImage();
@@ -178,69 +194,77 @@ const Post = ({ post }) => {
 
   return (
     <div className="outline-black">
-      <h1 className="">
-        <a
-          href={`https://www.reddit.com/${post.permalink}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {post.title}
-        </a>
-      </h1>
+      {toLoad ? (
+        <div>
+          <h1 className="">
+            <a
+              href={`https://www.reddit.com/${post?.permalink ?? ""}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {post?.title ?? "ERR"}
+            </a>
+          </h1>
 
-      {isGallery ? <Gallery images={galleryInfo} /> : ""}
+          {isGallery ? <Gallery images={galleryInfo} /> : ""}
 
-      {isImage ? (
-        // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-        <Image
-          src={imageInfo.url}
-          height={imageInfo.height}
-          width={imageInfo.width}
-          alt="image"
-          layout="responsive"
-          placeholder="blur"
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
-        />
-      ) : (
-        // <LazyLoad height={imageInfo.height}>
-        //   <img src={imageInfo.url} alt="img" />
-        // </LazyLoad>
-        ""
-      )}
+          {isImage ? (
+            // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
+            <Image
+              src={imageInfo.url}
+              height={imageInfo.height}
+              width={imageInfo.width}
+              alt="image"
+              layout="responsive"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+            />
+          ) : (
+            // <LazyLoad height={imageInfo.height}>
+            //   <img src={imageInfo.url} alt="img" />
+            // </LazyLoad>
+            ""
+          )}
 
-      {isMP4 ? (
-        <div className="flex flex-wrap content-center">
-          <p>{videoInfo.height}</p>
-          <LazyLoad
-            height={videoInfo.height}
-            once={true}
-            // placeholder={<Placeholder imageInfo={placeholder} />}
+          {isMP4 ? (
+            <div>
+              <LazyLoad
+                height={videoInfo.height}
+                once={true}
+                // placeholder={<Placeholder imageInfo={placeholder} />}
+              >
+                <VideoHandler
+                  placeholder={placeholderInfo}
+                  videoInfo={videoInfo}
+                />
+              </LazyLoad>
+            </div>
+          ) : (
+            ""
+          )}
+
+          <p>{post?.url ?? "ERR"}</p>
+          <Link
+            href={{
+              pathname: "/r/[slug]",
+              query: { slug: post?.subreddit ?? "" },
+            }}
           >
-            <VideoHandler placeholder={placeholderInfo} videoInfo={videoInfo} />
-          </LazyLoad>
+            <a>r/{post?.subreddit ?? "ERR"}</a>
+          </Link>
+          <Link
+            href={{
+              pathname: "/u/[slug]",
+              query: { slug: post?.author ?? "" },
+            }}
+          >
+            <a>u/{post?.author ?? ""}</a>
+          </Link>
+          <p>{post?.score ?? "0"}</p>
         </div>
       ) : (
-        ""
+        <h1>ERR WITH POST</h1>
       )}
-
-      <p>{post.url}</p>
-      <Link
-        href={{
-          pathname: "/r/[slug]",
-          query: { slug: post.subreddit },
-        }}
-      >
-        <a>r/{post.subreddit}</a>
-      </Link>
-      <Link
-        href={{
-          pathname: "/u/[slug]",
-          query: { slug: post.author },
-        }}
-      >
-        <a>u/{post.author}</a>
-      </Link>
-      <p>{post.score}</p>
     </div>
   );
 };
