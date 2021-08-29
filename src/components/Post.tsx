@@ -9,6 +9,7 @@ import Placeholder from "./Placeholder";
 import Gallery from "./Gallery";
 import image from "next/image";
 import VideoHandler from "./VideoHandler";
+import ImageHandler from "./ImageHandler";
 
 const Post = ({ post }) => {
   const [loaded, setLoaded] = useState(false);
@@ -27,17 +28,20 @@ const Post = ({ post }) => {
   //console.log(post);
   useEffect(() => {
     initialize();
-  }, [loaded]);
+  }, []);
 
   const initialize = async () => {
     const a = await findImage();
     const b = await findVideo();
-    checkURLs();
+    //console.log(imageInfo, videoInfo, placeholderInfo);
+
+    //checkURLs();
     a || b ? setLoaded(true) : setLoaded(false);
   };
 
   //if deleted by copyright notice may be set to 'self'
   const checkURLs = () => {
+    //console.log(imageInfo, videoInfo, placeholderInfo);
     const placeholder = "http://goo.gl/ijai22";
     if (imageInfo.url === "self") {
       setImageInfo((imgInfo) => {
@@ -56,6 +60,13 @@ const Post = ({ post }) => {
     }
   };
 
+  const checkURL = (url) => {
+    const placeholder = "http://goo.gl/ijai22";
+    if (!url) return placeholder;
+    if (!url.includes("http")) return placeholder;
+    return url;
+  };
+
   const findVideo = async () => {
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
@@ -66,7 +77,7 @@ const Post = ({ post }) => {
         });
 
         setPlaceholderInfo({
-          url: post?.thumbnail,
+          url: checkURL(post?.thumbnail),
           height: post.preview.reddit_video_preview.height,
           width: post.preview.reddit_video_preview.width,
           //height: post.prevt.thumbnail_height,
@@ -85,7 +96,7 @@ const Post = ({ post }) => {
             width: post.media.reddit_video.width,
           });
           setPlaceholderInfo({
-            url: post.thumbnail,
+            url: checkURL(post.thumbnail),
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
             //height: post.thumbnail_height,
@@ -112,7 +123,7 @@ const Post = ({ post }) => {
             let num = image.p.length - 1;
             //console.log(num);
             gallery.push({
-              url: image.p[num].u.replace("amp;", ""),
+              url: checkURL(image.p[num].u.replace("amp;", "")),
               height: image.p[num].y,
               width: image.p[num].x,
             });
@@ -131,15 +142,14 @@ const Post = ({ post }) => {
           //console.log(num);
 
           setImageInfo({
-            url: post.preview?.images[0]?.resolutions[num].url.replace(
-              "amp;",
-              ""
+            url: checkURL(
+              post.preview?.images[0]?.resolutions[num].url.replace("amp;", "")
             ),
             height: post.preview?.images[0]?.resolutions[num].height,
             width: post.preview?.images[0]?.resolutions[num].width,
           });
           setPlaceholderInfo({
-            url: post.thumbnail,
+            url: checkURL(post.thumbnail),
             height: post.thumbnail_height,
             width: post.thumbnail_width,
           });
@@ -181,12 +191,15 @@ const Post = ({ post }) => {
       {isGallery ? <Gallery images={galleryInfo} /> : ""}
 
       {isImage ? (
+        // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
         <Image
-          src={imageInfo.url} //{loaded ? imageInfo.url : imgPlaceholder}
+          src={imageInfo.url}
           height={imageInfo.height}
           width={imageInfo.width}
-          alt="thumbnail"
+          alt="image"
           layout="responsive"
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
         />
       ) : (
         // <LazyLoad height={imageInfo.height}>
