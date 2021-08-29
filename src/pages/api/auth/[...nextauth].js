@@ -1,6 +1,88 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
+
+ function b2a(a) {
+  var c,
+    d,
+    e,
+    f,
+    g,
+    h,
+    i,
+    j,
+    o,
+    b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    k = 0,
+    l = 0,
+    m = "",
+    n = [];
+  if (!a) return a;
+  do
+    (c = a.charCodeAt(k++)),
+      (d = a.charCodeAt(k++)),
+      (e = a.charCodeAt(k++)),
+      (j = (c << 16) | (d << 8) | e),
+      (f = 63 & (j >> 18)),
+      (g = 63 & (j >> 12)),
+      (h = 63 & (j >> 6)),
+      (i = 63 & j),
+      (n[l++] = b.charAt(f) + b.charAt(g) + b.charAt(h) + b.charAt(i));
+  while (k < a.length);
+  return (
+    (m = n.join("")),
+    (o = a.length % 3),
+    (o ? m.slice(0, o - 3) : m) + "===".slice(o || 3)
+  );
+}
+
+
+async function refreshAccessToken(token) {
+  try {
+
+    const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
+
+    const url =
+      "https://www.reddit.com/api/v1/access_token?"
+       +
+      new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: token.reddit.refreshToken,
+      });
+
+    const response = await fetch(url, {
+
+      headers: {
+        "Authorization" : `Basic ${b2a(authvalue)}`
+      },
+      method: "POST",
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      reddit: {
+        accessToken: refreshedTokens.accessToken ?? token.reddit.accessToken, //fallback to old access token
+        refreshToken: refreshedTokens.refreshToken ?? token.reddit.refreshToken //fall back to old refresh token
+      },
+      iat: Math.floor(Date.now()/1000),
+      exp: Math.floor(Date.now()/1000)+refreshedTokens.expires_in
+    };
+  } catch (error) {
+    console.log(error);
+    console.log("errored");
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
+
 export default NextAuth({
   // Configure one or more authentication providers
   providers: [
@@ -33,24 +115,11 @@ export default NextAuth({
   ],
 
   callbacks: {
-    /**
-     * @param  {object}  token     Decrypted JSON Web Token
-     * @param  {object}  user      User object      (only available on sign in)
-     * @param  {object}  account   Provider account (only available on sign in)
-     * @param  {object}  profile   Provider profile (only available on sign in)
-     * @param  {boolean} isNewUser True if new user (only available on sign in)
-     * @return {object}            JSON Web Token that will be saved
-     */
-    async jwt(token, user, account, profile, isNewUser) {
-      // Add access_token to the token right after signin
-      if (account?.accessToken) {
-        token.accessToken = account.accessToken;
-      }
-      return token;
-    },
-  },
-  callbacks: {
     async jwt(token, user, account = {}, profile, isNewUser) {
+      if (Math.floor(Date.now() / 1000) > token.exp) {
+        token = refreshAccessToken(token);
+      }
+
       if (account.provider && !token[account.provider]) {
         token[account.provider] = {};
       }
@@ -62,6 +131,8 @@ export default NextAuth({
       if (account.refreshToken) {
         token[account.provider].refreshToken = account.refreshToken;
       }
+
+      
 
       return token;
     },
