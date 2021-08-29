@@ -1,9 +1,18 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SortRange = () => {
   const [range, setRange] = useState("day");
   const router = useRouter();
+
+  useEffect(() => {
+    if (router?.query?.t ?? false) {
+      console.log(router.query.t)
+      setRange(router.query.t.toString())
+    }
+
+  }, [router])
+
   const updateRange = (e, r) => {
     e.preventDefault();
     console.log(router.query);
@@ -32,15 +41,18 @@ const SortRange = () => {
       });
     }
   };
+
+  
+
   return (
     <div>
       <ul>
-        <li onClick={(e) => updateRange(e, "hour")}>Now</li>
-        <li onClick={(e) => updateRange(e, "day")}>Today</li>
-        <li onClick={(e) => updateRange(e, "week")}>Week</li>
-        <li onClick={(e) => updateRange(e, "month")}>Month</li>
-        <li onClick={(e) => updateRange(e, "year")}>Year</li>
-        <li onClick={(e) => updateRange(e, "all")}>All</li>
+        <li className={range==="hour" ? `font-bold` : ""} onClick={(e) => updateRange(e, "hour")}>Now</li>
+        <li className={range==="day" ? `font-bold` : ""} onClick={(e) => updateRange(e, "day")}>Today</li>
+        <li className={range==="week" ? `font-bold` : ""} onClick={(e) => updateRange(e, "week")}>Week</li>
+        <li className={range==="month" ? `font-bold` : ""} onClick={(e) => updateRange(e, "month")}>Month</li>
+        <li className={range==="year" ? `font-bold` : ""} onClick={(e) => updateRange(e, "year")}>Year</li>
+        <li className={range==="all" ? `font-bold` : ""} onClick={(e) => updateRange(e, "all")}>All</li>
       </ul>
     </div>
   );
