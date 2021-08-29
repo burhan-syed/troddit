@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "eslint-plugin-react-hooks": "^4.2.1-alpha-8723e772b-20210826",
     "firebase": "^8.8.0",
     "image-to-base64": "^2.2.0",
     "next": "11.0.1",
