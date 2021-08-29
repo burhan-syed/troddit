@@ -29,7 +29,7 @@ export default function Login() {
       )}
       {session && (
         <>
-          Signed in as {session?.user.name} <br />
+          {session?.user.name} |  <br />
           <button onClick={() => signOut()}>Sign out</button>
         </>
       )}
