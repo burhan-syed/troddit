@@ -16,6 +16,7 @@ module.exports = {
       "www.newsweek.com",
       "www.independent.co.uk",
       "i.imgur.com",
+      "goo.gl",
     ],
   },
 };

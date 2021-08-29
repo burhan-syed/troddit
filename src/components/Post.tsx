@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
 import imageToBase64 from "image-to-base64/browser";
@@ -6,6 +7,8 @@ import LazyLoad from "react-lazyload";
 import { useEffect, useState } from "react";
 import Placeholder from "./Placeholder";
 import Gallery from "./Gallery";
+import image from "next/image";
+import VideoHandler from "./VideoHandler";
 
 const Post = ({ post }) => {
   const [loaded, setLoaded] = useState(false);
@@ -15,14 +18,12 @@ const Post = ({ post }) => {
   const [isMP4, setIsMP4] = useState(false);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({ url: "", height: 0, width: 0 });
-  const [placeholder, setPlaceholder] = useState({
+  const [placeholderInfo, setPlaceholderInfo] = useState({
     url: "",
     height: 0,
     width: 0,
   });
-  const [base64, setBase64] = useState(
-    "iVBORw0KGgoAAAANSUhEUgAAAfQAAAAyCAYAAACqECmXAAAAuElEQVR42u3VMQ0AAAgDMPbi3y9ciCBpTTTpngIAXovQAUDoAIDQAQChAwBCBwChAwBCBwCEDgAIHQCEDgAIHQAQOgAgdAAQOgAgdABA6ACA0AFA6ACA0AEAoQMAQgcAoQMAQgcAhA4ACB0AhA4ACB0AEDoAIHQAEDoAIHQAQOgAgNABQOgAgNABAKEDAEIHAKEDAEIHAIQOAAgdAIQudAAQOgAgdABA6ACA0AFA6ACA0AEAoQMAZwGc6TYbROcIIwAAAABJRU5ErkJggg=="
-  );
+
   //console.log(post);
   useEffect(() => {
     initialize();
@@ -31,7 +32,28 @@ const Post = ({ post }) => {
   const initialize = async () => {
     const a = await findImage();
     const b = await findVideo();
+    checkURLs();
     a || b ? setLoaded(true) : setLoaded(false);
+  };
+
+  //if deleted by copyright notice may be set to 'self'
+  const checkURLs = () => {
+    const placeholder = "http://goo.gl/ijai22";
+    if (imageInfo.url === "self") {
+      setImageInfo((imgInfo) => {
+        return { ...imageInfo, url: placeholder };
+      });
+    }
+    if (videoInfo.url === "self") {
+      setVideoInfo((imgInfo) => {
+        return { ...imageInfo, url: placeholder };
+      });
+    }
+    if (placeholderInfo.url === "self") {
+      setPlaceholderInfo((imgInfo) => {
+        return { ...imageInfo, url: placeholder };
+      });
+    }
   };
 
   const findVideo = async () => {
@@ -43,10 +65,12 @@ const Post = ({ post }) => {
           width: post.preview.reddit_video_preview.width,
         });
 
-        setPlaceholder({
+        setPlaceholderInfo({
           url: post?.thumbnail,
-          height: post.thumbnail_height,
-          width: post.thumbnail_width,
+          height: post.preview.reddit_video_preview.height,
+          width: post.preview.reddit_video_preview.width,
+          //height: post.prevt.thumbnail_height,
+          //width: post.thumbnail_width,
         });
         //console.log(`${post.title}: ${imageInfo.url}`);
         setIsMP4(true);
@@ -60,10 +84,12 @@ const Post = ({ post }) => {
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
           });
-          setPlaceholder({
+          setPlaceholderInfo({
             url: post.thumbnail,
-            height: post.thumbnail_height,
-            width: post.thumbnail_width,
+            height: post.media.reddit_video.height,
+            width: post.media.reddit_video.width,
+            //height: post.thumbnail_height,
+            //width: post.thumbnail_width,
           });
           setIsMP4(true);
           setIsImage(false);
@@ -112,7 +138,7 @@ const Post = ({ post }) => {
             height: post.preview?.images[0]?.resolutions[num].height,
             width: post.preview?.images[0]?.resolutions[num].width,
           });
-          setPlaceholder({
+          setPlaceholderInfo({
             url: post.thumbnail,
             height: post.thumbnail_height,
             width: post.thumbnail_width,
@@ -134,9 +160,15 @@ const Post = ({ post }) => {
     return false;
   };
 
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const onLoadedData = () => {
+    console.log("loaded");
+    setVideoLoaded(true);
+  };
+
   return (
     <div className="outline-black">
-      <h1 className="mt-1 transition-all duration-100 ease-in-out group-hover:font-bold">
+      <h1 className="">
         <a
           href={`https://www.reddit.com/${post.permalink}`}
           target="_blank"
@@ -150,15 +182,11 @@ const Post = ({ post }) => {
 
       {isImage ? (
         <Image
-          src={imageInfo.url}
+          src={imageInfo.url} //{loaded ? imageInfo.url : imgPlaceholder}
           height={imageInfo.height}
           width={imageInfo.width}
           alt="thumbnail"
           layout="responsive"
-          placeholder="blur"
-          blurDataURL={
-            "iVBORw0KGgoAAAANSUhEUgAAAfQAAAAyCAYAAACqECmXAAAAuElEQVR42u3VMQ0AAAgDMPbi3y9ciCBpTTTpngIAXovQAUDoAIDQAQChAwBCBwChAwBCBwCEDgAIHQCEDgAIHQAQOgAgdAAQOgAgdABA6ACA0AFA6ACA0AEAoQMAQgcAoQMAQgcAhA4ACB0AhA4ACB0AEDoAIHQAEDoAIHQAQOgAgNABQOgAgNABAKEDAEIHAKEDAEIHAIQOAAgdAIQudAAQOgAgdABA6ACA0AFA6ACA0AEAoQMAZwGc6TYbROcIIwAAAABJRU5ErkJggg=="
-          }
         />
       ) : (
         // <LazyLoad height={imageInfo.height}>
@@ -168,22 +196,16 @@ const Post = ({ post }) => {
       )}
 
       {isMP4 ? (
-        <LazyLoad
-          height={videoInfo.height}
-          // placeholder={<Placeholder imageInfo={imageInfo} />}
-        >
-          <video
-            className=""
-            autoPlay={true}
-            muted
-            loop
-            preload="none"
-            // poster={imageInfo.url}
-            playsInline
+        <div className="flex flex-wrap content-center">
+          <p>{videoInfo.height}</p>
+          <LazyLoad
+            height={videoInfo.height}
+            once={true}
+            // placeholder={<Placeholder imageInfo={placeholder} />}
           >
-            <source src={videoInfo.url} type="video/mp4" />
-          </video>
-        </LazyLoad>
+            <VideoHandler placeholder={placeholderInfo} videoInfo={videoInfo} />
+          </LazyLoad>
+        </div>
       ) : (
         ""
       )}
