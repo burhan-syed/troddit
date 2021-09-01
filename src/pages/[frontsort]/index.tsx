@@ -12,7 +12,6 @@ const Subs = ({ query }) => {
     <div>
       <NavBar/>
       <p>sort: {frontsort}</p>
-      <Sort />
       <FrontPage sort={frontsort ?? "best"} range={query.t ?? ""} />
     </div>
   );

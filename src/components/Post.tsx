@@ -32,16 +32,16 @@ const Post = ({ post }) => {
       initialize();
       setToLoad(true);
     } else {
-      console.log("ERRRRRR")
+      console.log("ERRRRRR");
     }
-
-  }, []);
+  }, [loaded]);
 
   const shouldLoad = () => {
-    if (!post) return false; 
-    if (!(post.url)) return false;
-    if (!(post.title)) return false;
-    if (!(post.subreddit)) return false;
+
+    if (!post) return false;
+    if (!post.url) return false;
+    if (!post.title) return false;
+    if (!post.subreddit) return false;
     //console.log(post);
     return true;
   };
@@ -193,11 +193,12 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div className="outline-black">
+    <div className="p-2 text-sm text-white bg-black shadow-sm">
       {toLoad ? (
-        <div>
-          <h1 className="">
+        <div className="p-1 ">
+          <h1>
             <a
+              className="text-base"
               href={`https://www.reddit.com/${post?.permalink ?? ""}`}
               target="_blank"
               rel="noreferrer"
@@ -205,62 +206,90 @@ const Post = ({ post }) => {
               {post?.title ?? "ERR"}
             </a>
           </h1>
+          <div className="flex flex-row text-xs text-gray">
+            <Link
+              href={{
+                pathname: "/r/[slug]",
+                query: { slug: post?.subreddit ?? "" },
+              }}
+            >
+              <a className="mr-1">r/{post?.subreddit ?? "ERR"}</a>
+            </Link>
+            <p>•</p>
+            <Link
+              href={{
+                pathname: "/u/[slug]",
+                query: { slug: post?.author ?? "" },
+              }}
+            >
+              <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
+            </Link>
+            <p>•</p>
 
-          {isGallery ? <Gallery images={galleryInfo} /> : ""}
-
-          {isImage ? (
-            // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-            <Image
-              src={imageInfo.url}
-              height={imageInfo.height}
-              width={imageInfo.width}
-              alt="image"
-              layout="responsive"
-              placeholder="blur"
-              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
-            />
-          ) : (
-            // <LazyLoad height={imageInfo.height}>
-            //   <img src={imageInfo.url} alt="img" />
-            // </LazyLoad>
-            ""
-          )}
-
-          {isMP4 ? (
-            <div>
-              <LazyLoad
-                height={videoInfo.height}
-                once={true}
-                // placeholder={<Placeholder imageInfo={placeholder} />}
-              >
-                <VideoHandler
-                  placeholder={placeholderInfo}
-                  videoInfo={videoInfo}
-                />
-              </LazyLoad>
+            <p className="ml-1">
+              {Math.floor(
+                (Math.floor(Date.now() / 1000) - post.created_utc) / 3600
+              )}
+              hr
+            </p>
+            <div className="flex flex-row ml-auto">
+              <p className="ml-1">{`(${post.domain})`}</p>
             </div>
-          ) : (
-            ""
-          )}
+          </div>
+          <div className="pt-2 pb-2">
+            {isGallery ? <Gallery images={galleryInfo} /> : ""}
 
-          <p>{post?.url ?? "ERR"}</p>
-          <Link
-            href={{
-              pathname: "/r/[slug]",
-              query: { slug: post?.subreddit ?? "" },
-            }}
-          >
-            <a>r/{post?.subreddit ?? "ERR"}</a>
-          </Link>
-          <Link
-            href={{
-              pathname: "/u/[slug]",
-              query: { slug: post?.author ?? "" },
-            }}
-          >
-            <a>u/{post?.author ?? ""}</a>
-          </Link>
-          <p>{post?.score ?? "0"}</p>
+            {isImage ? (
+              // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
+              <Image
+                src={imageInfo.url}
+                height={imageInfo.height}
+                width={imageInfo.width}
+                alt="image"
+                layout="responsive"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+              />
+            ) : (
+              // <LazyLoad height={imageInfo.height}>
+              //   <img src={imageInfo.url} alt="img" />
+              // </LazyLoad>
+              ""
+            )}
+
+            {isMP4 ? (
+              <div>
+                <LazyLoad
+                  height={videoInfo.height}
+                  once={true}
+                  // placeholder={<Placeholder imageInfo={placeholder} />}
+                >
+                  <VideoHandler
+                    placeholder={placeholderInfo}
+                    videoInfo={videoInfo}
+                  />
+                </LazyLoad>
+              </div>
+            ) : (
+              ""
+            )}
+
+            {post.selftext ? (<p>{post.selftext}</p>) : ""}
+          </div>
+          {/* <p>{post?.url ?? "ERR"}</p> */}
+
+          <div className="flex text-xs align-bottom lex-row">
+            <p className="">{post?.score ?? "0"}</p>
+
+            <a
+              className="ml-auto"
+              href={`https://www.reddit.com/${post?.permalink ?? ""}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {`${post.num_comments} comments`}
+            </a>
+          </div>
         </div>
       ) : (
         <h1>ERR WITH POST</h1>

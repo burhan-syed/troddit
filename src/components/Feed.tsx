@@ -30,8 +30,8 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
   useEffect(() => {
     initialize();
     return () => {
-      setPosts([]);
-      setAfter("");
+      //setPosts([]);
+      //setAfter("");
       componentMounted = false;
     };
   }, [subreddits, sort, subURL]);
@@ -71,7 +71,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
               setPosts(response.data.data.children);
               setLoading(false);
             }
-            //console.log(posts);
+            console.log(posts);
             //posts.map(post => (console.log(post[0].title)));
           })
           .catch((err) => console.log(err))
@@ -101,7 +101,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
     return <section>Loading...</section>;
   }
   return (
-    <section>
+    <section className="">
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
@@ -120,7 +120,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`} post={post.data} />
+            <Post key={`${post.id}_${i}`}   post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

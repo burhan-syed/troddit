@@ -14,7 +14,7 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
         // className={`${
         //   videoLoaded ? "opacity-100" : "opacity-0"
         // }  h-full w-full`}
-        className="absolute top-0 left-0 blur-3xl"
+        className="absolute top-0 left-0 blur"
         src={placeholder.url}
         height={placeholder.height}
         width={placeholder.width}
@@ -35,7 +35,7 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
         autoPlay={true}
         muted
         loop
-        preload="metadata"
+        // preload="metadata"
         onLoadedData={onLoadedData}
         // poster={imageInfo.url}
         playsInline

@@ -38,7 +38,58 @@ const FrontPage = ({ sort, range }) => {
   // let countUrl     = (count == 0) ? "" : "&count="+count;
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
-    initialLoad();
+
+    const fetchFrontPage = async () => {
+      console.log(context);
+      if (context?.token?.accessToken ?? false) {
+        //console.log("token!");
+        //console.log(range);
+        axios
+          .get(`https://oauth.reddit.com/${sort}`, {
+            headers: {
+              authorization: `bearer ${context.token.accessToken}`,
+            },
+            params: {
+              raw_json: 1,
+              t: range,
+            },
+          })
+          .then((response) => {
+            // const posts = [];
+            // response.data.data.children.forEach((post) => {
+            //   posts.push(post.data);
+            // });
+            setLoading(false);
+            setAfter(response.data.data.after);
+            setPosts(response.data.data.children);
+            //console.log(posts);
+          })
+          .catch((err) => {
+            const token = getSession();
+            console.log(err)
+          });
+      } else {
+        axios
+          .get(`${BASE_URL}/${sort}.json?t=${range}`, {
+            params: {
+              raw_json: 1,
+            },
+          })
+          .then((response) => {
+            //console.log(response);
+            // const posts = [];
+            // response.data.data.children.forEach((post) => {
+            //   posts.push(post.data);
+            // });
+            setLoading(false);
+            setAfter(response.data.data.after);
+            setPosts(response.data.data.children);
+          });
+      }
+    };
+  
+
+    fetchFrontPage();
     return (() => {
       setPosts([]);
       setAfter("");
@@ -48,59 +99,11 @@ const FrontPage = ({ sort, range }) => {
 
   const initialLoad = async () => {
     if (sort != undefined) {
-      fetchFrontPage(sort);
+      //fetchFrontPage();
     }
   };
 
-  const fetchFrontPage = async (sort?: string) => {
-    console.log(context);
-    if (context?.token?.accessToken ?? false) {
-      //console.log("token!");
-      //console.log(range);
-      axios
-        .get(`https://oauth.reddit.com/${sort}`, {
-          headers: {
-            authorization: `bearer ${context.token.accessToken}`,
-          },
-          params: {
-            raw_json: 1,
-            t: range,
-          },
-        })
-        .then((response) => {
-          // const posts = [];
-          // response.data.data.children.forEach((post) => {
-          //   posts.push(post.data);
-          // });
-          setLoading(false);
-          setAfter(response.data.data.after);
-          setPosts(response.data.data.children);
-          //console.log(posts);
-        })
-        .catch((err) => {
-          const token = getSession();
-          console.log(err)
-        });
-    } else {
-      axios
-        .get(`${BASE_URL}/${sort}.json?t=${range}`, {
-          params: {
-            raw_json: 1,
-          },
-        })
-        .then((response) => {
-          //console.log(response);
-          // const posts = [];
-          // response.data.data.children.forEach((post) => {
-          //   posts.push(post.data);
-          // });
-          setLoading(false);
-          setAfter(response.data.data.after);
-          setPosts(response.data.data.children);
-        });
-    }
-  };
-
+  
 
   const loadmore = () => {
     setLoadingMore(true);
@@ -153,7 +156,7 @@ const FrontPage = ({ sort, range }) => {
     return <section>Loading...</section>;
   }
   return (
-    <section>
+    <section className="bg-gray">
       <div>{mysubs}</div>
       <h1>Posts</h1>
       <InfiniteScroll
