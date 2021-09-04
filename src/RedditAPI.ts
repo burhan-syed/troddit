@@ -113,7 +113,7 @@ export const loadSubreddits = async (
   };
 };
 
-export const getSubs = async (after?, count?) => {
+export const getMySubs = async (after?, count?) => {
   const token = await (await getToken())?.accessToken;
 
   try {
@@ -126,12 +126,74 @@ export const getSubs = async (after?, count?) => {
           after: after,
           before: "",
           count: count,
+          limit: 100,
         },
       })
     ).data;
     if (data?.data?.children ?? false) {
       return { after: data.data.after, children: data.data.children };
     }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getAllMySubs = async () => {
+  let alldata = [];
+  let after = "";
+  let count = 0;
+  const token = await (await getToken())?.accessToken;
+  let done = false;
+  while (!done) {
+    try {
+      let data = await (
+        await axios.get("https://oauth.reddit.com/subreddits/mine/subscriber", {
+          headers: {
+            authorization: `bearer ${token}`,
+          },
+          params: {
+            after: after,
+            before: "",
+            count: count,
+            limit: 100,
+          },
+        })
+      ).data;
+      if (data?.data?.children ?? false) {
+        alldata = [...alldata, ...data.data.children];
+        if (data?.data?.after ?? false) {
+          after = data.data.after;
+        } else {
+          done = true;
+        }
+      } else {
+        done = true;
+      }
+    } catch (err) {
+      done = true;
+      console.log(err);
+    }
+  }
+  alldata = alldata.sort((a, b) =>
+    a.data.display_name.localeCompare(b.data.display_name)
+  );
+  return alldata;
+};
+
+export const getMyMultis = async () => {
+  const token = await (await getToken())?.accessToken;
+
+  try {
+    let data = await (
+      await axios.get("https://oauth.reddit.com//api/multi/mine", {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {},
+      })
+    ).data;
+    console.log(data);
+    return data
   } catch (err) {
     console.log(err);
   }
@@ -162,4 +224,18 @@ export const searchSubreddits = async (query, over18 = true) => {
     return [{ name: query }, { name: "Login for autocomplete" }];
   }
   return [];
+};
+
+const loadAll = async (func) => {
+  let after = "";
+  let done = false;
+  let data = [];
+  const token = await (await getToken())?.accessToken;
+
+  while (!done) {
+    try {
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };
