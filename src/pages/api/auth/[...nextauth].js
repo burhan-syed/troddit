@@ -65,8 +65,8 @@ async function refreshAccessToken(token) {
         accessToken: refreshedTokens.accessToken ?? token.reddit.accessToken, //fallback to old access token
         refreshToken: refreshedTokens.refreshToken ?? token.reddit.refreshToken, //fall back to old refresh token
       },
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
+      //iat: Math.floor(Date.now() / 1000),
+      expires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
     };
   } catch (error) {
     console.log(error);
@@ -112,8 +112,11 @@ export default NextAuth({
   callbacks: {
     async jwt(token, user, account = {}, profile, isNewUser) {
       console.log("JWT CALLBACK", token, user, account, profile, isNewUser);
-      console.log(Math.floor(Date.now() / 1000) - token.exp);
-      if (Math.floor(Date.now() / 1000) > token.exp) {
+      console.log(Math.floor(Date.now() / 1000))
+      console.log(token.expires);
+      console.log(Math.floor(Date.now() / 1000)-token?.expires)
+      if (!token.expires) {token.expires = Math.floor(Date.now()/1000) + 3600}
+      if (Math.floor(Date.now() / 1000) > token.expires) {
         token = await refreshAccessToken(token);
         console.log(token);
       }

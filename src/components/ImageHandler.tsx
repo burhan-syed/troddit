@@ -10,8 +10,8 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
     setImageLoaded(true);
   };
   return (
-    <div className="">
-      {/* <div className="absolute top-0 left-0">
+    <div className="relative">
+      <div className="absolute top-0 left-0 blur">
         <Image
           // className={`${
           //   videoLoaded ? "opacity-100" : "opacity-0"
@@ -26,7 +26,13 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
             setUseFallback(true);
           }}
         />
-      </div> */}
+      </div>
+      {imageLoaded ? (
+        ""
+      ) : (
+        <div className="absolute w-16 h-16 border-b-2 border-gray-900 rounded-full left-1/2 animate-spin top-1/2"></div>
+      )}
+
       <Image
         // className="object-cover"
         // className={videoLoaded ? "opacity-0" : "opacity-100"}
@@ -38,8 +44,8 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
         onLoad={(e) => {
           onLoadedData;
         }}
-        placeholder="blur"
-        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+        // placeholder="blur"
+        // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
       />
     </div>
   );

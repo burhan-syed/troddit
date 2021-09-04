@@ -60,7 +60,7 @@ const Feed = ({ query }) => {
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data) {
       setLoading(false);
-      setAfter(data.after);
+      setAfter(data?.after);
       setPosts(data.children);
     }
   };
@@ -73,7 +73,7 @@ const Feed = ({ query }) => {
     );
     if (data) {
       setLoading(false);
-      setAfter(data.after);
+      setAfter(data?.after);
       setPosts(data.children);
     }
   };
@@ -93,7 +93,7 @@ const Feed = ({ query }) => {
         posts.length
       );
     }
-    setAfter(data.after);
+    setAfter(data?.after);
     setPosts((prevposts) => [...prevposts, ...data.children]);
   };
 

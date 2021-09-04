@@ -18,6 +18,7 @@ const Post = ({ post }) => {
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);
   const [isMP4, setIsMP4] = useState(false);
+  const [showMP4, setShowMP4] = useState(true);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({ url: "", height: 0, width: 0 });
   const [placeholderInfo, setPlaceholderInfo] = useState({
@@ -26,8 +27,16 @@ const Post = ({ post }) => {
     width: 0,
   });
 
+  const [mediaLoaded, setMediaLoaded] = useState(false);
+  const onLoaded = () => {
+    console.log("loaded");
+    setMediaLoaded(true);
+  };
+
   //console.log(post);
   useEffect(() => {
+
+
     if (shouldLoad()) {
       initialize();
       setToLoad(true);
@@ -38,6 +47,7 @@ const Post = ({ post }) => {
 
   const shouldLoad = () => {
 
+    //if (post.over_18) return false;
     if (!post) return false;
     if (!post.url) return false;
     if (!post.title) return false;
@@ -186,11 +196,7 @@ const Post = ({ post }) => {
     return false;
   };
 
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const onLoadedData = () => {
-    console.log("loaded");
-    setVideoLoaded(true);
-  };
+
 
   return (
     <div className="p-2 text-sm text-white bg-black shadow-sm">
@@ -241,15 +247,20 @@ const Post = ({ post }) => {
 
             {isImage ? (
               // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
+              <div className="relative">
+              {mediaLoaded ? "" : <div className="absolute z-50 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>}
+
               <Image
                 src={imageInfo.url}
                 height={imageInfo.height}
                 width={imageInfo.width}
                 alt="image"
                 layout="responsive"
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+                onLoadingComplete={onLoaded}
+                // placeholder="blur"
+                // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
               />
+              </div>
             ) : (
               // <LazyLoad height={imageInfo.height}>
               //   <img src={imageInfo.url} alt="img" />
@@ -257,7 +268,7 @@ const Post = ({ post }) => {
               ""
             )}
 
-            {isMP4 ? (
+            {isMP4 ? showMP4 ? (
               <div>
                 <LazyLoad
                   height={videoInfo.height}
@@ -272,7 +283,7 @@ const Post = ({ post }) => {
               </div>
             ) : (
               ""
-            )}
+            ) : ""}
 
             {post.selftext ? (<p className="truncate ...">{post.selftext}</p>) : ""}
           </div>
