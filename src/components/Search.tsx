@@ -4,15 +4,14 @@ import { useState } from "react";
 import axios from "axios";
 import router from "next/router";
 import { useMainContext } from "../MainContext";
-
+import { searchSubreddits } from "../RedditAPI";
 
 const Search = () => {
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
 
-  const context:any = useMainContext();
-
+  const context: any = useMainContext();
 
   const onSuggestionsFetchRequested = async ({ value }) => {
     const suggestions = await getSuggestions({ value });
@@ -20,29 +19,9 @@ const Search = () => {
   };
 
   const getSuggestions = async (value) => {
-    if (context?.token?.accessToken ?? false) {
-      try {
-        
-        let res = await axios.get(
-          "https://oauth.reddit.com/api/subreddit_autocomplete",
-          {
-            headers: {
-              authorization: `bearer ${context.token.accessToken}`,
-            },
-            params: {
-              include_over_18: true,
-              include_profiles: false,
-              query: value.value,
-              typeahead_active: true,
-            },
-          }
-        );
-        return res.data.subreddits;
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    return [{ name: "Login for search complete" }];
+    let suggestions = await searchSubreddits(value.value);
+    //console.log(suggestions);
+    return suggestions;
   };
 
   const onSuggestionsClearRequested = () => {
@@ -56,8 +35,8 @@ const Search = () => {
   const renderSuggestion = (suggestion) => {
     console.log(suggestion);
     return (
-      <ul 
-         className=""
+      <ul
+        className=""
         onClick={(e) => goToSub(e, suggestion.name)}
         onSubmit={(e) => goToSub(e, suggestion.name)}
       >

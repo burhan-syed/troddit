@@ -136,3 +136,30 @@ export const getSubs = async (after?, count?) => {
     console.log(err);
   }
 };
+
+export const searchSubreddits = async (query, over18 = true) => {
+  const token = await (await getToken()).accessToken;
+  if (token) {
+    try {
+      let res = await (
+        await axios.get("https://oauth.reddit.com/api/subreddit_autocomplete", {
+          headers: {
+            authorization: `bearer ${token}`,
+          },
+          params: {
+            include_over_18: over18,
+            include_profiles: false,
+            query: query,
+            typeahead_active: true,
+          },
+        })
+      ).data;
+      return res.subreddits;
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    return [{ name: query }, { name: "Login for autocomplete" }];
+  }
+  return [];
+};
