@@ -95,7 +95,7 @@ const FrontPage = ({ sort, range }) => {
       setAfter("");
       setLoading(false);
     })
-  }, [route, context, session]);
+  }, [route, context, session?.token, range, sort]);
 
   const initialLoad = async () => {
     if (sort != undefined) {
@@ -176,7 +176,7 @@ const FrontPage = ({ sort, range }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`} post={post.data} />
+            <Post key={`${post.data.id}_${i}`} post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

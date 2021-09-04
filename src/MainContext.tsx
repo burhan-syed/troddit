@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useSession } from "next-auth/client";
 import React, { useState, useContext, useEffect } from "react";
 
 const getToken = async () => {
@@ -28,12 +29,14 @@ export const MainProvider = ({ children }) => {
 
   const [token, setToken] = useState({})
 
+  const [session, loading] = useSession();
+
   useEffect(() => {
     updateToken();
     return () => {
       setToken(undefined);
     }
-  }, [])
+  }, [session])
  
 
   const updateToken = async() => {
@@ -46,7 +49,7 @@ export const MainProvider = ({ children }) => {
   };
 
   return (
-    <MainContext.Provider value={{ darkTheme, toggleTheme, token }}>
+    <MainContext.Provider value={{ darkTheme, toggleTheme, token, session}}>
       {children}
     </MainContext.Provider>
   );

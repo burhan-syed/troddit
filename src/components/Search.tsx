@@ -56,7 +56,8 @@ const Search = () => {
   const renderSuggestion = (suggestion) => {
     console.log(suggestion);
     return (
-      <ul
+      <ul 
+         className=""
         onClick={(e) => goToSub(e, suggestion.name)}
         onSubmit={(e) => goToSub(e, suggestion.name)}
       >
@@ -87,7 +88,7 @@ const Search = () => {
   return (
     <>
       <Autosuggest
-        className="flex"
+        className=""
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}

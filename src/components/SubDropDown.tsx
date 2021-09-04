@@ -66,7 +66,7 @@ const SubDropDown = () => {
 
       <div
         id="scrollableDiv"
-        className={hidden ? `hidden` : "overflow-auto h-32"}
+        className={(hidden ? `hidden` : "overflow-auto h-32") + " absolute bg-gray"}
       >
         <InfiniteScroll
           dataLength={mySubs.length}
@@ -78,6 +78,7 @@ const SubDropDown = () => {
           {mySubs.map((sub) => {
             return (
               <div
+                className="text-white "
                 key={sub.id}
                 onClick={(e) => goToSub(e, sub.data.display_name)}
               >

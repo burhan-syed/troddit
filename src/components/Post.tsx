@@ -274,7 +274,7 @@ const Post = ({ post }) => {
               ""
             )}
 
-            {post.selftext ? (<p>{post.selftext}</p>) : ""}
+            {post.selftext ? (<p className="truncate ...">{post.selftext}</p>) : ""}
           </div>
           {/* <p>{post?.url ?? "ERR"}</p> */}
 

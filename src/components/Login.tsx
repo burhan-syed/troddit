@@ -5,20 +5,6 @@ import Snoowrap from "snoowrap";
 
 export default function Login() {
   const [session, loading] = useSession();
-  const [accessToken, setAccessToken] = useState("");
-  const [refreshtoken, setRefreshToken] = useState("");
-  useEffect(() => {
-    if (session) {
-      getToken();
-    }
-  }, [session]);
-
-  const getToken = async () => {
-    let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
-    //console.log(tokendata);
-    setAccessToken(tokendata.data.accessToken);
-    setRefreshToken(tokendata.data.refreshtoken);
-  };
 
   return (
     <>
