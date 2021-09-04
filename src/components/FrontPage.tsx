@@ -4,6 +4,7 @@ import Search from "./Search";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { loadFront } from "../RedditAPI";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
@@ -20,7 +21,7 @@ const FrontPage = ({ sort, range }) => {
 
   const [mysubs, setMySubs] = useState([]);
 
-  const context:any = useMainContext();
+  const context: any = useMainContext();
 
   const [session, sessionLoading] = useSession();
 
@@ -38,64 +39,26 @@ const FrontPage = ({ sort, range }) => {
   // let countUrl     = (count == 0) ? "" : "&count="+count;
   // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
-
     const fetchFrontPage = async () => {
       console.log(context);
-      if (context?.token?.accessToken ?? false) {
-        //console.log("token!");
-        //console.log(range);
-        axios
-          .get(`https://oauth.reddit.com/${sort}`, {
-            headers: {
-              authorization: `bearer ${context.token.accessToken}`,
-            },
-            params: {
-              raw_json: 1,
-              t: range,
-            },
-          })
-          .then((response) => {
-            // const posts = [];
-            // response.data.data.children.forEach((post) => {
-            //   posts.push(post.data);
-            // });
-            setLoading(false);
-            setAfter(response.data.data.after);
-            setPosts(response.data.data.children);
-            //console.log(posts);
-          })
-          .catch((err) => {
-            const token = getSession();
-            console.log(err)
-          });
-      } else {
-        axios
-          .get(`${BASE_URL}/${sort}.json?t=${range}`, {
-            params: {
-              raw_json: 1,
-            },
-          })
-          .then((response) => {
-            //console.log(response);
-            // const posts = [];
-            // response.data.data.children.forEach((post) => {
-            //   posts.push(post.data);
-            // });
-            setLoading(false);
-            setAfter(response.data.data.after);
-            setPosts(response.data.data.children);
-          });
+      let data = await loadFront(sort);
+      if (data) {
+        console.log(data);
+        setLoading(false);
+        setAfter(await data.after);
+        setPosts(await data.children);
       }
     };
-  
+
+    console.log(session);
 
     fetchFrontPage();
-    return (() => {
+    return () => {
       setPosts([]);
       setAfter("");
       setLoading(false);
-    })
-  }, [route, context, session?.token, range, sort]);
+    };
+  }, [route, context, session, range, sort]);
 
   const initialLoad = async () => {
     if (sort != undefined) {
@@ -103,53 +66,12 @@ const FrontPage = ({ sort, range }) => {
     }
   };
 
-  
-
-  const loadmore = () => {
+  const loadmore = async () => {
     setLoadingMore(true);
     //console.log(after);
-    if (context?.token?.accessToken ?? false) {
-      //console.log(range);
-      axios
-        .get(`https://oauth.reddit.com/${sort}`, {
-          headers: {
-            authorization: `bearer ${context.token.accessToken}`,
-          },
-          params: {
-            after: after,
-            count: posts.length,
-            raw_json: 1,
-            t: range,
-          },
-        })
-        .then((response) => {
-          // response.data.data.children.forEach((post) => {
-          //   posts.push(post.data);
-          // });
-          setLoading(false);
-          setAfter(response.data.data.after);
-          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
-          //console.log(posts);
-        })
-        .catch((err) => console.log(err));
-    } else {
-      axios
-        .get(
-          `${BASE_URL}/${sort}.json??t=${range}&after=${after}&count=${posts.length}`,
-          {
-            params: { raw_json: 1 },
-          }
-        )
-        .then((response) => {
-          // response.data.data.children.forEach((post) => {
-          //   posts.push(post.data);
-          // });
-          setLoadingMore(false);
-          setAfter(response.data.data.after);
-          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
-          //posts.map(post => (console.log(post[0].title)));
-        });
-    }
+    let data = await loadFront(sort, range, after, posts.length);
+    setAfter(data.after);
+    setPosts((prevposts) => [...prevposts, ...data.children]);
   };
 
   if (loading) {

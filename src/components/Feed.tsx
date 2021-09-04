@@ -4,6 +4,7 @@ import Sort from "./Sort";
 import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { loadSubreddits } from "../RedditAPI";
 
 const Feed = ({ subreddits, sort, range, isUser }) => {
   const [loading, setLoading] = useState(true);
@@ -55,46 +56,69 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
   };
 
   const fetchPage = async () => {
-    subreddits
-      ? axios
-          .get(
-            `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}`,
-            {
-              params: {
-                raw_json: 1,
-              },
-            }
-          )
-          .then((response) => {
-            if (componentMounted) {
-              setAfter(response.data.data.after);
-              setPosts(response.data.data.children);
-              setLoading(false);
-            }
-            console.log(posts);
-            //posts.map(post => (console.log(post[0].title)));
-          })
-          .catch((err) => console.log(err))
-      : "";
+    let data = await loadSubreddits(
+      subreddits,
+      sort,
+      range,
+      after,
+      posts.length
+    );
+    setAfter(data.after);
+    setPosts(data.children);
+    setLoading(false);
+    // subreddits
+    //   ? axios
+    //       .get(
+    //         `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}`,
+    //         {
+    //           params: {
+    //             raw_json: 1,
+    //           },
+    //         }
+    //       )
+    //       .then((response) => {
+    //         if (componentMounted) {
+    //           setAfter(response.data.data.after);
+    //           setPosts(response.data.data.children);
+    //           setLoading(false);
+    //         }
+    //         console.log(posts);
+    //         //posts.map(post => (console.log(post[0].title)));
+    //       })
+    //       .catch((err) => console.log(err))
+    //   : "";
   };
 
-  const loadmore = () => {
+  const loadmore = async () => {
     setLoadingMore(true);
     //console.log(after);
-    axios
-      .get(
-        `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`,
-        {
-          params: { raw_json: 1 },
-        }
-      )
-      .then((response) => {
-        if (componentMounted) {
-          setAfter(response.data.data.after);
-          setPosts(prevposts => ([...prevposts, ...response.data.data.children]));
-          setLoadingMore(false);
-        }
-      });
+    let data = await loadSubreddits(
+      subreddits,
+      sort,
+      range,
+      after,
+      posts.length
+    );
+    setAfter(data.after);
+    setPosts((prevposts) => [...prevposts, ...data.children]);
+    setLoading(false);
+    // axios
+    //   .get(
+    //     `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`,
+    //     {
+    //       params: { raw_json: 1 },
+    //     }
+    //   )
+    //   .then((response) => {
+    //     if (componentMounted) {
+    //       setAfter(response.data.data.after);
+    //       setPosts((prevposts) => [
+    //         ...prevposts,
+    //         ...response.data.data.children,
+    //       ]);
+    //       setLoadingMore(false);
+    //     }
+    //   });
   };
 
   if (loading) {
@@ -120,7 +144,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`}   post={post.data} />
+            <Post key={`${post.id}_${i}`} post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
-
- function b2a(a) {
+function b2a(a) {
   var c,
     d,
     e,
@@ -36,30 +35,26 @@ import Providers from "next-auth/providers";
   );
 }
 
-
 async function refreshAccessToken(token) {
   try {
-
-    const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
+    const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 
     const url =
-      "https://www.reddit.com/api/v1/access_token?"
-       +
+      "https://www.reddit.com/api/v1/access_token?" +
       new URLSearchParams({
         grant_type: "refresh_token",
         refresh_token: token.reddit.refreshToken,
       });
 
     const response = await fetch(url, {
-
       headers: {
-        "Authorization" : `Basic ${b2a(authvalue)}`
+        Authorization: `Basic ${b2a(authvalue)}`,
       },
       method: "POST",
     });
 
     const refreshedTokens = await response.json();
-    console.log('refreshed token', refreshedTokens);
+    console.log("refreshed token", refreshedTokens);
     if (!response.ok) {
       throw refreshedTokens;
     }
@@ -68,10 +63,10 @@ async function refreshAccessToken(token) {
       ...token,
       reddit: {
         accessToken: refreshedTokens.accessToken ?? token.reddit.accessToken, //fallback to old access token
-        refreshToken: refreshedTokens.refreshToken ?? token.reddit.refreshToken //fall back to old refresh token
+        refreshToken: refreshedTokens.refreshToken ?? token.reddit.refreshToken, //fall back to old refresh token
       },
-      iat: Math.floor(Date.now()/1000),
-      exp: Math.floor(Date.now()/1000)+refreshedTokens.expires_in
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
     };
   } catch (error) {
     console.log(error);
@@ -116,8 +111,11 @@ export default NextAuth({
 
   callbacks: {
     async jwt(token, user, account = {}, profile, isNewUser) {
+      console.log("JWT CALLBACK", token, user, account, profile, isNewUser);
+      console.log(Math.floor(Date.now() / 1000) - token.exp);
       if (Math.floor(Date.now() / 1000) > token.exp) {
-        token = refreshAccessToken(token);
+        token = await refreshAccessToken(token);
+        console.log(token);
       }
 
       if (account.provider && !token[account.provider]) {
@@ -131,8 +129,6 @@ export default NextAuth({
       if (account.refreshToken) {
         token[account.provider].refreshToken = account.refreshToken;
       }
-
-      
 
       return token;
     },
