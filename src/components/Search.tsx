@@ -36,7 +36,7 @@ const Search = () => {
     console.log(suggestion);
     return (
       <ul
-        className=""
+        className="text-black"
         onClick={(e) => goToSub(e, suggestion.name)}
         onSubmit={(e) => goToSub(e, suggestion.name)}
       >
@@ -66,17 +66,17 @@ const Search = () => {
   };
 
   return (
-    <>
+    <div className="w-full text-base outline-none">
       <Autosuggest
-        className=""
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         getSuggestionValue={getSuggestionValue}
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
+        highlightFirstSuggestion={true}
       />
-    </>
+    </div>
   );
 };
 

@@ -30,9 +30,9 @@ const NavBar = () => {
   return (
     <header 
     >
-      <header className={`sticky top-0 z-50 h-20 flex items-center px-4 py-4 bg-black shadow-md text-white`}>
-        <Link href="/" passHref><h1 className="text-white">ReddAll</h1></Link>
-        <div className="flex items-center flex-grow px-5 py-2 mx-5 text-gray-600 bg-gray-100 rounded-lg focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
+      <header className={`sticky top-0 z-50 h-20 flex items-center px-4 py-4 shadow-md `}>
+        <Link href="/" passHref><h1 className="">ReddAll</h1></Link>
+        <div className="flex items-center flex-grow p-2 mx-5 text-gray-600 rounded-lg bg-blue focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
           <Search />
         </div>
         <div className="">

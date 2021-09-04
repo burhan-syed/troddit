@@ -138,7 +138,7 @@ export const getSubs = async (after?, count?) => {
 };
 
 export const searchSubreddits = async (query, over18 = true) => {
-  const token = await (await getToken()).accessToken;
+  const token = await (await getToken())?.accessToken;
   if (token) {
     try {
       let res = await (
