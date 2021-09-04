@@ -23,33 +23,30 @@ export const useMainContext = () => {
 };
 
 export const MainProvider = ({ children }) => {
-
-
   const [darkTheme, setDarkTheme] = useState(true);
 
-  const [token, setToken] = useState({})
+  const [token, setToken] = useState({});
 
   const [session, loading] = useSession();
 
   useEffect(() => {
-    updateToken();
+    //updateToken();
     return () => {
       setToken(undefined);
-    }
-  }, [session])
- 
+    };
+  }, [session]);
 
-  const updateToken = async() => {
-    const t = await getToken();
-    setToken(t);
-  }
+  const updateToken = async () => {
+    //const t = await getToken();
+    //setToken(t);
+  };
 
   const toggleTheme = () => {
     setDarkTheme((prevDarkTheme) => !prevDarkTheme);
   };
 
   return (
-    <MainContext.Provider value={{ darkTheme, toggleTheme, token, session}}>
+    <MainContext.Provider value={{ darkTheme, toggleTheme, token, session }}>
       {children}
     </MainContext.Provider>
   );

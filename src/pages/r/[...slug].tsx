@@ -1,24 +1,20 @@
 import { useRouter } from "next/router";
-import Feed from "../../components/Feed";
 import Link from "next/link";
 import NavBar from "../../components/NavBar";
+import Feed from "../../components/Feed";
 
 const Sort = ({ query }) => {
   const router = useRouter();
+  console.log(query);
   const [subs, sort] = router.query?.slug ?? [];
   return (
     <div>
-      <NavBar/>
+      <NavBar />
       <p>
         query: {subs}
         {sort}
       </p>
-      <Feed
-        subreddits={subs}
-        sort={sort ?? "hot"}
-        isUser={false}
-        range={query?.t ?? ""}
-      />
+      <Feed query={query} />
     </div>
   );
 };

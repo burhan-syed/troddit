@@ -1,131 +1,107 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Post from "./Post";
-import Sort from "./Sort";
-import axios from "axios";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { loadSubreddits } from "../RedditAPI";
+import { loadFront, loadSubreddits } from "../RedditAPI";
 
-const Feed = ({ subreddits, sort, range, isUser }) => {
+import { useRouter } from "next/router";
+import { useMainContext } from "../MainContext";
+import { getSession, useSession } from "next-auth/client";
+
+const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
   const [after, setAfter] = useState("");
-  const [subURL, setSubURL] = useState("");
-  const BASE_URL = "https://www.reddit.com";
 
-  let componentMounted = true;
+  const [sort, setSort] = useState("");
+  const [range, setRange] = useState("");
+  const [subreddits, setSubreddits] = useState("");
 
+  const context: any = useMainContext();
+
+  const [session, sessionLoading] = useSession();
+
+  const route = useRouter();
   const breakpointColumnsObj = {
     default: 4,
     1400: 3,
     1280: 2,
     767: 1,
   };
-
-  // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
-  // let limitUrl     = "limit=" + limit;
-  // let afterUrl     = (after == null) ? "" : "&after="+after;
-  // let countUrl     = (count == 0) ? "" : "&count="+count;
-  // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
   useEffect(() => {
-    initialize();
+    console.log(query);
+    if (query.frontsort) {
+      setSort(query?.frontsort ?? "best");
+      setRange(query?.t ?? "");
+      fetchFront();
+    }
+    if (query.slug) {
+      setSubreddits(query?.slug?.[0] ?? "");
+      setSort(query?.slug?.[1] ?? "best");
+      setRange(query?.t ?? "");
+      fetchSubs();
+    }
+    // console.log(query?.slug?.[0] ?? "noslug");
+    // console.log("sort", sort);
+    // console.log("range", range);
+    // console.log("subreddits", subreddits);
+
     return () => {
-      //setPosts([]);
-      //setAfter("");
-      componentMounted = false;
+      setPosts([]);
+      setAfter("");
+      setRange("");
+      setSubreddits("");
+      setLoading(true);
     };
-  }, [subreddits, sort, subURL]);
+  }, [query, range, sort, subreddits]);
 
-  const initialize = async () => {
-    await configureURL();
-    console.log(
-      `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`
-    );
-    if (!subURL.includes("undefined")) {
-      fetchPage();
-    }
-  };
-  const configureURL = async () => {
-    if (isUser) {
-      console.log(">>>", `u/${subreddits}`);
-      componentMounted ? setSubURL(`u/${subreddits}`) : "";
-    } else {
-      componentMounted ? setSubURL(`r/${subreddits}`) : "";
+  const fetchFront = async () => {
+    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
+    if (data) {
+      setLoading(false);
+      setAfter(data.after);
+      setPosts(data.children);
     }
   };
 
-  const fetchPage = async () => {
+  const fetchSubs = async () => {
     let data = await loadSubreddits(
-      subreddits,
-      sort,
-      range,
-      after,
-      posts.length
+      query?.slug?.[0] ?? "",
+      query?.slug?.[1] ?? "hot",
+      query?.t ?? ""
     );
-    setAfter(data.after);
-    setPosts(data.children);
-    setLoading(false);
-    // subreddits
-    //   ? axios
-    //       .get(
-    //         `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}`,
-    //         {
-    //           params: {
-    //             raw_json: 1,
-    //           },
-    //         }
-    //       )
-    //       .then((response) => {
-    //         if (componentMounted) {
-    //           setAfter(response.data.data.after);
-    //           setPosts(response.data.data.children);
-    //           setLoading(false);
-    //         }
-    //         console.log(posts);
-    //         //posts.map(post => (console.log(post[0].title)));
-    //       })
-    //       .catch((err) => console.log(err))
-    //   : "";
+    if (data) {
+      setLoading(false);
+      setAfter(data.after);
+      setPosts(data.children);
+    }
   };
 
   const loadmore = async () => {
     setLoadingMore(true);
     //console.log(after);
-    let data = await loadSubreddits(
-      subreddits,
-      sort,
-      range,
-      after,
-      posts.length
-    );
+    let data = { after: "", children: [] };
+    if (!subreddits) {
+      data = await loadFront(sort, range, after, posts.length);
+    } else {
+      data = data = await loadSubreddits(
+        query?.slug?.[0] ?? "",
+        query?.slug?.[1] ?? "hot",
+        query?.t ?? "",
+        after,
+        posts.length
+      );
+    }
     setAfter(data.after);
     setPosts((prevposts) => [...prevposts, ...data.children]);
-    setLoading(false);
-    // axios
-    //   .get(
-    //     `${BASE_URL}/${subURL}/${sort}/.json?t=${range}&after=${after}&count=${posts.length}`,
-    //     {
-    //       params: { raw_json: 1 },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     if (componentMounted) {
-    //       setAfter(response.data.data.after);
-    //       setPosts((prevposts) => [
-    //         ...prevposts,
-    //         ...response.data.data.children,
-    //       ]);
-    //       setLoadingMore(false);
-    //     }
-    //   });
   };
 
   if (loading) {
     return <section>Loading...</section>;
   }
   return (
-    <section className="">
+    <section className="bg-gray">
       <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
@@ -144,7 +120,7 @@ const Feed = ({ subreddits, sort, range, isUser }) => {
           columnClassName="my-masonry-grid_column"
         >
           {posts.map((post, i) => (
-            <Post key={`${post.id}_${i}`} post={post.data} />
+            <Post key={`${post.data.id}_${i}`} post={post.data} />
           ))}
         </Masonry>
       </InfiniteScroll>

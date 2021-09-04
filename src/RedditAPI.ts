@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSession } from "next-auth/client";
 
 // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
 // let limitUrl     = "limit=" + limit;
@@ -13,7 +14,7 @@ const REDDIT = "https://www.reddit.com";
 const getToken = async () => {
   try {
     let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
-    console.log("tokendata:", tokendata);
+    //console.log("tokendata:", tokendata);
     return {
       accessToken: tokendata.data.accessToken,
       refreshToken: tokendata.data.refreshToken,
@@ -30,11 +31,15 @@ export const loadFront = async (
   after?: string,
   count?: number
 ) => {
-  const token = await (await getToken())?.accessToken;
+  const session = await getSession();
+  let token = false;
+  if (session) {
+    token = await (await getToken())?.accessToken;
+  }
 
   if (token) {
     try {
-      console.log("WITH LOGIN", token);
+      //console.log("WITH LOGIN", token);
       const res = await (
         await axios.get(`https://oauth.reddit.com/${sort}`, {
           headers: {
@@ -86,9 +91,11 @@ export const loadSubreddits = async (
   subreddits: string,
   sort: string,
   range: string,
-  after: string,
-  count: number
+  after: string = "",
+  count: number = 0
 ) => {
+  console.log(subreddits, sort, range);
+
   const res = await (
     await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
       params: {

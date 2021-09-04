@@ -1,18 +1,19 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import FrontPage from "../../components/FrontPage";
+import Feed from "../../components/Feed";
 import NavBar from "../../components/NavBar";
 import Sort from "../../components/Sort";
 
 const Subs = ({ query }) => {
   const router = useRouter();
+  //console.log(query);
   const { frontsort } = router.query;
 
   return (
     <div>
-      <NavBar/>
+      <NavBar />
       <p>sort: {frontsort}</p>
-      <FrontPage sort={frontsort ?? "best"} range={query.t ?? ""} />
+      <Feed query={query} />
     </div>
   );
 };

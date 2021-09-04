@@ -1,7 +1,7 @@
 import axios from "axios";
 import Head from "next/head";
 
-import FrontPage from "../components/FrontPage";
+import Feed from "../components/Feed";
 import NavBar from "../components/NavBar";
 
 export const index = () => {
@@ -10,8 +10,8 @@ export const index = () => {
       <Head>
         <title>Next-Reddit</title>
       </Head>
-      <NavBar/>
-      <FrontPage sort="best" range="" />
+      <NavBar />
+      <Feed query={{ frontsort: "hot" }} />
     </div>
   );
 };
