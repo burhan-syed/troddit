@@ -12,15 +12,19 @@ let ratelimit_remaining = 0;
 const REDDIT = "https://www.reddit.com";
 
 const getToken = async () => {
-  try {
-    let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
-    //console.log("tokendata:", tokendata);
-    return {
-      accessToken: tokendata.data.accessToken,
-      refreshToken: tokendata.data.refreshToken,
-    };
-  } catch (err) {
-    console.log(err);
+  const session = await getSession();
+  if (session) {
+    try {
+      let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
+      //console.log("tokendata:", tokendata);
+      return {
+        accessToken: tokendata.data.accessToken,
+        refreshToken: tokendata.data.refreshToken,
+      };
+    } catch (err) {
+      console.log(err);
+      return undefined;
+    }
     return undefined;
   }
 };
@@ -31,11 +35,7 @@ export const loadFront = async (
   after?: string,
   count?: number
 ) => {
-  const session = await getSession();
-  let token = false;
-  if (session) {
-    token = await (await getToken())?.accessToken;
-  }
+  let token = await (await getToken())?.accessToken;
 
   if (token) {
     try {
@@ -111,4 +111,28 @@ export const loadSubreddits = async (
     before: res.data.before,
     children: res.data.children,
   };
+};
+
+export const getSubs = async (after?, count?) => {
+  const token = await (await getToken())?.accessToken;
+
+  try {
+    let data = await (
+      await axios.get("https://oauth.reddit.com/subreddits/mine/subscriber", {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+          after: after,
+          before: "",
+          count: count,
+        },
+      })
+    ).data;
+    if (data?.data?.children ?? false) {
+      return { after: data.data.after, children: data.data.children };
+    }
+  } catch (err) {
+    console.log(err);
+  }
 };

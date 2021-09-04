@@ -3,6 +3,8 @@ import router from "next/router";
 import { useState } from "react";
 import { useMainContext } from "../MainContext";
 
+import { getSubs } from "../RedditAPI";
+
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const SubDropDown = () => {
@@ -15,40 +17,20 @@ const SubDropDown = () => {
   const context: any = useMainContext();
 
   const handleClick = () => {
-    if (!clicked) getSubs();
+    if (!clicked) loadSubs();
     setHidden((hidden) => !hidden);
   };
 
-  const getSubs = async () => {
-    if (context?.token?.accessToken ?? false) {
-      console.log("getting mysubs");
-      try {
-        let data = await axios.get(
-          "https://oauth.reddit.com/subreddits/mine/subscriber",
-          {
-            headers: {
-              authorization: `bearer ${context.token.accessToken}`,
-            },
-            params: {
-              after: after,
-              before: "",
-              count: count,
-            },
-          }
-        );
-        if (data?.data?.data?.children ?? false) {
-          console.log(data.data.data);
-          setAfter(data.data.data.after);
-          setMySubs((subs) => {
-            return [...subs, ...data.data.data.children];
-          });
-          setClicked(true);
-          console.log(mySubs);
-        }
-      } catch (err) {
-        console.log(err);
-      }
+  const loadSubs = async () => {
+    try {
+      let data = await getSubs(after, mySubs.length);
+      console.log(data);
+      setAfter(data.after);
+      setMySubs((subs) => [...subs, ...data.children]);
+    } catch (err) {
+      console.log(err);
     }
+    setClicked(true);
   };
 
   const goToSub = (e, suggestion) => {
@@ -62,15 +44,17 @@ const SubDropDown = () => {
 
   return (
     <div>
-      <button onClick={handleClick}>My Subs {hidden ? " v " : " ^ " }</button>
+      <button onClick={handleClick}>My Subs {hidden ? " v " : " ^ "}</button>
 
       <div
         id="scrollableDiv"
-        className={(hidden ? `hidden` : "overflow-auto h-32") + " absolute bg-gray"}
+        className={
+          (hidden ? `hidden` : "overflow-auto h-32") + " absolute bg-gray"
+        }
       >
         <InfiniteScroll
           dataLength={mySubs.length}
-          next={getSubs}
+          next={loadSubs}
           hasMore={after ? true : false}
           loader={<h1>Loading more...</h1>}
           scrollableTarget="scrollableDiv"
@@ -86,7 +70,7 @@ const SubDropDown = () => {
               </div>
             );
           })}
-          <button onClick={getSubs}>Load more</button>
+          <button onClick={loadSubs}>Load more</button>
         </InfiniteScroll>
       </div>
     </div>
