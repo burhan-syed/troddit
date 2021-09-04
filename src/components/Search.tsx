@@ -40,6 +40,7 @@ const Search = () => {
         onClick={(e) => goToSub(e, suggestion.name)}
         onSubmit={(e) => goToSub(e, suggestion.name)}
       >
+        {/* suggestion.icon */}
         {suggestion.name}
       </ul>
     );

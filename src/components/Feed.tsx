@@ -30,7 +30,7 @@ const Feed = ({ query }) => {
     767: 1,
   };
   useEffect(() => {
-    console.log(query);
+    //console.log(query);
     if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
