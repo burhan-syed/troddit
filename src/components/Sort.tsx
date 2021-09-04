@@ -16,21 +16,24 @@ const Sort = () => {
   const updateSort = (e, s) => {
     e.preventDefault();
     setSort(s);
-    console.log(`r/${router.query}/${s}`);
+    if (s !== "top"){
+      console.log(`r/${router.query}/${s}`);
 
-    if (router.query?.slug?.[0] ?? false) {
-      router.push({
-        pathname: "/r/[subs]/[sort]",
-        query: {
-          subs: router.query?.slug?.[0] ?? "",
-          sort: s,
-        },
-      });
-    } else {
-      router.push({
-        pathname: "/[sort]",
-        query: { sort: s },
-      });
+      if (router.query?.slug?.[0] ?? false) {
+        router.push({
+          pathname: "/r/[subs]/[sort]",
+          query: {
+            subs: router.query?.slug?.[0] ?? "",
+            sort: s,
+          },
+        });
+      } else {
+        router.push({
+          pathname: "/[sort]",
+          query: { sort: s },
+        });
+    }
+ 
     }
 
     //router.push('/r/[subs]/[sort]', `${router.query?.slug?.[0] ?? ""}/${s}`)
