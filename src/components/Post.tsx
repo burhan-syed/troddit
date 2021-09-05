@@ -1,17 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
-import imageToBase64 from "image-to-base64/browser";
 
 import LazyLoad from "react-lazyload";
 import { useEffect, useState } from "react";
 import Placeholder from "./Placeholder";
 import Gallery from "./Gallery";
-import image from "next/image";
 import VideoHandler from "./VideoHandler";
 import ImageHandler from "./ImageHandler";
 
+import { useMainContext } from "../MainContext";
+
 const Post = ({ post }) => {
+  const context: any = useMainContext();
+  const [hide, setHide] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [toLoad, setToLoad] = useState(false);
   const [isGallery, setIsGallery] = useState(false);
@@ -35,8 +37,6 @@ const Post = ({ post }) => {
 
   //console.log(post);
   useEffect(() => {
-
-
     if (shouldLoad()) {
       initialize();
       setToLoad(true);
@@ -45,9 +45,14 @@ const Post = ({ post }) => {
     }
   }, [loaded]);
 
-  const shouldLoad = () => {
+  useEffect(() => {
+    !context.nsfw && post.over_18 ? setHide(true) : setHide(false);
+    return () => {
+      setHide(false);
+    };
+  }, [context, post]);
 
-    //if (post.over_18) return false;
+  const shouldLoad = () => {
     if (!post) return false;
     if (!post.url) return false;
     if (!post.title) return false;
@@ -196,11 +201,9 @@ const Post = ({ post }) => {
     return false;
   };
 
-
-
   return (
     <div className="p-2 text-sm text-white bg-black shadow-sm">
-      {toLoad ? (
+      {toLoad && !hide ? (
         <div className="p-1 ">
           <h1>
             <a
@@ -248,18 +251,22 @@ const Post = ({ post }) => {
             {isImage ? (
               // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
               <div className="relative">
-              {mediaLoaded ? "" : <div className="absolute z-50 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>}
+                {mediaLoaded ? (
+                  ""
+                ) : (
+                  <div className="absolute z-50 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
+                )}
 
-              <Image
-                src={imageInfo.url}
-                height={imageInfo.height}
-                width={imageInfo.width}
-                alt="image"
-                layout="responsive"
-                onLoadingComplete={onLoaded}
-                // placeholder="blur"
-                // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
-              />
+                <Image
+                  src={imageInfo.url}
+                  height={imageInfo.height}
+                  width={imageInfo.width}
+                  alt="image"
+                  layout="responsive"
+                  onLoadingComplete={onLoaded}
+                  // placeholder="blur"
+                  // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+                />
               </div>
             ) : (
               // <LazyLoad height={imageInfo.height}>
@@ -268,24 +275,32 @@ const Post = ({ post }) => {
               ""
             )}
 
-            {isMP4 ? showMP4 ? (
-              <div>
-                <LazyLoad
-                  height={videoInfo.height}
-                  once={true}
-                  // placeholder={<Placeholder imageInfo={placeholder} />}
-                >
-                  <VideoHandler
-                    placeholder={placeholderInfo}
-                    videoInfo={videoInfo}
-                  />
-                </LazyLoad>
-              </div>
+            {isMP4 ? (
+              showMP4 ? (
+                <div>
+                  <LazyLoad
+                    height={videoInfo.height}
+                    once={true}
+                    // placeholder={<Placeholder imageInfo={placeholder} />}
+                  >
+                    <VideoHandler
+                      placeholder={placeholderInfo}
+                      videoInfo={videoInfo}
+                    />
+                  </LazyLoad>
+                </div>
+              ) : (
+                ""
+              )
             ) : (
               ""
-            ) : ""}
+            )}
 
-            {post.selftext ? (<p className="truncate ...">{post.selftext}</p>) : ""}
+            {post.selftext ? (
+              <p className="truncate ...">{post.selftext}</p>
+            ) : (
+              ""
+            )}
           </div>
           {/* <p>{post?.url ?? "ERR"}</p> */}
 
@@ -303,7 +318,7 @@ const Post = ({ post }) => {
           </div>
         </div>
       ) : (
-        <h1>ERR WITH POST</h1>
+        "NSFW"
       )}
     </div>
   );

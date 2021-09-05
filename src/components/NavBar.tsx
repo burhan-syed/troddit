@@ -4,6 +4,8 @@ import Link from "next/link";
 import Login from "./Login";
 import SubDropDown from "./SubDropDown";
 import Sort from "./Sort";
+import ThemeToggle from "./ThemeToggle";
+import NSFWToggle from "./NSFWToggle";
 
 const NavBar = () => {
   const [hidden, setHidden] = useState("");
@@ -28,19 +30,24 @@ const NavBar = () => {
   };
 
   return (
-    <header 
-    >
-      <header className={`sticky top-0 z-50 h-20 flex items-center px-4 py-4 shadow-md `}>
-        <Link href="/" passHref><h1 className="">ReddAll</h1></Link>
+    <header>
+      <header
+        className={`sticky top-0 z-50 h-20 flex items-center px-4 py-4 shadow-md `}
+      >
+        <Link href="/" passHref>
+          <h1 className="">ReddAll</h1>
+        </Link>
         <div className="flex items-center flex-grow p-2 mx-5 text-gray-600 rounded-lg bg-blue focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
           <Search />
         </div>
         <div className="">
           <SubDropDown />
         </div>
+        <ThemeToggle />
+        <NSFWToggle />
         <Login />
       </header>
-      <Sort/>
+      <Sort />
     </header>
   );
 };
