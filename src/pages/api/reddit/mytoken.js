@@ -6,7 +6,7 @@ import Snoowrap from "snoowrap";
 
 export default async (req, res) => {
   //const body = JSON.parse(req.body);
-  const session = await getSession({ req });
+  //const session = await getSession({ req });
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   try {

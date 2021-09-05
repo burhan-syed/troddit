@@ -115,8 +115,8 @@ export default NextAuth({
       console.log(Math.floor(Date.now() / 1000))
       console.log(token.expires);
       console.log(Math.floor(Date.now() / 1000)-token?.expires)
-      if (!token.expires) {token.expires = Math.floor(Date.now()/1000) + 3600}
-      if (Math.floor(Date.now() / 1000) > token.expires) {
+      //if (!token.expires) {token.expires = Math.floor(Date.now()/1000) + 3600}
+      if (!token.expires || (Math.floor(Date.now() / 1000) > token.expires)) {
         token = await refreshAccessToken(token);
         console.log(token);
       }
