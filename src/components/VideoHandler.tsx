@@ -10,7 +10,11 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
   };
   return (
     <div className="relative overflow-hidden ">
-      {videoLoaded ? "" : <div className="absolute z-50 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>}
+      {videoLoaded ? (
+        ""
+      ) : (
+        <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
+      )}
 
       <div
         className={`blur-xl ` + `${videoLoaded ? "opacity-0" : "opacity-100"}`}

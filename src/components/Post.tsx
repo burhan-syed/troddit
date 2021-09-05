@@ -250,11 +250,11 @@ const Post = ({ post }) => {
 
             {isImage ? (
               // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-              <div className="relative">
+              <div className="relative ">
                 {mediaLoaded ? (
                   ""
                 ) : (
-                  <div className="absolute z-50 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
+                  <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
                 )}
 
                 <Image
@@ -304,7 +304,7 @@ const Post = ({ post }) => {
           </div>
           {/* <p>{post?.url ?? "ERR"}</p> */}
 
-          <div className="flex text-xs align-bottom lex-row">
+          <div className="flex flex-row text-xs align-bottom">
             <p className="">{post?.score ?? "0"}</p>
 
             <a
