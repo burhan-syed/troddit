@@ -33,7 +33,7 @@ const Search = () => {
   };
 
   const renderSuggestion = (suggestion) => {
-    console.log(suggestion);
+    //console.log(suggestion);
     return (
       <ul
         className="text-black"

@@ -8,7 +8,7 @@ import ThemeToggle from "./ThemeToggle";
 import NSFWToggle from "./NSFWToggle";
 
 const NavBar = () => {
-  const [hidden, setHidden] = useState("");
+  const [hidden, setHidden] = useState(false);
   const [prevScrollpos, setScrollpos] = useState(0);
 
   useEffect(() => {
@@ -22,32 +22,33 @@ const NavBar = () => {
   const onScroll = () => {
     var currentScrollPos = window.pageYOffset;
     if (prevScrollpos > currentScrollPos) {
-      setHidden("");
+      setHidden(false);
     } else {
-      setHidden("hidden");
+      setHidden(true);
     }
     setScrollpos(currentScrollPos);
   };
 
   return (
-    <header>
-      <header
-        className={`sticky top-0 z-50 h-20 flex items-center px-4 py-4 shadow-md `}
-      >
-        <Link href="/" passHref>
-          <h1 className="">ReddAll</h1>
-        </Link>
-        <div className="flex items-center flex-grow p-2 mx-5 text-gray-600 rounded-lg bg-blue focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
-          <Search />
-        </div>
-        <div className="">
-          <SubDropDown />
-        </div>
-        <ThemeToggle />
-        <NSFWToggle />
-        <Login />
-      </header>
+    <header
+      className={
+        `${hidden ? "" : "sticky top-0"}` +
+        " z-50 h-12 flex items-center bg-white dark:bg-black px-4 py-4 shadow-md"
+      }
+    >
+      <Link href="/" passHref>
+        <h1 className="">ReddAll</h1>
+      </Link>
+      <div className="flex items-center flex-grow p-1 mx-5 text-gray-600 rounded-lg bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
+        <Search />
+      </div>
+      <div className="">
+        <SubDropDown />
+      </div>
+      <ThemeToggle />
+      <NSFWToggle />
       <Sort />
+      <Login />
     </header>
   );
 };
