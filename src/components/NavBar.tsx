@@ -7,9 +7,10 @@ import Sort from "./Sort";
 import ThemeToggle from "./ThemeToggle";
 import NSFWToggle from "./NSFWToggle";
 
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { CgMenu } from "react-icons/cg";
 import SideNav from "./SideNav";
+import NavMenu from "./NavMenu";
+import SortMenu from "./SortMenu";
 
 const NavBar = () => {
   const [hidden, setHidden] = useState(false);
@@ -58,11 +59,9 @@ const NavBar = () => {
           <div className="">
             <SubDropDown />
           </div>
-          <ThemeToggle />
-          <NSFWToggle />
-          <Sort />
+          <SortMenu />
           <Login />
-          <BsThreeDotsVertical />
+          <NavMenu />
         </div>
       </nav>
     </header>

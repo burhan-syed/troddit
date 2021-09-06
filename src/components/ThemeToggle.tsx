@@ -6,10 +6,10 @@ const ThemeToggle = () => {
   return (
     <div className="flex flex-row">
       <label>
-        <span>Toggle Theme</span>
+        <span>Theme</span>
         <ReactSwitch
           onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-          checked={theme === "dark"}
+          checked={theme === "light"}
         />
       </label>
     </div>

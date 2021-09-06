@@ -6,6 +6,7 @@ import { useMainContext } from "../MainContext";
 import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
 
 import InfiniteScroll from "react-infinite-scroll-component";
+import Link from "next/link";
 
 const SubDropDown = () => {
   const [mySubs, setMySubs] = useState([]);
@@ -65,13 +66,13 @@ const SubDropDown = () => {
     });
   };
 
-  const goToMulti = (e,suggestion) => {
+  const goToMulti = (e, suggestion) => {
     let suggestions = "";
-    for (let s of suggestion){
+    for (let s of suggestion) {
       suggestions = suggestions + "+" + s.name;
     }
-    goToSub(e,suggestions);
-  }
+    goToSub(e, suggestions);
+  };
 
   return (
     <div>
@@ -90,29 +91,36 @@ const SubDropDown = () => {
           loader={<h1>Loading more...</h1>}
           scrollableTarget="scrollableDiv"
         > */}
+        <Link href="/" passHref>
+          <h1 className="">Home</h1>
+        </Link>
 
-        {myMultis.map((multi, i) => {
-          return (
-            <div
-              className="text-blue"
-              key={`${i}_${multi.data.display_name}`}
-              onClick={(e) => goToMulti(e, multi.data.subreddits)}
-            >
-              {multi.data.display_name}
-            </div>
-          );
-        })}
-        {mySubs.map((sub, i) => {
-          return (
-            <div
-              className="text-white "
-              key={`${i}_${sub.data.display_name}`}
-              onClick={(e) => goToSub(e, sub.data.display_name)}
-            >
-              {sub.data.display_name}
-            </div>
-          );
-        })}
+        {myMultis
+          ? myMultis.map((multi, i) => {
+              return (
+                <div
+                  className="text-blue"
+                  key={`${i}_${multi.data.display_name}`}
+                  onClick={(e) => goToMulti(e, multi.data.subreddits)}
+                >
+                  {multi.data.display_name}
+                </div>
+              );
+            })
+          : ""}
+        {mySubs
+          ? mySubs.map((sub, i) => {
+              return (
+                <div
+                  className="text-white "
+                  key={`${i}_${sub.data.display_name}`}
+                  onClick={(e) => goToSub(e, sub.data.display_name)}
+                >
+                  {sub.data.display_name}
+                </div>
+              );
+            })
+          : ""}
         {/* <button onClick={loadSubs}>Load more</button>
         </InfiniteScroll> */}
       </div>

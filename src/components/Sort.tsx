@@ -16,7 +16,7 @@ const Sort = () => {
   const updateSort = (e, s) => {
     e.preventDefault();
     setSort(s);
-    if (s !== "top"){
+    if (s !== "top") {
       console.log(`r/${router.query}/${s}`);
 
       if (router.query?.slug?.[0] ?? false) {
@@ -32,8 +32,7 @@ const Sort = () => {
           pathname: "/[sort]",
           query: { sort: s },
         });
-    }
- 
+      }
     }
 
     //router.push('/r/[subs]/[sort]', `${router.query?.slug?.[0] ?? ""}/${s}`)
@@ -45,7 +44,7 @@ const Sort = () => {
       <button onClick={(e) => updateSort(e, "new")}>New</button>
       <button onClick={(e) => updateSort(e, "top")}>Top</button>
       <button onClick={(e) => updateSort(e, "rising")}>Rising</button>
-      {sort == "top" ? <SortRange /> : ""}
+      <div className="absolute">{sort == "top" ? <SortRange /> : ""}</div>
     </div>
   );
 };

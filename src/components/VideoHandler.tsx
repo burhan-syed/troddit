@@ -13,7 +13,7 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
       {videoLoaded ? (
         ""
       ) : (
-        <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
+        <div className="absolute z-10 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
       )}
 
       <div

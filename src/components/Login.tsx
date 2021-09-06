@@ -10,13 +10,12 @@ export default function Login() {
     <>
       {!session && (
         <>
-          <button onClick={() => signIn()}>Sign in</button>
+          <button onClick={() => signIn()}>Login</button>
         </>
       )}
       {session && (
         <>
-          {session?.user.name} |  <br />
-          <button onClick={() => signOut()}>Sign out</button>
+          <button onClick={() => signOut()}>Logout</button>
         </>
       )}
     </>

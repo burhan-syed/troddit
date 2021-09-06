@@ -5,10 +5,14 @@ const NSFWToggle = () => {
   const context: any = useMainContext();
   return (
     <div>
-      <ReactSwitch
-        onChange={() => context.toggleNSFW()}
-        checked={context.nsfw === true}
-      />
+      <label>
+        <span>NSFW</span>
+
+        <ReactSwitch
+          onChange={() => context.toggleNSFW()}
+          checked={context.nsfw === true}
+        />
+      </label>
     </div>
   );
 };
