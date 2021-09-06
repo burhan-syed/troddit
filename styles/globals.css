@@ -90,3 +90,62 @@
   font-size: 12px;
   color: #777;
 }
+
+.dropdown {
+  /* Border */
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+
+  /* Reset list styles */
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown li {
+  /* Spacing */
+  padding: 8px;
+
+  /* Used to position the sub dropdown */
+  position: relative;
+}
+
+/* The sub dropdown */
+.dropdown ul {
+  /* Border */
+  border: 1px solid rgba(0, 0, 0, 0.3);
+
+  /* Hidden by default */
+  display: none;
+
+  /* Absolute position */
+  left: 0;
+  position: absolute;
+  top: 100%;
+
+  /* Reset styles */
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  /* Width */
+  width: 200px;
+}
+
+/* The second level sub dropdown */
+.dropdown ul ul {
+  left: 100%;
+  position: absolute;
+  top: 0;
+}
+
+/* Change background color of list item when being hovered */
+.dropdown li:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Show the direct sub dropdown when hovering the list item */
+.dropdown li:hover > ul {
+  display: block;
+}

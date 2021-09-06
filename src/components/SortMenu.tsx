@@ -87,128 +87,135 @@ const SortMenu = () => {
   };
 
   return (
-    <div className="inline-block group">
-      <div
-        className="flex items-center px-3 py-1 bg-white border rounded-sm outline-none focus:outline-none min-w-32"
-        onClick={() => setShow((show) => !show)}
-      >
-        {sort === "best" ? (
-          <div>
-            <AiOutlineRocket /> <span> Best </span>
-          </div>
-        ) : (
-          ""
-        )}
-        {sort === "hot" ? (
-          <div>
-            {" "}
-            <AiOutlineFire /> <span> Hot </span>
-          </div>
-        ) : (
-          ""
-        )}
-        {sort === "top" ? (
-          <div>
-            <RiBarChart2Line /> <span> Top </span>
-          </div>
-        ) : (
-          ""
-        )}
-        {sort === "new" ? (
-          <div>
-            <BsCircle /> <span> New </span>
-          </div>
-        ) : (
-          ""
-        )}
-        {sort === "rising" ? (
-          <div>
-            <IoMdTrendingUp /> <span> Rising </span>
-          </div>
-        ) : (
-          ""
-        )}
-      </div>
-
-      <div
-        className={
-          "bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32  top-12 " +
-          `${show ? "" : "hidden"}`
-        }
-      >
+    <div className="inline-block ">
+      <div>
         <div
-          className="px-3 py-1 rounded-sm hover:bg-gray-100"
-          onClick={(e) => updateSort(e, "best")}
+          className="flex items-center px-3 py-1 bg-white border rounded-sm outline-none focus:outline-none min-w-32"
+          onClick={() => setShow((show) => !show)}
         >
-          <AiOutlineRocket /> <span> Best </span>
+          {sort === "best" ? (
+            <div>
+              <AiOutlineRocket /> <span> Best </span>
+            </div>
+          ) : (
+            ""
+          )}
+          {sort === "hot" ? (
+            <div>
+              {" "}
+              <AiOutlineFire /> <span> Hot </span>
+            </div>
+          ) : (
+            ""
+          )}
+          {sort === "top" ? (
+            <div>
+              <RiBarChart2Line /> <span> Top </span>
+            </div>
+          ) : (
+            ""
+          )}
+          {sort === "new" ? (
+            <div>
+              <BsCircle /> <span> New </span>
+            </div>
+          ) : (
+            ""
+          )}
+          {sort === "rising" ? (
+            <div>
+              <IoMdTrendingUp /> <span> Rising </span>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
 
         <div
-          className="px-3 py-1 rounded-sm hover:bg-gray-100"
-          onClick={(e) => updateSort(e, "hot")}
-        >
-          <AiOutlineFire /> <span> Hot </span>
-        </div>
-        <div
-          className="relative px-3 py-1 rounded-sm hover:bg-gray-100"
-          onClick={(e) => updateSort(e, "top")}
-        >
-          <span className="flex-1 pr-1 font-semibold">
-            <RiBarChart2Line /> Top
-          </span>
-        </div>
-        <ul
           className={
-            "" +
-            `${
-              sort === "top"
-                ? "bg-white border rounded-sm  top-0 right-0 transition duration-150 ease-in-out origin-top-right"
-                : "hidden"
-            }`
+            "bg-white border rounded-sm transform scale-100 hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32  top-12 " +
+            `${show ? "" : "hidden"}`
           }
         >
-          <li
-            className={range === "hour" ? `font-bold` : "" + ""}
-            onClick={(e) => updateRange(e, "hour")}
-          >
-            Now
-          </li>
-          <li
-            className={range === "day" ? `font-bold` : "" + ""}
-            onClick={(e) => updateRange(e, "day")}
-          >
-            Today
-          </li>
-          <li
-            className={range === "week" ? `font-bold` : ""}
-            onClick={(e) => updateRange(e, "week")}
-          >
-            Week
-          </li>
-          <li
-            className={range === "month" ? `font-bold` : ""}
-            onClick={(e) => updateRange(e, "month")}
-          >
-            Month
-          </li>
-          <li
-            className={range === "year" ? `font-bold` : ""}
-            onClick={(e) => updateRange(e, "year")}
-          >
-            Year
-          </li>
-          <li
-            className={range === "all" ? `font-bold` : ""}
-            onClick={(e) => updateRange(e, "all")}
-          >
-            All
-          </li>
-        </ul>
-        <div onClick={(e) => updateSort(e, "new")}>
-          <BsCircle /> <span> New </span>
-        </div>
-        <div onClick={(e) => updateSort(e, "rising")}>
-          <IoMdTrendingUp /> <span> Rising </span>
+          <ul className="flex-col p-0 m-0 list-none">
+            <li
+              className="relative px-3 py-1 rounded-sm hover:bg-gray-100"
+              onClick={(e) => updateSort(e, "best")}
+            >
+              <AiOutlineRocket /> <span> Best </span>
+            </li>
+
+            <li
+              className="relative px-3 py-1 rounded-sm hover:bg-gray-100"
+              onClick={(e) => updateSort(e, "hot")}
+            >
+              <AiOutlineFire /> <span> Hot </span>
+            </li>
+            <li
+              className="relative px-3 py-1 rounded-sm hover:bg-gray-100 group"
+              onClick={(e) => updateSort(e, "top")}
+            >
+              <span className="flex-1 pr-1 font-semibold">
+                <RiBarChart2Line /> Top
+              </span>
+
+              <ul
+                className="absolute top-0 hidden w-20 bg-white -left-20 group-hover:block"
+                // className={
+                //   "" +
+                //   `${
+                //     sort === "top"
+                //       ? "bg-white border rounded-sm  top-0 right-0 transition duration-150 ease-in-out origin-top-right"
+                //       : "hidden"
+                //   }`
+                // }
+              >
+                <li
+                  className={range === "hour" ? `font-bold` : "" + ""}
+                  onClick={(e) => updateRange(e, "hour")}
+                >
+                  Now
+                </li>
+                <li
+                  className={range === "day" ? `font-bold` : "" + ""}
+                  onClick={(e) => updateRange(e, "day")}
+                >
+                  Today
+                </li>
+                <li
+                  className={range === "week" ? `font-bold` : ""}
+                  onClick={(e) => updateRange(e, "week")}
+                >
+                  Week
+                </li>
+                <li
+                  className={range === "month" ? `font-bold` : ""}
+                  onClick={(e) => updateRange(e, "month")}
+                >
+                  Month
+                </li>
+                <li
+                  className={range === "year" ? `font-bold` : ""}
+                  onClick={(e) => updateRange(e, "year")}
+                >
+                  Year
+                </li>
+                <li
+                  className={range === "all" ? `font-bold` : ""}
+                  onClick={(e) => updateRange(e, "all")}
+                >
+                  All
+                </li>
+              </ul>
+            </li>
+
+            <li onClick={(e) => updateSort(e, "new")}>
+              <BsCircle /> <span> New </span>
+            </li>
+            <li onClick={(e) => updateSort(e, "rising")}>
+              <IoMdTrendingUp /> <span> Rising </span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
