@@ -2,7 +2,7 @@ import { AiOutlineFire, AiOutlineRocket } from "react-icons/ai";
 import { GrNew } from "react-icons/gr";
 import { IoMdTrendingUp } from "react-icons/io";
 import { RiBarChart2Line } from "react-icons/ri";
-import { BsCircle } from "react-icons/bs";
+import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 const SortMenu = () => {
@@ -87,15 +87,15 @@ const SortMenu = () => {
   };
 
   return (
-    <div className="inline-block ">
-      <div>
+    <div className="flex flex-row w-full h-full border border-blue-400">
+      <div className="flex flex-col flex-grow">
         <div
-          className="flex items-center px-3 py-1 bg-white border rounded-sm outline-none focus:outline-none min-w-32"
+          className="flex flex-row items-center justify-between flex-none h-full border border-red-300 rounded-sm"
           onClick={() => setShow((show) => !show)}
         >
           {sort === "best" ? (
-            <div>
-              <AiOutlineRocket /> <span> Best </span>
+            <div className="flex flex-row justify-between">
+              <AiOutlineRocket className="flex-none w-6 h-6 mr-2" />
             </div>
           ) : (
             ""
@@ -129,11 +129,12 @@ const SortMenu = () => {
           ) : (
             ""
           )}
+          <BsChevronDown />
         </div>
 
         <div
           className={
-            "bg-white border rounded-sm transform scale-100 hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32  top-12 " +
+            "transform  hover:scale-100  transition duration-150 ease-in-out origin-top bg-white " +
             `${show ? "" : "hidden"}`
           }
         >
@@ -155,21 +156,11 @@ const SortMenu = () => {
               className="relative px-3 py-1 rounded-sm hover:bg-gray-100 group"
               onClick={(e) => updateSort(e, "top")}
             >
-              <span className="flex-1 pr-1 font-semibold">
+              <span className="">
                 <RiBarChart2Line /> Top
               </span>
 
-              <ul
-                className="absolute top-0 hidden w-20 bg-white -left-20 group-hover:block"
-                // className={
-                //   "" +
-                //   `${
-                //     sort === "top"
-                //       ? "bg-white border rounded-sm  top-0 right-0 transition duration-150 ease-in-out origin-top-right"
-                //       : "hidden"
-                //   }`
-                // }
-              >
+              <ul className="absolute top-0 hidden w-20 bg-white -left-20 group-hover:block">
                 <li
                   className={range === "hour" ? `font-bold` : "" + ""}
                   onClick={(e) => updateRange(e, "hour")}

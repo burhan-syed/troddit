@@ -38,30 +38,38 @@ const NavBar = () => {
   };
 
   return (
-    <header className={`${hidden ? "" : "sticky top-0"}` + "absolute z-50 "}>
+    <header
+      className={
+        `${hidden ? "-translate-y-full" : ""}` +
+        " z-50 sticky top-0 transition duration-500 ease-in-out transform h-12 border  border-blue-300"
+      }
+    >
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-      <nav className="flex items-center h-12 px-4 py-4 bg-white shadow-md dark:bg-black">
+      <nav className="flex flex-row justify-between h-full bg-white border border-green-400 shadow-md dark:bg-black">
         <CgMenu
           className="md:hidden"
           onClick={() => setSidebarVisible((vis) => !vis)}
         />
 
-        {sidebarVisible ? "visible" : "not vis"}
-
         <Link href="/" passHref>
           <h1 className="">ReddAll</h1>
         </Link>
 
-        <div className="flex items-center flex-grow p-1 mx-5 text-gray-600 rounded-lg bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
+        <div className="w-40 p-1 border border-black rounded-lg">
+          <SubDropDown />
+        </div>
+
+        <div className="flex items-center w-1/3 p-1 text-gray-600 border border-black rounded-lg bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
           <Search />
         </div>
-        <div className="hidden md:flex">
-          <div className="">
-            <SubDropDown />
+        <div className="items-center hidden border border-red-300 w-80 md:flex">
+          <div className="w-20 h-full">
+            <SortMenu />
           </div>
-          <SortMenu />
           <Login />
-          <NavMenu />
+          <div className="">
+            <NavMenu />
+          </div>
         </div>
       </nav>
     </header>

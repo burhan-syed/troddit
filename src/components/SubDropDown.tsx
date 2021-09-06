@@ -80,9 +80,7 @@ const SubDropDown = () => {
 
       <div
         id="scrollableDiv"
-        className={
-          (hidden ? `hidden` : "overflow-auto h-32") + " absolute bg-gray"
-        }
+        className={(hidden ? `hidden` : "overflow-auto") + " absolute bg-gray"}
       >
         {/* <InfiniteScroll
           dataLength={mySubs.length}
