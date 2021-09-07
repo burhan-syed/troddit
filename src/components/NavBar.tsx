@@ -54,7 +54,7 @@ const NavBar = () => {
           <h1 className="">ReddAll</h1>
         </Link>
 
-        <div className="h-full border border-black rounded-lg w-80">
+        <div className="flex flex-row items-center flex-none h-full border border-black w-60">
           <SubDropDown hide={hidden} />
         </div>
 

@@ -36,46 +36,63 @@ function b2a(a) {
 }
 
 async function refreshAccessToken(token) {
-  try {
+  let refresh = true;
+
+  let refreshtoken = "";
+  if (token?.reddit?.refreshToken) {
+    refreshtoken = token?.reddit?.refreshToken;
+  } else if (token?.refreshToken) {
+    refreshtoken = token.refreshToken;
+  } else if (token?.refresh_token) {
+    refreshtoken = token.refresh_token;
+  } else {
+    refresh = false;
+    console.log("FAILED TO FIND REFRESH TOKEN");
+  }
+  if (refresh) {
     const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 
-    const url =
-      "https://www.reddit.com/api/v1/access_token?" +
-      new URLSearchParams({
-        grant_type: "refresh_token",
-        refresh_token: token.reddit.refreshToken,
+    try {
+      const url =
+        "https://www.reddit.com/api/v1/access_token?" +
+        new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: refreshtoken,
+        });
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Basic ${b2a(authvalue)}`,
+        },
+        method: "POST",
       });
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Basic ${b2a(authvalue)}`,
-      },
-      method: "POST",
-    });
+      const refreshedTokens = await response.json();
+      console.log("refreshed token", refreshedTokens);
+      if (!response.ok) {
+        throw refreshedTokens;
+      }
 
-    const refreshedTokens = await response.json();
-    console.log("refreshed token", refreshedTokens);
-    if (!response.ok) {
-      throw refreshedTokens;
+      return {
+        ...token,
+        reddit: {
+          accessToken: refreshedTokens.access_token ?? token.reddit.accessToken, //fallback to old access token
+          refreshToken:
+            refreshedTokens.refresh_token ?? token.reddit.refreshToken, //fall back to old refresh token
+        },
+        //iat: Math.floor(Date.now() / 1000),
+        expires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
+      };
+    } catch (error) {
+      console.log(error);
+      console.log("errored");
+      return {
+        ...token,
+        error: "RefreshAccessTokenError",
+      };
     }
-
-    return {
-      ...token,
-      reddit: {
-        accessToken: refreshedTokens.accessToken ?? token.reddit.accessToken, //fallback to old access token
-        refreshToken: refreshedTokens.refreshToken ?? token.reddit.refreshToken, //fall back to old refresh token
-      },
-      //iat: Math.floor(Date.now() / 1000),
-      expires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
-    };
-  } catch (error) {
-    console.log(error);
-    console.log("errored");
-    return {
-      ...token,
-      error: "RefreshAccessTokenError",
-    };
   }
+  return token;
 }
 
 export default NextAuth({
@@ -112,11 +129,11 @@ export default NextAuth({
   callbacks: {
     async jwt(token, user, account = {}, profile, isNewUser) {
       console.log("JWT CALLBACK", token, user, account, profile, isNewUser);
-      console.log(Math.floor(Date.now() / 1000))
+      console.log(Math.floor(Date.now() / 1000));
       console.log(token.expires);
-      console.log(Math.floor(Date.now() / 1000)-token?.expires)
+      console.log(Math.floor(Date.now() / 1000) - token?.expires);
       //if (!token.expires) {token.expires = Math.floor(Date.now()/1000) + 3600}
-      if (!token.expires || (Math.floor(Date.now() / 1000) > token.expires)) {
+      if (!token.expires || Math.floor(Date.now() / 1000) > token.expires) {
         token = await refreshAccessToken(token);
         console.log(token);
       }

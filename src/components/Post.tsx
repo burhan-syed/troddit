@@ -31,7 +31,6 @@ const Post = ({ post }) => {
 
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const onLoaded = () => {
-    console.log("loaded");
     setMediaLoaded(true);
   };
 
