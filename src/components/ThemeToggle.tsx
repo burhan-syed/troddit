@@ -4,8 +4,8 @@ import ReactSwitch from "react-switch";
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
   return (
-    <div className="flex flex-row">
-      <label>
+    <div >
+      <label className="flex flex-row items-center justify-between">
         <span>Theme</span>
         <ReactSwitch
           onChange={() => setTheme(theme === "dark" ? "light" : "dark")}

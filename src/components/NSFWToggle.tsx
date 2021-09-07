@@ -5,7 +5,7 @@ const NSFWToggle = () => {
   const context: any = useMainContext();
   return (
     <div>
-      <label>
+      <label className="flex flex-row items-center justify-between">
         <span>NSFW</span>
 
         <ReactSwitch

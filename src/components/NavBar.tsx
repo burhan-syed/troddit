@@ -19,33 +19,32 @@ const NavBar = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   useEffect(() => {
+    const onScroll = () => {
+      setSidebarVisible(false);
+      var currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        setHidden(false);
+      } else {
+        setHidden(true);
+      }
+      setScrollpos(currentScrollPos);
+    };
     window.addEventListener("scroll", onScroll);
     setScrollpos(window.pageYOffset);
     return () => {
       window.removeEventListener("scroll", onScroll);
     };
-  });
-
-  const onScroll = () => {
-    setSidebarVisible(false);
-    var currentScrollPos = window.pageYOffset;
-    if (prevScrollpos > currentScrollPos) {
-      setHidden(false);
-    } else {
-      setHidden(true);
-    }
-    setScrollpos(currentScrollPos);
-  };
+  }, [prevScrollpos]);
 
   return (
     <header
       className={
         `${hidden ? "-translate-y-full" : ""}` +
-        " z-50 sticky top-0 transition duration-500 ease-in-out transform h-12 border  border-blue-300"
+        " z-50 sticky top-0 transition duration-500 ease-in-out transform h-12 border w-screen  border-blue-300"
       }
     >
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-      <nav className="flex flex-row justify-between h-full bg-white border border-green-400 shadow-md dark:bg-black">
+      <nav className="flex flex-row items-center justify-between h-full bg-white border border-green-400 shadow-md dark:bg-black">
         <CgMenu
           className="md:hidden"
           onClick={() => setSidebarVisible((vis) => !vis)}
@@ -55,20 +54,22 @@ const NavBar = () => {
           <h1 className="">ReddAll</h1>
         </Link>
 
-        <div className="w-40 p-1 border border-black rounded-lg">
-          <SubDropDown />
+        <div className="h-full border border-black rounded-lg w-80">
+          <SubDropDown hide={hidden} />
         </div>
 
-        <div className="flex items-center w-1/3 p-1 text-gray-600 border border-black rounded-lg bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
+        <div className="flex items-center text-gray-600 border border-black h-fullw-1/3 bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
           <Search />
         </div>
-        <div className="items-center hidden border border-red-300 w-80 md:flex">
+        <div className="items-center justify-end hidden h-full space-x-2 border border-red-300 w-80 md:flex">
           <div className="w-20 h-full">
-            <SortMenu />
+            <SortMenu hide={hidden} />
           </div>
-          <Login />
-          <div className="">
-            <NavMenu />
+          <div className="w-20 h-full border border-green-400">
+            <Login />
+          </div>
+          <div className="w-5 h-full">
+            <NavMenu hide={hidden}/>
           </div>
         </div>
       </nav>

@@ -2,19 +2,23 @@ import axios from "axios";
 import router from "next/router";
 import { useState } from "react";
 import { useMainContext } from "../MainContext";
+import Image from "next/dist/client/image";
+
+import { BsChevronDown } from "react-icons/bs";
 
 import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
+import DropdownSubItem from "./DropdownSubItem";
 
-const SubDropDown = () => {
+const SubDropDown = ({ hide }) => {
   const [mySubs, setMySubs] = useState([]);
   const [myMultis, setMyMultis] = useState([]);
   const [count, setCount] = useState(0);
   const [after, setAfter] = useState("");
   const [clicked, setClicked] = useState(false);
-  const [hidden, setHidden] = useState(true);
+  const [show, setShow] = useState(false);
 
   const context: any = useMainContext();
 
@@ -23,7 +27,7 @@ const SubDropDown = () => {
       loadMultis();
       loadAllSubs();
     }
-    setHidden((hidden) => !hidden);
+    setShow((show) => !show);
   };
 
   const loadSubs = async () => {
@@ -50,6 +54,7 @@ const SubDropDown = () => {
   const loadAllSubs = async () => {
     try {
       let data = await getAllMySubs();
+      console.log(data);
       setMySubs(data);
     } catch (err) {
       console.log(err);
@@ -75,52 +80,63 @@ const SubDropDown = () => {
   };
 
   return (
-    <div>
-      <button onClick={handleClick}>My Subs {hidden ? " v " : " ^ "}</button>
-
+    <div className="flex flex-col items-center w-full h-full select-none hover:cursor-pointer">
+      {/* Close when clicking outisde element */}
       <div
-        id="scrollableDiv"
-        className={(hidden ? `hidden` : "overflow-auto") + " absolute bg-gray"}
+        className={
+          (show && !hide ? "" : "w-0 h-0") +
+          "absolute  top-0 left-0 w-screen h-screen bg-transparent "
+        }
+        onClick={() => setShow((show) => !show)}
+      ></div>
+      {/* Main Button */}
+      <div
+        className="flex flex-row items-center justify-between flex-none w-full h-full px-2"
+        onClick={handleClick}
       >
-        {/* <InfiniteScroll
-          dataLength={mySubs.length}
-          next={loadSubs}
-          hasMore={after ? true : false}
-          loader={<h1>Loading more...</h1>}
-          scrollableTarget="scrollableDiv"
-        > */}
-        <Link href="/" passHref>
-          <h1 className="">Home</h1>
-        </Link>
+        <h1>My Subs</h1>
+        <BsChevronDown className={
+              show
+                ? "-rotate-180"
+                : "rotate-0" + "transform transition duration-200 "
+            }/>
+      </div>
+      {/* Dropdown */}
+      <div
+        className={
+          "flex flex-col w-full transform transition border border-t-0 duration-150 ease-in-out origin-top bg-white " +
+          `${show && !hide ? "block" : "hidden"}`
+        }
+      >
+        {/* scroll */}
+        <div className="px-3 py-3 overflow-y-auto overscroll-contain max-h-96">
+          {/* Quick Links */}
+          <Link href="/" passHref>
+            <h1 className="">Home</h1>
+          </Link>
 
-        {myMultis
-          ? myMultis.map((multi, i) => {
-              return (
-                <div
-                  className="text-blue"
-                  key={`${i}_${multi.data.display_name}`}
-                  onClick={(e) => goToMulti(e, multi.data.subreddits)}
-                >
-                  {multi.data.display_name}
-                </div>
-              );
-            })
-          : ""}
-        {mySubs
-          ? mySubs.map((sub, i) => {
-              return (
-                <div
-                  className="text-white "
-                  key={`${i}_${sub.data.display_name}`}
-                  onClick={(e) => goToSub(e, sub.data.display_name)}
-                >
-                  {sub.data.display_name}
-                </div>
-              );
-            })
-          : ""}
-        {/* <button onClick={loadSubs}>Load more</button>
-        </InfiniteScroll> */}
+          {/* Multis */}
+          {myMultis
+            ? myMultis.map((multi, i) => {
+                return (
+                  <div
+                    className="text-blue"
+                    key={`${i}_${multi.data.display_name}`}
+                    onClick={(e) => goToMulti(e, multi.data.subreddits)}
+                  >
+                    {multi.data.display_name}
+                  </div>
+                );
+              })
+            : ""}
+
+          {/* Subs */}
+          {mySubs
+            ? mySubs.map((sub, i) => {
+                return <DropdownSubItem key={i} sub={sub} />;
+              })
+            : ""}
+        </div>
       </div>
     </div>
   );

@@ -5,10 +5,10 @@ import { RiBarChart2Line } from "react-icons/ri";
 import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-const SortMenu = () => {
+const SortMenu = ({ hide }) => {
   const [show, setShow] = useState(false);
   const [sort, setSort] = useState<any>("hot");
-  const [range, setRange] = useState("day");
+  const [range, setRange] = useState("");
 
   const router = useRouter();
   useEffect(() => {
@@ -72,127 +72,159 @@ const SortMenu = () => {
       });
     } else if (router.query.frontsort) {
       router.push({
-        pathname: "/[frontsort]",
+        pathname: "/top",
         query: {
-          frontsort: router.query.frontsort,
+          //frontsort: router.query.frontsort,
           t: encodeURI(r),
         },
       });
     } else {
       router.push({
-        pathname: "/[sort]",
-        query: { sort: router.query?.slug?.[1] ?? "", t: encodeURI(r) },
+        pathname: "/top",
+        query: { 
+          //sort: router.query?.slug?.[1] ?? "",
+           t: encodeURI(r) },
       });
     }
   };
 
   return (
-    <div className="flex flex-row w-full h-full border border-blue-400">
+    <div className="flex flex-row w-full h-full border border-blue-400 select-none hover:cursor-pointer">
+      {/* Close when clicking outisde element */}
+      <div
+        className={
+          (show && !hide ? "" : "w-0 h-0") +
+          "absolute  top-0 left-0 w-screen h-screen bg-transparent "
+        }
+        onClick={() => setShow((show) => !show)}
+      ></div>
+      
       <div className="flex flex-col flex-grow">
+        {/* Button Label */}
         <div
-          className="flex flex-row items-center justify-between flex-none h-full border border-red-300 rounded-sm"
+          className="z-10 flex flex-row items-center justify-between flex-none h-full px-2 bg-white border border-red-300 rounded-sm"
           onClick={() => setShow((show) => !show)}
         >
+          <BsChevronDown
+            className={
+              show
+                ? "rotate-180"
+                : "rotate-0" + "transform transition duration-200 "
+            }
+          />
           {sort === "best" ? (
-            <div className="flex flex-row justify-between">
-              <AiOutlineRocket className="flex-none w-6 h-6 mr-2" />
+            <div className="flex flex-row items-center justify-between">
+              <AiOutlineRocket className="flex-none w-6 h-6 mr-1" />
             </div>
           ) : (
             ""
           )}
           {sort === "hot" ? (
-            <div>
-              {" "}
-              <AiOutlineFire /> <span> Hot </span>
+            <div className="flex flex-row items-baseline justify-between">
+              <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
             </div>
           ) : (
             ""
           )}
           {sort === "top" ? (
-            <div>
-              <RiBarChart2Line /> <span> Top </span>
+            <div className="flex flex-row items-baseline justify-between">
+              <RiBarChart2Line className="flex-none w-6 h-6 mr-1" />
             </div>
           ) : (
             ""
           )}
           {sort === "new" ? (
-            <div>
-              <BsCircle /> <span> New </span>
+            <div className="flex flex-row items-baseline justify-between">
+              <BsCircle className="flex-none w-6 h-6 mr-1" />
             </div>
           ) : (
             ""
           )}
           {sort === "rising" ? (
-            <div>
-              <IoMdTrendingUp /> <span> Rising </span>
+            <div className="flex flex-row items-baseline justify-between">
+              <IoMdTrendingUp className="flex-none w-6 h-6 mr-1" />
             </div>
           ) : (
             ""
           )}
-          <BsChevronDown />
         </div>
 
+          {/* Dropdown */}
         <div
           className={
-            "transform  hover:scale-100  transition duration-150 ease-in-out origin-top bg-white " +
-            `${show ? "" : "hidden"}`
+            "transform transition duration-150 ease-in-out origin-top bg-white " +
+            `${show && !hide ? "scale-100 block" : " scale-0"}`
           }
         >
+          {/* Dropdown Items */}
           <ul className="flex-col p-0 m-0 list-none">
             <li
-              className="relative px-3 py-1 rounded-sm hover:bg-gray-100"
+              className={(sort === "best" ? "bg-gray-300" : "") + " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"}
               onClick={(e) => updateSort(e, "best")}
             >
-              <AiOutlineRocket /> <span> Best </span>
+              <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
+              <span> Best </span>
             </li>
-
             <li
-              className="relative px-3 py-1 rounded-sm hover:bg-gray-100"
+              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
               onClick={(e) => updateSort(e, "hot")}
             >
-              <AiOutlineFire /> <span> Hot </span>
+              <AiOutlineFire className="flex-none w-5 h-5" /> <span> Hot </span>
             </li>
-            <li
-              className="relative px-3 py-1 rounded-sm hover:bg-gray-100 group"
-              onClick={(e) => updateSort(e, "top")}
-            >
-              <span className="">
-                <RiBarChart2Line /> Top
-              </span>
-
+            <li className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm group hover:bg-gray-100">
+              <RiBarChart2Line className="flex-none w-5 h-5" />{" "}
+              <span> Top </span>
               <ul className="absolute top-0 hidden w-20 bg-white -left-20 group-hover:block">
                 <li
-                  className={range === "hour" ? `font-bold` : "" + ""}
+                  className={
+                    (range === "hour" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "hour")}
                 >
                   Now
                 </li>
                 <li
-                  className={range === "day" ? `font-bold` : "" + ""}
+                  className={
+                    (range === "day" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "day")}
                 >
                   Today
                 </li>
                 <li
-                  className={range === "week" ? `font-bold` : ""}
+                  className={
+                    (range === "week" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "week")}
                 >
                   Week
                 </li>
                 <li
-                  className={range === "month" ? `font-bold` : ""}
+                  className={
+                    (range === "month" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "month")}
                 >
                   Month
                 </li>
                 <li
-                  className={range === "year" ? `font-bold` : ""}
+                  className={
+                    (range === "year" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "year")}
                 >
                   Year
                 </li>
                 <li
-                  className={range === "all" ? `font-bold` : ""}
+                  className={
+                    (range === "all" ? `font-bold` : "") +
+                    " px-2 py-3 text-sm hover:bg-gray-100"
+                  }
                   onClick={(e) => updateRange(e, "all")}
                 >
                   All
@@ -200,11 +232,18 @@ const SortMenu = () => {
               </ul>
             </li>
 
-            <li onClick={(e) => updateSort(e, "new")}>
-              <BsCircle /> <span> New </span>
+            <li
+              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
+              onClick={(e) => updateSort(e, "rising")}
+            >
+              <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
+              <span> Rising </span>
             </li>
-            <li onClick={(e) => updateSort(e, "rising")}>
-              <IoMdTrendingUp /> <span> Rising </span>
+            <li
+              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
+              onClick={(e) => updateSort(e, "new")}
+            >
+              <BsCircle className="flex-none w-5 h-5" /> <span> New </span>
             </li>
           </ul>
         </div>

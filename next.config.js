@@ -4,6 +4,7 @@ module.exports = {
     domains: [
       "b.thumbs.redditmedia.com",
       "a.thumbs.redditmedia.com",
+      "styles.redditmedia.com",
       "external-preview.redd.it",
       "preview.redd.it",
       "v.redd.it",
