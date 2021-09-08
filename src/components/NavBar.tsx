@@ -58,7 +58,7 @@ const NavBar = () => {
           <SubDropDown hide={hidden} />
         </div>
 
-        <div className="flex items-center text-gray-600 border border-black h-fullw-1/3 bg-lightgray focus-within:text-gray-600 focus-within:shadow-md md:mx-20">
+        <div className="flex flex-row items-center w-1/3 h-full text-gray-600 border border-black bg-lightgray focus-within:text-gray-600 focus-within:shadow-md ">
           <Search />
         </div>
         <div className="items-center justify-end hidden h-full space-x-2 border border-red-300 w-80 md:flex">

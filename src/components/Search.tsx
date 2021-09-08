@@ -66,7 +66,7 @@ const Search = () => {
   };
 
   return (
-    <div className="w-full text-base outline-none">
+    <div className="flex flex-row w-full h-full border border-red-500">
       <Autosuggest
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
