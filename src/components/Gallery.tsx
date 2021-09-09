@@ -24,19 +24,43 @@ const Gallery = ({ images }) => {
 
   if (loaded) {
     return (
-      <div>
-        {index != 0 ? <button onClick={previous}>{"<"}</button> : ""}
-        <Image
+      <div className="flex flex-row items-center">
+        <button className={index === 0 ? "opacity-0" : ""} onClick={previous}>
+          {"<"}
+        </button>
+        <div className="">
+          {images.map((image, i) => {
+            if (i === index) {
+              return (
+                <Image
+                key={i}
+                  src={image.url}
+                  height={image.height}
+                  width={image.width}
+                  alt="thumbnail"
+                  layout="intrinsic"
+                  priority={true}
+                ></Image>
+              );
+            } else {
+              return "";
+            }
+          })}
+        </div>
+
+        {/* <Image
           src={images[index].url}
           height={images[index].height}
           width={images[index].width}
           alt="thumbnail"
-        ></Image>
-        {index < images.length - 1 ? (
-          <button onClick={advance}>{">"}</button>
-        ) : (
-          ""
-        )}
+          layout="intrinsic"
+        ></Image> */}
+        <button
+          className={index === images.length - 1 ? "opacity-0" : ""}
+          onClick={advance}
+        >
+          {">"}
+        </button>
       </div>
     );
   } else return <div>loading gallery</div>;

@@ -25,7 +25,7 @@ const Feed = ({ query }) => {
 
   const route = useRouter();
   const breakpointColumnsObj = {
-    default: 4,
+    default: 3,
     1400: 3,
     1280: 2,
     767: 1,
@@ -102,34 +102,38 @@ const Feed = ({ query }) => {
   };
 
   if (loading) {
-    return (<div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>);
+    return (
+      <div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>
+    );
   }
   if (error) {
     return <div>{"Oops something went wrong :("}</div>;
   }
   return (
-    <section className="bg-gray">
-      <InfiniteScroll
-        dataLength={posts.length}
-        next={loadmore}
-        hasMore={after ? true : false}
-        loader={<h1>Loading More..</h1>}
-        endMessage={
-          <p className="text-align-center">
-            <b>You have reached the end</b>
-          </p>
-        }
-      >
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
+    <section className="flex flex-col items-center flex-none w-screen pt-5">
+      <div className="w-5/6">
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={loadmore}
+          hasMore={after ? true : false}
+          loader={<h1>Loading More..</h1>}
+          endMessage={
+            <p className="text-align-center">
+              <b>You have reached the end</b>
+            </p>
+          }
         >
-          {posts.map((post, i) => (
-            <Post key={`${post.data.id}_${i}`} post={post.data} />
-          ))}
-        </Masonry>
-      </InfiniteScroll>
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {posts.map((post, i) => (
+              <Post key={`${post.data.id}_${i}`} post={post.data} />
+            ))}
+          </Masonry>
+        </InfiniteScroll>
+      </div>
       <button onClick={loadmore}>Load More</button>
     </section>
   );

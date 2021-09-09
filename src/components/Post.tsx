@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
+import {BiDownvote, BiUpvote} from 'react-icons/bi'
 
 import LazyLoad from "react-lazyload";
 import { useEffect, useState } from "react";
@@ -203,7 +204,7 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div className="p-2 text-sm border border-gray-100 rounded-md shadow-md">
+    <div className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500">
       {toLoad && !hide ? (
         <div className="p-1 ">
           <h1>
@@ -213,10 +214,10 @@ const Post = ({ post }) => {
               target="_blank"
               rel="noreferrer"
             >
-              {post?.title ?? "ERR"}
+              {post?.title ?? ""}
             </a>
           </h1>
-          <div className="flex flex-row text-xs text-gray">
+          <div className="flex flex-row text-xs font-light text-gray">
             <Link href={`/r/${post?.subreddit}`}>
               <a className="mr-1">r/{post?.subreddit ?? "ERR"}</a>
             </Link>
@@ -242,7 +243,7 @@ const Post = ({ post }) => {
             </div>
           </div>
           <div className="pt-2 pb-2">
-            {isGallery ? <Gallery images={galleryInfo} /> : ""}
+            {isGallery ? <div className='flex flex-col items-center'><Gallery images={galleryInfo} /> </div>: ""}
 
             {isImage ? (
               // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
@@ -274,7 +275,7 @@ const Post = ({ post }) => {
 
             {isMP4 ? (
               showMP4 ? (
-                <div>
+                <div className="flex flex-col items-center flex-none">
                   <LazyLoad
                     height={videoInfo.height}
                     once={true}
@@ -296,7 +297,7 @@ const Post = ({ post }) => {
             )}
 
             {post.selftext ? (
-              <p className="truncate ...">{post.selftext}</p>
+              <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
             ) : (
               ""
             )}
@@ -304,15 +305,24 @@ const Post = ({ post }) => {
           {/* <p>{post?.url ?? "ERR"}</p> */}
 
           <div className="flex flex-row text-xs align-bottom">
+            <div className="flex flex-row items-center text-sm">
+            <div className="flex-none border hover:cursor-pointer active:border-2">
+            <BiUpvote />
+            </div>
             <p className="">{post?.score ?? "0"}</p>
+            
+            <div className="flex-none border hover:cursor-pointer active:border-2">
+            <BiDownvote/>
+            </div>
+            </div>
 
             <a
-              className="ml-auto"
+              className="ml-auto hover:underline"
               href={`https://www.reddit.com${post?.permalink ?? ""}`}
               target="_blank"
               rel="noreferrer"
             >
-              {`${post.num_comments} comments`}
+              {`${post.num_comments} ${post.num_comments===1 ? "comment" : "comments"}`}
             </a>
           </div>
         </div>
