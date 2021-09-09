@@ -8,7 +8,7 @@ import Placeholder from "./Placeholder";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
 import ImageHandler from "./ImageHandler";
-import { forceCheck } from 'react-lazyload';
+import { forceCheck } from "react-lazyload";
 
 import { useMainContext } from "../MainContext";
 
@@ -217,23 +217,18 @@ const Post = ({ post }) => {
             </a>
           </h1>
           <div className="flex flex-row text-xs text-gray">
-            <Link
-              href={{
-                pathname: "/r/[slug]",
-                query: { slug: post?.subreddit ?? "" },
-              }}
-            >
+            <Link href={`/r/${post?.subreddit}`}>
               <a className="mr-1">r/{post?.subreddit ?? "ERR"}</a>
             </Link>
             <p>•</p>
-            <Link
+            {/* <Link
               href={{
                 pathname: "/u/[slug]",
                 query: { slug: post?.author ?? "" },
               }}
-            >
-              <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
-            </Link>
+            > */}
+            <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
+            {/* </Link> */}
             <p>•</p>
 
             <p className="ml-1">

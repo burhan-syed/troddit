@@ -2,7 +2,7 @@ import Search from "./Search";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Login from "./Login";
-import SubDropDown from "./SubDropDown";
+import DropdownPane from "./DropdownPane";
 import Sort from "./Sort";
 import ThemeToggle from "./ThemeToggle";
 import NSFWToggle from "./NSFWToggle";
@@ -55,7 +55,7 @@ const NavBar = () => {
         </Link>
 
         <div className="flex flex-row items-center flex-none h-full border border-black w-60">
-          <SubDropDown hide={hidden} />
+          <DropdownPane hide={hidden} />
         </div>
 
         <div className="flex flex-row items-center w-1/3 h-full text-gray-600 border border-black bg-lightgray focus-within:text-gray-600 focus-within:shadow-md ">

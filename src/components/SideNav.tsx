@@ -1,7 +1,7 @@
 import Login from "./Login";
 import NSFWToggle from "./NSFWToggle";
 import Sort from "./Sort";
-import SubDropDown from "./SubDropDown";
+import DropdownPane from "./DropdownPane";
 import ThemeToggle from "./ThemeToggle";
 
 const SideNav = ({ visible, toggle }) => {
@@ -13,10 +13,10 @@ const SideNav = ({ visible, toggle }) => {
           `${visible ? "relative translate-x-0 w-screen" : ""}`
         }
       >
-        <div className="flex h-screen ">
-          <nav className="w-5/6 sm:w-3/4 bg-gray">
+        <div className="flex h-screen overflow-y-auto">
+          <nav className="w-5/6 sm:w-3/4">
             <Login />
-            <SubDropDown />
+            <DropdownPane hide={visible}/>
             <ThemeToggle />
             <NSFWToggle />
             <Sort />

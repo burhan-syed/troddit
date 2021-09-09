@@ -48,11 +48,8 @@ const Search = () => {
 
   const goToSub = (e, suggestion) => {
     e.preventDefault();
-    console.log(suggestions);
-    router.push({
-      pathname: "/r/[subs]",
-      query: { subs: suggestion },
-    });
+    router.push(`/r/${suggestion}`);
+     
   };
 
   const onChange = (event, { newValue }) => {

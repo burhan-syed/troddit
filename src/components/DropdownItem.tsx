@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 
-const DropdownSubItem = ({ sub }) => {
+const DropdownItem   = ({ sub }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
@@ -80,4 +80,4 @@ const DropdownSubItem = ({ sub }) => {
   );
 };
 
-export default DropdownSubItem;
+export default DropdownItem;

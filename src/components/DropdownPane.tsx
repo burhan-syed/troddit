@@ -14,9 +14,9 @@ import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
-import DropdownSubItem from "./DropdownSubItem";
+import DropdownItem from "./DropdownItem";
 
-const SubDropDown = ({ hide }) => {
+const DropdownPane = ({ hide }) => {
   const [mySubs, setMySubs] = useState([]);
   const [myMultis, setMyMultis] = useState([]);
   const [count, setCount] = useState(0);
@@ -158,7 +158,7 @@ const SubDropDown = ({ hide }) => {
           {myMultis
             ? myMultis.map((multi, i) => {
                 return (
-                  <DropdownSubItem
+                  <DropdownItem
                     key={`${i}_${multi.data.display_name}`}
                     sub={multi}
                   />
@@ -169,7 +169,7 @@ const SubDropDown = ({ hide }) => {
           {/* Subs */}
           {mySubs
             ? mySubs.map((sub, i) => {
-                return <DropdownSubItem key={i} sub={sub} />;
+                return <DropdownItem key={i} sub={sub} />;
               })
             : ""}
         </div>
@@ -178,4 +178,4 @@ const SubDropDown = ({ hide }) => {
   );
 };
 
-export default SubDropDown;
+export default DropdownPane;
