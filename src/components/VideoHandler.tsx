@@ -34,6 +34,7 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
             console.log("ERR: ", placeholder, videoInfo);
             setUseFallback(true);
           }}
+          lazyBoundary={"2000px"}
         />
       </div>
 

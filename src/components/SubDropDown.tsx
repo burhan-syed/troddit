@@ -39,10 +39,10 @@ const SubDropDown = ({ hide }) => {
     return () => {};
   }, [router]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!clicked) {
-      loadMultis();
-      loadAllSubs();
+      loadAllFast();
+      setClicked(true);
     }
     setShow((show) => !show);
   };
@@ -62,7 +62,6 @@ const SubDropDown = ({ hide }) => {
   const loadMultis = async () => {
     try {
       let data = await getMyMultis();
-      console.log(data);
       setMyMultis(data);
     } catch (err) {
       console.log(err);
@@ -72,12 +71,21 @@ const SubDropDown = ({ hide }) => {
   const loadAllSubs = async () => {
     try {
       let data = await getAllMySubs();
-      console.log(data);
       setMySubs(data);
     } catch (err) {
       console.log(err);
     }
-    setClicked(true);
+  };
+
+  const loadAllFast = async () => {
+    try {
+      const subs = getAllMySubs();
+      const multis = getMyMultis();
+      setMySubs(await subs);
+      setMyMultis(await multis);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -118,7 +126,7 @@ const SubDropDown = ({ hide }) => {
       {/* Dropdown */}
       <div
         className={
-          "flex flex-col w-full transform transition border border-t-0 duration-150 ease-in-out origin-top bg-white " +
+          "flex flex-col w-full transform transition border border-t-0 duration-150 ease-in-out origin-top  " +
           `${show && !hide ? "block" : "hidden"}`
         }
       >
@@ -127,19 +135,19 @@ const SubDropDown = ({ hide }) => {
           {/* Quick Links */}
           <div className="flex flex-col font-light">
             <Link href="/" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 hover:bg-gray-300">
+              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2" >
                 <AiOutlineHome className="w-6 h-6" />
                 <h1 className="">Home</h1>
               </div>
             </Link>
             <Link href="/r/popular" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 hover:bg-gray-300">
+              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 ">
                 <BiRightTopArrowCircle className="w-6 h-6" />
                 <h1>Popular</h1>
               </div>
             </Link>
             <Link href="/r/all" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 hover:bg-gray-300">
+              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 ">
                 <CgLivePhoto className="w-6 h-6" />
                 <h1>All</h1>
               </div>

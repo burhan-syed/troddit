@@ -6,7 +6,7 @@
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
   display: flex;
-  margin-left: -10px; /* gutter size offset */
+  margin-left: -6px; /* gutter size offset */
   width: auto;
 }
 .my-masonry-grid_column {

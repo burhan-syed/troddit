@@ -102,7 +102,7 @@ const SortMenu = ({ hide }) => {
       <div className="flex flex-col flex-grow">
         {/* Button Label */}
         <div
-          className="z-10 flex flex-row items-center justify-between flex-none h-full px-2 bg-white border border-red-300 rounded-sm"
+          className="z-10 flex flex-row items-center justify-between flex-none h-full px-2 border border-red-300 rounded-sm"
           onClick={() => setShow((show) => !show)}
         >
           <BsChevronDown
@@ -152,7 +152,7 @@ const SortMenu = ({ hide }) => {
           {/* Dropdown */}
         <div
           className={
-            "transform transition duration-150 ease-in-out origin-top bg-white " +
+            "transform transition duration-150 ease-in-out origin-top " +
             `${show && !hide ? "scale-100 block" : " scale-0"}`
           }
         >
@@ -174,7 +174,7 @@ const SortMenu = ({ hide }) => {
             <li className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm group hover:bg-gray-100">
               <RiBarChart2Line className="flex-none w-5 h-5" />{" "}
               <span> Top </span>
-              <ul className="absolute top-0 hidden w-20 bg-white -left-20 group-hover:block">
+              <ul className="absolute top-0 hidden w-20 -left-20 group-hover:block">
                 <li
                   className={
                     (range === "hour" ? `font-bold` : "") +

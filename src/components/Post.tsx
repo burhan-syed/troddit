@@ -8,6 +8,7 @@ import Placeholder from "./Placeholder";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
 import ImageHandler from "./ImageHandler";
+import { forceCheck } from 'react-lazyload';
 
 import { useMainContext } from "../MainContext";
 
@@ -42,6 +43,7 @@ const Post = ({ post }) => {
     } else {
       console.log("ERRRRRR");
     }
+    forceCheck();
   }, [loaded]);
 
   useEffect(() => {
@@ -201,13 +203,13 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div className="p-2 text-sm text-white bg-black shadow-sm">
+    <div className="p-2 text-sm border border-gray-100 rounded-md shadow-md">
       {toLoad && !hide ? (
         <div className="p-1 ">
           <h1>
             <a
               className="text-base"
-              href={`https://www.reddit.com/${post?.permalink ?? ""}`}
+              href={`https://www.reddit.com${post?.permalink ?? ""}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -253,7 +255,7 @@ const Post = ({ post }) => {
                 {mediaLoaded ? (
                   ""
                 ) : (
-                  <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
+                  <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
                 )}
 
                 <Image
@@ -263,6 +265,7 @@ const Post = ({ post }) => {
                   alt="image"
                   layout="responsive"
                   onLoadingComplete={onLoaded}
+                  lazyBoundary={"2000px"}
                   // placeholder="blur"
                   // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
                 />
@@ -280,6 +283,8 @@ const Post = ({ post }) => {
                   <LazyLoad
                     height={videoInfo.height}
                     once={true}
+                    offset={2000}
+                    unmountIfInvisible={false}
                     // placeholder={<Placeholder imageInfo={placeholder} />}
                   >
                     <VideoHandler
@@ -308,7 +313,7 @@ const Post = ({ post }) => {
 
             <a
               className="ml-auto"
-              href={`https://www.reddit.com/${post?.permalink ?? ""}`}
+              href={`https://www.reddit.com${post?.permalink ?? ""}`}
               target="_blank"
               rel="noreferrer"
             >

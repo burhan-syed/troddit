@@ -10,6 +10,7 @@ import { getSession, useSession } from "next-auth/client";
 
 const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [posts, setPosts] = useState([]);
   const [after, setAfter] = useState("");
@@ -75,6 +76,9 @@ const Feed = ({ query }) => {
       setLoading(false);
       setAfter(data?.after);
       setPosts(data.children);
+    } else {
+      setLoading(false);
+      setError(true);
     }
   };
 
@@ -98,11 +102,13 @@ const Feed = ({ query }) => {
   };
 
   if (loading) {
-    return <section>Loading...</section>;
+    return (<div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>);
+  }
+  if (error) {
+    return <div>{"Oops something went wrong :("}</div>;
   }
   return (
     <section className="bg-gray">
-      <h1>Posts</h1>
       <InfiniteScroll
         dataLength={posts.length}
         next={loadmore}

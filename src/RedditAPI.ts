@@ -95,22 +95,25 @@ export const loadSubreddits = async (
   count: number = 0
 ) => {
   console.log(subreddits, sort, range);
-
-  const res = await (
-    await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
-      params: {
-        raw_json: 1,
-        t: range,
-        after: after,
-        count: count,
-      },
-    })
-  ).data;
-  return {
-    after: res.data.after,
-    before: res.data.before,
-    children: res.data.children,
-  };
+  try {
+    const res = await (
+      await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
+        params: {
+          raw_json: 1,
+          t: range,
+          after: after,
+          count: count,
+        },
+      })
+    ).data;
+    return {
+      after: res.data.after,
+      before: res.data.before,
+      children: res.data.children,
+    };
+  } catch (err) {
+    return null;
+  }
 };
 
 export const getMySubs = async (after?, count?) => {
@@ -193,7 +196,7 @@ export const getMyMultis = async () => {
       })
     ).data;
     console.log(data);
-    return data
+    return data;
   } catch (err) {
     console.log(err);
   }
