@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getSession } from "next-auth/client";
+import { json } from "stream/consumers";
 
 // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
 // let limitUrl     = "limit=" + limit;
@@ -240,5 +241,54 @@ const loadAll = async (func) => {
     } catch (err) {
       console.log(err);
     }
+  }
+};
+
+export const loadComments = async (permalink) => {
+  try {
+    console.log(permalink);
+    const res = await (
+      await axios.get(`${REDDIT}${permalink}.json?sort=top`, {
+        params: {
+          raw_json: 1,
+        },
+      })
+    ).data;
+    console.log(res?.[1]);
+    return res?.[1] ?? null;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const loadMoreComments = async (
+  children,
+  link_id,
+  depth?,
+  id?,
+  sort = "top"
+) => {
+  const token = await (await getToken())?.accessToken;
+  try {
+    const res = await (
+      await axios.get("https://oauth.reddit.com/api/morechildren", {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+          api_type: "json",
+          children: children,
+          link_id: link_id,
+          sort: sort,
+          limit_children: false,
+          raw_json: 1
+        },
+      })
+    ).data;
+    console.log(res?.json?.data?.things);
+    return res?.json?.data?.things;
+  } catch (err) {
+    console.log(err);
+    return [];
   }
 };

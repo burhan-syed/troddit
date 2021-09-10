@@ -25,21 +25,19 @@ const SortMenu = ({ hide }) => {
     e.preventDefault();
     setSort(s);
     if (s !== "top") {
-      console.log(`r/${router.query}/${s}`);
+      console.log(`r/${router?.query ?? "popular"}/${s}`);
 
       if (router.query?.slug?.[0] ?? false) {
-        router.push({
-          pathname: "/r/[subs]/[sort]",
-          query: {
-            subs: router.query?.slug?.[0] ?? "",
-            sort: s,
-          },
-        });
+        router.push(`/r/${router.query?.slug?.[0] ?? "popular"}/${s}`);
+        //   {
+        //   pathname: "/r/[subs]/[sort]",
+        //   query: {
+        //     subs: router.query?.slug?.[0] ?? "",
+        //     sort: s,
+        //   },
+        // });
       } else {
-        router.push({
-          pathname: "/[sort]",
-          query: { sort: s },
-        });
+        router.push(`/${s}`);
       }
     }
   };
@@ -62,14 +60,15 @@ const SortMenu = ({ hide }) => {
     //   });
     //}
     if (router.query?.slug?.[0] ?? false) {
-      router.push({
-        pathname: "/r/[subs]/top",
-        query: {
-          subs: router.query?.slug?.[0] ?? "",
-          //sort: router.query?.slug?.[1] ?? "top",
-          t: encodeURI(r),
-        },
-      });
+      router.push(`/r/${router.query?.slug?.[0] ?? "popular"}?t=${encodeURI(r)}`);
+      //   {
+      //   pathname: "/r/[subs]/top",
+      //   query: {
+      //     subs: router.query?.slug?.[0] ?? "",
+      //     //sort: router.query?.slug?.[1] ?? "top",
+      //     t: encodeURI(r),
+      //   },
+      // });
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",

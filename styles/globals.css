@@ -68,7 +68,9 @@
 .react-autosuggest__section-title {
 }
 
-
+.react-markdown a {
+  @apply text-blue-800 underline
+}
 /* 
 .react-autosuggest__container {
   position: relative;

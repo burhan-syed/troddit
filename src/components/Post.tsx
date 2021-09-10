@@ -10,8 +10,10 @@ import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
 import ImageHandler from "./ImageHandler";
 import { forceCheck } from "react-lazyload";
+import Markdown from 'markdown-to-jsx';
 
 import { useMainContext } from "../MainContext";
+import PostModal from "./PostModal";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -30,6 +32,8 @@ const Post = ({ post }) => {
     height: 0,
     width: 0,
   });
+
+  const [select, setSelect] = useState(false);
 
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const onLoaded = () => {
@@ -204,7 +208,7 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500">
+    <div onClick={() => setSelect(true)} className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500">
       {toLoad && !hide ? (
         <div className="p-1 ">
           <h1>
@@ -297,7 +301,8 @@ const Post = ({ post }) => {
             )}
 
             {post.selftext ? (
-              <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
+              <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</Markdown>
+              // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
             ) : (
               ""
             )}
@@ -329,6 +334,7 @@ const Post = ({ post }) => {
       ) : (
         "NSFW"
       )}
+      {select && <PostModal post={post}/>}
     </div>
   );
 };
