@@ -15,6 +15,7 @@ import Markdown from "markdown-to-jsx";
 import { useMainContext } from "../MainContext";
 import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
+import Iframe from "react-iframe";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -73,6 +74,7 @@ const Post = ({ post }) => {
   const initialize = async () => {
     const a = await findImage();
     const b = await findVideo();
+    const c = await findIframe();
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
@@ -150,6 +152,22 @@ const Post = ({ post }) => {
       }
     }
     return false;
+  };
+  const [isIFrame, setIsIFrame] = useState(false);
+  const [iFrame, setIFrame] = useState([]);
+  const findIframe = async () => {
+    if (post?.media_embed?.content) {
+      if (post.media_embed.content.includes("iframe")) {
+        post.media_embed.content.split('"').forEach((p) => {
+          let a = p.replace('"', "");
+          console.log(a);
+          setIFrame((prev) => [...prev, a]);
+        });
+        setIsIFrame(true);
+      } else {
+        console.log(post.media_embed.content);
+      }
+    }
   };
 
   const findImage = async () => {
@@ -284,6 +302,28 @@ const Post = ({ post }) => {
               </div>
             </div>
             <div className="pt-2 pb-2">
+              {isIFrame ? (
+                <div>
+                  {/* <Iframe
+                    url={iFrame[3]}
+                    width={iFrame[5] + "px"}
+                    height={iFrame[7 + "px"]}
+                    allowFullScreen={true}
+                    frameBorder={0}
+                    scrolling={"no"}
+                    id={"player"}
+                  /> */}
+                  <iframe
+                    src={Iframe[3]}
+                    height={Iframe[7]}
+                    width={iFrame[5]}
+                    allowFullScreen={true}
+                  ></iframe>
+                </div>
+              ) : (
+                ""
+              )}
+
               {isGallery ? (
                 <div className="flex flex-col items-center">
                   <Gallery images={galleryInfo} />{" "}
