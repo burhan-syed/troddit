@@ -32,6 +32,7 @@ const Feed = ({ query }) => {
   };
   useEffect(() => {
     //console.log(query);
+    console.log("new posts");
     if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
@@ -129,6 +130,7 @@ const Feed = ({ query }) => {
   }
   return (
     <section className="flex flex-col items-center flex-none w-screen pt-5">
+      {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`}
       <div className="w-5/6">
         <InfiniteScroll
           dataLength={posts.length}

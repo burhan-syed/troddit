@@ -60,15 +60,9 @@ const SortMenu = ({ hide }) => {
     //   });
     //}
     if (router.query?.slug?.[0] ?? false) {
-      router.push(`/r/${router.query?.slug?.[0] ?? "popular"}?t=${encodeURI(r)}`);
-      //   {
-      //   pathname: "/r/[subs]/top",
-      //   query: {
-      //     subs: router.query?.slug?.[0] ?? "",
-      //     //sort: router.query?.slug?.[1] ?? "top",
-      //     t: encodeURI(r),
-      //   },
-      // });
+      router.push(
+        `/r/${router.query?.slug?.[0] ?? "popular"}/top/?t=${encodeURI(r)}`
+      );
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",
@@ -80,9 +74,10 @@ const SortMenu = ({ hide }) => {
     } else {
       router.push({
         pathname: "/top",
-        query: { 
+        query: {
           //sort: router.query?.slug?.[1] ?? "",
-           t: encodeURI(r) },
+          t: encodeURI(r),
+        },
       });
     }
   };
@@ -97,7 +92,7 @@ const SortMenu = ({ hide }) => {
         }
         onClick={() => setShow((show) => !show)}
       ></div>
-      
+
       <div className="flex flex-col flex-grow">
         {/* Button Label */}
         <div
@@ -148,7 +143,7 @@ const SortMenu = ({ hide }) => {
           )}
         </div>
 
-          {/* Dropdown */}
+        {/* Dropdown */}
         <div
           className={
             "transform transition duration-150 ease-in-out origin-top " +
@@ -158,7 +153,10 @@ const SortMenu = ({ hide }) => {
           {/* Dropdown Items */}
           <ul className="flex-col p-0 m-0 list-none">
             <li
-              className={(sort === "best" ? "bg-gray-300" : "") + " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"}
+              className={
+                (sort === "best" ? "bg-gray-300" : "") +
+                " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
+              }
               onClick={(e) => updateSort(e, "best")}
             >
               <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
