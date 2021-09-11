@@ -55,7 +55,7 @@ const Feed = ({ query }) => {
       setSubreddits("");
       setLoading(true);
     };
-  }, [query, range, sort, subreddits]);
+  }, [range, sort, subreddits]);
 
   const fetchFront = async () => {
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
