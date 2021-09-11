@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import Post from "./Post";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { loadFront, loadSubreddits } from "../RedditAPI";
+import { loadFront, loadPost, loadSubreddits } from "../RedditAPI";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { getSession, useSession } from "next-auth/client";
+import PostModal from "./PostModal";
 
 const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
@@ -85,19 +86,26 @@ const Feed = ({ query }) => {
     }
   };
 
+  const [fetchPost, setFetchPost] = useState(false);
+
   const fetchSubs = async () => {
-    let data = await loadSubreddits(
-      query?.slug?.[0] ?? "",
-      query?.slug?.[1] ?? "hot",
-      query?.t ?? ""
-    );
-    if (data) {
+    if (query?.slug?.[1] === "comments") {
+      setFetchPost(true);
       setLoading(false);
-      setAfter(data?.after);
-      setPosts(data.children);
     } else {
-      setLoading(false);
-      setError(true);
+      let data = await loadSubreddits(
+        query?.slug?.[0] ?? "",
+        query?.slug?.[1] ?? "hot",
+        query?.t ?? ""
+      );
+      if (data) {
+        setLoading(false);
+        setAfter(data?.after);
+        setPosts(data.children);
+      } else {
+        setLoading(false);
+        setError(true);
+      }
     }
   };
 
@@ -123,6 +131,18 @@ const Feed = ({ query }) => {
   if (loading) {
     return (
       <div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>
+    );
+  }
+  if (fetchPost) {
+    return (
+      <div className="mt-10">
+        FETCHING A POST
+        <PostModal
+          permalink={"/r/" + query.slug.join("/")}
+          returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
+          setSelect={setFetchPost}
+        />
+      </div>
     );
   }
   if (error) {

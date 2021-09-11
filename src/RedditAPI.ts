@@ -292,3 +292,20 @@ export const loadMoreComments = async (
     return [];
   }
 };
+
+export const loadPost = async (permalink) => {
+  try {
+    const res = await (
+      await axios.get(`${REDDIT}${permalink}.json?sort=top`, {
+        params: { raw_json: 1 },
+      })
+    ).data;
+    const data = {
+      post: res?.[0]?.data?.children?.[0].data,
+      comments: res?.[1]?.data?.children,
+    };
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};

@@ -237,7 +237,7 @@ const Post = ({ post }) => {
     <div>
       {select && (
         <PostModal
-          post={post}
+          permalink={post?.permalink}
           setSelect={setSelect}
           returnRoute={returnRoute}
         />
