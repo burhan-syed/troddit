@@ -65,7 +65,7 @@ export const loadFront = async (
     }
   } else {
     try {
-      console.log("NO LOGIN");
+      //console.log("NO LOGIN");
       const res = await (
         await axios.get(`${REDDIT}/${sort}/.json?`, {
           params: {
@@ -95,7 +95,7 @@ export const loadSubreddits = async (
   after: string = "",
   count: number = 0
 ) => {
-  console.log(subreddits, sort, range);
+  //console.log(subreddits, sort, range);
   try {
     const res = await (
       await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
@@ -196,7 +196,7 @@ export const getMyMultis = async () => {
         params: {},
       })
     ).data;
-    console.log(data);
+    //console.log(data);
     return data;
   } catch (err) {
     console.log(err);
@@ -254,7 +254,7 @@ export const loadComments = async (permalink) => {
         },
       })
     ).data;
-    console.log(res?.[1]);
+    //console.log(res?.[1]);
     return res?.[1] ?? null;
   } catch (err) {
     console.log(err);
@@ -281,11 +281,11 @@ export const loadMoreComments = async (
           link_id: link_id,
           sort: sort,
           limit_children: false,
-          raw_json: 1
+          raw_json: 1,
         },
       })
     ).data;
-    console.log(res?.json?.data?.things);
+    //console.log(res?.json?.data?.things);
     return res?.json?.data?.things;
   } catch (err) {
     console.log(err);

@@ -30,14 +30,14 @@ const DropdownPane = ({ hide }) => {
   const context: any = useMainContext();
 
   useEffect(() => {
-    console.log(router.query);
+    //console.log(router.query);
     if (router?.query?.slug?.[0]) {
       setLocation(router.query.slug[0]);
     } else {
       setLocation("home");
     }
     return () => {};
-  }, [router]);
+  }, [router.query]);
 
   const handleClick = async () => {
     if (!clicked) {
@@ -135,7 +135,7 @@ const DropdownPane = ({ hide }) => {
           {/* Quick Links */}
           <div className="flex flex-col font-light">
             <Link href="/" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2" >
+              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2">
                 <AiOutlineHome className="w-6 h-6" />
                 <h1 className="">Home</h1>
               </div>

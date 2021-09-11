@@ -2,12 +2,18 @@ import { useEffect } from "react";
 import Comments from "./Comments";
 import { useRouter } from "next/router";
 
-const PostModal = ({ post, setSelect }) => {
+const PostModal = ({ post, setSelect, returnRoute }) => {
   const router = useRouter();
 
   const handleBack = () => {
     setSelect(false);
-    router.back();
+    //for handling returning to [frontsort] routes, only clicking in the app works... browser back button kicks to front page
+    if (returnRoute) {
+      console.log("last route", returnRoute);
+      router.push(returnRoute);
+    } else {
+      router.back();
+    }
   };
 
   return (

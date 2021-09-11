@@ -210,6 +210,7 @@ const Post = ({ post }) => {
     return false;
   };
   const [lastRoute, setLastRoute] = useState("");
+  const [returnRoute, setReturnRoute] = useState("");
 
   useEffect(() => {
     if (lastRoute === router.asPath) {
@@ -220,14 +221,27 @@ const Post = ({ post }) => {
   }, [router.asPath]);
 
   const handleClick = () => {
-    setSelect(true);
     setLastRoute(router.asPath);
-    router.push("", post.permalink, { shallow: true });
+    setSelect(true);
+    //need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
+    if (router.query?.frontsort) {
+      // router.push("/", post.permalink);
+      // console.log("FRONSORT");
+      setReturnRoute(router.asPath);
+    } else {
+      router.push("", post.permalink, { shallow: true });
+    }
   };
 
   return (
     <div>
-      {select && <PostModal post={post} setSelect={setSelect} />}
+      {select && (
+        <PostModal
+          post={post}
+          setSelect={setSelect}
+          returnRoute={returnRoute}
+        />
+      )}
       <div
         onClick={() => handleClick()}
         className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500"

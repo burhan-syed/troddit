@@ -57,6 +57,24 @@ const Feed = ({ query }) => {
     };
   }, [range, sort, subreddits]);
 
+  //determine if we need to load new posts
+  const [newFeed, setNewFeed] = useState(false);
+  useEffect(() => {
+    console.log("FRONT", query);
+    if (query.frontsort) {
+      setSort(query?.frontsort ?? "best");
+      setRange(query?.t ?? "");
+    }
+    if (query.slug) {
+      setSubreddits(query?.slug?.[0] ?? "");
+      setSort(query?.slug?.[1] ?? "best");
+      setRange(query?.t ?? "");
+    }
+    return () => {
+      ("");
+    };
+  }, [query]);
+
   const fetchFront = async () => {
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data) {
