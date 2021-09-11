@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { loadMoreComments } from "../RedditAPI";
+import Markdown from "markdown-to-jsx"
+
 
 const ChildComments = ({ comment, depth, hide }) => {
   const [moreComments, setMoreComments] = useState([]);
@@ -86,7 +88,7 @@ const ChildComments = ({ comment, depth, hide }) => {
 
       <div onClick={() => setHideChildren((h) => !h)}>{"+"}</div>
 
-      <div>{`${comment?.data?.author} : ${comment?.data?.body}`}</div>
+      <div>{`${comment?.data?.author}`} <Markdown>{comment?.data?.body}</Markdown> </div>
       <div className="">
         {comment?.data?.replies?.data?.children.map((childcomment, i) => (
           <div key={`${i}_${childcomment?.data?.id}`}>

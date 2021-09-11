@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Comments from "./Comments";
 import { useRouter } from "next/router";
 import { loadPost } from "../RedditAPI";
+import Media from "./Media";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
@@ -36,12 +37,13 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-10 w-full h-screen overflow-y-auto bg-black opacity-20">
+    <div className="fixed inset-0 z-10 w-full h-screen overflow-y-auto bg-black overscroll-y-contain">
       <div className="flex flex-col items-center flex-none w-5/6">
-        <div className="bg-white h-60"></div>
+        <div className=""><Media post={post} allowIFrame={true}/></div>
+
         <div
-          onClick={() => handleBack()}
-          className="flex-none text-white border-4 border-yellow-500"
+          // onClick={() => handleBack()}
+          className="flex flex-row flex-none text-white border-4 border-yellow-500 "
         >
           <Comments comments={comments} depth={0} />
         </div>
