@@ -40,9 +40,9 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
       <div className="flex flex-row h-screen ">
         <div
           onClick={() => handleBack()}
-          className="left-0 w-1/6 bg-black opacity-80 "
+          className="left-0 bg-black lg:w-1/6 opacity-80 "
         ></div>
-        <div className="mt-10 overflow-y-auto border-4 border-green-600 md:w-4/6 md:flex md:flex-col md:items-center overscroll-y-contain ">
+        <div className="mt-10 overflow-y-auto border-4 border-green-600 lg:w-4/6 md:flex md:flex-col md:items-center overscroll-y-contain ">
           {/* media */}
           <div className="w-full bg-gray-400 border-4 border-blue-500">
             <h1>{apost?.title}</h1>
@@ -60,7 +60,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
         </div>
         <div
           onClick={() => handleBack()}
-          className="right-0 w-1/6 bg-black opacity-80 "
+          className="right-0 bg-black lg:w-1/6 opacity-80 "
         ></div>
       </div>
     </div>

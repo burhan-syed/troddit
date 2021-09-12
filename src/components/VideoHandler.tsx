@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-const VideoHandler = ({ placeholder, videoInfo }) => {
+const VideoHandler = ({ placeholder, videoInfo, maxHeight={} }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
@@ -42,6 +42,7 @@ const VideoHandler = ({ placeholder, videoInfo }) => {
         // className="object-cover"
         // className={videoLoaded ? "opacity-0" : "opacity-100"}
         className="absolute top-0 left-0"
+        style={maxHeight}
         width={`${videoInfo.width} !important`}
         height={`${videoInfo.height} !important`}
         autoPlay={true}

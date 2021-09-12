@@ -203,9 +203,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
+  const [maxheightnum, setmaxheightnum] = useState<Number>();
   useEffect(() => {
     setheight({ height: `${imageInfo.height}px`, maxHeight: `${Math.floor(screen.height * .75)}px` });
-    setmaxheight({maxHeight: `${Math.floor(screen.height * .75)}px`} )
+    setmaxheight({maxHeight: `${Math.floor(screen.height * .75)}px`} );
+    setmaxheightnum(Math.floor(screen.height * .75));
   }, [imageInfo]);
 
   return (
@@ -289,6 +291,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               <VideoHandler
                 placeholder={placeholderInfo}
                 videoInfo={videoInfo}
+                maxHeight={maxheight}
               />
             </LazyLoad>
           </div>
@@ -301,7 +304,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
       {post.selftext ? (
         <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
-          {post.selftext}
+          {post?.selftext}
         </Markdown>
       ) : (
         // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
