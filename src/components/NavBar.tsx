@@ -12,19 +12,21 @@ import SideNav from "./SideNav";
 import NavMenu from "./NavMenu";
 import SortMenu from "./SortMenu";
 
+import { useRouter } from "next/router";
+
 const NavBar = () => {
   const [hidden, setHidden] = useState(false);
   const [prevScrollpos, setScrollpos] = useState(0);
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     const onScroll = () => {
       setSidebarVisible(false);
       var currentScrollPos = window.pageYOffset;
       if (prevScrollpos > currentScrollPos) {
         setHidden(false);
-      } else {
+      } else if (router.query?.slug?.[1] !== "comments") {
         setHidden(true);
       }
       setScrollpos(currentScrollPos);
@@ -35,6 +37,13 @@ const NavBar = () => {
       window.removeEventListener("scroll", onScroll);
     };
   }, [prevScrollpos]);
+
+  useEffect(() => {
+    console.log("NAVBAR", router.query);
+    if (router.query?.slug?.[1] === "comments" || true) {
+      setHidden(false);
+    }
+  }, [router]);
 
   return (
     <header
@@ -69,7 +78,7 @@ const NavBar = () => {
             <Login />
           </div>
           <div className="w-5 h-full">
-            <NavMenu hide={hidden}/>
+            <NavMenu hide={hidden} />
           </div>
         </div>
       </nav>

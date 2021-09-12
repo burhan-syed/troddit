@@ -205,9 +205,12 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<Number>();
   useEffect(() => {
-    setheight({ height: `${imageInfo.height}px`, maxHeight: `${Math.floor(screen.height * .75)}px` });
-    setmaxheight({maxHeight: `${Math.floor(screen.height * .75)}px`} );
-    setmaxheightnum(Math.floor(screen.height * .75));
+    setheight({
+      height: `${imageInfo.height}px`,
+      maxHeight: `${Math.floor(screen.height * 0.75)}px`,
+    });
+    setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
+    setmaxheightnum(Math.floor(screen.height * 0.75));
   }, [imageInfo]);
 
   return (
@@ -265,7 +268,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             layout={imgFull ? "fill" : "responsive"}
             onLoadingComplete={onLoaded}
             lazyBoundary={imgFull ? "0px" : "2000px"}
-            objectFit="scale-down"
+            objectFit={imgFull ? "contain" : "contain"}
             priority={imgFull}
             // placeholder="blur"
             // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
@@ -280,7 +283,10 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
       {isMP4 && !isIFrame ? (
         showMP4 ? (
-          <div className="flex flex-col items-center flex-none " style={imgFull ? maxheight : {}}>
+          <div
+            className="flex flex-col items-center flex-none "
+            style={imgFull ? maxheight : {}}
+          >
             <LazyLoad
               height={videoInfo.height}
               once={true}

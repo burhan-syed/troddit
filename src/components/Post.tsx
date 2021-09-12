@@ -64,7 +64,7 @@ const Post = ({ post }) => {
       )}
       <div
         onClick={() => handleClick()}
-        className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500"
+        className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
         {!hide ? (
           <div className="p-1 ">
