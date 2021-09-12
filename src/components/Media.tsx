@@ -201,6 +201,13 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
     return false;
   };
 
+  const [imgheight, setheight] = useState({});
+  const [maxheight, setmaxheight] = useState({});
+  useEffect(() => {
+    setheight({ height: `${imageInfo.height}px`, maxHeight: `${Math.floor(screen.height * .75)}px` });
+    setmaxheight({maxHeight: `${Math.floor(screen.height * .75)}px`} )
+  }, [imageInfo]);
+
   return (
     <div>
       {isIFrame ? (
@@ -238,7 +245,10 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
       {isImage && !isIFrame ? (
         // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-        <div className="relative ">
+        <div
+          className={"relative" + (imgFull ? " " : "")}
+          style={imgFull ? imgheight : {}}
+        >
           {mediaLoaded ? (
             ""
           ) : (
@@ -250,9 +260,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             height={imageInfo.height}
             width={imageInfo.width}
             alt="image"
-            layout={imgFull ? "intrinsic" : "responsive"}
+            layout={imgFull ? "fill" : "responsive"}
             onLoadingComplete={onLoaded}
-            lazyBoundary={"2000px"}
+            lazyBoundary={imgFull ? "0px" : "2000px"}
+            objectFit="scale-down"
+            priority={imgFull}
             // placeholder="blur"
             // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
           />
@@ -266,7 +278,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
       {isMP4 && !isIFrame ? (
         showMP4 ? (
-          <div className="flex flex-col items-center flex-none">
+          <div className="flex flex-col items-center flex-none " style={imgFull ? maxheight : {}}>
             <LazyLoad
               height={videoInfo.height}
               once={true}

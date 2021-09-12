@@ -36,24 +36,23 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-10 w-screen h-screen min-h-screen overflow-y-auto border-4 border-red-500 overscroll-y-contain">
-      <div className="flex flex-row flex-none h-screen ">
+    <div className="fixed inset-0 z-20 w-screen h-screen min-h-screen border-4 border-red-500 overflow-y-none overscroll-y-contain">
+      <div className="flex flex-row h-screen ">
         <div
           onClick={() => handleBack()}
-          className="left-0 object-contain w-1/5 bg-black opacity-80 blur"
+          className="left-0 w-1/6 bg-black opacity-80 "
         ></div>
-        <div className="border-4 border-green-600 md:w-4/6 md:flex md:flex-col md:items-center ">
-          <div className="w-full border-4 border-blue-500 ">
+        <div className="mt-10 overflow-y-auto border-4 border-green-600 md:w-4/6 md:flex md:flex-col md:items-center overscroll-y-contain ">
+          {/* media */}
+          <div className="w-full bg-gray-400 border-4 border-blue-500">
             <h1>{apost?.title}</h1>
-            <div className="">
-              <div className="flex flex-col items-center max-h-full bg-green-900 border-2 border-green-600">
+              <div className="block bg-green-900 border-2 border-blue-600">
                 <Media post={apost} allowIFrame={true} imgFull={true} />
               </div>
-            </div>
           </div>
 
+          {/* comments */}
           <div
-            // onClick={() => handleBack()}
             className="w-full text-white border-4 border-yellow-500 "
           >
             <Comments comments={post_comments} depth={0} />
@@ -61,7 +60,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
         </div>
         <div
           onClick={() => handleBack()}
-          className="right-0 w-1/5 bg-black opacity-80 blur "
+          className="right-0 w-1/6 bg-black opacity-80 "
         ></div>
       </div>
     </div>
