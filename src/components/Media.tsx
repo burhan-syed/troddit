@@ -1,5 +1,5 @@
-import Image from "next/dist/client/image"
-import Markdown from "markdown-to-jsx"
+import Image from "next/dist/client/image";
+import Markdown from "markdown-to-jsx";
 import LazyLoad from "react-lazyload";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
@@ -7,9 +7,7 @@ import ImageHandler from "./ImageHandler";
 import { forceCheck } from "react-lazyload";
 import { useEffect, useState } from "react";
 
-
-const Media = ({post, allowIFrame=false}) => {
-
+const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);
@@ -22,7 +20,6 @@ const Media = ({post, allowIFrame=false}) => {
     height: 0,
     width: 0,
   });
-
 
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -57,7 +54,7 @@ const Media = ({post, allowIFrame=false}) => {
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
-    a || b ? setLoaded(true) : setLoaded(false);
+    a || b || c ? setLoaded(true) : setLoaded(false);
   };
 
   //if deleted by copyright notice may be set to 'self'
@@ -139,15 +136,9 @@ const Media = ({post, allowIFrame=false}) => {
       if (post.media_embed.content.includes("iframe")) {
         console.log(post.media_embed.content);
         setIFrame(post.media_embed.content);
-        //setIsIFrame(true);
-        // post.media_embed.content.split('"').forEach((p) => {
-        //   let a = p.replace('"', "");
-        //   console.log(a);
-        //   setIFrame((prev) => [...prev, a]);
-        // });
-        allowIFrame && setIsIFrame(true);
+        //allowIFrame && setIsIFrame(true);
       } else {
-       // console.log(post.media_embed.content);
+        // console.log(post.media_embed.content);
       }
     }
   };
@@ -210,13 +201,11 @@ const Media = ({post, allowIFrame=false}) => {
     return false;
   };
 
-
-
   return (
     <div>
       {isIFrame ? (
-                <div className="">
-                  {/* <Iframe
+        <div className="">
+          {/* <Iframe
                     url={iFrame[3]}
                     width={iFrame[5] + "px"}
                     height={iFrame[7 + "px"]}
@@ -225,89 +214,89 @@ const Media = ({post, allowIFrame=false}) => {
                     scrolling={"no"}
                     id={"player"}
                   /> */}
-                  {/* <iframe
+          {/* <iframe
                     src={Iframe[3]}
                     height={Iframe[7]}
                     width={iFrame[5]}
                     allowFullScreen={true}
                   ></iframe> */}
-                  <div>IFRAME</div>
-                  {/* {iFrame} */}
-                  <div dangerouslySetInnerHTML={{__html: iFrame}}></div>
-                </div>
-              ) : (
-                ""
-              )}
+          <div>IFRAME</div>
+          {/* {iFrame} */}
+          <div dangerouslySetInnerHTML={{ __html: iFrame }}></div>
+        </div>
+      ) : (
+        ""
+      )}
 
-              {isGallery ? (
-                <div className="flex flex-col items-center">
-                  <Gallery images={galleryInfo} />{" "}
-                </div>
-              ) : (
-                ""
-              )}
+      {isGallery ? (
+        <div className="flex flex-col items-center">
+          <Gallery images={galleryInfo} />{" "}
+        </div>
+      ) : (
+        ""
+      )}
 
-              {(isImage&&!isIFrame) ? (
-                // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-                <div className="relative ">
-                  {mediaLoaded ? (
-                    ""
-                  ) : (
-                    <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
-                  )}
+      {isImage && !isIFrame ? (
+        // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
+        <div className="relative ">
+          {mediaLoaded ? (
+            ""
+          ) : (
+            <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
+          )}
 
-                  <Image
-                    src={imageInfo.url}
-                    height={imageInfo.height}
-                    width={imageInfo.width}
-                    alt="image"
-                    layout="responsive"
-                    onLoadingComplete={onLoaded}
-                    lazyBoundary={"2000px"}
-                    // placeholder="blur"
-                    // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
-                  />
-                </div>
-              ) : (
-                // <LazyLoad height={imageInfo.height}>
-                //   <img src={imageInfo.url} alt="img" />
-                // </LazyLoad>
-                ""
-              )}
+          <Image
+            src={imageInfo.url}
+            height={imageInfo.height}
+            width={imageInfo.width}
+            alt="image"
+            layout={imgFull ? "intrinsic" : "responsive"}
+            onLoadingComplete={onLoaded}
+            lazyBoundary={"2000px"}
+            // placeholder="blur"
+            // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+          />
+        </div>
+      ) : (
+        // <LazyLoad height={imageInfo.height}>
+        //   <img src={imageInfo.url} alt="img" />
+        // </LazyLoad>
+        ""
+      )}
 
-              {(isMP4&&!isIFrame) ? (
-                showMP4 ? (
-                  <div className="flex flex-col items-center flex-none">
-                    <LazyLoad
-                      height={videoInfo.height}
-                      once={true}
-                      offset={2000}
-                      unmountIfInvisible={false}
-                      // placeholder={<Placeholder imageInfo={placeholder} />}
-                    >
-                      <VideoHandler
-                        placeholder={placeholderInfo}
-                        videoInfo={videoInfo}
-                      />
-                    </LazyLoad>
-                  </div>
-                ) : (
-                  ""
-                )
-              ) : (
-                ""
-              )}
+      {isMP4 && !isIFrame ? (
+        showMP4 ? (
+          <div className="flex flex-col items-center flex-none">
+            <LazyLoad
+              height={videoInfo.height}
+              once={true}
+              offset={2000}
+              unmountIfInvisible={false}
+              // placeholder={<Placeholder imageInfo={placeholder} />}
+            >
+              <VideoHandler
+                placeholder={placeholderInfo}
+                videoInfo={videoInfo}
+              />
+            </LazyLoad>
+          </div>
+        ) : (
+          ""
+        )
+      ) : (
+        ""
+      )}
 
-              {post.selftext ? (
-                <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
-                  {post.selftext}
-                </Markdown>
-              ) : (
-                // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-                ""
-              )}
+      {post.selftext ? (
+        <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
+          {post.selftext}
+        </Markdown>
+      ) : (
+        // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
+        ""
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Media
+export default Media;

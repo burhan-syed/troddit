@@ -6,17 +6,16 @@ import Media from "./Media";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
-  const [post, setPost] = useState({});
-  const [comments, setComments] = useState([]);
+  const [apost, setPost] = useState<any>({});
+  const [post_comments, setComments] = useState([]);
 
   useEffect(() => {
     const fetchPost = async () => {
-      const data = await loadPost(permalink);
-      if (data) {
-        console.log(data);
-        setPost(data?.post);
-        setComments(data?.comments);
-      }
+      const { post, comments } = await loadPost(permalink);
+      //console.log(post);
+      setPost(post);
+      //console.log(comments);
+      setComments(comments);
     };
     fetchPost();
     return () => {
@@ -37,16 +36,33 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-10 w-full h-screen overflow-y-auto bg-black overscroll-y-contain">
-      <div className="flex flex-col items-center flex-none w-5/6">
-        <div className=""><Media post={post} allowIFrame={true}/></div>
-
+    <div className="fixed inset-0 z-10 w-screen h-screen min-h-screen overflow-y-auto border-4 border-red-500 overscroll-y-contain">
+      <div className="flex flex-row flex-none ">
         <div
-          // onClick={() => handleBack()}
-          className="flex flex-row flex-none text-white border-4 border-yellow-500 "
-        >
-          <Comments comments={comments} depth={0} />
+          onClick={() => handleBack()}
+          className="left-0 object-contain w-1/5 bg-black opacity-80 blur"
+        ></div>
+        <div className="border-4 border-green-600 md:w-4/6 md:flex md:flex-col md:items-center ">
+          <div className="w-full border-4 border-blue-500 ">
+            <h1>{apost?.title}</h1>
+            <div className="">
+              <div className="flex flex-col items-center max-h-full bg-green-900 border-2 border-green-600">
+                <Media post={apost} allowIFrame={true} imgFull={true} />
+              </div>
+            </div>
+          </div>
+
+          <div
+            // onClick={() => handleBack()}
+            className="w-full text-white border-4 border-yellow-500 "
+          >
+            <Comments comments={post_comments} depth={0} />
+          </div>
         </div>
+        <div
+          onClick={() => handleBack()}
+          className="right-0 w-1/5 bg-black opacity-80 blur "
+        ></div>
       </div>
     </div>
   );

@@ -52,6 +52,7 @@ const Feed = ({ query }) => {
 
     return () => {
       setPosts([]);
+      setError(false);
       setAfter("");
       setRange("");
       setSubreddits("");
@@ -151,7 +152,7 @@ const Feed = ({ query }) => {
   return (
     <section className="flex flex-col items-center flex-none w-screen pt-5">
       {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`}
-      <div className="w-5/6">
+      <div className="md:w-5/6">
         <InfiniteScroll
           dataLength={posts.length}
           next={loadmore}

@@ -304,6 +304,7 @@ export const loadPost = async (permalink) => {
       post: res?.[0]?.data?.children?.[0].data,
       comments: res?.[1]?.data?.children,
     };
+    console.log(data);
     return data;
   } catch (err) {
     console.log(err);

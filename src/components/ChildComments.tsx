@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { loadMoreComments } from "../RedditAPI";
-import Markdown from "markdown-to-jsx"
-
+import Markdown from "markdown-to-jsx";
 
 const ChildComments = ({ comment, depth, hide }) => {
   const [moreComments, setMoreComments] = useState([]);
@@ -17,20 +16,6 @@ const ChildComments = ({ comment, depth, hide }) => {
   };
 
   const fixformat = async (comments) => {
-    // const fixed = [];
-    // let fixindex = 0;
-    // let depthindex = {}
-    // comments.forEach((comment,i) => {
-    // if (i===0){
-    //   depthindex[comment.data.depth] = fixindex;
-    //   depth = comment.data.depth;
-    //   fixed.push(comment);
-    //   fixed[fixindex].replies.data.children = [];
-    // } else if (comment.data.depth === depth+1){
-    //   fixed[depthindex[depth]].replies.data.children.push(comment);
-    //   depthindex[comment.data.depth] =
-    // }
-    // });
     if (comments.length > 0) {
       let basedepth = comments[0].data.depth;
 
@@ -57,11 +42,11 @@ const ChildComments = ({ comment, depth, hide }) => {
       });
 
       let fixedcomments = [];
-      idIndex.forEach((comment,i) => {
+      idIndex.forEach((comment, i) => {
         if (comment?.data?.depth === basedepth) {
           fixedcomments.push(comment);
         } else {
-          console.log(i,comment.data.parent_id,comment.data.body);
+          console.log(i, comment.data.parent_id, comment.data.body);
         }
       });
 
@@ -75,7 +60,7 @@ const ChildComments = ({ comment, depth, hide }) => {
   return (
     <div
       className={
-        `${depth !== 0 ? "ml-10 " : ""}` +
+        `${depth !== 0 ? "ml-2 md:ml-10 " : ""}` +
         (depth == 0
           ? "bg-red-500"
           : depth % 2 === 0
@@ -88,7 +73,9 @@ const ChildComments = ({ comment, depth, hide }) => {
 
       <div onClick={() => setHideChildren((h) => !h)}>{"+"}</div>
 
-      <div>{`${comment?.data?.author}`} <Markdown>{comment?.data?.body}</Markdown> </div>
+      <div>
+        {`${comment?.data?.author}`} {comment?.data?.body}{" "}
+      </div>
       <div className="">
         {comment?.data?.replies?.data?.children.map((childcomment, i) => (
           <div key={`${i}_${childcomment?.data?.id}`}>
@@ -126,7 +113,6 @@ const ChildComments = ({ comment, depth, hide }) => {
           </div>
         ))}
       </div>
-      <div></div>
     </div>
   );
 };
