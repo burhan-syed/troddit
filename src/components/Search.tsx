@@ -19,7 +19,7 @@ const Search = () => {
   };
 
   const getSuggestions = async (value) => {
-    let suggestions = await searchSubreddits(value.value);
+    let suggestions = await searchSubreddits(value.value, false);
     //console.log(suggestions);
     return suggestions;
   };
@@ -49,7 +49,6 @@ const Search = () => {
   const goToSub = (e, suggestion) => {
     e.preventDefault();
     router.push(`/r/${suggestion}`);
-     
   };
 
   const onChange = (event, { newValue }) => {

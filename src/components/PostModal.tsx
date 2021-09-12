@@ -37,7 +37,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
 
   return (
     <div className="fixed inset-0 z-10 w-screen h-screen min-h-screen overflow-y-auto border-4 border-red-500 overscroll-y-contain">
-      <div className="flex flex-row flex-none ">
+      <div className="flex flex-row flex-none h-screen ">
         <div
           onClick={() => handleBack()}
           className="left-0 object-contain w-1/5 bg-black opacity-80 blur"
