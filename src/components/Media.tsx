@@ -48,9 +48,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const initialize = async () => {
-    const a = await findImage();
-    const b = await findVideo();
-    const c = await findIframe();
+    let a,b,c
+
+     b = await findVideo();
+    !b && (a = await findImage())
+     c = await findIframe();
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
@@ -144,7 +146,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const findImage = async () => {
-    //galleries
+    console.log("Find image");
     if (post.media_metadata) {
       let gallery = [];
       for (let i in post.media_metadata) {
@@ -269,12 +271,9 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         ""
       )}
 
-      {isImage && !isIFrame ? (
+      {isImage && !isIFrame && !isMP4 ? (
         // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-        <div
-          className={"relative" + (imgFull ? " " : "")}
-          style={imgFull ? imgheight : {}}
-        >
+        <div className={"relative"} style={imgFull ? imgheight : {}}>
           {mediaLoaded ? (
             ""
           ) : (
@@ -313,12 +312,14 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               once={true}
               offset={2000}
               unmountIfInvisible={false}
+              
               // placeholder={<Placeholder imageInfo={placeholder} />}
             >
               <VideoHandler
                 placeholder={placeholderInfo}
                 videoInfo={videoInfo}
                 maxHeight={maxheight}
+                imgFull={imgFull}
               />
             </LazyLoad>
           </div>
@@ -329,7 +330,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         ""
       )}
 
-      {post.selftext_html ? (
+      {post?.selftext_html ? (
         // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
         //   {post?.selftext}
         // </Markdown>

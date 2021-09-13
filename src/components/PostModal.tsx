@@ -69,7 +69,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
           className="left-0 bg-black lg:w-1/12 opacity-80 "
         ></div>
         <div className="overflow-y-auto border-4 border-green-600 lg:w-10/12 md:flex md:flex-col md:items-center overscroll-y-contain bg-coolGray-200">
-          <div className="w-full mt-10">
+          <div className="w-full mt-12">
             <div className="flex flex-row w-full lg:hidden bg-coolGray-600">
               <CgCloseO className="w-12 h-12 " onClick={() => handleBack()} />
             </div>

@@ -66,7 +66,7 @@ const SortMenu = ({ hide }) => {
   };
 
   return (
-    <div className="flex flex-row w-full h-full border border-blue-400 select-none hover:cursor-pointer">
+    <div className="flex flex-row w-full h-full select-none hover:cursor-pointer">
       {/* Close when clicking outisde element */}
       {/* <div
         className={
@@ -79,7 +79,7 @@ const SortMenu = ({ hide }) => {
       <div className="flex flex-col flex-grow">
         {/* Button Label */}
         <div
-          className="z-10 flex flex-row items-center justify-between flex-none h-full px-2 border border-red-300 rounded-sm"
+          className="flex flex-row items-center justify-between flex-none h-full px-2 border border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
           onClick={() => setShow((show) => !show)}
         >
           <BsChevronDown
@@ -136,7 +136,7 @@ const SortMenu = ({ hide }) => {
         {/* Dropdown */}
         <div
           className={
-            "transform transition duration-150 ease-in-out origin-top " +
+            "transform transition duration-150 ease-in-out origin-top bg-white dark:bg-darkBG " +
             `${show && !hide ? "scale-100 block" : " scale-0"}`
           }
         >
@@ -145,7 +145,7 @@ const SortMenu = ({ hide }) => {
             <li
               className={
                 (sort === "best" ? "bg-gray-300" : "") +
-                " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
+                " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm"
               }
               onClick={(e) => updateSort(e, "best")}
             >

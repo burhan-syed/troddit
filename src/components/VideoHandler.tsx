@@ -1,13 +1,31 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-const VideoHandler = ({ placeholder, videoInfo, maxHeight={} }) => {
+const VideoHandler = ({
+  placeholder,
+  videoInfo,
+  maxHeight = {},
+  imgFull = false,
+}) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
   const onLoadedData = () => {
     setVideoLoaded(true);
   };
+
+  const [imgheight, setheight] = useState({});
+  const [maxheight, setmaxheight] = useState({});
+  const [maxheightnum, setmaxheightnum] = useState<Number>();
+  useEffect(() => {
+    setheight({
+      height: `${videoInfo.height}px`,
+      maxHeight: `${Math.floor(screen.height * 0.75)}px`,
+    });
+    setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
+    setmaxheightnum(Math.floor(screen.height * 0.75));
+  }, [videoInfo]);
+
   return (
     <div className="relative overflow-hidden ">
       {videoLoaded ? (
@@ -18,6 +36,7 @@ const VideoHandler = ({ placeholder, videoInfo, maxHeight={} }) => {
 
       <div
         className={`blur-xl ` + `${videoLoaded ? "opacity-0" : "opacity-100"}`}
+        style={imgFull ? imgheight : {}}
       >
         <Image
           // className={`${
@@ -28,13 +47,17 @@ const VideoHandler = ({ placeholder, videoInfo, maxHeight={} }) => {
           height={placeholder.height}
           width={placeholder.width}
           alt="placeholder"
+
+          // layout={imgFull ? "fill" : undefined}
+          // lazyBoundary={imgFull ? "0px" : "2000px"}
+          // objectFit={imgFull ? "contain" : undefined}
+          priority={imgFull}
           // placeholder="blur"
           // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
           onError={() => {
             console.log("ERR: ", placeholder, videoInfo);
             setUseFallback(true);
           }}
-          lazyBoundary={"2000px"}
         />
       </div>
 

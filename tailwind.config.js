@@ -9,18 +9,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        lightBG : "#E5E7EB",
+        lightHighlight: "#D1D5DB",
+        lightBorder: "#D4D4D8",
+        lightBorderHighlight: "#71717A",
+        darkBG : "#171717",
+        darkBorder: "#3F3F46",
+        darkBorderHighlight: "#71717A",
+        darkHighlight: "#262626",
         blueGray : colors.blueGray,
         coolGray : colors.coolGray,
         trueGray: colors.trueGray
 
-        // black: "#11151C",
-        // darkgray: "#212D40",
-        // gray: "#364156",
-        // lightgray: "#D1D1D1",
-        // blue: "#A1CFE3",
-        // white: "#FAE8EB",
-        //https://coolors.co/11151c-212d40-364156-d1d1d1-fae8eb
-        //https://coolors.co/a7b8ac-45544a-1d1f19-162933-a1cfe3
+       
       },
     },
   },

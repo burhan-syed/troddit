@@ -88,7 +88,7 @@ const ChildComments = ({ comment, depth, hide }) => {
           <div>{`${comment?.data?.author}`}</div>
 
           {/* Main Comment Body */}
-          <div className={hideChildren && "hidden"}>
+          <div className={hideChildren ? "hidden" : " "}>
             <div className="flex-grow">
               {/* Comment Text */}
               <div
@@ -111,7 +111,7 @@ const ChildComments = ({ comment, depth, hide }) => {
                   (childcomment, i) => (
                     <div key={`${i}_${childcomment?.data?.id}`}>
                       {childcomment.kind == "more" ? (
-                        <div className={hideChildren && "hidden"}>
+                        <div className={hideChildren ? "hidden" : " "}>
                           {!moreLoaded ? (
                             <div
                               onClick={() =>
