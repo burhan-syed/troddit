@@ -14,6 +14,7 @@ import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/client";
 import DropdownItem from "./DropdownItem";
 
 const DropdownPane = ({ hide }) => {
@@ -27,6 +28,7 @@ const DropdownPane = ({ hide }) => {
   const router = useRouter();
   const [location, setLocation] = useState("home");
 
+  const [session, loading] = useSession();
   const context: any = useMainContext();
 
   useEffect(() => {
@@ -89,7 +91,7 @@ const DropdownPane = ({ hide }) => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full select-none hover:cursor-pointer">
+    <div className="flex flex-col items-center w-full h-full select-none">
       {/* Close when clicking outside element */}
       <div
         className={
@@ -100,7 +102,10 @@ const DropdownPane = ({ hide }) => {
       ></div>
       {/* Main Button */}
       <div
-        className="flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-red-500"
+        className={
+          "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-white rounded-md hover:cursor-pointer hover:border-lightBorder rounded-2 dark:bg-darkBG dark:hover:border-darkBorder dark:border-darkBG" +
+          (show ? " border-lightBorder dark:border-darkBorder" : "")
+        }
         onClick={handleClick}
       >
         <div className="flex flex-row items-center">
@@ -126,52 +131,83 @@ const DropdownPane = ({ hide }) => {
       {/* Dropdown */}
       <div
         className={
-          "flex flex-col w-full transform transition border border-t-0 duration-150 ease-in-out origin-top  " +
+          "flex flex-col w-full transform transition border border-t-0 duration-150 ease-in-out origin-top dark:bg-darkBG bg-white dark:border-darkBorder border-lightBorder " +
           `${show && !hide ? "block" : "hidden"}`
         }
       >
         {/* scroll */}
-        <div className="px-3 py-3 overflow-y-auto overscroll-contain max-h-96">
+        <div className="grid grid-cols-1 overflow-y-auto overscroll-contain max-h-96 ">
           {/* Quick Links */}
-          <div className="flex flex-col font-light">
+          <div className="flex flex-col py-2 font-light">
             <Link href="/" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2">
+              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
                 <AiOutlineHome className="w-6 h-6" />
                 <h1 className="">Home</h1>
               </div>
             </Link>
             <Link href="/r/popular" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 ">
+              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
                 <BiRightTopArrowCircle className="w-6 h-6" />
                 <h1>Popular</h1>
               </div>
             </Link>
             <Link href="/r/all" passHref>
-              <div className="flex flex-row items-center pl-1 py-1.5 space-x-2 ">
+              <div className="flex flex-row items-center  py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
                 <CgLivePhoto className="w-6 h-6" />
                 <h1>All</h1>
               </div>
             </Link>
           </div>
 
-          {/* Multis */}
-          {myMultis
-            ? myMultis.map((multi, i) => {
-                return (
-                  <DropdownItem
-                    key={`${i}_${multi.data.display_name}`}
-                    sub={multi}
-                  />
-                );
-              })
-            : ""}
+          {!session && (
+            <>
+              <button
+                className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                onClick={() => signIn()}
+              >
+                Login to see your subs
+              </button>
+            </>
+          )}
 
-          {/* Subs */}
-          {mySubs
-            ? mySubs.map((sub, i) => {
-                return <DropdownItem key={i} sub={sub} />;
-              })
-            : ""}
+          {session && (
+            <>
+              {/* Multis */}
+              <div className="pl-2 text-xs font-semibold">M u l t i s</div>
+              <div>
+                <div className="py-2">
+                  {myMultis
+                    ? myMultis.map((multi, i) => {
+                        return (
+                          <div
+                            className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                            key={`${i}_${multi.data.display_name}`}
+                          >
+                            <DropdownItem sub={multi} />
+                          </div>
+                        );
+                      })
+                    : ""}
+                </div>
+              </div>
+              {/* Subs */}
+              <div className="pl-2 text-xs font-semibold">S u b s</div>
+              <div className="py-2">
+                {mySubs
+                  ? mySubs.map((sub, i) => {
+                      return (
+                        <div
+                          className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                          key={i}
+                        >
+                          <DropdownItem sub={sub} />
+                        </div>
+                      );
+                    })
+                  : ""}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-color: #6969dd #e0e0e0;
+  scrollbar-width: thin;
+}
+
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
@@ -31,11 +36,11 @@
 
 /*suggestions container*/
 .react-autosuggest__container {
-  @apply flex flex-col w-full border border-blue-500 items-center;
+  @apply flex flex-col items-center w-full border border-blue-500;
 }
 
 .react-autosuggest__input {
-  @apply w-full h-full outline-none flex-none;
+  @apply flex-none w-full h-full outline-none;
 }
 
 .react-autosuggest__input--focused {
@@ -45,14 +50,14 @@
 }
 
 .react-autosuggest__suggestions-container {
-  @apply hidden ;
+  @apply hidden;
 }
 
 .react-autosuggest__suggestions-container--open {
-  @apply flex flex-col items-center w-full border border-green-600 bg-white  h-44;
+  @apply flex flex-col items-center w-full bg-white border border-green-600 h-44;
 }
 .react-autosuggest__suggestions-list {
-  @apply list-none w-full border border-red-400 overflow-auto;
+  @apply w-full overflow-auto list-none border border-red-400;
 }
 
 .react-autosuggest__suggestion {
@@ -69,7 +74,7 @@
 }
 
 .react-markdown a {
-  @apply text-blue-800 underline
+  @apply text-blue-800 underline;
 }
 /* 
 .react-autosuggest__container {

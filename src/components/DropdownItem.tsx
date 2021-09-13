@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 
-const DropdownItem   = ({ sub }) => {
+const DropdownItem = ({ sub }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
@@ -43,7 +43,7 @@ const DropdownItem   = ({ sub }) => {
   return (
     <div>
       <div
-        className="flex flex-row items-center py-1.5 text-sm text-center border hover:bg-gray-200"
+        className="flex flex-row items-center text-sm text-center"
         onClick={(e) => goTo(e)}
       >
         {/* Image */}
@@ -71,9 +71,9 @@ const DropdownItem   = ({ sub }) => {
           )}
         </div>
         {/* Text */}
-        <h1 className="ml-2 font-light">
+        <h1 className="ml-2">
           {" "}
-          {sub.data?.display_name_prefixed ?? sub.data.display_name}
+          {sub.data?.display_name_prefixed ?? sub.data?.display_name}
         </h1>
       </div>
     </div>

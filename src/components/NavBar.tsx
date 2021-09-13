@@ -58,32 +58,36 @@ const NavBar = () => {
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
       <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-trueGray-900">
         <CgMenu
-          className="md:hidden"
+          className="w-10 h-10 md:hidden"
           onClick={() => setSidebarVisible((vis) => !vis)}
         />
-        <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2">
-        <Link href="/" passHref>
-          <h1 className="">Truddit</h1>
-        </Link>
+        <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
+          <Link href="/" passHref>
+            <h1 className="ml-1 text-2xl align-middle">Troddit</h1>
+          </Link>
 
-        <div className="hidden h-full border border-black md:block w-60">
-          <DropdownPane hide={hidden} />
-        </div>
+          <div className="flex-none hidden h-full py-2 md:block w-60">
+            <DropdownPane hide={hidden} />
+          </div>
 
-        <div className="hidden w-1/3 h-full md:block">
-          <Search />
+          <div className="hidden w-full h-full py-2 md:block">
+            <Search />
+          </div>
         </div>
-        </div>
-        <div className="flex flex-row items-center justify-end h-full space-x-1 justify-self-end">
-        <div className="w-20 h-full">
-          <SortMenu2 hide={hidden} />
-        </div>
-        <div className={!session ? "hidden" : "hidden w-20 h-full border  md:block"}>
-          <Login />
-        </div>
-        <div className="flex flex-row items-center w-10 h-full ">
-          <NavMenu hide={hidden} />
-        </div>
+        <div className="flex flex-row items-center justify-end h-full py-2 ml-2 space-x-1 justify-self-end">
+          <div className="w-20 h-full">
+            <SortMenu2 hide={hidden} />
+          </div>
+          <div
+            className={
+              !session ? "hidden" : "hidden w-20 h-full border  md:block"
+            }
+          >
+            <Login />
+          </div>
+          <div className="flex flex-row items-center w-10 h-full ">
+            <NavMenu hide={hidden} />
+          </div>
         </div>
       </nav>
     </header>
