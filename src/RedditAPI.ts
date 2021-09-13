@@ -208,24 +208,28 @@ export const searchSubreddits = async (query, over18 = true) => {
   if (token) {
     try {
       let res = await (
-        await axios.get("https://oauth.reddit.com/api/subreddit_autocomplete", {
-          headers: {
-            authorization: `bearer ${token}`,
-          },
-          params: {
-            include_over_18: over18,
-            include_profiles: false,
-            query: query,
-            typeahead_active: true,
-          },
-        })
+        await axios.get(
+          "https://oauth.reddit.com/api/subreddit_autocomplete_v2",
+          {
+            headers: {
+              authorization: `bearer ${token}`,
+            },
+            params: {
+              include_over_18: true,
+              include_profiles: false,
+              query: query,
+              typeahead_active: true,
+            },
+          }
+        )
       ).data;
-      return res.subreddits;
+      //console.log(res);
+      return res?.data?.children;
     } catch (err) {
       console.log(err);
     }
   } else {
-    return [{ name: query }, { name: "Login for autocomplete" }];
+    return null;
   }
   return [];
 };

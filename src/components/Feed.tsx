@@ -150,8 +150,8 @@ const Feed = ({ query }) => {
     return <div>{"Oops something went wrong :("}</div>;
   }
   return (
-    <section className="flex flex-col items-center flex-none w-screen pt-10">
-      {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`}
+    <section className="flex flex-col items-center flex-none w-screen pt-16">
+      {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
       <div className="md:w-5/6">
         <InfiniteScroll
           dataLength={posts.length}
