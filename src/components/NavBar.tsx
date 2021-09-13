@@ -52,7 +52,7 @@ const NavBar = () => {
     <header
       className={
         `${hidden ? "-translate-y-full" : ""}` +
-        " z-50 fixed top-0 transition duration-500 ease-in-out transform h-14 border w-screen "
+        " z-50 fixed top-0 transition duration-500 ease-in-out transform h-14 w-screen "
       }
     >
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
@@ -80,12 +80,14 @@ const NavBar = () => {
           </div>
           <div
             className={
-              !session ? "hidden" : "hidden w-20 h-full border  md:block"
+              !session
+                ? "hidden"
+                : "hidden w-20 h-full border border-white dark:hover:border-darkBorder hover:border-lightBorder dark:border-darkBG rounded-md md:block"
             }
           >
             <Login />
           </div>
-          <div className="flex flex-row items-center w-10 h-full ">
+          <div className="flex flex-row items-center w-10 h-full mr-2 ">
             <NavMenu hide={hidden} />
           </div>
         </div>

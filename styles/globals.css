@@ -27,16 +27,17 @@ html {
 
 /*input box*/
 .react-autosuggest__input {
-  @apply bg-gray-300;
+  @apply bg-transparent;
 }
 .react-autosuggest__input--focused {
+  @apply outline-none;
 }
 .react-autosuggest__input--open {
 }
 
 /*suggestions container*/
 .react-autosuggest__container {
-  @apply flex flex-col items-center w-full border border-blue-500;
+  @apply flex flex-col items-center w-full border rounded-lg border-lightBorder dark:border-darkBorder;
 }
 
 .react-autosuggest__input {
@@ -50,14 +51,13 @@ html {
 }
 
 .react-autosuggest__suggestions-container {
-  @apply hidden;
 }
 
 .react-autosuggest__suggestions-container--open {
-  @apply flex flex-col items-center w-full bg-white border border-green-600 h-44;
+  @apply flex flex-col items-center w-full mt-3 bg-white border rounded-lg dark:bg-darkBG dark:text-white;
 }
 .react-autosuggest__suggestions-list {
-  @apply w-full overflow-auto list-none border border-red-400;
+  @apply w-full overflow-auto list-none;
 }
 
 .react-autosuggest__suggestion {

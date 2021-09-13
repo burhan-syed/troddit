@@ -62,7 +62,7 @@ const Search = () => {
   };
 
   return (
-    <div className="flex flex-row w-full h-full border border-red-500">
+    <div className="flex flex-row w-full h-full border rounded-lg border-lightBorder dark:border-darkBorder">
       <Autosuggest
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
