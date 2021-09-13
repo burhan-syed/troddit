@@ -106,25 +106,25 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         setIsImage(false);
         return true;
         //setLoaded(true);
-      } else if (post.media) {
-        if (post.media.reddit_video) {
-          setVideoInfo({
-            url: post.media.reddit_video.fallback_url,
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-          });
-          setPlaceholderInfo({
-            url: checkURL(post.thumbnail),
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-            //height: post.thumbnail_height,
-            //width: post.thumbnail_width,
-          });
-          setIsMP4(true);
-          setIsImage(false);
-          //setLoaded(true);
-          return true;
-        }
+      }
+    } else if (post.media) {
+      if (post.media.reddit_video) {
+        setVideoInfo({
+          url: post.media.reddit_video.fallback_url,
+          height: post.media.reddit_video.height,
+          width: post.media.reddit_video.width,
+        });
+        setPlaceholderInfo({
+          url: checkURL(post.thumbnail),
+          height: post.media.reddit_video.height,
+          width: post.media.reddit_video.width,
+          //height: post.thumbnail_height,
+          //width: post.thumbnail_width,
+        });
+        setIsMP4(true);
+        setIsImage(false);
+        //setLoaded(true);
+        return true;
       }
     }
     return false;
@@ -196,6 +196,27 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           //setLoaded(true);
           return true;
         }
+      }
+    } else if (post.url) {
+      let purl: string = post.url;
+      if (
+        purl.includes(".jpg") ||
+        purl.includes(".png") ||
+        purl.includes(".gif")
+      ) {
+        // let img = new Image()
+        // img.addEventListener("load", function(){
+        //     alert( this.naturalWidth +' '+ this.naturalHeight );
+        // });
+        // img.src = purl;
+        imgFull = true;
+        setImageInfo({
+          url: checkURL(purl),
+          height: 1080,
+          width: 1080,
+        });
+        setIsImage(true);
+        return true;
       }
     }
     return false;
@@ -308,10 +329,14 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         ""
       )}
 
-      {post.selftext ? (
-        <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
-          {post?.selftext}
-        </Markdown>
+      {post.selftext_html ? (
+        // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
+        //   {post?.selftext}
+        // </Markdown>
+        <div className="overflow-y-auto max-h-96 overscroll-contain">
+          {" "}
+          <div dangerouslySetInnerHTML={{ __html: post?.selftext_html }}></div>
+        </div>
       ) : (
         // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
         ""

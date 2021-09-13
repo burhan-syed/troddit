@@ -83,14 +83,7 @@ const Post = ({ post }) => {
                 <a className="mr-1">r/{post?.subreddit ?? "ERR"}</a>
               </Link>
               <p>•</p>
-              {/* <Link
-              href={{
-                pathname: "/u/[slug]",
-                query: { slug: post?.author ?? "" },
-              }}
-            > */}
               <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
-              {/* </Link> */}
               <p>•</p>
 
               <p className="ml-1">

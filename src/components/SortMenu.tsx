@@ -19,6 +19,9 @@ const SortMenu = ({ hide }) => {
       console.log(router.query.t);
       setRange(router.query.t.toString());
     }
+    return () => {
+      setSort("hot");
+    }
   }, [router.query]);
 
   const updateSort = (e, s) => {
@@ -114,6 +117,13 @@ const SortMenu = ({ hide }) => {
             ""
           )}
           {sort === "hot" ? (
+            <div className="flex flex-row items-baseline justify-between">
+              <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
+            </div>
+          ) : (
+            ""
+          )}
+          {sort === "" ? (
             <div className="flex flex-row items-baseline justify-between">
               <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
             </div>

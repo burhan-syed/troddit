@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { loadMoreComments } from "../RedditAPI";
+import { BiDownvote, BiUpvote } from "react-icons/bi";
+
 import Markdown from "markdown-to-jsx";
 
 const ChildComments = ({ comment, depth, hide }) => {
@@ -60,58 +62,93 @@ const ChildComments = ({ comment, depth, hide }) => {
   return (
     <div
       className={
-        `${depth !== 0 ? "ml-2 md:ml-10 " : ""}` +
+        `${depth !== 0 ? " " : ""}` +
         (depth == 0
-          ? "bg-red-500"
+          ? "bg-white"
           : depth % 2 === 0
-          ? " bg-green-400"
-          : "bg-blue-400") +
-        (hide ? " hidden " : "")
+          ? " bg-white"
+          : "bg-coolGray-200") +
+        (hide ? " hidden " : "") +
+        " border-2 border-blue-900 rounded-md "
       }
     >
-      <h1 className="font-bold">{depth}</h1>
 
-      <div onClick={() => setHideChildren((h) => !h)}>{"+"}</div>
+      <div className={"flex flex-row"}>
+        {/* Left column */}
+        <div className={"w-10 flex-none flex flex-col items-center"}>
+          <div
+            onClick={() => setHideChildren((h) => !h)}
+            className="flex-1 w-1 bg-gray-100 hover:bg-gray-400"
+          ></div>
+        </div>
 
-      <div>
-        {`${comment?.data?.author}`} {comment?.data?.body}{" "}
-      </div>
-      <div className="">
-        {comment?.data?.replies?.data?.children.map((childcomment, i) => (
-          <div key={`${i}_${childcomment?.data?.id}`}>
-            {childcomment.kind == "more" ? (
-              <div>
-                {!moreLoaded ? (
-                  <div
-                    onClick={() =>
-                      loadChildComments(
-                        childcomment.data.children,
-                        comment?.data?.link_id
-                      )
-                    }
-                  >
-                    {"Load More... " + `(${childcomment.data?.count})`}
-                  </div>
-                ) : (
-                  moreComments.map((morecomment, i) => (
-                    <ChildComments
-                      key={i + morecomment?.data?.id}
-                      comment={morecomment}
-                      depth={morecomment?.data?.depth ?? depth + 1}
-                      hide={hideChildren}
-                    />
-                  ))
+        {/* Right Column */}
+        <div className="flex-grow">
+          {/* Author */}
+          <div>{`${comment?.data?.author}`}</div>
+
+          {/* Main Comment Body */}
+          <div className={hideChildren && "hidden"}>
+            <div className="flex-grow">
+              {/* Comment Text */}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    comment?.data?.body_html ??
+                    `<div>${comment?.data?.body ?? "No comment found"}</div>`,
+                }}
+              ></div>
+              {/* Comment Buttons */}
+              <div className="flex flex-row items-center justify-start">
+                <BiUpvote/>
+                {comment?.data?.score ?? "0"}
+                <BiDownvote/>
+              </div>
+
+              {/* Children */}
+              <div className="min-w-full bg-red-500">
+                {comment?.data?.replies?.data?.children.map(
+                  (childcomment, i) => (
+                    <div key={`${i}_${childcomment?.data?.id}`}>
+                      {childcomment.kind == "more" ? (
+                        <div className={hideChildren && "hidden"}>
+                          {!moreLoaded ? (
+                            <div
+                              onClick={() =>
+                                loadChildComments(
+                                  childcomment.data.children,
+                                  comment?.data?.link_id
+                                )
+                              }
+                            >
+                              {"Load More... " +
+                                `(${childcomment.data?.count})`}
+                            </div>
+                          ) : (
+                            moreComments.map((morecomment, i) => (
+                              <ChildComments
+                                key={i + morecomment?.data?.id}
+                                comment={morecomment}
+                                depth={morecomment?.data?.depth ?? depth + 1}
+                                hide={hideChildren}
+                              />
+                            ))
+                          )}
+                        </div>
+                      ) : (
+                        <ChildComments
+                          comment={childcomment}
+                          depth={depth + 1}
+                          hide={hideChildren}
+                        />
+                      )}
+                    </div>
+                  )
                 )}
               </div>
-            ) : (
-              <ChildComments
-                comment={childcomment}
-                depth={depth + 1}
-                hide={hideChildren}
-              />
-            )}
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
