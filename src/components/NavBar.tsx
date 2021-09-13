@@ -49,37 +49,36 @@ const NavBar = () => {
     <header
       className={
         `${hidden ? "-translate-y-full" : ""}` +
-        " z-50 sticky top-0 transition duration-500 ease-in-out transform h-12 border w-screen  border-blue-300"
+        " z-50 fixed top-0 transition duration-500 ease-in-out transform h-12 border w-screen border-blue-300"
       }
     >
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-      <nav className="flex flex-row items-center justify-between h-full bg-white border border-green-400 shadow-md dark:bg-black">
+      <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white dark:bg-black">
         <CgMenu
           className="md:hidden"
           onClick={() => setSidebarVisible((vis) => !vis)}
         />
 
         <Link href="/" passHref>
-          <h1 className="">ReddAll</h1>
+          <h1 className="">Truddit</h1>
         </Link>
 
-        <div className="flex flex-row items-center flex-none h-full border border-black w-60">
+        <div className="hidden h-full border border-black md:block w-60">
           <DropdownPane hide={hidden} />
         </div>
 
-        <div className="flex flex-row items-center w-1/3 h-full text-gray-600 border border-black bg-lightgray focus-within:text-gray-600 focus-within:shadow-md ">
+        <div className="hidden w-1/3 h-full md:block">
           <Search />
         </div>
-        <div className="items-center justify-end hidden h-full space-x-2 border border-red-300 w-80 md:flex">
-          <div className="w-20 h-full">
-            <SortMenu hide={hidden} />
-          </div>
-          <div className="w-20 h-full border border-green-400">
-            <Login />
-          </div>
-          <div className="w-5 h-full">
-            <NavMenu hide={hidden} />
-          </div>
+        <div className="w-20 h-full">
+          <SortMenu hide={hidden} />
+        </div>
+        <div className="hidden w-20 h-full border border-green-400 md:block">
+          <Login />
+        </div>
+        <div className="flex flex-row items-center w-10 h-full bg-red-200">
+          <NavMenu hide={hidden} />
+
         </div>
       </nav>
     </header>

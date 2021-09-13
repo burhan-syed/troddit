@@ -32,13 +32,6 @@ const SortMenu = ({ hide }) => {
 
       if (router.query?.slug?.[0] ?? false) {
         router.push(`/r/${router.query?.slug?.[0] ?? "popular"}/${s}`);
-        //   {
-        //   pathname: "/r/[subs]/[sort]",
-        //   query: {
-        //     subs: router.query?.slug?.[0] ?? "",
-        //     sort: s,
-        //   },
-        // });
       } else {
         router.push(`/${s}`);
       }
@@ -49,19 +42,6 @@ const SortMenu = ({ hide }) => {
     e.preventDefault();
     console.log(router.query);
     setRange(r);
-    // if (
-    //   (router.query?.slug?.[0] ?? false) &&
-    //   (router.query?.slug?.[1] ?? false)
-    // ) {
-    //   router.push({
-    //     pathname: "/r/[subs]/[sort]",
-    //     query: {
-    //       subs: router.query?.slug?.[0] ?? "",
-    //       sort: router.query?.slug?.[1] ?? "",
-    //       t: encodeURI(r),
-    //     },
-    //   });
-    //}
     if (router.query?.slug?.[0] ?? false) {
       router.push(
         `/r/${router.query?.slug?.[0] ?? "popular"}/top/?t=${encodeURI(r)}`
@@ -88,13 +68,13 @@ const SortMenu = ({ hide }) => {
   return (
     <div className="flex flex-row w-full h-full border border-blue-400 select-none hover:cursor-pointer">
       {/* Close when clicking outisde element */}
-      <div
+      {/* <div
         className={
           (show && !hide ? "" : "w-0 h-0") +
           "absolute  top-0 left-0 w-screen h-screen bg-transparent "
         }
         onClick={() => setShow((show) => !show)}
-      ></div>
+      ></div> */}
 
       <div className="flex flex-col flex-grow">
         {/* Button Label */}

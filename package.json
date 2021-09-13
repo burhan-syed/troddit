@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.4.1",
     "axios": "^0.21.1",
     "eslint-plugin-react-hooks": "^4.2.1-alpha-8723e772b-20210826",
     "firebase": "^8.8.0",

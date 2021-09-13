@@ -1,39 +1,61 @@
-import { useState } from "react";
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import NSFWToggle from "./NSFWToggle";
 import ThemeToggle from "./ThemeToggle";
-const NavMenu = ({ hide }) => {
-  const [show, setShow] = useState(false);
-  return (
-    <div className="flex flex-row items-center w-full h-full border border-green-400 select-none hover:cursor-pointer">
-      {/* Close when clicking outisde element */}
-      <div
-        className={
-          (show && !hide ? "" : "w-0 h-0") +
-          "absolute top-0 left-0 w-screen h-screen bg-transparent "
-        }
-        onClick={() => setShow((show) => !show)}
-      ></div>
+import NSFWToggle from "./NSFWToggle";
 
-      <div>
-        <div onClick={() => setShow((show) => !show)}>
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const NavMenu = ({hide=false}) => {
+  return (
+    <Menu as="div" className="relative flex flex-col items-center flex-grow w-full h-full">
+      <div className="flex-grow w-full">
+        <Menu.Button className="flex flex-row items-center justify-center w-full h-full bg-white border border-gray-300 hover:bg-gray-50 focus:outline-none">
           <BsThreeDotsVertical />
-        </div>
-        <div className="absolute right-1 top-12">
-          <div
-            className={
-              "transform transition duration-150 ease-in-out origin-top-right bg-white border " +
-              `${show && !hide ? "scale-100 block" : " scale-0"}`
-            }
-          >
-            <div className="flex-col p-0 m-3 my-5 space-y-6 list-none">
-            <ThemeToggle />
-            <NSFWToggle />
-          </div>
-          </div>
-        </div>
+        </Menu.Button>
       </div>
-    </div>
+
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className={"absolute right-0 w-40 mt-12 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" + (hide && " hidden")}>
+          <div className="py-1">
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <ThemeToggle />
+                </div>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <NSFWToggle />
+                </div>
+              )}
+            </Menu.Item>
+          </div>
+        </Menu.Items>
+      </Transition>
+    </Menu>
   );
 };
 
