@@ -51,7 +51,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
     let a,b,c
 
      b = await findVideo();
-    !b && (a = await findImage())
+    a = await findImage();
      c = await findIframe();
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
@@ -88,6 +88,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const findVideo = async () => {
+    console.log("in vid");
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
         setVideoInfo({
@@ -103,13 +104,19 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           //height: post.prevt.thumbnail_height,
           //width: post.thumbnail_width,
         });
+        setImageInfo({
+          url: checkURL(post?.thumbnail),
+          height: post.preview.reddit_video_preview.height,
+          width: post.preview.reddit_video_preview.width,
+        });
         //console.log(`${post.title}: ${imageInfo.url}`);
         setIsMP4(true);
         setIsImage(false);
         return true;
         //setLoaded(true);
       }
-    } else if (post.media) {
+    } if (post.media) {
+
       if (post.media.reddit_video) {
         setVideoInfo({
           url: post.media.reddit_video.fallback_url,
@@ -122,6 +129,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           width: post.media.reddit_video.width,
           //height: post.thumbnail_height,
           //width: post.thumbnail_width,
+        });
+        setImageInfo({
+          url: checkURL(post?.thumbnail),
+          height: post.media.reddit_video.height,
+          width: post.media.reddit_video.width,
         });
         setIsMP4(true);
         setIsImage(false);
@@ -315,12 +327,29 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               
               // placeholder={<Placeholder imageInfo={placeholder} />}
             >
-              <VideoHandler
+              <video
+        // className="object-cover"
+        // className={videoLoaded ? "opacity-0" : "opacity-100"}
+        className="relative top-0 left-0"
+        style={imgFull ? maxheight : {}}//{maxHeight}
+        width={`${videoInfo.width} !important`}
+        height={`${videoInfo.height} !important`}
+        autoPlay={true}
+        muted
+        loop
+        // preload="metadata"
+        //onLoadedData={onLoadedData}
+        // poster={imageInfo.url}
+        playsInline
+      >
+        <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
+      </video>
+              {/* <VideoHandler
                 placeholder={placeholderInfo}
                 videoInfo={videoInfo}
                 maxHeight={maxheight}
                 imgFull={imgFull}
-              />
+              /> */}
             </LazyLoad>
           </div>
         ) : (

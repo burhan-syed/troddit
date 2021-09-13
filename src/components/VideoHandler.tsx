@@ -34,9 +34,9 @@ const VideoHandler = ({
         <div className="absolute z-10 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
       )}
 
-      <div
+      {/* <div
         className={`blur-xl ` + `${videoLoaded ? "opacity-0" : "opacity-100"}`}
-        style={imgFull ? imgheight : {}}
+        //style={imgFull ? imgheight : {}}
       >
         <Image
           // className={`${
@@ -48,10 +48,10 @@ const VideoHandler = ({
           width={placeholder.width}
           alt="placeholder"
 
-          // layout={imgFull ? "fill" : undefined}
+          layout={imgFull ? "fill" : undefined}
           // lazyBoundary={imgFull ? "0px" : "2000px"}
           // objectFit={imgFull ? "contain" : undefined}
-          priority={imgFull}
+          //priority={imgFull}
           // placeholder="blur"
           // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
           onError={() => {
@@ -59,13 +59,13 @@ const VideoHandler = ({
             setUseFallback(true);
           }}
         />
-      </div>
+      </div> */}
 
       <video
         // className="object-cover"
         // className={videoLoaded ? "opacity-0" : "opacity-100"}
         className="absolute top-0 left-0"
-        style={maxHeight}
+        //style={maxHeight}
         width={`${videoInfo.width} !important`}
         height={`${videoInfo.height} !important`}
         autoPlay={true}
