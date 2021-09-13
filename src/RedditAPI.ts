@@ -203,7 +203,7 @@ export const getMyMultis = async () => {
   }
 };
 
-export const searchSubreddits = async (query, over18 = true) => {
+export const searchSubreddits = async (query, over18 = false) => {
   const token = await (await getToken())?.accessToken;
   if (token) {
     try {
@@ -215,7 +215,7 @@ export const searchSubreddits = async (query, over18 = true) => {
               authorization: `bearer ${token}`,
             },
             params: {
-              include_over_18: true,
+              include_over_18: over18,
               include_profiles: false,
               query: query,
               typeahead_active: true,

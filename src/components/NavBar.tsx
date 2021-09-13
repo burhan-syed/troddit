@@ -63,7 +63,9 @@ const NavBar = () => {
         />
         <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
           <Link href="/" passHref>
-            <h1 className="ml-1 text-2xl align-middle">Troddit</h1>
+            <h1 className="ml-1 text-2xl align-middle cursor-pointer select-none">
+              Troddit
+            </h1>
           </Link>
 
           <div className="flex-none hidden h-full py-2 md:block w-60">

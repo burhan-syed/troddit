@@ -37,41 +37,45 @@ html {
 
 /*suggestions container*/
 .react-autosuggest__container {
-  @apply flex flex-col items-center w-full border rounded-lg border-lightBorder dark:border-darkBorder;
+  @apply flex flex-col items-center w-full border rounded-lg border-lightBorder dark:border-darkBorder dark:hover:border-darkBorderHighlight hover:border-lightBorderHighlight focus:border-lightBorderHighlight focus-within:border-lightBorderHighlight;
 }
 
 .react-autosuggest__input {
-  @apply flex-none w-full h-full outline-none;
+  @apply flex-none w-full h-full px-2 text-gray-300 outline-none dark:text-gray-700;
 }
 
 .react-autosuggest__input--focused {
+  @apply text-black shadow-lg dark:text-white border-lightBorderHighlight dark:border-darkBorderHighlight;
 }
 
 .react-autosuggest__input--open {
+  @apply text-black dark:text-white;
 }
 
 .react-autosuggest__suggestions-container {
+  @apply border rounded-lg border-lightBorder dark:border-darkBorder;
 }
 
 .react-autosuggest__suggestions-container--open {
-  @apply flex flex-col items-center w-full mt-3 bg-white border rounded-lg dark:bg-darkBG dark:text-white;
+  @apply flex flex-col items-center w-full mt-1 bg-white dark:bg-darkBG dark:text-white;
 }
 .react-autosuggest__suggestions-list {
   @apply w-full overflow-auto list-none;
 }
-
+/* 
 .react-autosuggest__suggestion {
-}
+} */
 
 .react-autosuggest__suggestion--highlighted {
+  @apply bg-lightHighlight dark:bg-darkHighlight;
 }
-.react-autosuggest__section-container {
+/* .react-autosuggest__section-container {
 }
 .react-autosuggest__section-container--first {
 }
 
 .react-autosuggest__section-title {
-}
+} */
 
 .react-markdown a {
   @apply text-blue-800 underline;

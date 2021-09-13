@@ -21,12 +21,25 @@ const Search = () => {
   };
 
   const getSuggestions = async (value) => {
-    let suggestions = [{ data: { display_name_prefixed: value.value } }];
+    let suggestions = [
+      {
+        data: {
+          display_name_prefixed: value.value,
+          display_name: value.value,
+          over18: false,
+        },
+      },
+    ];
     if (!session) {
       //suggestions.push({ name: value });
       return suggestions;
     } else if (session) {
+      console.log(context);
       suggestions = await searchSubreddits(value.value, context.nsfw);
+      suggestions = suggestions.filter((sub) => {
+        if (context.nsfw) return sub;
+        else if (sub?.data?.over18 !== true) return sub;
+      });
       console.log(suggestions);
     }
     return suggestions;
@@ -45,8 +58,8 @@ const Search = () => {
     return (
       <div>
         <div
-          onClick={(e) => goToSub(e, suggestion?.data?.display_name)}
-          className="flex flex-row items-center px-2 py-2 cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight focus:bg-red-500 "
+          // onClick={(e) =>}
+          className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
         >
           <div className="ml-2">
             {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
@@ -71,17 +84,21 @@ const Search = () => {
             <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
               {suggestion?.data?.subscribers
                 ? suggestion.data.subscribers.toLocaleString("en-US") +
-                  " followers"
-                : ""}
+                  " followers "
+                : "?? followers "}
+              {suggestion?.data?.over18 && (
+                <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                  nsfw
+                </span>
+              )}
             </div>
           </div>
         </div>
-
         {!session && (
           <div className="flex flex-row items-center flex-grow w-full">
             <button
-              className="w-full h-full py-3 mx-2 my-1 border border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-              onClick={() => signIn()}
+              className="w-full h-full py-3 bg-white border rounded-lg dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+              onClick={(e) => handleSignIn(e)}
             >
               <span className="text-blue-800 dark:text-blue-600">Login</span>{" "}
               with Reddit to Autocomplete Search
@@ -92,9 +109,18 @@ const Search = () => {
     );
   };
 
+  const handleSignIn = (e) => {
+    e.stopPropagation();
+    signIn();
+  };
+
   const goToSub = (e, suggestion) => {
     e.preventDefault();
     router.push(`/r/${suggestion}`);
+  };
+
+  const onSuggestionSelected = (event, { suggestion }) => {
+    goToSub(event, suggestion?.data?.display_name ?? "popular");
   };
 
   const onChange = (event, { newValue }) => {
@@ -108,7 +134,7 @@ const Search = () => {
   };
 
   return (
-    <div className="flex flex-row w-full h-full">
+    <div className="flex flex-row w-full h-full ">
       <Autosuggest
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
@@ -117,6 +143,7 @@ const Search = () => {
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
         highlightFirstSuggestion={true}
+        onSuggestionSelected={onSuggestionSelected}
       />
     </div>
   );
