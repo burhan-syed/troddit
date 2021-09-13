@@ -48,11 +48,14 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const initialize = async () => {
-    let a,b,c
+    let a, b, c;
 
-     b = await findVideo();
-    a = await findImage();
-     c = await findIframe();
+    b = await findVideo();
+    if (!b) {
+      a = await findImage();
+    }
+    //a = await findImage();
+    c = await findIframe();
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
@@ -115,8 +118,8 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         return true;
         //setLoaded(true);
       }
-    } if (post.media) {
-
+    }
+    if (post.media) {
       if (post.media.reddit_video) {
         setVideoInfo({
           url: post.media.reddit_video.fallback_url,
@@ -324,32 +327,13 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               once={true}
               offset={2000}
               unmountIfInvisible={false}
-              
-              // placeholder={<Placeholder imageInfo={placeholder} />}
             >
-              <video
-        // className="object-cover"
-        // className={videoLoaded ? "opacity-0" : "opacity-100"}
-        className="relative top-0 left-0"
-        style={imgFull ? maxheight : {}}//{maxHeight}
-        width={`${videoInfo.width} !important`}
-        height={`${videoInfo.height} !important`}
-        autoPlay={true}
-        muted
-        loop
-        // preload="metadata"
-        //onLoadedData={onLoadedData}
-        // poster={imageInfo.url}
-        playsInline
-      >
-        <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
-      </video>
-              {/* <VideoHandler
+              <VideoHandler
                 placeholder={placeholderInfo}
                 videoInfo={videoInfo}
                 maxHeight={maxheight}
                 imgFull={imgFull}
-              /> */}
+              />
             </LazyLoad>
           </div>
         ) : (
