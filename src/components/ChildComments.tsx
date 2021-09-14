@@ -69,16 +69,16 @@ const ChildComments = ({ comment, depth, hide }) => {
           ? " bg-white"
           : "bg-coolGray-200") +
         (hide ? " hidden " : "") +
-        " border-2 border-blue-900 rounded-md "
+        " border py-2 my-1"
       }
     >
 
       <div className={"flex flex-row"}>
         {/* Left column */}
-        <div className={"w-10 flex-none flex flex-col items-center"}>
+        <div className={"w-10 flex-none flex flex-col justify-start"}>
           <div
             onClick={() => setHideChildren((h) => !h)}
-            className="flex-1 w-1 bg-gray-100 hover:bg-gray-400"
+            className="flex-1 w-3 bg-gray-100 rounded-full hover:bg-gray-400"
           ></div>
         </div>
 
@@ -106,7 +106,7 @@ const ChildComments = ({ comment, depth, hide }) => {
               </div>
 
               {/* Children */}
-              <div className="min-w-full bg-red-500">
+              <div className="min-w-full py-2">
                 {comment?.data?.replies?.data?.children.map(
                   (childcomment, i) => (
                     <div key={`${i}_${childcomment?.data?.id}`}>
