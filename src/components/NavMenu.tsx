@@ -31,7 +31,7 @@ const NavMenu = ({ hide = false }) => {
       >
         <Menu.Items
           className={
-            "absolute right-0 w-40 mt-12 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" +
+            "absolute right-0 w-40 mt-11 origin-top-right bbg-white dark:bg-darkBG bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder " +
             (hide && " hidden")
           }
         >
@@ -41,8 +41,8 @@ const NavMenu = ({ hide = false }) => {
                 <div
                   className={classNames(
                     active
-                      ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                      : "text-gray-700",
+                      ? "bg-lightHighlight dark:bg-darkHighlight "
+                      : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >
@@ -55,8 +55,8 @@ const NavMenu = ({ hide = false }) => {
                 <div
                   className={classNames(
                     active
-                      ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                      : "text-gray-700",
+                      ? "bg-lightHighlight dark:bg-darkHighlight"
+                      : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >

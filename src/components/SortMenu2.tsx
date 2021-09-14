@@ -157,8 +157,8 @@ const SortMenu2 = ({ hide = false }) => {
                       onClick={(e) => updateSort(e, "best")}
                       className={classNames(
                         active
-                          ? "bg-gray-100 dark:bg-darkHighlight text-gray-900 dark:text-white"
-                          : "text-gray-700",
+                          ? "bg-lightHighlight dark:bg-darkHighlight"
+                          : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -176,8 +176,8 @@ const SortMenu2 = ({ hide = false }) => {
                       onClick={(e) => updateSort(e, "hot")}
                       className={classNames(
                         active
-                          ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                          : "text-gray-700",
+                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                        : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -198,8 +198,8 @@ const SortMenu2 = ({ hide = false }) => {
                       <div
                         className={classNames(
                           active
-                            ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                            : "text-gray-700",
+                          ? "bg-lightHighlight dark:bg-darkHighlight"
+                          : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -211,7 +211,7 @@ const SortMenu2 = ({ hide = false }) => {
                       <ul
                         className={
                           (active ? "block " : "hidden ") +
-                          "absolute top-24 mt-1 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                          "absolute top-24 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                         }
                       >
                         <Menu.Item>
@@ -219,7 +219,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "hour" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-gray-100 mt-1"
                               }
                               onClick={(e) => updateRange(e, "hour")}
                             >
@@ -284,7 +284,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "all" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-gray-100 mb-1"
                               }
                               onClick={(e) => updateRange(e, "all")}
                             >
@@ -303,8 +303,8 @@ const SortMenu2 = ({ hide = false }) => {
                       onClick={(e) => updateSort(e, "new")}
                       className={classNames(
                         active
-                          ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                          : "text-gray-700",
+                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                        : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -322,8 +322,8 @@ const SortMenu2 = ({ hide = false }) => {
                       onClick={(e) => updateSort(e, "rising")}
                       className={classNames(
                         active
-                          ? "bg-gray-100 dark:bg-gray-500 text-gray-900"
-                          : "text-gray-700",
+                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                        : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >

@@ -314,3 +314,41 @@ export const loadPost = async (permalink) => {
     console.log(err);
   }
 };
+
+export const getMyID = async () => {
+  const token = await (await getToken())?.accessToken;
+  try{
+    const res = await axios.get("https://oauth.reddit.com/api/v1/me", {
+      headers: {
+        authorization: `bearer ${token}`,
+      }
+    });
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export const postVote = async (dir:number, id ) => {
+  const token = await (await getToken())?.accessToken;
+  await getMyID(); 
+  try {
+    const res = await (
+      await axios.post("https://oauth.reddit.com/api/vote", {
+        headers: {
+          authorization: `bearer ${token}`,
+          'Access-Control-Allow-Origin' : '*',
+        },
+        params: {
+          dir: dir,
+          id: id,
+          rank: 2,
+          uh: undefined
+        },
+      })
+    ).data;
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+}

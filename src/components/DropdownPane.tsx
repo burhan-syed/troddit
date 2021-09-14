@@ -34,7 +34,8 @@ const DropdownPane = ({ hide }) => {
   useEffect(() => {
     //console.log(router.query);
     if (router?.query?.slug?.[0]) {
-      setLocation(router.query.slug[0]);
+      let loc = router?.query?.slug?.[0].split('+')
+      setLocation(loc[0]);
     } else {
       setLocation("home");
     }
@@ -165,7 +166,7 @@ const DropdownPane = ({ hide }) => {
                 className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
                 onClick={() => signIn()}
               >
-                Login to see your subs
+                <span className="text-blue-300 dark:text-blue-600">Login</span> to see your subs
               </button>
             </>
           )}
@@ -173,7 +174,7 @@ const DropdownPane = ({ hide }) => {
           {session && (
             <>
               {/* Multis */}
-              <div className="pl-2 text-xs font-semibold">M u l t i s</div>
+              <div className="pl-2 text-xs tracking-widest">multis</div>
               <div>
                 <div className="py-2">
                   {myMultis
@@ -191,7 +192,7 @@ const DropdownPane = ({ hide }) => {
                 </div>
               </div>
               {/* Subs */}
-              <div className="pl-2 text-xs font-semibold">S u b s</div>
+              <div className="pl-2 text-xs tracking-widest">subs</div>
               <div className="py-2">
                 {mySubs
                   ? mySubs.map((sub, i) => {

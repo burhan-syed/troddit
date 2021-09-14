@@ -11,6 +11,7 @@ import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
 import Iframe from "react-iframe";
 import Media from "./Media";
+import { postVote } from "../RedditAPI";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -53,6 +54,11 @@ const Post = ({ post }) => {
     }
   };
 
+  const castVote = async(e,vote) => {
+    e.stopPropagation();
+    //await postVote(1,post.name);
+  }
+
   return (
     <div>
       {select && (
@@ -67,20 +73,13 @@ const Post = ({ post }) => {
         className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
         {!hide ? (
-          <div className="p-1 ">
-            <h1>
-              <a
-                className="text-base"
-                href={`https://www.reddit.com${post?.permalink ?? ""}`}
-                target="_blank"
-                rel="noreferrer"
-              >
+          <div className="p-1">
+            <h1 className="text-base cursor-pointer">
                 {post?.title ?? ""}
-              </a>
             </h1>
             <div className="flex flex-row text-xs font-light text-gray">
               <Link href={`/r/${post?.subreddit}`}>
-                <a className="mr-1">r/{post?.subreddit ?? "ERR"}</a>
+                <a className="mr-1" onClick={(e) => {e.stopPropagation()}}>r/{post?.subreddit ?? "ERR"}</a>
               </Link>
               <p>•</p>
               <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
@@ -101,28 +100,25 @@ const Post = ({ post }) => {
             </div>
             {/* <p>{post?.url ?? "ERR"}</p> */}
 
-            <div className="flex flex-row text-xs align-bottom">
-              <div className="flex flex-row items-center text-sm">
-                <div className="flex-none border hover:cursor-pointer active:border-2">
-                  <BiUpvote />
+            <div className="flex flex-row justify-between text-sm align-bottom select-none">
+              <div className="flex flex-row items-center space-x-1">
+                <div className="flex-none hover:cursor-pointer ">
+                  <BiUpvote className="w-4 h-4 hover:scale-110 hover:text-upvote" onClick={(e) => castVote(e,1)}/>
                 </div>
                 <p className="">{post?.score ?? "0"}</p>
 
-                <div className="flex-none border hover:cursor-pointer active:border-2">
-                  <BiDownvote />
+                <div className="flex-none hover:cursor-pointer ">
+                  <BiDownvote className="w-4 h-4 hover:scale-110 hover:text-downvote" onClick={(e) => castVote(e,-1)}/>
                 </div>
               </div>
 
-              <a
-                className="ml-auto hover:underline"
-                href={`https://www.reddit.com${post?.permalink ?? ""}`}
-                target="_blank"
-                rel="noreferrer"
+              <h1
+                className="cursor-pointer "
               >
                 {`${post.num_comments} ${
                   post.num_comments === 1 ? "comment" : "comments"
                 }`}
-              </a>
+              </h1>
             </div>
           </div>
         ) : (

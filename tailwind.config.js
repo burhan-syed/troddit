@@ -17,6 +17,8 @@ module.exports = {
         darkBorder: "#3F3F46",
         darkBorderHighlight: "#71717A",
         darkHighlight: "#262626",
+        upvote: "#F97316",
+        downvote: "#60A5FA",
         blueGray: colors.blueGray,
         coolGray: colors.coolGray,
         trueGray: colors.trueGray,
