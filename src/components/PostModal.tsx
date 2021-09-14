@@ -7,6 +7,7 @@ import Media from "./Media";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { BiComment } from "react-icons/bi";
 import { CgCloseO } from "react-icons/cg";
+import { RiArrowGoBackLine } from "react-icons/ri";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
 
@@ -84,6 +85,12 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
       <div className="flex flex-row justify-center pt-2">
         {/* Main Card */}
         <div className="z-10 sm:w-full md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
+          <div className="fixed right-2 top-16">
+            <RiArrowGoBackLine
+              onClick={() => handleBack()}
+              className="w-8 h-8 mt-1 text-gray-400 cursor-pointer hover:text-gray-300"
+            />
+          </div>
           {/* Content container */}
           <div className="w-full mt-12 overflow-y-auto">
             {/* Mobile close button */}
@@ -93,24 +100,39 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
             {/* media */}
             {loadingPost ? (
               // Loading Media Card
-              <div className="w-full p-4 mx-auto bg-black border border-blue-300 rounded-md shadow">
-                <div className="flex space-x-4 animate-pulse">
-                  <div className="flex-1 py-1 space-y-4">
-                    <div className="w-3/4 h-4 bg-blue-400 rounded"></div>
-                    <div className="space-y-2">
-                      <div className="bg-blue-400 rounded h-96"></div>
-                      <div className="w-5/6 bg-blue-400 rounded h-44"></div>
-                    </div>
+              <div className="w-full mx-auto my-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                <div className="flex flex-row items-center pt-2 pb-2 pr-2 md:pt-4 md:pr-4 md:pb-4">
+                  <div className="flex-col items-center self-start justify-start hidden w-20 h-full md:flex animate-pulse">
+                    <BiUpvote className="flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110" />
+                    <div className="w-3/4 h-4 my-1 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <BiDownvote className="flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110" />
                   </div>
+                  <div className="flex-grow space-y-2 animate-pulse">
+                    <div className="w-full h-10 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <div className="w-3/4 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <div className="w-full h-6 bg-gray-300 rounded dark:bg-gray-800 "></div>
+                    <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <div className="w-5/6 bg-gray-300 rounded h-96 dark:bg-gray-800 justify-self-center "></div>
+                    <div className="flex flex-row items-center justify-end mt-2 select-none">
+                      <div
+                        onClick={() => scrollComments()}
+                        className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                      >
+                        <BiComment className="flex-none w-6 h-6 pr-2" />
+                        {'comments'}
+                      </div>
+                    </div>
                 </div>
+                  </div>
+                  
               </div>
             ) : (
               // Media Card
-              <div className="w-full mb-3 bg-white border-b rounded-b-lg dark:bg-darkBG">
+              <div className="w-full my-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
                 {/* Flex container */}
-                <div className="flex flex-row items-center md:pr-3 md:pb-3 p-4 md:pl-0 lg:pr-4 pt-2.5 lg:pb-4">
+                <div className="flex flex-row items-center pt-2 pb-2 pr-2 md:pt-4 md:pr-4 md:pb-4">
                   {/* Upvote column */}
-                  <div className="flex-col items-center self-start justify-start hidden w-20 h-full px-2 md:flex ">
+                  <div className="flex-col items-center self-start justify-start hidden w-20 h-full md:flex ">
                     <BiUpvote className="flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110" />
                     <p className="">{score ?? "0"}</p>
                     <BiDownvote className="flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110" />
@@ -192,7 +214,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
               </div>
             ) : (
               // Loaded Comment
-              <div className="flex-grow bg-white border rounded-lg dark:bg-darkBG">
+              <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
                 <div
                   ref={divRef}
                   className="flex flex-col items-center justify-center w-full my-5 overflow-x-hidden"
@@ -209,7 +231,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                   <h1 className="">
                     {post_comments?.[0] ? "" : "no comments :("}
                   </h1>
-                  <div className="flex-grow w-full">
+                  <div className="flex-grow w-full px-2">
                     <Comments comments={post_comments} depth={0} />
                   </div>
                 </div>

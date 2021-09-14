@@ -19,6 +19,7 @@ module.exports = {
       "www.independent.co.uk",
       "i.imgur.com",
       "goo.gl",
+      "im2.ezgif.com"
     ],
   },
 };
