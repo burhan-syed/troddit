@@ -394,7 +394,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         // </Markdown>
         <div className="overflow-y-auto max-h-96 overscroll-contain">
           {" "}
-          <div dangerouslySetInnerHTML={{ __html: post?.selftext_html }}></div>
+          <div id="innerhtml" dangerouslySetInnerHTML={{ __html: post?.selftext_html }}></div>
         </div>
       ) : (
         // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>

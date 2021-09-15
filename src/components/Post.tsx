@@ -107,12 +107,12 @@ const Post = ({ post }) => {
             <div className="flex flex-row justify-between text-sm align-bottom select-none">
               <div className="flex flex-row items-center space-x-1">
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiUpvote className={(vote === 1 && "text-upvote ") + " w-4 h-4 hover:scale-110 hover:text-upvote"} onClick={(e) => castVote(e,1)}/>
+                  <BiUpvote className={(vote === 1 ? "text-upvote " : " text-black dark:text-white") + " w-4 h-4 hover:scale-110 hover:text-upvote"} onClick={(e) => castVote(e,1)}/>
                 </div>
                 <p className="">{post?.score ? (post.score+vote) : vote}</p>
 
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiDownvote className={(vote === -1 && " text-downvote ") + " w-4 h-4 hover:scale-110 hover:text-downvote"} onClick={(e) => castVote(e,-1)}/>
+                  <BiDownvote className={(vote === -1 ? " text-downvote " : " text-black dark:text-white ") + " w-4 h-4 hover:scale-110 hover:text-downvote"} onClick={(e) => castVote(e,-1)}/>
                 </div>
               </div>
 

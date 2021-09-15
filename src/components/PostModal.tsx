@@ -98,8 +98,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
       ></div>
       <div className="flex flex-row justify-center pt-2">
         {/* Main Card */}
-        <div className="z-10 w-screen md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
-          <div className="absolute md:fixed left-2 top-16">
+        <div className="z-10 w-11/12 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
+          <div className="absolute md:fixed left-4 top-16">
             <RiArrowGoBackLine
               onClick={() => handleBack()}
               className="w-8 h-8 mt-1 text-gray-400 cursor-pointer hover:text-gray-300"
@@ -131,7 +131,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       }
                     />
                   </div>
-                  <div className="flex flex-col flex-grow space-y-2 animate-pulse pt-1.5 md:pl-1 border-gray-100 md:border-l dark:border-darkHighlight">
+                  <div className="flex flex-col flex-grow space-y-2 animate-pulse pt-1.5 md:pl-3 border-gray-100 md:border-l dark:border-darkHighlight">
                     <div className="w-1/4 h-4 bg-gray-300 rounded dark:bg-gray-800"></div>
                     <div className="w-full bg-gray-300 rounded dark:bg-gray-800"></div>
                     <div className="w-3/4 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
@@ -212,8 +212,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                   {/* Main Media Column */}
                   <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                     {/* Title etc*/}
-                    <div className="flex flex-row flex-none pt-1.5 text-xs font-light text-gray md:pl-1">
-                      <a className="ml-1 mr-1">
+                    <div className="flex flex-row flex-none pt-1.5 text-xs font-light text-gray md:pl-3">
+                      <a className="mr-1 ">
                         {"Posted by " + `u/${apost?.author ?? ""}`}
                       </a>
                       <Link href={`/r/${apost?.subreddit}`}>
@@ -238,7 +238,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                         <p className="ml-1">{`(${apost?.domain})`}</p>
                       </div>
                     </div>
-                    <h1 className="py-2 md:pl-1">
+                    <h1 className="py-2 md:pl-3">
                       <a
                         className="text-xl"
                         href={`https://www.reddit.com${apost?.permalink ?? ""}`}
@@ -250,7 +250,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     </h1>
 
                     {/* Image/Video/Text Body */}
-                    <div className="block md:pl-1">
+                    <div className="block md:pl-3">
                       <Media post={apost} allowIFrame={true} imgFull={true} />
                     </div>
                     {/* Bottom Buttons */}

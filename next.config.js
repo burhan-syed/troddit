@@ -18,6 +18,7 @@ module.exports = {
       "www.newsweek.com",
       "www.independent.co.uk",
       "i.imgur.com",
+      "imgur.com",
       "goo.gl",
       "im2.ezgif.com"
     ],

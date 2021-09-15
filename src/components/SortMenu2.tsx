@@ -219,7 +219,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "hour" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100 mt-1"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1"
                               }
                               onClick={(e) => updateRange(e, "hour")}
                             >
@@ -232,7 +232,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "today" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
                               }
                               onClick={(e) => updateRange(e, "today")}
                             >
@@ -245,7 +245,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "week" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
                               }
                               onClick={(e) => updateRange(e, "week")}
                             >
@@ -258,7 +258,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "month" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
                               }
                               onClick={(e) => updateRange(e, "month")}
                             >
@@ -271,7 +271,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "year" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
                               }
                               onClick={(e) => updateRange(e, "year")}
                             >
@@ -283,8 +283,8 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "all" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-gray-100 mb-1"
+                                (range === "all" ? `font-bold ` : "") +
+                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
                               }
                               onClick={(e) => updateRange(e, "all")}
                             >

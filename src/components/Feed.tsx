@@ -133,7 +133,7 @@ const Feed = ({ query }) => {
 
   if (loading) {
     return (
-      <div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>
+      <div className="absolute w-screen h-16 bg-blue-700 animate-pulse"></div>
     );
   }
   if (fetchPost) {
@@ -155,7 +155,7 @@ const Feed = ({ query }) => {
   return (
     <section className="flex flex-col items-center flex-none w-screen pt-16">
       {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
-      <div className="md:w-5/6">
+      <div className="w-11/12 md:w-5/6">
         <InfiniteScroll
           dataLength={posts.length}
           next={loadmore}

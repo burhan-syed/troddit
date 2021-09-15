@@ -31,10 +31,13 @@ const DropdownPane = ({ hide }) => {
   const [session, loading] = useSession();
   const context: any = useMainContext();
 
+  const [loadedMultis, setloadedMultis] = useState(false);
+  const [loadedSubs, setloadedSubs] = useState(false);
+
   useEffect(() => {
     //console.log(router.query);
     if (router?.query?.slug?.[0]) {
-      let loc = router?.query?.slug?.[0].split('+')
+      let loc = router?.query?.slug?.[0].split("+");
       setLocation(loc[0]);
     } else {
       setLocation("home");
@@ -82,10 +85,12 @@ const DropdownPane = ({ hide }) => {
 
   const loadAllFast = async () => {
     try {
-      const subs = getAllMySubs();
       const multis = getMyMultis();
-      setMySubs(await subs);
+      const subs = getAllMySubs();
       setMyMultis(await multis);
+      setloadedMultis(true);
+      setMySubs(await subs);
+      setloadedSubs(true);
     } catch (err) {
       console.log(err);
     }
@@ -166,7 +171,8 @@ const DropdownPane = ({ hide }) => {
                 className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
                 onClick={() => signIn()}
               >
-                <span className="text-blue-300 dark:text-blue-600">Login</span> to see your subs
+                <span className="text-blue-300 dark:text-blue-600">Login</span>{" "}
+                to see your subs
               </button>
             </>
           )}
@@ -174,26 +180,75 @@ const DropdownPane = ({ hide }) => {
           {session && (
             <>
               {/* Multis */}
-              <div className="pl-2 text-xs tracking-widest">multis</div>
-              <div>
-                <div className="py-2">
-                  {myMultis
-                    ? myMultis.map((multi, i) => {
-                        return (
-                          <div
-                            className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                            key={`${i}_${multi.data.display_name}`}
-                          >
-                            <DropdownItem sub={multi} />
+              {/* onClick={() => {setloadedMultis(m => !m);setloadedSubs(s => !s)}} */}
+              <div className="pl-2 text-xs tracking-widest" >multis</div>
+              {!loadedMultis ? (
+                // Loading pane
+                <>
+                  <div className="py-2">
+                    <div className="px-4 py-1 ">
+                      {/* Repeated rows */}
+                      {[...Array(3)].map((u, i) => (
+                        <div key={i} className="py-1">
+                          <div className="flex flex-row items-center text-sm text-center animate-pulse ">
+                            {/* Image */}
+                            <div className="flex flex-row items-center w-6 h-6 ml-1 ">
+                              <div className="w-6 h-6 text-center text-white bg-red-400 rounded ">
+                                {"m"}
+                              </div>
+                            </div>
+                            {/* Text */}
+                            <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
                           </div>
-                        );
-                      })
-                    : ""}
-                </div>
-              </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="py-2">
+                    {myMultis
+                      ? myMultis.map((multi, i) => {
+                          return (
+                            <div
+                              className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                              key={`${i}_${multi.data.display_name}`}
+                            >
+                              <DropdownItem sub={multi} />
+                            </div>
+                          );
+                        })
+                      : ""}
+                  </div>
+                </>
+              )}
               {/* Subs */}
               <div className="pl-2 text-xs tracking-widest">subs</div>
-              <div className="py-2">
+              {!loadedSubs ? (
+                <>
+                <div className="py-2">
+                  <div className="px-4 py-1 ">
+                    {/* Repeated rows */}
+                    {[...Array(5)].map((u, i) => (
+                      <div key={i} className="py-1">
+                        <div className="flex flex-row items-center text-sm text-center animate-pulse ">
+                          {/* Image */}
+                          <div className="flex flex-row items-center w-6 h-6 ml-1 ">
+                            <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full ">
+                              {"r/"}
+                            </div>
+                          </div>
+                          {/* Text */}
+                          <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </> ) : 
+              (
+                <div className="py-2">
                 {mySubs
                   ? mySubs.map((sub, i) => {
                       return (
@@ -207,6 +262,8 @@ const DropdownPane = ({ hide }) => {
                     })
                   : ""}
               </div>
+              )}
+              
             </>
           )}
         </div>
