@@ -78,6 +78,8 @@ html {
 .react-autosuggest__section-title {
 } */
 
+#innerhtml a {@apply text-blue-600 dark:text-blue-400 underline }
+
 .react-markdown a {
   @apply text-blue-800 underline;
 }

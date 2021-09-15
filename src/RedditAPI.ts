@@ -317,38 +317,53 @@ export const loadPost = async (permalink) => {
 
 export const getMyID = async () => {
   const token = await (await getToken())?.accessToken;
-  try{
+  try {
     const res = await axios.get("https://oauth.reddit.com/api/v1/me", {
       headers: {
         authorization: `bearer ${token}`,
-      }
+      },
     });
     console.log(res);
   } catch (err) {
     console.log(err);
   }
-}
+};
 
-export const postVote = async (dir:number, id ) => {
+export const postVote = async (dir: number, id) => {
   const token = await (await getToken())?.accessToken;
-  await getMyID(); 
+
   try {
-    const res = await (
-      await axios.post("https://oauth.reddit.com/api/vote", {
-        headers: {
-          authorization: `bearer ${token}`,
-          'Access-Control-Allow-Origin' : '*',
-        },
-        params: {
-          dir: dir,
-          id: id,
-          rank: 2,
-          uh: undefined
-        },
-      })
-    ).data;
-    console.log(res);
+    console.log(dir, id, token);
+    // const res = await (
+    //   await axios.post("https://oauth.reddit.com/api/vote", {
+    //     headers: {
+    //       authorization: `bearer ${token}`,
+    //       'Content-Type': 'application/x-www-form-urlencoded'
+
+    //     },
+    //     params: {
+    //       dir: "1",
+    //       id: "t3_po8g7d",
+    //       rank: 2
+    //     },
+    //   })
+    // ).data;
+    const res = await fetch("https://oauth.reddit.com/api/vote", {
+      method: "POST",
+      headers: {
+        Authorization: `bearer ${token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `id=${id}&dir=${dir}&rank=3`,
+    });
+    if (res.ok) {
+      console.log(res);
+      return true;
+    } else {
+      return false;
+    }
   } catch (err) {
     console.log(err);
+    return false;
   }
-}
+};

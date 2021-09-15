@@ -130,6 +130,7 @@ const Feed = ({ query }) => {
     setPosts((prevposts) => [...prevposts, ...data.children]);
   };
 
+
   if (loading) {
     return (
       <div className="absolute w-screen h-1 bg-blue-700 animate-pulse"></div>
@@ -143,6 +144,7 @@ const Feed = ({ query }) => {
           permalink={"/r/" + query.slug.join("/")}
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
           setSelect={setFetchPost}
+
         />
       </div>
     );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { loadMoreComments } from "../RedditAPI";
+import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 
 import Markdown from "markdown-to-jsx";
@@ -9,14 +9,24 @@ const ChildComments = ({ comment, depth, hide }) => {
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [score, setScore] = useState("");
   const [color, setColor] = useState(100);
+  const [hideChildren, setHideChildren] = useState(false);
+  const [vote, setVote] = useState(0);
 
+  const castVote = async (e, v) => {
+    e.stopPropagation();
+    v === vote ? (v = 0) : undefined;
+    let res = await postVote(v, comment?.data?.name);
+    res ? setVote(v) : undefined;
+  };
   useEffect(() => {
-    setScore(calculateScore(comment?.data?.score ?? 0));
+    setScore(
+      calculateScore(comment?.data?.score ? comment.data.score + vote : 0)
+    );
     //console.log(comment);
     return () => {
       setScore("0");
     };
-  }, [comment, depth]);
+  }, [comment, depth, vote]);
 
   const calculateScore = (x: number) => {
     if (x < 10000) {
@@ -78,7 +88,6 @@ const ChildComments = ({ comment, depth, hide }) => {
     return comments;
   };
 
-  const [hideChildren, setHideChildren] = useState(false);
   return (
     <div
       className={
@@ -97,46 +106,63 @@ const ChildComments = ({ comment, depth, hide }) => {
 
         <div
           onClick={() => setHideChildren((h) => !h)}
-          className={
-            "min-h-full  w-4 flex-none  cursor-pointer group"
-          }
+          className={"min-h-full w-0  md:w-4 flex-none  cursor-pointer group"}
         >
           <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
           {/* Vote Buttons */}
         </div>
         <div
           className={
-            "flex flex-col items-center justify-start flex-none pr-2 pt-4 " +
-            (hideChildren && " hidden")
+            " flex-col items-center justify-start flex-none pr-2 pt-4 hidden " +
+            (hideChildren ? " hidden " : " md:flex ")
           }
         >
-          <BiUpvote className="flex-none w-6 h-6 hover:text-upvote hover:scale-110" />
-          <BiDownvote className="flex-none w-6 h-6 font-extralight hover:text-downvote hover:scale-110" />
+          <BiUpvote
+            onClick={(e) => castVote(e, 1)}
+            className={
+              (vote === 1 && "text-upvote ") +
+              " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
+            }
+          />{" "}
+          <BiDownvote
+            onClick={(e) => castVote(e, -1)}
+            className={
+              (vote === -1 && "text-downvote ") +
+              " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
+            }
+          />{" "}
         </div>
 
         {/* Comment Body */}
-        <div className={"flex-grow mt-3 " + (hideChildren && " pl-8 mb-3")}>
+        <div
+          className={"flex-grow mt-3  " + (hideChildren && " md:pl-8 mb-3")}
+          onClick={(e) => {
+            e.stopPropagation();
+            setHideChildren((h) => !h);
+          }}
+        >
           {/* Author */}
-          <div className="flex flex-row justify-start space-x-1 text-base text-gray-400 dark:text-gray-500">
+          <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             <h1 className="">{`${comment?.data?.author}`}</h1>
             <p>•</p>
             <h1>{score ?? "0"} pts</h1>
             <p>•</p>
             <p className="">
-                        {Math.floor(
-                          (Math.floor(Date.now() / 1000) - comment?.data?.created_utc) /
-                            3600
-                        )}{" "}
-                        hours ago
-                      </p>
+              {Math.floor(
+                (Math.floor(Date.now() / 1000) - comment?.data?.created_utc) /
+                  3600
+              )}{" "}
+              hours ago
+            </p>
           </div>
 
           {/* Main Comment Body */}
-          <div className={hideChildren ? "hidden" : " "}>
+          <div className={(hideChildren ? "hidden" : " ") + " "}>
             <div className="flex-grow ">
               {/* Comment Text */}
               <div
-                className="pb-2"
+                className="pb-2 pl-3 md:pl-0"
+                id="innerhtml"
                 dangerouslySetInnerHTML={{
                   __html:
                     comment?.data?.body_html ??
@@ -153,13 +179,14 @@ const ChildComments = ({ comment, depth, hide }) => {
                         <div className={hideChildren ? "hidden" : " "}>
                           {!moreLoaded ? (
                             <div
-                              className="pt-2 cursor-pointer hover:font-semibold"
-                              onClick={() =>
+                              className="pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 loadChildComments(
                                   childcomment?.data?.children,
                                   comment?.data?.link_id
-                                )
-                              }
+                                );
+                              }}
                             >
                               {"Load More... " +
                                 `(${childcomment.data?.count})`}

@@ -54,9 +54,13 @@ const Post = ({ post }) => {
     }
   };
 
-  const castVote = async(e,vote) => {
+  const [vote, setVote] = useState(0)
+
+  const castVote = async(e,v) => {
     e.stopPropagation();
-    //await postVote(1,post.name);
+    v === vote ?  (v = 0) : undefined;
+    let res = await postVote(v,post.name);
+    res ? setVote(v) : undefined
   }
 
   return (
@@ -103,12 +107,12 @@ const Post = ({ post }) => {
             <div className="flex flex-row justify-between text-sm align-bottom select-none">
               <div className="flex flex-row items-center space-x-1">
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiUpvote className="w-4 h-4 hover:scale-110 hover:text-upvote" onClick={(e) => castVote(e,1)}/>
+                  <BiUpvote className={(vote === 1 && "text-upvote ") + " w-4 h-4 hover:scale-110 hover:text-upvote"} onClick={(e) => castVote(e,1)}/>
                 </div>
-                <p className="">{post?.score ?? "0"}</p>
+                <p className="">{post?.score ? (post.score+vote) : vote}</p>
 
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiDownvote className="w-4 h-4 hover:scale-110 hover:text-downvote" onClick={(e) => castVote(e,-1)}/>
+                  <BiDownvote className={(vote === -1 && " text-downvote ") + " w-4 h-4 hover:scale-110 hover:text-downvote"} onClick={(e) => castVote(e,-1)}/>
                 </div>
               </div>
 
