@@ -107,43 +107,77 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
           </div>
           {/* Content container */}
           <div className="w-full pt-10 mt-12 overflow-y-auto md:pt-0 ">
-            {/* media */}
+            {/* LOADING POST CARD */}
             {loadingPost ? (
               // Loading Media Card
-              <div className="w-full mx-auto my-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
-                <div className="flex flex-row items-center pt-2 pb-2 pr-2 md:pt-4 md:pr-4 md:pb-4">
-                  <div className="flex-col items-center self-start justify-start hidden w-20 h-full md:flex animate-pulse">
+              <div className="w-full my-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                {/* Flex container */}
+                <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
+                  {/* Upvote column */}
+                  <div className="flex-col flex-none items-center self-start justify-start hidden h-full pt-1.5 md:px-2 md:flex animate-pulse ">
                     <BiUpvote
                       className={
                         (vote === 1 && "text-upvote ") +
-                        " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
+                        " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
                       }
                     />
-                    <div className="w-3/4 h-4 my-1 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <div className="flex-grow w-full h-4 py-1.5 bg-gray-300 rounded dark:bg-gray-800 text-transparent">
+                      0000
+                    </div>
                     <BiDownvote
                       className={
                         (vote === -1 && "text-downvote ") +
-                        " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
+                        " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110 "
                       }
                     />
                   </div>
-                  <div className="flex-grow space-y-2 animate-pulse">
-                    <div className="w-full h-10 bg-gray-300 rounded dark:bg-gray-800"></div>
+                  <div className="flex flex-col flex-grow space-y-2 animate-pulse pt-1.5 md:pl-1 border-gray-100 md:border-l dark:border-darkHighlight">
+                    <div className="w-1/4 h-4 bg-gray-300 rounded dark:bg-gray-800"></div>
+                    <div className="w-full bg-gray-300 rounded dark:bg-gray-800"></div>
                     <div className="w-3/4 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
-                    <div className="w-full h-6 bg-gray-300 rounded dark:bg-gray-800 "></div>
-                    <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
-                    <div className="w-5/6 bg-gray-300 rounded h-96 dark:bg-gray-800 justify-self-center "></div>
-                    <div className="flex flex-row items-center justify-end mt-2 select-none">
-                      <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight">
-                        <BiComment className="flex-none w-6 h-6 pr-2" />
-                        {"comments"}
+                    <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800 place-self-center"></div>
+                    <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800 place-self-center"></div>
+                    <div className="w-5/6 bg-gray-300 rounded h-96 dark:bg-gray-800 place-self-center"></div>
+                    <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
+                      <div
+                        onClick={() => scrollComments()}
+                        className="flex flex-row items-center p-2 ml-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                      >
+                        <BiComment className="flex-none w-6 h-6 pr-2 " />
+                        {`${apost?.num_comments ?? ""} ${
+                          apost?.num_comments === 1 ? "comment" : "comments"
+                        }`}
+                      </div>
+                      <div className="flex flex-row items-center justify-end">
+                        <a
+                          href={`${apost?.url}` ?? "https://reddit.com"}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                            <BiExit className="flex-none w-6 h-6 pr-2" />
+                            Source
+                          </div>
+                        </a>
+                        <a
+                          href={`https://www.reddit.com/${
+                            apost?.permalink ?? ""
+                          }`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                            <ImReddit className="flex-none w-6 h-6 pr-2" />
+                            Original
+                          </div>
+                        </a>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              // Media Card
+              // Loaded Media Card
               <div className="w-full my-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
                 {/* Flex container */}
                 <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
@@ -220,38 +254,40 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       <Media post={apost} allowIFrame={true} imgFull={true} />
                     </div>
                     {/* Bottom Buttons */}
-                    <div className="flex flex-row items-center justify-end mt-2 space-x-2 select-none">
+                    <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                       <div
                         onClick={() => scrollComments()}
-                        className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                        className="flex flex-row items-center p-2 ml-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
                       >
-                        <BiComment className="flex-none w-6 h-6 pr-2" />
+                        <BiComment className="flex-none w-6 h-6 pr-2 " />
                         {`${apost?.num_comments} ${
                           apost?.num_comments === 1 ? "comment" : "comments"
                         }`}
                       </div>
-                      <a
-                        href={`${apost?.url}` ?? "https://reddit.com"}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                          <BiExit className="flex-none w-6 h-6 pr-2" />
-                          Source
-                        </div>
-                      </a>
-                      <a
-                        href={`https://www.reddit.com/${
-                          apost?.permalink ?? ""
-                        }`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                          <ImReddit className="flex-none w-6 h-6 pr-2" />
-                          Original
-                        </div>
-                      </a>
+                      <div className="flex flex-row items-center justify-end">
+                        <a
+                          href={`${apost?.url}` ?? "https://reddit.com"}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                            <BiExit className="flex-none w-6 h-6 pr-2" />
+                            Source
+                          </div>
+                        </a>
+                        <a
+                          href={`https://www.reddit.com/${
+                            apost?.permalink ?? ""
+                          }`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                            <ImReddit className="flex-none w-6 h-6 pr-2" />
+                            Original
+                          </div>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -259,15 +295,53 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
             )}
 
             {/* comments */}
+            {/* Loading Comments */}
             {loadingComments ? (
               // Comment Loader
-              <div className="w-full p-4 mx-auto bg-black border border-blue-300 rounded-md shadow">
-                <div className="flex space-x-4 animate-pulse">
-                  <div className="flex-1 py-1 space-y-4">
-                    <div className="w-3/4 h-4 bg-blue-400 rounded"></div>
-                    <div className="space-y-2">
-                      <div className="bg-blue-400 rounded h-96"></div>
-                      <div className="w-5/6 bg-blue-400 rounded h-44"></div>
+              <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG h-96">
+                <div className="mx-2 my-6 border rounded-md border-lightBorder dark:border-darkBorder h-80">
+                  <div className={"flex flex-row"}>
+                    {/* Left column */}
+                    <div
+                      className={
+                        "h-80 w-1  md:w-4 flex-none  cursor-pointer group animate-pulse"
+                      }
+                    >
+                      <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+                      {/* Vote Buttons */}
+
+                      <div
+                        className={
+                          "flex-col items-center justify-start flex-none pr-2 pt-4 hidden md-flex "
+                        }
+                      >
+                        <BiUpvote
+                          className={
+                            " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
+                          }
+                        />
+                        <BiDownvote
+                          className={
+                            " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
+                          }
+                        />
+                      </div>
+                    </div>
+                    {/* Comment Body */}
+                    <div className={"flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-8 mr-4"}>
+                      {/* Author */}
+                      <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
+                      {/* Main Comment Body */}
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+
                     </div>
                   </div>
                 </div>

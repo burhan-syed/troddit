@@ -105,7 +105,7 @@ const ChildComments = ({ comment, depth, hide }) => {
         {/* Left column */}
 
         <div
-          onClick={() => setHideChildren((h) => !h)}
+          onClick={(e) => {e.stopPropagation();setHideChildren((h) => !h)}}
           className={"min-h-full w-0  md:w-4 flex-none  cursor-pointer group"}
         >
           <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
