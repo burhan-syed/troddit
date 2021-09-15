@@ -49,8 +49,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   useEffect(() => {
     setScore(calculateScore(apost?.score ? apost?.score + vote : 0));
 
-    return () => {
-    };
+    return () => {};
   }, [apost, vote]);
 
   const calculateScore = (x: number) => {

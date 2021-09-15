@@ -145,7 +145,7 @@ const ChildComments = ({ comment, depth, hide }) => {
           <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             <h1 className="">{`${comment?.data?.author}`}</h1>
             <p>•</p>
-            <h1>{score ?? "0"} pts</h1>
+            <h1 className={(vote === 1 ? "text-upvote" : vote===-1 ? "text-downvote" : "")}>{score ?? "0"} pts</h1>
             <p>•</p>
             <p className="">
               {Math.floor(
