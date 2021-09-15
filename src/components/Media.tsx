@@ -49,13 +49,13 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
   const initialize = async () => {
     let a, b, c;
-
     b = await findVideo();
     if (!b) {
       a = await findImage();
     }
+    c = await findIframe()
     //a = await findImage();
-    c = await findIframe();
+    
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
@@ -91,7 +91,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const findVideo = async () => {
-    console.log("in vid");
+    console.log("find vid", post?.title);
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
         setVideoInfo({
@@ -147,21 +147,51 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
     return false;
   };
   const [isIFrame, setIsIFrame] = useState(false);
-  const [iFrame, setIFrame] = useState("");
+  const [iFrame, setIFrame] = useState<Element>();
+
+  const stringToHTML = function (str) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(str, 'text/html');
+    return doc.body.firstElementChild;
+  };
+
   const findIframe = async () => {
+    console.log("find iframe", post?.title);
     if (post?.media_embed?.content) {
       if (post.media_embed.content.includes("iframe")) {
-        console.log(post.media_embed.content);
-        setIFrame(post.media_embed.content);
-        //allowIFrame && setIsIFrame(true);
+        let html:Element = stringToHTML(post.media_embed.content);
+        html.setAttribute("height","100%");
+        html.setAttribute("width", "100%");
+        let htmlsrc = html.getAttribute("src");
+        if (htmlsrc.includes("clips.twitch.tv")){
+          console.log(post?.url.split('/'));
+          html.setAttribute("src", `https://clips.twitch.tv/embed?clip=${post?.url.split('/')?.[3]}&parent=localhost`);
+          console.log(html);
+        }
+        //console.log(html);
+        setIFrame(html);
+        // let iframe = document.createElement('div');
+        // iframe.innerHTML=media;
+        // let fragment = document.createDocumentFragment();
+        // fragment.appendChild(iframe);
+        // let html = iframe.firstChild;
+       
+        
+        // if (iframe.includes("www.youtube.com")){
+        //   iframe = iframe.replace("")
+        // }
+        //setIFrame(post.media_embed.content);
+        allowIFrame && setIsIFrame(true);
+        return true;
       } else {
         // console.log(post.media_embed.content);
       }
     }
+    return false;
   };
 
   const findImage = async () => {
-    console.log("Find image");
+    console.log("find iframe", post?.title);
     if (post.media_metadata) {
       let gallery = [];
       for (let i in post.media_metadata) {
@@ -253,8 +283,8 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
 
   return (
     <div>
-      {isIFrame ? (
-        <div className="">
+      {isIFrame && allowIFrame ? (
+        <div className="relative" style={imgFull ? imgheight : {}}>
           {/* <Iframe
                     url={iFrame[3]}
                     width={iFrame[5] + "px"}
@@ -270,9 +300,9 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
                     width={iFrame[5]}
                     allowFullScreen={true}
                   ></iframe> */}
-          <div>IFRAME</div>
           {/* {iFrame} */}
-          <div dangerouslySetInnerHTML={{ __html: iFrame }}></div>
+          <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}></div>
+          
         </div>
       ) : (
         ""

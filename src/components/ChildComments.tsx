@@ -12,7 +12,7 @@ const ChildComments = ({ comment, depth, hide }) => {
 
   useEffect(() => {
     setScore(calculateScore(comment?.data?.score ?? 0));
-    console.log(comment);
+    //console.log(comment);
     return () => {
       setScore("0");
     };
@@ -45,7 +45,7 @@ const ChildComments = ({ comment, depth, hide }) => {
       comments.forEach((comment) => {
         idIndex.set(`t1_${comment.data.id}`, comment);
       });
-      console.log(idIndex);
+      //console.log(idIndex);
       await comments.forEach((comment, i) => {
         //console.log(comment.data.parent_id);
         let c = idIndex.get(comment.data.parent_id);
@@ -72,7 +72,7 @@ const ChildComments = ({ comment, depth, hide }) => {
         }
       });
 
-      console.log(fixedcomments);
+      //console.log(fixedcomments);
       return fixedcomments;
     }
     return comments;

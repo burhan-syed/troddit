@@ -50,7 +50,7 @@ const VideoHandler = ({
           //layout={imgFull ? "fill" : undefined}
           // lazyBoundary={imgFull ? "0px" : "2000px"}
           // objectFit={imgFull ? "contain" : undefined}
-          //priority={imgFull}
+          priority={imgFull}
           // placeholder="blur"
           // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
           onError={() => {

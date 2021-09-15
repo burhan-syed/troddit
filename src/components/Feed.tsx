@@ -73,6 +73,7 @@ const Feed = ({ query }) => {
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
     }
+    // if (query?.slug?)
     return () => {
       ("");
     };
