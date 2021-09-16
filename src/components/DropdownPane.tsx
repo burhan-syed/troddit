@@ -47,7 +47,7 @@ const DropdownPane = ({ hide }) => {
 
   const handleClick = async () => {
     if (!clicked) {
-      loadAllFast();
+      session && loadAllFast();
       setClicked(true);
     }
     setShow((show) => !show);
@@ -181,7 +181,7 @@ const DropdownPane = ({ hide }) => {
             <>
               {/* Multis */}
               {/* onClick={() => {setloadedMultis(m => !m);setloadedSubs(s => !s)}} */}
-              <div className="pl-2 text-xs tracking-widest" >multis</div>
+              <div className="pl-2 text-xs tracking-widest">multis</div>
               {!loadedMultis ? (
                 // Loading pane
                 <>
@@ -227,43 +227,42 @@ const DropdownPane = ({ hide }) => {
               <div className="pl-2 text-xs tracking-widest">subs</div>
               {!loadedSubs ? (
                 <>
-                <div className="py-2">
-                  <div className="px-4 py-1 ">
-                    {/* Repeated rows */}
-                    {[...Array(5)].map((u, i) => (
-                      <div key={i} className="py-1">
-                        <div className="flex flex-row items-center text-sm text-center animate-pulse ">
-                          {/* Image */}
-                          <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                            <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full ">
-                              {"r/"}
+                  <div className="py-2">
+                    <div className="px-4 py-1 ">
+                      {/* Repeated rows */}
+                      {[...Array(5)].map((u, i) => (
+                        <div key={i} className="py-1">
+                          <div className="flex flex-row items-center text-sm text-center animate-pulse ">
+                            {/* Image */}
+                            <div className="flex flex-row items-center w-6 h-6 ml-1 ">
+                              <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full ">
+                                {"r/"}
+                              </div>
                             </div>
+                            {/* Text */}
+                            <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
                           </div>
-                          {/* Text */}
-                          <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </> ) : 
-              (
+                </>
+              ) : (
                 <div className="py-2">
-                {mySubs
-                  ? mySubs.map((sub, i) => {
-                      return (
-                        <div
-                          className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                          key={i}
-                        >
-                          <DropdownItem sub={sub} />
-                        </div>
-                      );
-                    })
-                  : ""}
-              </div>
+                  {mySubs
+                    ? mySubs.map((sub, i) => {
+                        return (
+                          <div
+                            className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                            key={i}
+                          >
+                            <DropdownItem sub={sub} />
+                          </div>
+                        );
+                      })
+                    : ""}
+                </div>
               )}
-              
             </>
           )}
         </div>

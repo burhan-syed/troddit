@@ -186,6 +186,8 @@ export const getAllMySubs = async () => {
         done = true;
         console.log(err);
       }
+    } else {
+      done = true;
     }
   }
   alldata = alldata.sort((a, b) =>

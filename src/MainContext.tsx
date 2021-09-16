@@ -22,7 +22,7 @@ export const MainProvider = ({ children }) => {
 
   useEffect(() => {
     const saved_nsfw = localStorage.getItem("nsfw");
-    saved_nsfw.includes("false") ? setNSFW("false") : setNSFW("true");
+    saved_nsfw?.includes("true") ? setNSFW("true") : setNSFW("false");
   }, []);
 
   useEffect(() => {
