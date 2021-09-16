@@ -126,6 +126,11 @@ export default NextAuth({
     },
   ],
 
+  jwt: {  signingKey: process.env.JWT_SIGNING_PRIVATE_KEY,
+    // You can also specify a public key for verification if using public/private key (but private only is fine)  // verificationKey: process.env.JWT_SIGNING_PUBLIC_KEY,
+    // If you want to use some key format other than HS512 you can specify custom options to use  // when verifying (note: verificationOptions should include a value for maxTokenAge as well).  // verificationOptions = {  //   maxTokenAge: `${maxAge}s`, // e.g. `${30 * 24 * 60 * 60}s` = 30 days  //   algorithms: ['HS512']  // }
+  },
+
   callbacks: {
     async jwt(token, user, account = {}, profile, isNewUser) {
       console.log("JWT CALLBACK", token, user, account, profile, isNewUser);
@@ -135,7 +140,7 @@ export default NextAuth({
       //if (!token.expires) {token.expires = Math.floor(Date.now()/1000) + 3600}
       if (!token.expires || Math.floor(Date.now() / 1000) > token.expires) {
         token = await refreshAccessToken(token);
-        //console.log(token);
+        console.log(token);
       }
 
       if (account.provider && !token[account.provider]) {

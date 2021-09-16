@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/client";
 import { useState, useEffect } from "react";
 import Snoowrap from "snoowrap";
 

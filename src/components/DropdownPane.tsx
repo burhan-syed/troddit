@@ -137,7 +137,7 @@ const DropdownPane = ({ hide }) => {
       {/* Dropdown */}
       <div
         className={
-          "flex flex-col w-full transform transition border  duration-150 ease-in-out origin-top dark:bg-darkBG bg-white dark:border-darkBorder border-lightBorder mt-1 rounded-md shadow-sm " +
+          "flex flex-col w-full transform transition border duration-150 ease-in-out origin-top dark:bg-darkBG bg-white dark:border-darkBorder border-lightBorder mt-1 rounded-md shadow-sm " +
           `${show && !hide ? " block" : " hidden"}`
         }
       >

@@ -58,7 +58,7 @@ const NavBar = () => {
       <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
       <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-trueGray-900">
         <CgMenu
-          className="w-10 h-10 md:hidden"
+          className="w-10 h-10 cursor-pointer md:hidden"
           onClick={() => setSidebarVisible((vis) => !vis)}
         />
         <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
