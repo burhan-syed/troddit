@@ -37,6 +37,23 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   };
   const divRef = useRef<HTMLDivElement>(null);
 
+  //prevent scrolling on main body when open
+  useEffect(() => {
+    if (true) {
+      const width = document.body.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.width = `${width}px`;
+    } else {
+      document.body.style.overflow = "visible";
+      document.body.style.width = `auto`;
+    }
+  
+    return () => {
+      document.body.style.overflow = "visible";
+      document.body.style.width = `auto`;
+    };
+  }, []);
+
   useEffect(() => {
     const fetchPost = async () => {
       const { post, comments } = await loadPost(permalink);
@@ -95,7 +112,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-20 w-screen h-screen min-h-screen overflow-y-auto overscroll-y-contain">
+    <div className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain">
       {/* <div
           
           className="left-0 bg-black lg:w-1/12 opacity-80 "
@@ -104,9 +121,9 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
         onClick={() => handleBack()}
         className="fixed top-0 left-0 w-screen h-full bg-black backdrop-filter backdrop-blur-lg opacity-80 overscroll-none"
       ></div>
-      <div className="flex flex-row justify-center pt-2">
+      <div className="flex flex-row justify-center flex-grow w-full h-full ">
         {/* Main Card */}
-        <div className="z-10 w-11/12 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
+        <div className="z-10 w-11/12 pt-2 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
           <div className="absolute md:fixed left-4 top-16">
             <RiArrowGoBackLine
               onClick={() => handleBack()}
