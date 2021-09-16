@@ -12,6 +12,7 @@ import { useRouter } from "next/dist/client/router";
 import Iframe from "react-iframe";
 import Media from "./Media";
 import { postVote } from "../RedditAPI";
+import { useSession } from "next-auth/client";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -20,11 +21,11 @@ const Post = ({ post }) => {
   const [select, setSelect] = useState(false);
 
   const router = useRouter();
-
+  const [session, loading] = useSession();
   //console.log(post);
 
   useEffect(() => {
-    !context.nsfw && post.over_18 ? setHide(true) : setHide(false);
+    context.nsfw === "false" && post.over_18 ? setHide(true) : setHide(false);
     return () => {
       setHide(false);
     };
@@ -54,14 +55,18 @@ const Post = ({ post }) => {
     }
   };
 
-  const [vote, setVote] = useState(0)
+  const [vote, setVote] = useState(0);
 
-  const castVote = async(e,v) => {
+  const castVote = async (e, v) => {
     e.stopPropagation();
-    v === vote ?  (v = 0) : undefined;
-    let res = await postVote(v,post.name);
-    res ? setVote(v) : undefined
-  }
+    if (session) {
+      v === vote ? (v = 0) : undefined;
+      let res = await postVote(v, post.name);
+      res ? setVote(v) : undefined;
+    } else {
+      context.setLoginModal(true);
+    }
+  };
 
   return (
     <div>
@@ -78,12 +83,17 @@ const Post = ({ post }) => {
       >
         {!hide ? (
           <div className="p-1">
-            <h1 className="text-base cursor-pointer">
-                {post?.title ?? ""}
-            </h1>
+            <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
             <div className="flex flex-row text-xs font-light text-gray">
               <Link href={`/r/${post?.subreddit}`}>
-                <a className="mr-1" onClick={(e) => {e.stopPropagation()}}>r/{post?.subreddit ?? "ERR"}</a>
+                <a
+                  className="mr-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  r/{post?.subreddit ?? "ERR"}
+                </a>
               </Link>
               <p>•</p>
               <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
@@ -107,18 +117,32 @@ const Post = ({ post }) => {
             <div className="flex flex-row justify-between text-sm align-bottom select-none">
               <div className="flex flex-row items-center space-x-1">
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiUpvote className={(vote === 1 ? "text-upvote " : " text-black dark:text-white") + " w-4 h-4 hover:scale-110 hover:text-upvote"} onClick={(e) => castVote(e,1)}/>
+                  <BiUpvote
+                    className={
+                      (vote === 1
+                        ? "text-upvote "
+                        : " text-black dark:text-white") +
+                      " w-4 h-4 hover:scale-110 hover:text-upvote"
+                    }
+                    onClick={(e) => castVote(e, 1)}
+                  />
                 </div>
-                <p className="">{post?.score ? (post.score+vote) : vote}</p>
+                <p className="">{post?.score ? post.score + vote : vote}</p>
 
                 <div className="flex-none hover:cursor-pointer ">
-                  <BiDownvote className={(vote === -1 ? " text-downvote " : " text-black dark:text-white ") + " w-4 h-4 hover:scale-110 hover:text-downvote"} onClick={(e) => castVote(e,-1)}/>
+                  <BiDownvote
+                    className={
+                      (vote === -1
+                        ? " text-downvote "
+                        : " text-black dark:text-white ") +
+                      " w-4 h-4 hover:scale-110 hover:text-downvote"
+                    }
+                    onClick={(e) => castVote(e, -1)}
+                  />
                 </div>
               </div>
 
-              <h1
-                className="cursor-pointer "
-              >
+              <h1 className="cursor-pointer ">
                 {`${post.num_comments} ${
                   post.num_comments === 1 ? "comment" : "comments"
                 }`}

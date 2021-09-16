@@ -40,9 +40,7 @@ const NavMenu = ({ hide = false }) => {
               {({ active }) => (
                 <div
                   className={classNames(
-                    active
-                      ? "bg-lightHighlight dark:bg-darkHighlight "
-                      : "",
+                    active ? "bg-lightHighlight dark:bg-darkHighlight " : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >
@@ -54,9 +52,7 @@ const NavMenu = ({ hide = false }) => {
               {({ active }) => (
                 <div
                   className={classNames(
-                    active
-                      ? "bg-lightHighlight dark:bg-darkHighlight"
-                      : "",
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >

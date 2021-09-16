@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { getSession, useSession } from "next-auth/client";
 import PostModal from "./PostModal";
+import LoginModal from "./LoginModal";
 
 const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
@@ -130,7 +131,6 @@ const Feed = ({ query }) => {
     setPosts((prevposts) => [...prevposts, ...data.children]);
   };
 
-
   if (loading) {
     return (
       <div className="absolute w-screen h-16 bg-blue-700 animate-pulse"></div>
@@ -144,7 +144,6 @@ const Feed = ({ query }) => {
           permalink={"/r/" + query.slug.join("/")}
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
           setSelect={setFetchPost}
-
         />
       </div>
     );
@@ -154,6 +153,7 @@ const Feed = ({ query }) => {
   }
   return (
     <section className="flex flex-col items-center flex-none w-screen pt-16">
+      <LoginModal />
       {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
       <div className="w-11/12 md:w-5/6">
         <InfiniteScroll

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
+import { useSession } from "next-auth/client";
 
 import Markdown from "markdown-to-jsx";
+import { useMainContext } from "../MainContext";
 
 const ChildComments = ({ comment, depth, hide }) => {
   const [moreComments, setMoreComments] = useState([]);
@@ -11,12 +13,17 @@ const ChildComments = ({ comment, depth, hide }) => {
   const [color, setColor] = useState(100);
   const [hideChildren, setHideChildren] = useState(false);
   const [vote, setVote] = useState(0);
-
+  const [session, loading] = useSession();
+  const context: any = useMainContext();
   const castVote = async (e, v) => {
     e.stopPropagation();
-    v === vote ? (v = 0) : undefined;
-    let res = await postVote(v, comment?.data?.name);
-    res ? setVote(v) : undefined;
+    if (session) {
+      v === vote ? (v = 0) : undefined;
+      let res = await postVote(v, comment?.data?.name);
+      res ? setVote(v) : undefined;
+    } else {
+      context.setLoginModal(true);
+    }
   };
   useEffect(() => {
     setScore(
@@ -105,7 +112,10 @@ const ChildComments = ({ comment, depth, hide }) => {
         {/* Left column */}
 
         <div
-          onClick={(e) => {e.stopPropagation();setHideChildren((h) => !h)}}
+          onClick={(e) => {
+            e.stopPropagation();
+            setHideChildren((h) => !h);
+          }}
           className={"min-h-full w-0  md:w-4 flex-none  cursor-pointer group"}
         >
           <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
@@ -145,7 +155,13 @@ const ChildComments = ({ comment, depth, hide }) => {
           <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             <h1 className="">{`${comment?.data?.author}`}</h1>
             <p>•</p>
-            <h1 className={(vote === 1 ? "text-upvote" : vote===-1 ? "text-downvote" : "")}>{score ?? "0"} pts</h1>
+            <h1
+              className={
+                vote === 1 ? "text-upvote" : vote === -1 ? "text-downvote" : ""
+              }
+            >
+              {score ?? "0"} pts
+            </h1>
             <p>•</p>
             <p className="">
               {Math.floor(
@@ -182,10 +198,14 @@ const ChildComments = ({ comment, depth, hide }) => {
                               className="pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                loadChildComments(
-                                  childcomment?.data?.children,
-                                  comment?.data?.link_id
-                                );
+                                if (session) {
+                                  loadChildComments(
+                                    childcomment?.data?.children,
+                                    comment?.data?.link_id
+                                  );
+                                } else {
+                                  context.setLoginModal(true);
+                                }
                               }}
                             >
                               {"Load More... " +

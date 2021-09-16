@@ -11,6 +11,8 @@ import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
+import { useSession } from "next-auth/client";
+import { useMainContext } from "../MainContext";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
@@ -21,11 +23,17 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const [score, setScore] = useState("");
   const [vote, setVote] = useState(0);
 
+  const [session, loading] = useSession();
+  const context: any = useMainContext();
   const castVote = async (e, v) => {
     e.stopPropagation();
-    v === vote ? (v = 0) : undefined;
-    let res = await postVote(v, apost?.name);
-    res ? setVote(v) : undefined;
+    if (session) {
+      v === vote ? (v = 0) : undefined;
+      let res = await postVote(v, apost?.name);
+      res ? setVote(v) : undefined;
+    } else {
+      context.toggleLoginModal();
+    }
   };
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -255,32 +263,32 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     </div>
                     {/* Vote buttons for mobiles */}
                     <div className="flex-row items-center self-start justify-start flex h-full pt-1.5  md:hidden ">
-                    <BiUpvote
-                      onClick={(e) => castVote(e, 1)}
-                      className={
-                        (vote === 1 && "text-upvote ") +
-                        " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
-                      }
-                    />
-                    <p
-                      className={
-                        (vote === 1
-                          ? "text-upvote "
-                          : vote === -1
-                          ? "text-downvote "
-                          : " ") + " text-sm"
-                      }
-                    >
-                      {score ?? "0"}
-                    </p>
-                    <BiDownvote
-                      onClick={(e) => castVote(e, -1)}
-                      className={
-                        (vote === -1 && "text-downvote ") +
-                        " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
-                      }
-                    />
-                  </div>
+                      <BiUpvote
+                        onClick={(e) => castVote(e, 1)}
+                        className={
+                          (vote === 1 && "text-upvote ") +
+                          " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
+                        }
+                      />
+                      <p
+                        className={
+                          (vote === 1
+                            ? "text-upvote "
+                            : vote === -1
+                            ? "text-downvote "
+                            : " ") + " text-sm"
+                        }
+                      >
+                        {score ?? "0"}
+                      </p>
+                      <BiDownvote
+                        onClick={(e) => castVote(e, -1)}
+                        className={
+                          (vote === -1 && "text-downvote ") +
+                          " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
+                        }
+                      />
+                    </div>
                     {/* Bottom Buttons */}
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                       <div
@@ -356,7 +364,11 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       </div>
                     </div>
                     {/* Comment Body */}
-                    <div className={"flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-8 mr-4"}>
+                    <div
+                      className={
+                        "flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-8 mr-4"
+                      }
+                    >
                       {/* Author */}
                       <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
                       {/* Main Comment Body */}
@@ -369,7 +381,6 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
                       <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
                       <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-
                     </div>
                   </div>
                 </div>

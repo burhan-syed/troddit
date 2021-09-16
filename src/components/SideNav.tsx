@@ -20,7 +20,7 @@ const SideNav = ({ visible, toggle }) => {
         }
       >
         <div className="flex flex-row flex-none h-screen bg-lightHighlight dark:bg-darkBG">
-          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 overflow-y-auto mt-14 ">
+          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-y-auto">
             <div className="flex flex-col justify-start w-full space-y-4 ">
               <div className="flex flex-row justify-end w-full h-full">
                 <RiArrowGoBackLine

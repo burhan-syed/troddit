@@ -37,7 +37,7 @@ const Search = () => {
       console.log(context);
       suggestions = await searchSubreddits(value.value, context.nsfw);
       suggestions = suggestions.filter((sub) => {
-        if (context.nsfw) return sub;
+        if (context.nsfw === "true") return sub;
         else if (sub?.data?.over18 !== true) return sub;
       });
       console.log(suggestions);
