@@ -348,7 +348,7 @@ export const postVote = async (dir: number, id) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
-      console.log(dir, id, token);
+      //console.log(dir, id, token);
       const res = await fetch("https://oauth.reddit.com/api/vote", {
         method: "POST",
         headers: {
