@@ -253,6 +253,34 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     <div className="block md:pl-3">
                       <Media post={apost} allowIFrame={true} imgFull={true} />
                     </div>
+                    {/* Vote buttons for mobiles */}
+                    <div className="flex-row items-center self-start justify-start flex h-full pt-1.5  md:hidden ">
+                    <BiUpvote
+                      onClick={(e) => castVote(e, 1)}
+                      className={
+                        (vote === 1 && "text-upvote ") +
+                        " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
+                      }
+                    />
+                    <p
+                      className={
+                        (vote === 1
+                          ? "text-upvote "
+                          : vote === -1
+                          ? "text-downvote "
+                          : " ") + " text-sm"
+                      }
+                    >
+                      {score ?? "0"}
+                    </p>
+                    <BiDownvote
+                      onClick={(e) => castVote(e, -1)}
+                      className={
+                        (vote === -1 && "text-downvote ") +
+                        " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
+                      }
+                    />
+                  </div>
                     {/* Bottom Buttons */}
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                       <div
