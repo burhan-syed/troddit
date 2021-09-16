@@ -16,30 +16,37 @@ import { useRouter } from "next/router";
 import SortMenu2 from "./SortMenu2";
 
 import { useSession } from "next-auth/client";
+import { useScroll } from "../hooks/useScroll";
 
 const NavBar = () => {
   const [hidden, setHidden] = useState(false);
-  const [prevScrollpos, setScrollpos] = useState(0);
+
   const session = useSession();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const router = useRouter();
+  const [prevScrollpos, setScrollpos] = useState(0);
+  // useEffect(() => {
+  //   const onScroll = () => {
+  //     setSidebarVisible(false);
+  //     var currentScrollPos = window.pageYOffset;
+  //     if (prevScrollpos > currentScrollPos) {
+  //       setHidden(false);
+  //     } else if (router.query?.slug?.[1] !== "comments") {
+  //       setHidden(true);
+  //     }
+  //     setScrollpos(currentScrollPos);
+  //   };
+  //   window.addEventListener("scroll", onScroll);
+  //   setScrollpos(window.pageYOffset);
+  //   return () => {
+  //     window.removeEventListener("scroll", onScroll);
+  //   };
+  // }, [prevScrollpos]);
+
+  const { scrollY, scrollX, scrollDirection } = useScroll();
   useEffect(() => {
-    const onScroll = () => {
-      setSidebarVisible(false);
-      var currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos) {
-        setHidden(false);
-      } else if (router.query?.slug?.[1] !== "comments") {
-        setHidden(true);
-      }
-      setScrollpos(currentScrollPos);
-    };
-    window.addEventListener("scroll", onScroll);
-    setScrollpos(window.pageYOffset);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [prevScrollpos]);
+    scrollDirection === "down" ? setHidden(false) : setHidden(true);
+  }, [scrollDirection]);
 
   useEffect(() => {
     console.log("NAVBAR", router.query);
