@@ -59,6 +59,8 @@ const Feed = ({ query }) => {
       setSubreddits("");
       setLoading(true);
     };
+    //handling these in the other useeffect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range, sort, subreddits]);
 
   //determine if we need to load new posts

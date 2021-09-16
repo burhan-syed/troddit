@@ -40,6 +40,7 @@ const Post = ({ post }) => {
       setSelect(false);
     }
     //don't add lastRoute to the array, breaks things
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
   const handleClick = () => {
