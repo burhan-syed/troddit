@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { useSession } from "next-auth/client";
-
-import Markdown from "markdown-to-jsx";
 import { useMainContext } from "../MainContext";
 
 const ChildComments = ({ comment, depth, hide }) => {

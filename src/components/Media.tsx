@@ -1,5 +1,4 @@
 import Image from "next/dist/client/image";
-import Markdown from "markdown-to-jsx";
 import LazyLoad from "react-lazyload";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
@@ -8,7 +7,7 @@ import { forceCheck } from "react-lazyload";
 import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 
-const TWITCH_PARENT='localhost'
+const TWITCH_PARENT='www.troddit.com'//'localhost'
 
 const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   const context:any = useMainContext();

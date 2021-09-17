@@ -9,7 +9,6 @@ import Placeholder from "./Placeholder";
 import { useMainContext } from "../MainContext";
 import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
-import Iframe from "react-iframe";
 import Media from "./Media";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/client";
