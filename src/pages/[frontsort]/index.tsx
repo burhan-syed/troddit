@@ -12,7 +12,6 @@ const Subs = ({ query }) => {
   return (
     <div>
       <NavBar />
-      <p>sort: {frontsort}</p>
       <Feed query={query} />
     </div>
   );

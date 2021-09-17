@@ -2,7 +2,6 @@
 import { getSession } from "next-auth/client";
 import { getToken } from "next-auth/jwt";
 import axios from "axios";
-import Snoowrap from "snoowrap";
 
 export default async (req, res) => {
   //const body = JSON.parse(req.body);

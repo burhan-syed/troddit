@@ -5,7 +5,7 @@ const about = () => {
   return (
     <div>
       <Head>
-        <title>Next-Reddit</title>
+        <title>troddit</title>
       </Head>
       <NavBar />
       <div className="flex flex-row items-center justify-center min-h-screen text-center dark:text-gray-300">

@@ -8,7 +8,7 @@ export const index = ({ query }) => {
   return (
     <div>
       <Head>
-        <title>Next-Reddit</title>
+        <title>troddit</title>
       </Head>
       <NavBar />
       <Feed query={query} />
