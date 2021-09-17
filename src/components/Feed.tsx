@@ -34,7 +34,7 @@ const Feed = ({ query }) => {
   };
   useEffect(() => {
     //console.log(query);
-    console.log("new posts");
+    //console.log("new posts");
     if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
@@ -66,7 +66,7 @@ const Feed = ({ query }) => {
   //determine if we need to load new posts
   const [newFeed, setNewFeed] = useState(false);
   useEffect(() => {
-    console.log("FRONT", query);
+    //console.log("FRONT", query);
     if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");

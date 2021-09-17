@@ -7,14 +7,14 @@ const SortRange = () => {
 
   useEffect(() => {
     if (router?.query?.t ?? false) {
-      console.log(router.query.t);
+      //console.log(router.query.t);
       setRange(router.query.t.toString());
     }
   }, [router]);
 
   const updateRange = (e, r) => {
     e.preventDefault();
-    console.log(router.query);
+    //console.log(router.query);
     setRange(r);
     if (
       (router.query?.slug?.[0] ?? false) &&

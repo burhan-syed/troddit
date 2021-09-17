@@ -34,13 +34,13 @@ const Search = () => {
       //suggestions.push({ name: value });
       return suggestions;
     } else if (session) {
-      console.log(context);
+      //console.log(context);
       suggestions = await searchSubreddits(value.value, context.nsfw);
       suggestions = suggestions.filter((sub) => {
         if (context.nsfw === "true") return sub;
         else if (sub?.data?.over18 !== true) return sub;
       });
-      console.log(suggestions);
+      //console.log(suggestions);
     }
     return suggestions;
   };

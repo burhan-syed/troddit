@@ -17,7 +17,7 @@ const Sort = () => {
     e.preventDefault();
     setSort(s);
     if (s !== "top") {
-      console.log(`r/${router.query}/${s}`);
+      //console.log(`r/${router.query}/${s}`);
 
       if (router.query?.slug?.[0] ?? false) {
         router.push({

@@ -83,7 +83,7 @@ const ChildComments = ({ comment, depth, hide }) => {
         if (comment?.data?.depth === basedepth) {
           fixedcomments.push(comment);
         } else {
-          console.log(i, comment.data.parent_id, comment.data.body);
+          //console.log(i, comment.data.parent_id, comment.data.body);
         }
       });
 

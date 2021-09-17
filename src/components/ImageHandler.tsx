@@ -6,7 +6,7 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
   const [useFallback, setUseFallback] = useState(false);
 
   const onLoadedData = () => {
-    console.log("loaded");
+    //console.log("loaded");
     setImageLoaded(true);
   };
   return (
@@ -22,7 +22,7 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
           width={imageInfo.width}
           alt="placeholder"
           onError={() => {
-            console.log("ERR: ", placeholder, imageInfo);
+            //console.log("ERR: ", placeholder, imageInfo);
             setUseFallback(true);
           }}
         />

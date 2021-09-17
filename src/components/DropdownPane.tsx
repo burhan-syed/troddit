@@ -56,7 +56,7 @@ const DropdownPane = ({ hide }) => {
   const loadSubs = async () => {
     try {
       let data = await getMySubs(after, mySubs.length);
-      console.log(data);
+      //console.log(data);
       setAfter(data.after);
       setMySubs((subs) => [...subs, ...data.children]);
     } catch (err) {

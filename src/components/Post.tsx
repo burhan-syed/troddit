@@ -35,7 +35,7 @@ const Post = ({ post }) => {
 
   useEffect(() => {
     if (lastRoute === router.asPath) {
-      console.log("match");
+      //console.log("match");
       setSelect(false);
     }
     //don't add lastRoute to the array, breaks things

@@ -16,7 +16,7 @@ const SortMenu = ({ hide }) => {
     if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
     if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
     if (router?.query?.t ?? false) {
-      console.log(router.query.t);
+      //console.log(router.query.t);
       setRange(router.query.t.toString());
     }
     return () => {
@@ -28,7 +28,7 @@ const SortMenu = ({ hide }) => {
     e.preventDefault();
     setSort(s);
     if (s !== "top") {
-      console.log(`r/${router?.query ?? "popular"}/${s}`);
+      //console.log(`r/${router?.query ?? "popular"}/${s}`);
 
       if (router.query?.slug?.[0] ?? false) {
         router.push(`/r/${router.query?.slug?.[0] ?? "popular"}/${s}`);
@@ -40,7 +40,7 @@ const SortMenu = ({ hide }) => {
 
   const updateRange = (e, r) => {
     e.preventDefault();
-    console.log(router.query);
+    //console.log(router.query);
     setRange(r);
     if (router.query?.slug?.[0] ?? false) {
       router.push(

@@ -36,7 +36,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       initialize();
       setToLoad(true);
     } else {
-      console.log("ERRRRRR");
+      //console.log("ERRRRRR");
     }
     forceCheck();
   }, [post]);
@@ -170,7 +170,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         html.setAttribute("width", "100%");
         let htmlsrc = html.getAttribute("src");
         if (htmlsrc.includes("clips.twitch.tv")) {
-          console.log(post?.url.split("/"));
+          //console.log(post?.url.split("/"));
           html.setAttribute(
             "src",
             `https://clips.twitch.tv/embed?clip=${

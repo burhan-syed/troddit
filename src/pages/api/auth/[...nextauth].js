@@ -47,7 +47,7 @@ async function refreshAccessToken(token) {
     refreshtoken = token.refresh_token;
   } else {
     refresh = false;
-    console.log("FAILED TO FIND REFRESH TOKEN");
+    //console.log("FAILED TO FIND REFRESH TOKEN");
   }
   if (refresh) {
     const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
@@ -68,7 +68,7 @@ async function refreshAccessToken(token) {
       });
 
       const refreshedTokens = await response.json();
-      console.log("refreshed token", refreshedTokens);
+      //console.log("refreshed token", refreshedTokens);
       if (!response.ok) {
         throw refreshedTokens;
       }
@@ -84,8 +84,8 @@ async function refreshAccessToken(token) {
         expires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
       };
     } catch (error) {
-      console.log(error);
-      console.log("errored");
+      //console.log(error);
+      //console.log("errored");
       return {
         ...token,
         error: "RefreshAccessTokenError",

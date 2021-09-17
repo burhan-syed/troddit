@@ -23,7 +23,7 @@ const getToken = async () => {
         refreshToken: tokendata.data.refreshToken,
       };
     } catch (err) {
-      console.log(err);
+      //console.log(err);
       return undefined;
     }
     return undefined;
@@ -61,7 +61,7 @@ export const loadFront = async (
         children: res.data.children,
       };
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   } else {
     try {
@@ -83,7 +83,7 @@ export const loadFront = async (
         children: res.data.children,
       };
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   }
 };
@@ -141,7 +141,7 @@ export const getMySubs = async (after?, count?) => {
         return { after: data.data.after, children: data.data.children };
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   }
   return null;
@@ -184,7 +184,7 @@ export const getAllMySubs = async () => {
         }
       } catch (err) {
         done = true;
-        console.log(err);
+        //console.log(err);
       }
     } else {
       done = true;
@@ -211,7 +211,7 @@ export const getMyMultis = async () => {
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return data;
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   }
 };
@@ -239,7 +239,7 @@ export const searchSubreddits = async (query, over18 = false) => {
       //console.log(res);
       return data?.data?.children;
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   } else {
     return null;
@@ -253,12 +253,6 @@ const loadAll = async (func) => {
   let data = [];
   const token = await (await getToken())?.accessToken;
 
-  while (!done) {
-    try {
-    } catch (err) {
-      console.log(err);
-    }
-  }
 };
 
 export const loadComments = async (permalink, sort = "top") => {
@@ -274,7 +268,7 @@ export const loadComments = async (permalink, sort = "top") => {
     //console.log(res?.[1]);
     return res?.[1] ?? null;
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   }
 };
 
@@ -323,7 +317,7 @@ export const loadPost = async (permalink) => {
       post: res?.[0]?.data?.children?.[0].data,
       comments: res?.[1]?.data?.children,
     };
-    console.log(data);
+    //console.log(data);
     return data;
   } catch (err) {
     console.log(err);

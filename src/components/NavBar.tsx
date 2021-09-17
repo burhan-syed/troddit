@@ -49,7 +49,7 @@ const NavBar = () => {
   }, [scrollDirection]);
 
   useEffect(() => {
-    console.log("NAVBAR", router.query);
+    //console.log("NAVBAR", router.query);
     if (router.query?.slug?.[1] === "comments" || true) {
       setHidden(false);
     }

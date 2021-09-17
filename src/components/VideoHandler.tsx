@@ -58,7 +58,7 @@ const VideoHandler = ({
           // placeholder="blur"
           // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
           onError={() => {
-            console.log("ERR: ", placeholder, videoInfo);
+            //console.log("ERR: ", placeholder, videoInfo);
             setUseFallback(true);
           }}
         />

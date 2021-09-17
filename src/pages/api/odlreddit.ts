@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         }
       );
       if (response.data && response.data.access_token) {
-        console.log(response.data);
+        //console.log(response.data);
         res.redirect("/");
       }
       res.status(200).end();
