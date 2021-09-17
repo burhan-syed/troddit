@@ -20,7 +20,9 @@ module.exports = {
       "i.imgur.com",
       "imgur.com",
       "goo.gl",
-      "im2.ezgif.com"
+      "im2.ezgif.com",
+      "dummyimage.com",
+      "www.publicdomainpictures.net"
     ],
   },
 };

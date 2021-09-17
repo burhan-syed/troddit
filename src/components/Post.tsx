@@ -81,77 +81,77 @@ const Post = ({ post }) => {
         onClick={() => handleClick()}
         className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
-        {!hide ? (
-          <div className="p-1">
-            <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
-            <div className="flex flex-row text-xs font-light text-gray">
-              <Link href={`/r/${post?.subreddit}`}>
-                <a
-                  className="mr-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  r/{post?.subreddit ?? "ERR"}
-                </a>
-              </Link>
-              <p>•</p>
-              <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
-              <p>•</p>
+        <div className="p-1">
+          <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
+          <div className="flex flex-row text-xs font-light text-gray">
+            <Link href={`/r/${post?.subreddit}`}>
+              <a
+                className="mr-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                r/{post?.subreddit ?? "ERR"}
+              </a>
+            </Link>
+            <p>•</p>
+            <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
+            <p>•</p>
 
-              <p className="ml-1">
-                {Math.floor(
-                  (Math.floor(Date.now() / 1000) - post.created_utc) / 3600
-                )}
-                hr
-              </p>
-              <div className="flex flex-row ml-auto">
-                <p className="ml-1">{`(${post.domain})`}</p>
-              </div>
-            </div>
-            <div className="pt-2 pb-2">
-              <Media post={post} />
-            </div>
-            {/* <p>{post?.url ?? "ERR"}</p> */}
-
-            <div className="flex flex-row justify-between text-sm align-bottom select-none">
-              <div className="flex flex-row items-center space-x-1">
-                <div className="flex-none hover:cursor-pointer ">
-                  <BiUpvote
-                    className={
-                      (vote === 1
-                        ? "text-upvote "
-                        : " text-black dark:text-white") +
-                      " w-4 h-4 hover:scale-110 hover:text-upvote"
-                    }
-                    onClick={(e) => castVote(e, 1)}
-                  />
-                </div>
-                <p className="">{post?.score ? post.score + vote : vote}</p>
-
-                <div className="flex-none hover:cursor-pointer ">
-                  <BiDownvote
-                    className={
-                      (vote === -1
-                        ? " text-downvote "
-                        : " text-black dark:text-white ") +
-                      " w-4 h-4 hover:scale-110 hover:text-downvote"
-                    }
-                    onClick={(e) => castVote(e, -1)}
-                  />
-                </div>
-              </div>
-
-              <h1 className="cursor-pointer ">
-                {`${post.num_comments} ${
-                  post.num_comments === 1 ? "comment" : "comments"
-                }`}
-              </h1>
+            <p className="ml-1">
+              {Math.floor(
+                (Math.floor(Date.now() / 1000) - post.created_utc) / 3600
+              )}
+              hr
+            </p>
+            <div className="flex flex-row ml-auto">
+              <p className="ml-1">{`(${post.domain})`}</p>
             </div>
           </div>
-        ) : (
-          "NSFW"
-        )}
+          <div className="pt-2 pb-2">
+            {!hide ? (
+              <Media post={post} />
+            ) : (
+              <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">NSFW</div>
+            )}
+          </div>
+          {/* <p>{post?.url ?? "ERR"}</p> */}
+
+          <div className="flex flex-row justify-between text-sm align-bottom select-none">
+            <div className="flex flex-row items-center space-x-1">
+              <div className="flex-none hover:cursor-pointer ">
+                <BiUpvote
+                  className={
+                    (vote === 1
+                      ? "text-upvote "
+                      : " text-black dark:text-white") +
+                    " w-4 h-4 hover:scale-110 hover:text-upvote"
+                  }
+                  onClick={(e) => castVote(e, 1)}
+                />
+              </div>
+              <p className="">{post?.score ? post.score + vote : vote}</p>
+
+              <div className="flex-none hover:cursor-pointer ">
+                <BiDownvote
+                  className={
+                    (vote === -1
+                      ? " text-downvote "
+                      : " text-black dark:text-white ") +
+                    " w-4 h-4 hover:scale-110 hover:text-downvote"
+                  }
+                  onClick={(e) => castVote(e, -1)}
+                />
+              </div>
+            </div>
+
+            <h1 className="cursor-pointer ">
+              {`${post.num_comments} ${
+                post.num_comments === 1 ? "comment" : "comments"
+              }`}
+            </h1>
+          </div>
+        </div>
       </div>
     </div>
   );

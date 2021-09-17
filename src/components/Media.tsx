@@ -89,7 +89,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const checkURL = (url) => {
-    const placeholder = "http://goo.gl/ijai22";
+    const placeholder = "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"//"http://goo.gl/ijai22";
     if (!url) return placeholder;
     if (!url.includes("http")) return placeholder;
     return url;
