@@ -1,0 +1,13 @@
+{
+  "snoowrap": "^1.23.0",
+
+  "react-iframe": "^1.8.0",
+
+  "plaiceholder": "^2.0.1",
+
+  "firebase": "^8.8.0",
+  "image-to-base64": "^2.2.0",
+  "markdown-to-jsx": "^7.1.3"
+
+}
+    
