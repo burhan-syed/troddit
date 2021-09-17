@@ -1,19 +1,17 @@
 import { useTheme } from "next-themes";
 import ReactSwitch from "react-switch";
-import { FaSun } from "react-icons/fa";
-import { RiMoonLine } from "react-icons/ri";
-import {FaRegMoon} from 'react-icons/fa'
-import {BiMoon,BiSun} from 'react-icons/bi'
-const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+import { BsPlay,BsStop } from "react-icons/bs";
+import { useMainContext } from "../MainContext";
+const ToggleAutoplay = () => {
+  const context: any = useMainContext();
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <label className="flex flex-row items-center justify-between">
-        <span>Theme</span>
+        <span>Autoplay</span>
         <ReactSwitch
-          onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-          checked={theme === "dark"}
+          onChange={() => context.toggleAutoplay()}
+          checked={context.autoplay === true}
           checkedHandleIcon={<div></div>}
           checkedIcon={
             <div
@@ -26,7 +24,7 @@ const ThemeToggle = () => {
                 fontSize: 18,
               }}
             >
-              <BiMoon />
+              <BsPlay />
             </div>
           }
           uncheckedHandleIcon={<div></div>}
@@ -41,7 +39,7 @@ const ThemeToggle = () => {
                 fontSize: 18,
               }}
             >
-              <BiSun />
+              <BsStop />
             </div>
           }
           offColor="#EA580C"
@@ -54,4 +52,4 @@ const ThemeToggle = () => {
   );
 };
 
-export default ThemeToggle;
+export default ToggleAutoplay;

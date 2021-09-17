@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useMainContext } from "../MainContext";
 
 const VideoHandler = ({
   placeholder,
@@ -7,6 +8,8 @@ const VideoHandler = ({
   maxHeight = {},
   imgFull = false,
 }) => {
+  const context: any = useMainContext();
+
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
@@ -17,6 +20,7 @@ const VideoHandler = ({
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<Number>();
+
   useEffect(() => {
     setheight({
       height: `${videoInfo.height}px`,
@@ -68,9 +72,11 @@ const VideoHandler = ({
         style={imgFull ? maxHeight : {}}
         width={`${videoInfo.width} !important`}
         height={`${videoInfo.height} !important`}
-        autoPlay={true}
+        autoPlay={context?.autoplay}
         muted
         loop
+        preload={(context?.autoplay).toString()}
+        controls={!context?.autoplay}
         // preload="metadata"
         onLoadedData={onLoadedData}
         // poster={imageInfo.url}

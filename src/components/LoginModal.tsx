@@ -70,10 +70,9 @@ const Login = () => {
                     >
                       Login Needed
                     </Dialog.Title>
-                    <div className="mt-2">
+                    <div className="mt-3">
                       <p className="text-sm text-gray-500">
-                        Certain features need a Reddit login to access. You can
-                        login with your Reddit account below.
+                        A login is required to vote and load more comments. You can login with your Reddit account below. 
                       </p>
                     </div>
                   </div>

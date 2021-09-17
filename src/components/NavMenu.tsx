@@ -3,6 +3,8 @@ import { Menu, Transition } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ThemeToggle from "./ThemeToggle";
 import NSFWToggle from "./NSFWToggle";
+import ToggleAutoplay from "./ToggleAutoplay";
+import Link from "next/link";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -56,7 +58,34 @@ const NavMenu = ({ hide = false }) => {
                     "block px-4 py-2 text-sm"
                   )}
                 >
+                  <ToggleAutoplay />
+                </div>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
                   <NSFWToggle />
+                </div>
+              )}
+            </Menu.Item>
+
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <div className="flex flex-row justify-center">
+                    <Link href="/about">About</Link>
+                  </div>
                 </div>
               )}
             </Menu.Item>

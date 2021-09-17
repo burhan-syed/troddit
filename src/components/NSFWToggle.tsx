@@ -1,6 +1,6 @@
 import { useMainContext } from "../MainContext";
 import ReactSwitch from "react-switch";
-import { GoEye, GoEyeClosed } from "react-icons/go";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
 const NSFWToggle = () => {
@@ -19,7 +19,7 @@ const NSFWToggle = () => {
           checkedHandleIcon={<div></div>}
           checkedIcon={
             <div className="flex items-center justify-center h-full text-sm font-white dark:font-darkBG">
-              <GoEye />
+              <VscEye />
             </div>
           }
           uncheckedHandleIcon={<div></div>}
@@ -34,7 +34,7 @@ const NSFWToggle = () => {
                 fontSize: 18,
               }}
             >
-              <GoEyeClosed />
+              <VscEyeClosed />
             </div>
           }
           offColor="#059669"

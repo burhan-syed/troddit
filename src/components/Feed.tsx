@@ -141,7 +141,7 @@ const Feed = ({ query }) => {
   if (fetchPost) {
     return (
       <div className="mt-10">
-        FETCHING A POST
+        
         <PostModal
           permalink={"/r/" + query.slug.join("/")}
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}

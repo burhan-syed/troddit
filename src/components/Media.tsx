@@ -6,10 +6,12 @@ import VideoHandler from "./VideoHandler";
 import ImageHandler from "./ImageHandler";
 import { forceCheck } from "react-lazyload";
 import { useEffect, useState } from "react";
+import { useMainContext } from "../MainContext";
 
 const TWITCH_PARENT='localhost'
 
 const Media = ({ post, allowIFrame = false, imgFull = false }) => {
+  const context:any = useMainContext();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);

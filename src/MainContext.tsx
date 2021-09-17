@@ -11,11 +11,15 @@ export const useMainContext = () => {
 export const MainProvider = ({ children }) => {
   const [nsfw, setNSFW] = useState("false");
   const [loginModal, setLoginModal] = useState(false);
+  const [autoplay, setAutoplay] = useState(true);
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => {
       return prevNSFW === "false" ? "true" : "false";
     });
   };
+  const toggleAutoplay = () => {
+    setAutoplay(a => !a);
+  }
   const toggleLoginModal = () => {
     setLoginModal((m) => !m);
   };
@@ -23,15 +27,20 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     const saved_nsfw = localStorage.getItem("nsfw");
     saved_nsfw?.includes("true") ? setNSFW("true") : setNSFW("false");
+    const saved_autoplay = localStorage.getItem("autoplay");
+    saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
   }, []);
 
   useEffect(() => {
     localStorage.setItem("nsfw", JSON.stringify(nsfw));
   }, [nsfw]);
+  useEffect(() => {
+    localStorage.setItem("autoplay", JSON.stringify(autoplay));
+  }, [autoplay]);
 
   return (
     <MainContext.Provider
-      value={{ nsfw, toggleNSFW, loginModal, toggleLoginModal, setLoginModal }}
+      value={{ nsfw, toggleNSFW, loginModal, toggleLoginModal, setLoginModal, autoplay, toggleAutoplay}}
     >
       {children}
     </MainContext.Provider>
