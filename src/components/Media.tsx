@@ -8,10 +8,10 @@ import { forceCheck } from "react-lazyload";
 import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 
-const TWITCH_PARENT='www.troddit.com'//'localhost'
+const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 const Media = ({ post, allowIFrame = false, imgFull = false }) => {
-  const context:any = useMainContext();
+  const context: any = useMainContext();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);
@@ -90,7 +90,8 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const checkURL = (url) => {
-    const placeholder = "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"//"http://goo.gl/ijai22";
+    const placeholder =
+      "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"; //"http://goo.gl/ijai22";
     if (!url) return placeholder;
     if (!url.includes("http")) return placeholder;
     return url;
@@ -177,11 +178,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             `https://clips.twitch.tv/embed?clip=${
               post?.url.split("/")?.[3]
             }&parent=${TWITCH_PARENT}`
-            
           );
           // console.log(html);
-        } if (htmlsrc.includes("youtube.com")){
-          setytVidHeight({height: `${Math.floor(screen.height * 0.75)}px`});
+        }
+        if (htmlsrc.includes("youtube.com")) {
+          setytVidHeight({ height: `${Math.floor(screen.height * 0.75)}px` });
           setisYTVid(true);
         }
         //console.log(html);
@@ -232,7 +233,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       if (post.preview.images[0]) {
         if (post.preview.images[0].resolutions.length > 0) {
           let num = post.preview.images[0].resolutions.length - 1;
-          
+
           //choose smallest image possible
           //for reference
           // const breakpointColumnsObj = {
@@ -243,25 +244,25 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           // };
 
           if (!imgFull) {
-            let done = false; 
-            let width = screen.width; 
+            let done = false;
+            let width = screen.width;
             if (width > 767 && width < 1280) {
-              width = width/2
+              width = width / 2;
             } else if (width < 2560) {
-              width = width/3
+              width = width / 3;
             } else {
-              width = width/4
+              width = width / 4;
             }
             post.preview.images[0].resolutions.forEach((res, i) => {
               //console.log(width,res,i);
-              if (!done){
-                if (res.width > width){
-                  num = i; 
+              if (!done) {
+                if (res.width > width) {
+                  num = i;
                   //console.log("DONE",num);
-                  done = true; 
+                  done = true;
                 }
               }
-            })
+            });
           }
 
           setImageInfo({
@@ -329,7 +330,10 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   return (
     <div>
       {isIFrame && allowIFrame ? (
-        <div className="relative" style={imgFull&&isYTVid ? ytVidHeight : imgFull ? imgheight : {}}>
+        <div
+          className="relative"
+          style={imgFull && isYTVid ? ytVidHeight : imgFull ? imgheight : {}}
+        >
           {/* <Iframe
                     url={iFrame[3]}
                     width={iFrame[5] + "px"}
@@ -426,9 +430,13 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
         //   {post?.selftext}
         // </Markdown>
-        <div className="overflow-y-auto max-h-96 overscroll-contain">
+        <div className="overflow-y-auto max-h-96 overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800">
           {" "}
-          <div id="innerhtml" dangerouslySetInnerHTML={{ __html: post?.selftext_html }}></div>
+          <div
+            className="mr-1.5"
+            id="innerhtml"
+            dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
+          ></div>
         </div>
       ) : (
         // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>

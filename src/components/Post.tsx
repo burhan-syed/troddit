@@ -83,7 +83,7 @@ const Post = ({ post }) => {
       >
         <div className="p-1">
           <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
-          <div className="flex flex-row text-xs font-light text-gray">
+          <div className="flex flex-row text-xs font-light truncate text-gray ">
             <Link href={`/r/${post?.subreddit}`}>
               <a
                 className="mr-1"
@@ -112,7 +112,9 @@ const Post = ({ post }) => {
             {!hide ? (
               <Media post={post} />
             ) : (
-              <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">NSFW</div>
+              <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">
+                NSFW
+              </div>
             )}
           </div>
           {/* <p>{post?.url ?? "ERR"}</p> */}
