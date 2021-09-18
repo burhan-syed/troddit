@@ -43,30 +43,20 @@ const VideoHandler = ({
         style={imgFull && !videoLoaded ? imgheight : {}}
       >
         <Image
-          // className={`${
-          //   videoLoaded ? "opacity-100" : "opacity-0"
-          // }  h-full w-full`}
           className="absolute top-0 left-0"
           src={placeholder.url}
           height={placeholder.height}
           width={placeholder.width}
           alt="placeholder"
           unoptimized={true}
-          //layout={imgFull ? "fill" : undefined}
-          // lazyBoundary={imgFull ? "0px" : "2000px"}
-          // objectFit={imgFull ? "contain" : undefined}
           priority={imgFull}
-          // placeholder="blur"
-          // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8FQDwAEnQGIVO32RQAAAABJRU5ErkJggg=="
           onError={() => {
-            //console.log("ERR: ", placeholder, videoInfo);
             setUseFallback(true);
           }}
         />
       </div>
 
       <video
-        // className="object-cover"
         className={
           (videoLoaded ? "opacity-100" : "opacity-0") + " absolute top-0 left-0"
         }
@@ -76,11 +66,9 @@ const VideoHandler = ({
         autoPlay={context?.autoplay}
         muted
         loop
-        preload={(context?.autoplay ? "auto" : "none")}
+        preload={context?.autoplay ? "auto" : "metadata"}
         controls={!context?.autoplay}
-        // preload="metadata"
         onLoadedData={onLoadedData}
-        // poster={imageInfo.url}
         playsInline
       >
         <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
