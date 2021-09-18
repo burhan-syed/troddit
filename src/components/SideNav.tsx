@@ -14,7 +14,7 @@ const SideNav = ({ visible, toggle }) => {
   const [session, loading] = useSession();
   //prevent scrolling on main body when open
   useEffect(() => {
-    if (true) {
+    if (visible) {
       const width = document.body.clientWidth;
       document.body.style.overflow = "hidden";
       document.body.style.width = `${width}px`;
@@ -27,7 +27,7 @@ const SideNav = ({ visible, toggle }) => {
       document.body.style.overflow = "visible";
       document.body.style.width = `auto`;
     };
-  }, []);
+  }, [visible]);
   return (
     <div>
       <div
@@ -37,7 +37,7 @@ const SideNav = ({ visible, toggle }) => {
         }
       >
         <div className="flex flex-row flex-none h-screen bg-lightHighlight dark:bg-darkBG overscroll-y-contain">
-          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-y-auto border-r rounded-r-lg">
+          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg">
             <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
               <div className="flex flex-row items-center justify-between w-full ">
                 <div className="">
