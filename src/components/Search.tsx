@@ -71,6 +71,7 @@ const Search = () => {
                   alt="r"
                   layout="fill"
                   className="rounded-full"
+                  unoptimized={true}
                 ></Image>
               </div>
             ) : (

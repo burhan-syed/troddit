@@ -51,6 +51,7 @@ const VideoHandler = ({
           height={placeholder.height}
           width={placeholder.width}
           alt="placeholder"
+          unoptimized={true}
           //layout={imgFull ? "fill" : undefined}
           // lazyBoundary={imgFull ? "0px" : "2000px"}
           // objectFit={imgFull ? "contain" : undefined}

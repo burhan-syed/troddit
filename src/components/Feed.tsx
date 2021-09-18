@@ -27,8 +27,8 @@ const Feed = ({ query }) => {
 
   const route = useRouter();
   const breakpointColumnsObj = {
-    default: 3,
-    1400: 3,
+    default: 4,
+    2560: 3,
     1280: 2,
     767: 1,
   };

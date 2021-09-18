@@ -40,6 +40,7 @@ const Gallery = ({ images }) => {
                   alt="thumbnail"
                   layout="intrinsic"
                   priority={true}
+                  unoptimized={true}
                 ></Image>
               );
             } else {

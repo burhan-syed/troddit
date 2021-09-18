@@ -1,4 +1,5 @@
 import Image from "next/dist/client/image";
+//import MyImage from './Image';
 import LazyLoad from "react-lazyload";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
@@ -231,7 +232,37 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       if (post.preview.images[0]) {
         if (post.preview.images[0].resolutions.length > 0) {
           let num = post.preview.images[0].resolutions.length - 1;
-          //console.log(num);
+          
+          //choose smallest image possible
+          //for reference
+          // const breakpointColumnsObj = {
+          //   default: 4,
+          //   2560: 3,
+          //   1280: 2,
+          //   767: 1,
+          // };
+
+          if (!imgFull) {
+            let done = false; 
+            let width = screen.width; 
+            if (width > 767 && width < 1280) {
+              width = width/2
+            } else if (width < 2560) {
+              width = width/3
+            } else {
+              width = width/4
+            }
+            post.preview.images[0].resolutions.forEach((res, i) => {
+              //console.log(width,res,i);
+              if (!done){
+                if (res.width > width){
+                  num = i; 
+                  //console.log("DONE",num);
+                  done = true; 
+                }
+              }
+            })
+          }
 
           setImageInfo({
             url: checkURL(
@@ -351,9 +382,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             lazyBoundary={imgFull ? "0px" : "2000px"}
             objectFit={imgFull ? "contain" : "contain"}
             priority={imgFull}
+            unoptimized={true}
             // placeholder="blur"
             // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
           />
+          {/* <MyImage imageInfo={imageInfo}/> */}
         </div>
       ) : (
         // <LazyLoad height={imageInfo.height}>

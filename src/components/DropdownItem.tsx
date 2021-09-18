@@ -54,6 +54,7 @@ const DropdownItem = ({ sub }) => {
               alt="sub"
               height={sub.data?.icon_size?.[0] ?? 256}
               width={sub.data?.icon_size?.[1] ?? 256}
+              unoptimized={true}
               objectFit="cover"
               className={
                 (isMulti ? "rounded" : "rounded-full") + " flex-none border "

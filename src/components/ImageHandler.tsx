@@ -21,6 +21,7 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
           height={imageInfo.height}
           width={imageInfo.width}
           alt="placeholder"
+          unoptimized={true}
           onError={() => {
             //console.log("ERR: ", placeholder, imageInfo);
             setUseFallback(true);
@@ -41,6 +42,7 @@ const ImageHandler = ({ placeholder, imageInfo }) => {
         height={imageInfo.height}
         alt="image"
         onLoadedData={onLoadedData}
+        unoptimized={true}
         onLoad={(e) => {
           onLoadedData;
         }}
