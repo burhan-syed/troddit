@@ -76,7 +76,7 @@ const VideoHandler = ({
         autoPlay={context?.autoplay}
         muted
         loop
-        preload={(context?.autoplay).toString()}
+        preload={(context?.autoplay ? "auto" : "none")}
         controls={!context?.autoplay}
         // preload="metadata"
         onLoadedData={onLoadedData}
