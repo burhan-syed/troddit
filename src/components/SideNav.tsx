@@ -38,8 +38,8 @@ const SideNav = ({ visible, toggle }) => {
       >
         <div className="flex flex-row flex-none h-screen bg-lightHighlight dark:bg-darkBG overscroll-y-contain">
           <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-y-auto border-r rounded-r-lg">
-            <div className="flex flex-col justify-start w-full space-y-4 ">
-              <div className="flex flex-row items-center justify-between w-full h-full">
+            <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
+              <div className="flex flex-row items-center justify-between w-full ">
                 <div className="">
                   {!session && (
                     <>
@@ -63,7 +63,7 @@ const SideNav = ({ visible, toggle }) => {
                 />
               </div>
 
-              <div className="">
+              <div className="h-1/2">
                 <SideDropDown />
               </div>
               <div className="flex-none px-2 h-14">

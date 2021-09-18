@@ -62,7 +62,7 @@ const SideDropDown = ({ hide = false }) => {
   }, [session]);
 
   return (
-    <div className="grid grid-cols-1 overflow-y-auto overscroll-contain max-h-96 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
+    <div className="grid h-full grid-cols-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
       {/* Quick Links */}
       <div className="flex flex-col py-2 font-light">
         <Link href="/" passHref>
