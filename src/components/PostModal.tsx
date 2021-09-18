@@ -47,7 +47,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
       document.body.style.overflow = "visible";
       document.body.style.width = `auto`;
     }
-  
+
     return () => {
       document.body.style.overflow = "visible";
       document.body.style.width = `auto`;
@@ -131,7 +131,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
             />
           </div>
           {/* Content container */}
-          <div className="w-full pt-10 mt-12 overflow-y-auto md:pt-0 ">
+          <div className="w-full pt-10 mt-12 overflow-y-auto md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800 ">
             {/* LOADING POST CARD */}
             {loadingPost ? (
               // Loading Media Card

@@ -6,7 +6,7 @@ import NavBar from "../components/NavBar";
 
 export const index = ({ query }) => {
   return (
-    <div>
+    <div className="overflow-x-hidden ">
       <Head>
         <title>troddit</title>
       </Head>

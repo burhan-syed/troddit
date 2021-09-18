@@ -4,7 +4,7 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 const Sort = ({ query }) => {
   return (
-    <div>
+    <div className="overflow-x-hidden overflow-y-auto ">
       <NavBar />
       <Feed query={query} />
     </div>
