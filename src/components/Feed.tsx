@@ -53,6 +53,7 @@ const Feed = ({ query }) => {
 
     return () => {
       setPosts([]);
+      setFetchPost(false);
       setError(false);
       setAfter("");
       setRange("");

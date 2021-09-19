@@ -173,24 +173,42 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800 place-self-center"></div>
                     <div className="w-5/6 bg-gray-300 rounded h-96 dark:bg-gray-800 place-self-center"></div>
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
-                      <div
-                        onClick={() => scrollComments()}
-                        className="flex flex-row items-center p-2 ml-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-                      >
-                        <BiComment className="flex-none w-6 h-6 pr-2 " />
-                        {`${apost?.num_comments ?? ""} ${
-                          apost?.num_comments === 1 ? "comment" : "comments"
-                        }`}
+                      {/* Vote buttons for mobiles */}
+                      <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
+                        <BiUpvote
+                          className={
+                            (vote === 1 && "text-upvote ") +
+                            " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
+                          }
+                        />
+                        <p
+                          className={
+                            (vote === 1
+                              ? "text-upvote "
+                              : vote === -1
+                              ? "text-downvote "
+                              : " ") + " text-sm"
+                          }
+                        >
+                          {score ?? "0"}
+                        </p>
+                        <BiDownvote
+                          className={
+                            (vote === -1 && "text-downvote ") +
+                            " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
+                          }
+                        />
                       </div>
-                      <div className="flex flex-row items-center justify-end">
+                      <div></div>
+                      <div className="flex flex-row items-center justify-end space-x-1">
                         <a
                           href={`${apost?.url}` ?? "https://reddit.com"}
                           target="_blank"
                           rel="noreferrer"
                         >
                           <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                            <BiExit className="flex-none w-6 h-6 pr-2" />
-                            Source
+                            <BiExit className="flex-none w-6 h-6 md:pr-2" />
+                            <h1 className="hidden md:block">Source</h1>
                           </div>
                         </a>
                         <a
@@ -201,8 +219,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                           rel="noreferrer"
                         >
                           <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                            <ImReddit className="flex-none w-6 h-6 pr-2" />
-                            Original
+                            <ImReddit className="flex-none w-6 h-6 md:pr-2" />
+                            <h1 className="hidden md:block ">Original</h1>
                           </div>
                         </a>
                       </div>
@@ -287,10 +305,10 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     <div className="block md:pl-3">
                       <Media post={apost} allowIFrame={true} imgFull={true} />
                     </div>
-                    {/* Vote buttons for mobiles */}
 
                     {/* Bottom Buttons */}
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
+                      {/* Vote buttons for mobiles */}
                       <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
                         <BiUpvote
                           onClick={(e) => castVote(e, 1)}
