@@ -124,7 +124,7 @@ const DropdownPane = ({ hide }) => {
           ) : (
             <div>r/</div>
           )}
-          <h1 className="capitalize truncate">{location}</h1>
+          <h1 className="ml-2 capitalize truncate">{location}</h1>
         </div>
         <BsChevronDown
           className={

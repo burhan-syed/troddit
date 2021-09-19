@@ -23,7 +23,10 @@ const CommentSort = ({ updateSort }) => {
       {({ open }) => (
         <>
           <div className="flex-grow ">
-            <Menu.Button className="flex flex-row items-center justify-between h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG">
+            <Menu.Button
+              name="Sort Comments By"
+              className="flex flex-row items-center justify-between h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG"
+            >
               <div className="mr-2">{`sort comments by ${sort}`}</div>
               <BsChevronDown
                 className={

@@ -95,7 +95,7 @@ const Post = ({ post }) => {
               </a>
             </Link>
             <p>•</p>
-            <a className="ml-1 mr-1">u/{post?.author ?? ""}</a>
+            <p className="ml-1 mr-1">u/{post?.author ?? ""}</p>
             <p>•</p>
 
             <p className="ml-1">

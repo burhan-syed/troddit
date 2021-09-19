@@ -80,7 +80,7 @@ const NavBar = () => {
           </div>
 
           <div className="hidden w-full h-full py-2 md:block">
-            <Search />
+            <Search id={"subreddit search main"} />
           </div>
         </div>
         <div className="flex flex-row items-center justify-end h-full py-2 ml-2 space-x-1 justify-self-end">

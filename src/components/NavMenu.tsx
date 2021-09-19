@@ -17,7 +17,10 @@ const NavMenu = ({ hide = false }) => {
       className="relative flex flex-col items-center flex-grow w-full h-full"
     >
       <div className="flex-grow w-full">
-        <Menu.Button className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none">
+        <Menu.Button
+          name="Options"
+          className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none"
+        >
           <BsThreeDotsVertical />
         </Menu.Button>
       </div>

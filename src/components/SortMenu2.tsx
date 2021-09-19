@@ -80,7 +80,10 @@ const SortMenu2 = ({ hide = false }) => {
       {({ open }) => (
         <>
           <div className="flex-grow w-full">
-            <Menu.Button className="flex flex-row items-center justify-between w-full h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG">
+            <Menu.Button
+              name="Sort Page By"
+              className="flex flex-row items-center justify-between w-full h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG"
+            >
               <BsChevronDown
                 className={
                   open
@@ -156,9 +159,7 @@ const SortMenu2 = ({ hide = false }) => {
                     <div
                       onClick={(e) => updateSort(e, "best")}
                       className={classNames(
-                        active
-                          ? "bg-lightHighlight dark:bg-darkHighlight"
-                          : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -175,9 +176,7 @@ const SortMenu2 = ({ hide = false }) => {
                     <div
                       onClick={(e) => updateSort(e, "hot")}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -198,8 +197,8 @@ const SortMenu2 = ({ hide = false }) => {
                       <div
                         className={classNames(
                           active
-                          ? "bg-lightHighlight dark:bg-darkHighlight"
-                          : "",
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -232,7 +231,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "today" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
                               }
                               onClick={(e) => updateRange(e, "today")}
                             >
@@ -245,7 +244,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "week" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
                               }
                               onClick={(e) => updateRange(e, "week")}
                             >
@@ -258,7 +257,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "month" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
                               }
                               onClick={(e) => updateRange(e, "month")}
                             >
@@ -271,7 +270,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "year" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
                               }
                               onClick={(e) => updateRange(e, "year")}
                             >
@@ -284,7 +283,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "all" ? `font-bold ` : "") +
-                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight " 
+                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight "
                               }
                               onClick={(e) => updateRange(e, "all")}
                             >
@@ -302,9 +301,7 @@ const SortMenu2 = ({ hide = false }) => {
                     <div
                       onClick={(e) => updateSort(e, "new")}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -321,9 +318,7 @@ const SortMenu2 = ({ hide = false }) => {
                     <div
                       onClick={(e) => updateSort(e, "rising")}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >

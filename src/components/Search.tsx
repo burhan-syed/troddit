@@ -8,7 +8,7 @@ import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/client";
 import Image from "next/dist/client/image";
 
-const Search = () => {
+const Search = ({ id }) => {
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
@@ -137,6 +137,7 @@ const Search = () => {
   return (
     <div className="flex flex-row w-full h-full ">
       <Autosuggest
+        id={id}
         suggestions={suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}

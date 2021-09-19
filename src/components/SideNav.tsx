@@ -67,7 +67,7 @@ const SideNav = ({ visible, toggle }) => {
                 <SideDropDown />
               </div>
               <div className="flex-none px-2 h-14">
-                <Search />
+                <Search id={"Subreddit search side nav"} />
               </div>
             </div>
           </nav>
