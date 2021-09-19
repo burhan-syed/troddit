@@ -10,6 +10,8 @@ import { getSession, useSession } from "next-auth/client";
 import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
 
+import * as gtag from '../../lib/gtag'
+
 const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -20,6 +22,8 @@ const Feed = ({ query }) => {
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
   const [subreddits, setSubreddits] = useState("");
+
+  const [count, setCount] = useState(0);
 
   const context: any = useMainContext();
 
@@ -59,6 +63,7 @@ const Feed = ({ query }) => {
       setRange("");
       setSubreddits("");
       setLoading(true);
+      setCount(0);
     };
     //handling these in the other useeffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,6 +122,7 @@ const Feed = ({ query }) => {
 
   const loadmore = async () => {
     setLoadingMore(true);
+    setCount(c => (c+1))
     //console.log(after);
     let data = { after: "", children: [] };
     if (!subreddits) {
@@ -130,6 +136,7 @@ const Feed = ({ query }) => {
         posts.length
       );
     }
+    gtag.event({action: 'infinite-scroll', category: 'main-feed', label: `${subreddits ? subreddits : "home"}`, value: count})
     setAfter(data?.after);
     setPosts((prevposts) => [...prevposts, ...data.children]);
   };
@@ -162,11 +169,11 @@ const Feed = ({ query }) => {
           dataLength={posts.length}
           next={loadmore}
           hasMore={after ? true : false}
-          loader={<h1>Loading More..</h1>}
+          loader={<div className="flex flex-row justify-center"><h1>Loading More..</h1></div>}
           endMessage={
-            <p className="text-align-center">
-              <b>You have reached the end</b>
-            </p>
+            <div className="flex flex-row justify-center">
+              <b>You have reached the end after {posts?.length ?? 0} posts from {count+1} pages</b>
+            </div>
           }
         >
           <Masonry
@@ -180,7 +187,7 @@ const Feed = ({ query }) => {
           </Masonry>
         </InfiniteScroll>
       </div>
-      <button onClick={loadmore}>Load More</button>
+      <button className={"mt-2 " + (after ? "block" : "hidden")} name="load more" onClick={loadmore}>Load More</button>
     </section>
   );
 };
