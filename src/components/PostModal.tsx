@@ -72,13 +72,13 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
     };
   }, [permalink]);
 
-  const updateSort = async(e, sort) => {
+  const updateSort = async (e, sort) => {
     e.preventDefault();
     setLoadingComments(true);
-    const newcomments = await loadComments(permalink,sort);
+    const newcomments = await loadComments(permalink, sort);
     setComments(newcomments);
     setLoadingComments(false);
-  }
+  };
 
   useEffect(() => {
     setScore(calculateScore(apost?.score ? apost?.score + vote : 0));
@@ -288,53 +288,46 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       <Media post={apost} allowIFrame={true} imgFull={true} />
                     </div>
                     {/* Vote buttons for mobiles */}
-                    <div className="flex-row items-center self-start justify-start flex h-full pt-1.5  md:hidden ">
-                      <BiUpvote
-                        onClick={(e) => castVote(e, 1)}
-                        className={
-                          (vote === 1 && "text-upvote ") +
-                          " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
-                        }
-                      />
-                      <p
-                        className={
-                          (vote === 1
-                            ? "text-upvote "
-                            : vote === -1
-                            ? "text-downvote "
-                            : " ") + " text-sm"
-                        }
-                      >
-                        {score ?? "0"}
-                      </p>
-                      <BiDownvote
-                        onClick={(e) => castVote(e, -1)}
-                        className={
-                          (vote === -1 && "text-downvote ") +
-                          " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
-                        }
-                      />
-                    </div>
+
                     {/* Bottom Buttons */}
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
-                      <div
-                        onClick={() => scrollComments()}
-                        className="flex flex-row items-center p-2 ml-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-                      >
-                        <BiComment className="flex-none w-6 h-6 pr-2 " />
-                        {`${apost?.num_comments} ${
-                          apost?.num_comments === 1 ? "comment" : "comments"
-                        }`}
+                      <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
+                        <BiUpvote
+                          onClick={(e) => castVote(e, 1)}
+                          className={
+                            (vote === 1 && "text-upvote ") +
+                            " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
+                          }
+                        />
+                        <p
+                          className={
+                            (vote === 1
+                              ? "text-upvote "
+                              : vote === -1
+                              ? "text-downvote "
+                              : " ") + " text-sm"
+                          }
+                        >
+                          {score ?? "0"}
+                        </p>
+                        <BiDownvote
+                          onClick={(e) => castVote(e, -1)}
+                          className={
+                            (vote === -1 && "text-downvote ") +
+                            " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
+                          }
+                        />
                       </div>
-                      <div className="flex flex-row items-center justify-end">
+                      <div></div>
+                      <div className="flex flex-row items-center justify-end space-x-1">
                         <a
                           href={`${apost?.url}` ?? "https://reddit.com"}
                           target="_blank"
                           rel="noreferrer"
                         >
                           <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                            <BiExit className="flex-none w-6 h-6 pr-2" />
-                            Source
+                            <BiExit className="flex-none w-6 h-6 md:pr-2" />
+                            <h1 className="hidden md:block">Source</h1>
                           </div>
                         </a>
                         <a
@@ -345,8 +338,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                           rel="noreferrer"
                         >
                           <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                            <ImReddit className="flex-none w-6 h-6 pr-2" />
-                            Original
+                            <ImReddit className="flex-none w-6 h-6 md:pr-2" />
+                            <h1 className="hidden md:block ">Original</h1>
                           </div>
                         </a>
                       </div>
@@ -358,17 +351,28 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
 
             {/* comments */}
             <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
-            <div
-                    id="anchor-name"
-                    //className="border-4 border-red-500"
-                    style={{
-                      position: "absolute",
-                      top: "-3.5rem",
-                      left: 0,
-                    }}
-                  ></div>
-              <div className="flex-none h-10 px-2 w-25 ">
-                <CommentSort updateSort={updateSort}/>
+              <div
+                id="anchor-name"
+                //className="border-4 border-red-500"
+                style={{
+                  position: "absolute",
+                  top: "-3.5rem",
+                  left: 0,
+                }}
+              ></div>
+              <div className="flex flex-row justify-between h-10 px-2 mt-2 ">
+                <div className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2">
+                  <BiComment className="flex-none w-6 h-6 " />
+                  <div className="flex flex-row items-center mb-1 space-x-1">
+                    <h1 className="">{`${apost?.num_comments ?? "??"}`}</h1>
+                    <h1 className="hidden md:block">
+                      {`${apost?.num_comments === 1 ? "comment" : "comments"}`}
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex-none">
+                  <CommentSort updateSort={updateSort} />
+                </div>
               </div>
               {/* Loading Comments */}
               {loadingComments ? (
@@ -428,10 +432,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                 // Loaded Comment
                 <div
                   ref={divRef}
-                  className="flex flex-col items-center justify-center w-full my-5 overflow-x-hidden"
+                  className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden"
                 >
-                  
-
                   <h1 className="">
                     {post_comments?.[0] ? "" : "no comments :("}
                   </h1>

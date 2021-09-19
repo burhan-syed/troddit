@@ -11,27 +11,20 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const CommentSort = ({updateSort}) => {
-
-
-  const [sort, setsort] = useState("top")
+const CommentSort = ({ updateSort }) => {
+  const [sort, setsort] = useState("top");
   //confidence (best),top,new,controversial,old,qa (Q&A)
-
-
 
   return (
     <Menu
       as="div"
-      className="relative flex flex-col items-center h-full border"
+      className="relative flex flex-col items-center w-full h-full "
     >
       {({ open }) => (
         <>
           <div className="flex-grow ">
             <Menu.Button className="flex flex-row items-center justify-between h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG">
-              
-              <div className="mr-2">
-                {`sort comments by ${sort}`}
-              </div>
+              <div className="mr-2">{`sort comments by ${sort}`}</div>
               <BsChevronDown
                 className={
                   open
@@ -53,7 +46,7 @@ const CommentSort = ({updateSort}) => {
           >
             <Menu.Items
               className={
-                "absolute right-0 w-40 mt-7 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer " 
+                "absolute right-0 w-40 mt-11 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer "
                 // + (hide && " hidden")
               }
             >
@@ -62,11 +55,12 @@ const CommentSort = ({updateSort}) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={(e) => {updateSort(e, "confidence"); setsort("best")}}
+                      onClick={(e) => {
+                        updateSort(e, "confidence");
+                        setsort("best");
+                      }}
                       className={classNames(
-                        active
-                          ? "bg-lightHighlight dark:bg-darkHighlight"
-                          : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -80,11 +74,12 @@ const CommentSort = ({updateSort}) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={(e) => {updateSort(e, "top"); setsort("top")}}
+                      onClick={(e) => {
+                        updateSort(e, "top");
+                        setsort("top");
+                      }}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -99,13 +94,16 @@ const CommentSort = ({updateSort}) => {
                   {({ active }) => (
                     <div
                       className="group"
-                      onClick={(e) => {updateSort(e, "new"); setsort("new")}}
+                      onClick={(e) => {
+                        updateSort(e, "new");
+                        setsort("new");
+                      }}
                     >
                       <div
                         className={classNames(
                           active
-                          ? "bg-lightHighlight dark:bg-darkHighlight"
-                          : "",
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -113,7 +111,6 @@ const CommentSort = ({updateSort}) => {
                           <span> new </span>{" "}
                         </div>
                       </div>
-                      
                     </div>
                   )}
                 </Menu.Item>
@@ -121,11 +118,12 @@ const CommentSort = ({updateSort}) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={(e) => {updateSort(e, "controversial"); setsort("controversial")}}
+                      onClick={(e) => {
+                        updateSort(e, "controversial");
+                        setsort("controversial");
+                      }}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -139,11 +137,12 @@ const CommentSort = ({updateSort}) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={(e) => {updateSort(e, "old"); setsort("old")}}
+                      onClick={(e) => {
+                        updateSort(e, "old");
+                        setsort("old");
+                      }}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >
@@ -157,11 +156,12 @@ const CommentSort = ({updateSort}) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={(e) => {updateSort(e, "qa"); setsort("q & a")}}
+                      onClick={(e) => {
+                        updateSort(e, "qa");
+                        setsort("q & a");
+                      }}
                       className={classNames(
-                        active
-                        ? "bg-lightHighlight dark:bg-darkHighlight"
-                        : "",
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >
@@ -177,7 +177,7 @@ const CommentSort = ({updateSort}) => {
         </>
       )}
     </Menu>
-  )
-}
+  );
+};
 
-export default CommentSort
+export default CommentSort;

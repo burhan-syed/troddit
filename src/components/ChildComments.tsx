@@ -149,7 +149,7 @@ const ChildComments = ({ comment, depth, hide }) => {
             setHideChildren((h) => !h);
           }}
         >
-          {/* Author */}
+          {/* Author and comment data*/}
           <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             <h1 className="">{`${comment?.data?.author}`}</h1>
             <p>•</p>
