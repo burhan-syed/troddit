@@ -352,7 +352,7 @@ export const postVote = async (dir: number, id) => {
       });
 
       if (res.ok) {
-        console.log(res);
+        //console.log(res);
         return true;
       } else {
         return false;

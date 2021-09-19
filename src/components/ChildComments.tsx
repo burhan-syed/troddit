@@ -108,20 +108,22 @@ const ChildComments = ({ comment, depth, hide }) => {
     >
       <div className={"flex flex-row"}>
         {/* Left column */}
-
+        {/* Left Ribbon */}
         <div
           onClick={(e) => {
             e.stopPropagation();
             setHideChildren((h) => !h);
           }}
-          className={"min-h-full w-0  md:w-4 flex-none  cursor-pointer group"}
+          className={
+            "min-h-full w-0 md:w-2  lg:w-4 flex-none  cursor-pointer group"
+          }
         >
           <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
-          {/* Vote Buttons */}
         </div>
+        {/* Vote Buttons */}
         <div
           className={
-            " flex-col items-center justify-start flex-none pr-2 pt-4 hidden " +
+            " flex-col items-center justify-start flex-none lg:pr-2 md:pr-0.5 pt-4 hidden " +
             (hideChildren ? " hidden " : " md:flex ")
           }
         >
@@ -143,7 +145,9 @@ const ChildComments = ({ comment, depth, hide }) => {
 
         {/* Comment Body */}
         <div
-          className={"flex-grow mt-3  " + (hideChildren && " md:pl-8 mb-3")}
+          className={
+            "flex-grow mt-3 max-w-full  " + (hideChildren && " md:pl-8 mb-3")
+          }
           onClick={(e) => {
             e.stopPropagation();
             setHideChildren((h) => !h);
