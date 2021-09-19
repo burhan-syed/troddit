@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Comments from "./Comments";
 import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
-import { loadPost, postVote } from "../RedditAPI";
+import { loadComments, loadPost, postVote } from "../RedditAPI";
 import Media from "./Media";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { BiComment } from "react-icons/bi";
@@ -13,6 +13,7 @@ import ReactDOM from "react-dom";
 import React, { useRef } from "react";
 import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
+import CommentSort from "./CommentSort";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
@@ -70,6 +71,14 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
       setLoadingPost(true);
     };
   }, [permalink]);
+
+  const updateSort = async(e, sort) => {
+    e.preventDefault();
+    setLoadingComments(true);
+    const newcomments = await loadComments(permalink,sort);
+    setComments(newcomments);
+    setLoadingComments(false);
+  }
 
   useEffect(() => {
     setScore(calculateScore(apost?.score ? apost?.score + vote : 0));
@@ -348,68 +357,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
             )}
 
             {/* comments */}
-            {/* Loading Comments */}
-            {loadingComments ? (
-              // Comment Loader
-              <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG h-96">
-                <div className="mx-2 my-6 border rounded-md border-lightBorder dark:border-darkBorder h-80">
-                  <div className={"flex flex-row"}>
-                    {/* Left column */}
-                    <div
-                      className={
-                        "h-80 w-1  md:w-4 flex-none  cursor-pointer group animate-pulse"
-                      }
-                    >
-                      <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
-                      {/* Vote Buttons */}
-
-                      <div
-                        className={
-                          "flex-col items-center justify-start flex-none pr-2 pt-4 hidden md-flex "
-                        }
-                      >
-                        <BiUpvote
-                          className={
-                            " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
-                          }
-                        />
-                        <BiDownvote
-                          className={
-                            " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
-                          }
-                        />
-                      </div>
-                    </div>
-                    {/* Comment Body */}
-                    <div
-                      className={
-                        "flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-8 mr-4"
-                      }
-                    >
-                      {/* Author */}
-                      <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
-                      {/* Main Comment Body */}
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                      <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              // Loaded Comment
-              <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
-                <div
-                  ref={divRef}
-                  className="flex flex-col items-center justify-center w-full my-5 overflow-x-hidden"
-                >
-                  <div
+            <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+            <div
                     id="anchor-name"
                     //className="border-4 border-red-500"
                     style={{
@@ -418,6 +367,71 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       left: 0,
                     }}
                   ></div>
+              <div className="flex-none h-10 px-2 w-25 ">
+                <CommentSort updateSort={updateSort}/>
+              </div>
+              {/* Loading Comments */}
+              {loadingComments ? (
+                // Comment Loader
+                <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG h-96">
+                  <div className="mx-2 my-6 border rounded-md border-lightBorder dark:border-darkBorder h-80">
+                    <div className={"flex flex-row"}>
+                      {/* Left column */}
+                      <div
+                        className={
+                          "h-80 w-1  md:w-4 flex-none  cursor-pointer group animate-pulse"
+                        }
+                      >
+                        <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+                        {/* Vote Buttons */}
+
+                        <div
+                          className={
+                            "flex-col items-center justify-start flex-none pr-2 pt-4 hidden md-flex "
+                          }
+                        >
+                          <BiUpvote
+                            className={
+                              " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
+                            }
+                          />
+                          <BiDownvote
+                            className={
+                              " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
+                            }
+                          />
+                        </div>
+                      </div>
+                      {/* Comment Body */}
+                      <div
+                        className={
+                          "flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-8 mr-4"
+                        }
+                      >
+                        {/* Author */}
+                        <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
+                        {/* Main Comment Body */}
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                        <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Loaded Comment
+                <div
+                  ref={divRef}
+                  className="flex flex-col items-center justify-center w-full my-5 overflow-x-hidden"
+                >
+                  
+
                   <h1 className="">
                     {post_comments?.[0] ? "" : "no comments :("}
                   </h1>
@@ -425,8 +439,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     <Comments comments={post_comments} depth={0} />
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

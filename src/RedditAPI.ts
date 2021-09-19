@@ -252,7 +252,6 @@ const loadAll = async (func) => {
   let done = false;
   let data = [];
   const token = await (await getToken())?.accessToken;
-
 };
 
 export const loadComments = async (permalink, sort = "top") => {
@@ -266,7 +265,7 @@ export const loadComments = async (permalink, sort = "top") => {
       })
     ).data;
     //console.log(res?.[1]);
-    return res?.[1] ?? null;
+    return res?.[1]?.data?.children ?? null;
   } catch (err) {
     //console.log(err);
   }
@@ -275,9 +274,9 @@ export const loadComments = async (permalink, sort = "top") => {
 export const loadMoreComments = async (
   children,
   link_id,
+  sort = "top",
   depth?,
-  id?,
-  sort = "top"
+  id?
 ) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
