@@ -14,10 +14,7 @@ class MyDocument extends Document {
             name="description"
             content="A seamless experience for browsing through Reddit with a grid layout. Login with Reddit to experience your personalized home page, immediate access to your followed subreddits, and access to vote and comment."
           ></meta>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          ></meta>
+          
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
           <meta />
         </Head>

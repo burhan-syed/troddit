@@ -6,6 +6,7 @@ import Script from 'next/script'
 import { useRouter } from 'next/router'
 import * as gtag from '../../lib/gtag'
 import { useEffect } from "react";
+import  Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
@@ -37,6 +38,12 @@ function MyApp({ Component, pageProps }) {
           `,
         }}
       />
+      <Head>
+      <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          ></meta>
+      </Head>
     <ThemeProvider attribute="class">
       <MainProvider>
         <Provider session={pageProps.session}>

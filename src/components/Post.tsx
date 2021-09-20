@@ -77,12 +77,15 @@ const Post = ({ post }) => {
           returnRoute={returnRoute}
         />
       )}
+
       <div
         onClick={() => handleClick()}
         className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
         <div className="p-1">
-          <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
+          <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+            <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
+          </a>
           <div className="flex flex-row text-xs font-light truncate text-gray ">
             <Link href={`/r/${post?.subreddit}`}>
               <a
@@ -108,15 +111,17 @@ const Post = ({ post }) => {
               <p className="ml-1">{`(${post.domain})`}</p>
             </div>
           </div>
-          <div className="pt-2 pb-2">
-            {!hide ? (
-              <Media post={post} />
-            ) : (
-              <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">
-                NSFW
-              </div>
-            )}
-          </div>
+          <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+            <div className="pt-2 pb-2">
+              {!hide ? (
+                <Media post={post} />
+              ) : (
+                <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">
+                  NSFW
+                </div>
+              )}
+            </div>
+          </a>
           {/* <p>{post?.url ?? "ERR"}</p> */}
 
           <div className="flex flex-row justify-between text-sm align-bottom select-none">
@@ -146,12 +151,13 @@ const Post = ({ post }) => {
                 />
               </div>
             </div>
-
-            <h1 className="cursor-pointer ">
-              {`${post.num_comments} ${
-                post.num_comments === 1 ? "comment" : "comments"
-              }`}
-            </h1>
+            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+              <h1 className="cursor-pointer ">
+                {`${post.num_comments} ${
+                  post.num_comments === 1 ? "comment" : "comments"
+                }`}
+              </h1>
+            </a>
           </div>
         </div>
       </div>
