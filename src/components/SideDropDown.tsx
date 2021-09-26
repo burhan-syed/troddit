@@ -91,7 +91,7 @@ const SideDropDown = ({ hide = false }) => {
             className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
             onClick={() => signIn()}
           >
-            <span className="text-blue-300 dark:text-blue-600">Login</span> to
+            <span className="text-blue-500 dark:text-blue-600">Login</span> to
             see your subs
           </button>
         </>

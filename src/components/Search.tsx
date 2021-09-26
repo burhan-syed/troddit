@@ -101,7 +101,7 @@ const Search = ({ id }) => {
               className="w-full h-full py-3 bg-white border rounded-lg dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
               onClick={(e) => handleSignIn(e)}
             >
-              <span className="text-blue-300 dark:text-blue-600">Login</span>{" "}
+              <span className="text-blue-500 dark:text-blue-600">Login</span>{" "}
               with Reddit to Autocomplete Search
             </button>
           </div>

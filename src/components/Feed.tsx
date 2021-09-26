@@ -137,11 +137,15 @@ const Feed = ({ query }) => {
     return <div>{"Oops something went wrong :("}</div>;
   }
   return (
-    <div className="flex flex-col items-center flex-none w-screen pt-16">
+    <main>
+      <LoginModal />
+      <div className="flex flex-col items-center flex-none w-screen pt-16">
       <div className="w-full md:w-5/6 ">
         <MyMasonic query={query} initItems={posts} initAfter={after} />
       </div>
     </div>
+    </main>
+    
     // <section className="flex flex-col items-center flex-none w-screen pt-16">
     //   <LoginModal />
     //   {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}

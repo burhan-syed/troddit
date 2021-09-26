@@ -72,7 +72,7 @@ const Login = () => {
                     </Dialog.Title>
                     <div className="mt-3">
                       <p className="text-sm text-gray-500">
-                        A login is required to vote and load more comments. You can login with your Reddit account below. 
+                        A login is required to vote and access additional features. You can login with your Reddit account below. 
                       </p>
                     </div>
                   </div>
