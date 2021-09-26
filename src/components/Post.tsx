@@ -16,7 +16,7 @@ import { useSession } from "next-auth/client";
 const Post = ({ post }) => {
   const context: any = useMainContext();
   const [hide, setHide] = useState(false);
-
+  const [score, setScore] = useState("");
   const [select, setSelect] = useState(false);
 
   const router = useRouter();
@@ -41,6 +41,18 @@ const Post = ({ post }) => {
     //don't add lastRoute to the array, breaks things
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
+
+ 
+
+  const calculateScore = (x: number) => {
+    if (x < 10000) {
+      return x.toString();
+    } else {
+      let y = Math.floor(x / 1000);
+      let z = (x / 1000).toFixed(1);
+      return z.toString() + "k";
+    }
+  };
 
   const handleClick = () => {
     setLastRoute(router.asPath);
@@ -67,6 +79,11 @@ const Post = ({ post }) => {
       context.setLoginModal(true);
     }
   };
+  useEffect(() => {
+    setScore(calculateScore(post?.score ? post?.score + vote : 0));
+
+    return () => {};
+  }, [post, vote]);
 
   return (
     <div>
@@ -80,13 +97,15 @@ const Post = ({ post }) => {
 
       <div
         onClick={() => handleClick()}
-        className="p-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
+        className="px-3 pt-3 pb-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
-        <div className="p-1">
+        <div className="">
+        
           <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-            <h1 className="text-lg font-medium cursor-pointer ">{post?.title ?? ""}</h1>
+            <h1 className="text-lg font-medium leading-none cursor-pointer">{post?.title ?? ""}</h1>
           </a>
-          <div className="flex flex-row text-xs font-light truncate text-gray ">
+
+          <div className="flex flex-row py-1 text-xs font-light truncate text-gray">
             <Link href={`/r/${post?.subreddit}`}>
               <a
                 className="mr-1"
@@ -94,7 +113,7 @@ const Post = ({ post }) => {
                   e.stopPropagation();
                 }}
               >
-                r/{post?.subreddit ?? "ERR"}
+                <h2>r/{post?.subreddit ?? "ERR"}</h2>
               </a>
             </Link>
             <p>•</p>
@@ -111,20 +130,21 @@ const Post = ({ post }) => {
               <p className="ml-1">{`(${post.domain})`}</p>
             </div>
           </div>
+          
           <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-            <div className="pt-2 pb-2">
+            <div className="py-1">
               {!hide ? (
                 <Media post={post} />
               ) : (
-                <div className="flex flex-row justify-center py-2 text-red-400 text-color dark:text-red-700">
+                <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">
                   NSFW
                 </div>
               )}
             </div>
           </a>
           {/* <p>{post?.url ?? "ERR"}</p> */}
-
-          <div className="flex flex-row justify-between text-sm align-bottom select-none">
+          
+          <div className="flex flex-row justify-between py-1 text-sm align-bottom select-none">
             <div className="flex flex-row items-center space-x-1">
               <div className="flex-none hover:cursor-pointer ">
                 <BiUpvote
@@ -132,12 +152,12 @@ const Post = ({ post }) => {
                     (vote === 1
                       ? "text-upvote "
                       : " text-black dark:text-white") +
-                    " w-4 h-4 hover:scale-110 hover:text-upvote"
+                    " w-5 h-5 hover:scale-110 hover:text-upvote"
                   }
                   onClick={(e) => castVote(e, 1)}
                 />
               </div>
-              <p className="">{post?.score ? post.score + vote : vote}</p>
+              <p className="">{score}</p>
 
               <div className="flex-none hover:cursor-pointer ">
                 <BiDownvote
@@ -145,7 +165,7 @@ const Post = ({ post }) => {
                     (vote === -1
                       ? " text-downvote "
                       : " text-black dark:text-white ") +
-                    " w-4 h-4 hover:scale-110 hover:text-downvote"
+                    " w-5 h-5 hover:scale-110 hover:text-downvote"
                   }
                   onClick={(e) => castVote(e, -1)}
                 />

@@ -327,7 +327,7 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
         //height={windowHeight}
         // Forwards the ref to the masonry container element
         //containerRef={containerRef}
-        columnGutter={8}
+        columnGutter={10}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
         columnCount={cols}
         items={items}

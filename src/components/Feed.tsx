@@ -138,7 +138,7 @@ const Feed = ({ query }) => {
   }
   return (
     <div className="flex flex-col items-center flex-none w-screen pt-16">
-      <div className="w-11/12 md:w-5/6 ">
+      <div className="w-full md:w-5/6 ">
         <MyMasonic query={query} initItems={posts} initAfter={after} />
       </div>
     </div>
