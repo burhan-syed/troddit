@@ -13,6 +13,7 @@ import {
 import { loadFront, loadSubreddits } from "../RedditAPI";
 import Post from "./Post";
 import * as gtag from "../../lib/gtag";
+import { useMainContext } from "../MainContext";
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -35,7 +36,13 @@ const getFakeItemsPromise = (start, end) =>
 
 let allowload = true;
 
-const MyMasonic = ({ query, initItems, initAfter,  }) => {
+interface ColumnContext {
+  columns: number;
+  setColumns: Function;
+}
+
+const MyMasonic = ({ query, initItems, initAfter }) => {
+  const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
@@ -43,13 +50,15 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
+  const [cols, setCols] = useState(3);
   const [items, setItems] = useState([]);
+  const [end, setEnd] = useState(false);
 
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
   useEffect(() => {
+    allowload = true;
     if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
@@ -64,7 +73,7 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
     setNumPosts(initItems.length);
     setItems(initItems);
     setLoading(false);
-    
+
     return () => {
       setFetchPost(false);
       setError(false);
@@ -77,7 +86,7 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
     };
     //handling these in the other useeffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initItems,initAfter]);
+  }, [initItems, initAfter]);
 
   useEffect(() => {
     if (query.frontsort) {
@@ -110,6 +119,30 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
     },
     [items]
   );
+
+  useEffect(() => {
+    // const breakpointColumnsObj = {
+    //   default: 4,
+    //   2560: 3,
+    //   1280: 2,
+    //   767: 1,
+    // };
+    //console.log(windowWidth);
+    if (windowWidth > 2560) {
+      setCols(4);
+      context.setColumns(4);
+    } else if (windowWidth > 1280) {
+      setCols(3);
+      context.setColumns(3);
+    } else if (windowWidth > 767) {
+      setCols(2);
+      context.setColumns(2);
+    } else {
+      setCols(1);
+      context.setColumns(1);
+    }
+    return () => {};
+  }, [windowWidth]);
 
   const maybeLoadMore = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
@@ -199,7 +232,7 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
 
   const loadmore = async (loadafter = after) => {
     setCount((c) => c + 1);
-    console.log("loadmore after:", loadafter);
+    //console.log("loadmore after:", loadafter);
     let data = { after: "", children: [] };
     if (!subreddits) {
       data = await loadFront(
@@ -224,34 +257,39 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
     //   value: count,
     // });
     setAfter(data?.after);
-    return { data: { posts: data.children, after: data?.after } };
+    return { data: { posts: data?.children, after: data?.after } };
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
     allowload = false;
     let caughtup = false;
     let n = numposts;
-    const payload = [];
+    let payload = [];
     let fastafter = after;
     while (payload.length < end - start && !caughtup) {
       //console.log("getposts");
       //console.log(posts);
       let data = await (await loadmore(fastafter)).data;
-      console.log("data returned", data.after);
-      fastafter = data?.after;
-      if (!data.posts) {
-        console.log("no data");
+      if (!data.after) {
+        console.log("NO MORE DATA");
+        setEnd(true);
         caughtup = true;
+        allowload = false;
+        return data.posts;
       }
+      //console.log("data returned", data.after);
+      fastafter = data?.after;
+
       //console.log("data", data.data);
 
-      for (let c = 0; c < data.posts.length; c++) {
-        data.posts[c]["id"] = n;
-        n = n + 1;
-        data.posts[c]["height"] = randInt();
-        payload.push(data.posts[c]);
-        //console.log(payload[c]);
-      }
+      // for (let c = 0; c < data.posts.length; c++) {
+      //   //data.posts[c]["id"] = n;
+      //   //n = n + 1;
+      //   //data.posts[c]["height"] = randInt();
+      //   payload.push(data.posts[c]);
+      //   //console.log(payload[c]);
+      // }
+      payload = [...payload, ...data.posts];
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
@@ -291,12 +329,20 @@ const MyMasonic = ({ query, initItems, initAfter,  }) => {
         //containerRef={containerRef}
         columnGutter={8}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
-        columnCount={3}
+        columnCount={cols}
         items={items}
-        itemHeightEstimate={800}
+        itemHeightEstimate={600}
         overscanBy={2}
         render={FakeCard}
       />
+      {end && (
+        <div className="flex flex-row items-center justify-center text-lg font-bold">
+          <h1>
+            You have reached the end after {numposts} posts on {count + 1}{" "}
+            pages.{" "}
+          </h1>
+        </div>
+      )}
     </div>
   );
 };

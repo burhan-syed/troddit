@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
-import Masonry from "react-masonry-css";
-import InfiniteScroll from "react-infinite-scroll-component";
+//import Masonry from "react-masonry-css";
 import { loadFront, loadPost, loadSubreddits } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -35,42 +34,36 @@ const Feed = ({ query }) => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
-    }
-    else if (query.frontsort) {
+    } else if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
 
       //fetchFront();
-    }
-    else if (query.slug) {
+    } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
       //fetchSubs();
     }
-    return () => {
-    };
+    return () => {};
   }, [query]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
-    }
-    else if (query.frontsort) {
+    } else if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
 
       fetchFront();
-    }
-    else if (query.slug) {
+    } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
       fetchSubs();
     }
-    return()=>{
-
+    return () => {
       setPosts([]);
       setAfter("");
       setNumPosts(0);
@@ -78,14 +71,14 @@ const Feed = ({ query }) => {
       setError(false);
       setLoading(true);
     };
-  },[subreddits,sort,range])
+  }, [subreddits, sort, range]);
 
   const fetchFront = async () => {
     //console.log(query);
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data) {
-      console.log("DATA", data);
-      
+      //console.log("DATA", data);
+
       setLoading(false);
 
       setNumPosts((n) => n + data.children.length);
@@ -94,7 +87,6 @@ const Feed = ({ query }) => {
       return data.children;
     }
   };
-
 
   const fetchSubs = async () => {
     if (query?.slug?.[1] === "comments") {

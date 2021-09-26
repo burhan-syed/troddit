@@ -12,14 +12,16 @@ export const MainProvider = ({ children }) => {
   const [nsfw, setNSFW] = useState("false");
   const [loginModal, setLoginModal] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
+  const [columns, setColumns] = useState(3);
+
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => {
       return prevNSFW === "false" ? "true" : "false";
     });
   };
   const toggleAutoplay = () => {
-    setAutoplay(a => !a);
-  }
+    setAutoplay((a) => !a);
+  };
   const toggleLoginModal = () => {
     setLoginModal((m) => !m);
   };
@@ -40,7 +42,17 @@ export const MainProvider = ({ children }) => {
 
   return (
     <MainContext.Provider
-      value={{ nsfw, toggleNSFW, loginModal, toggleLoginModal, setLoginModal, autoplay, toggleAutoplay}}
+      value={{
+        nsfw,
+        toggleNSFW,
+        loginModal,
+        toggleLoginModal,
+        setLoginModal,
+        autoplay,
+        toggleAutoplay,
+        columns,
+        setColumns,
+      }}
     >
       {children}
     </MainContext.Provider>
