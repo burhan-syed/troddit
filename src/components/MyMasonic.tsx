@@ -250,12 +250,12 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
         //numposts //posts.length
       );
     }
-    // gtag.event({
-    //   action: "infinite-scroll",
-    //   category: "main-feed",
-    //   label: `${subreddits ? subreddits : "home"}`,
-    //   value: count,
-    // });
+    gtag.event({
+      action: "infinite-scroll",
+      category: "main-feed",
+      label: `${subreddits ? subreddits : "home"}`,
+      value: count,
+    });
     setAfter(data?.after);
     return { data: { posts: data?.children, after: data?.after } };
     //setPosts((prevposts) => [...prevposts, ...data.children]);
