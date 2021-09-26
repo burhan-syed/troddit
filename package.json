@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.4.1",
+    "@react-hook/window-size": "^3.0.7",
     "axios": "^0.21.1",
     "eslint-plugin-react-hooks": "^4.2.1-alpha-8723e772b-20210826",
     "masonic": "^3.4.1",
