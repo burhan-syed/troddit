@@ -10,135 +10,119 @@ import { getSession, useSession } from "next-auth/client";
 import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
 
-import * as gtag from '../../lib/gtag'
+import * as gtag from "../../lib/gtag";
+import MyMasonic from "./MyMasonic";
 
 const Feed = ({ query }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchPost, setFetchPost] = useState(false);
+
+  // const breakpointColumnsObj = {
+  //   default: 4,
+  //   2560: 3,
+  //   1280: 2,
+  //   767: 1,
+  // };
   const [posts, setPosts] = useState([]);
+  const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
+  const [subreddits, setSubreddits] = useState("");
 
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
-  const [subreddits, setSubreddits] = useState("");
-
-  const [count, setCount] = useState(0);
-
-  const context: any = useMainContext();
-
-  const [session, sessionLoading] = useSession();
-
-  const route = useRouter();
-  const breakpointColumnsObj = {
-    default: 4,
-    2560: 3,
-    1280: 2,
-    767: 1,
-  };
   useEffect(() => {
-    //console.log(query);
-    //console.log("new posts");
-    if (query.frontsort) {
+    if (query?.slug?.[1] === "comments") {
+      setFetchPost(true);
+      setLoading(false);
+    }
+    else if (query.frontsort) {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
+
+      //fetchFront();
+    }
+    else if (query.slug) {
+      setSubreddits(query?.slug?.[0] ?? "");
+      setSort(query?.slug?.[1] ?? "best");
+      setRange(query?.t ?? "");
+      //fetchSubs();
+    }
+    return () => {
+    };
+  }, [query]);
+
+  useEffect(()=>{
+    if (query?.slug?.[1] === "comments") {
+      setFetchPost(true);
+      setLoading(false);
+    }
+    else if (query.frontsort) {
+      setSort(query?.frontsort ?? "best");
+      setRange(query?.t ?? "");
+
       fetchFront();
     }
-    if (query.slug) {
+    else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
       fetchSubs();
     }
-    // console.log(query?.slug?.[0] ?? "noslug");
-    // console.log("sort", sort);
-    // console.log("range", range);
-    // console.log("subreddits", subreddits);
+    return()=>{
 
-    return () => {
       setPosts([]);
+      setAfter("");
+      setNumPosts(0);
       setFetchPost(false);
       setError(false);
-      setAfter("");
-      setRange("");
-      setSubreddits("");
       setLoading(true);
-      setCount(0);
     };
-    //handling these in the other useeffect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [range, sort, subreddits]);
-
-  //determine if we need to load new posts
-  const [newFeed, setNewFeed] = useState(false);
-  useEffect(() => {
-    //console.log("FRONT", query);
-    if (query.frontsort) {
-      setSort(query?.frontsort ?? "best");
-      setRange(query?.t ?? "");
-    }
-    if (query.slug) {
-      setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "best");
-      setRange(query?.t ?? "");
-    }
-    // if (query?.slug?)
-    return () => {
-      ("");
-    };
-  }, [query]);
+  },[subreddits,sort,range])
 
   const fetchFront = async () => {
+    //console.log(query);
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data) {
+      console.log("DATA", data);
+      
       setLoading(false);
+
+      setNumPosts((n) => n + data.children.length);
       setAfter(data?.after);
       setPosts(data.children);
+      return data.children;
     }
   };
 
-  const [fetchPost, setFetchPost] = useState(false);
 
   const fetchSubs = async () => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
     } else {
-      let data = await loadSubreddits(
+      let data: any = await loadSubreddits(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
       if (data) {
-        setLoading(false);
+        let n = numposts;
+        // for (let c = 0; c < data.children.length; c++) {
+        //   data.children[c]["id"] = n;
+        //   n = n + 1;
+        //   data.children[c]["height"] = randInt();
+        // }
+
         setAfter(data?.after);
         setPosts(data.children);
+        setNumPosts((n) => n + data.children.length);
+        setLoading(false);
       } else {
         setLoading(false);
         setError(true);
       }
     }
-  };
-
-  const loadmore = async () => {
-    setLoadingMore(true);
-    setCount(c => (c+1))
-    //console.log(after);
-    let data = { after: "", children: [] };
-    if (!subreddits) {
-      data = await loadFront(sort, range, after, posts.length);
-    } else {
-      data = data = await loadSubreddits(
-        query?.slug?.[0] ?? "",
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? "",
-        after,
-        posts.length
-      );
-    }
-    gtag.event({action: 'infinite-scroll', category: 'main-feed', label: `${subreddits ? subreddits : "home"}`, value: count})
-    setAfter(data?.after);
-    setPosts((prevposts) => [...prevposts, ...data.children]);
   };
 
   if (loading) {
@@ -161,34 +145,40 @@ const Feed = ({ query }) => {
     return <div>{"Oops something went wrong :("}</div>;
   }
   return (
-    <section className="flex flex-col items-center flex-none w-screen pt-16">
-      <LoginModal />
-      {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
-      <div className="w-11/12 md:w-5/6">
-        <InfiniteScroll
-          dataLength={posts.length}
-          next={loadmore}
-          hasMore={after ? true : false}
-          loader={<div className="flex flex-row justify-center"><h1>Loading More..</h1></div>}
-          endMessage={
-            <div className="flex flex-row justify-center">
-              <b>You have reached the end after {posts?.length ?? 0} posts from {count+1} pages</b>
-            </div>
-          }
-        >
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {posts.map((post, i) => (
-              <Post key={`${post.data.id}_${i}`} post={post.data} />
-            ))}
-          </Masonry>
-        </InfiniteScroll>
+    <div className="flex flex-col items-center flex-none w-screen pt-16">
+      <div className="w-11/12 md:w-5/6 ">
+        <MyMasonic query={query} initItems={posts} initAfter={after} />
       </div>
-      <button className={"mt-2 " + (after ? "block" : "hidden")} name="load more" onClick={loadmore}>Load More</button>
-    </section>
+    </div>
+    // <section className="flex flex-col items-center flex-none w-screen pt-16">
+    //   <LoginModal />
+    //   {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
+    //   <div className="w-11/12 md:w-5/6">
+
+    //     <InfiniteScroll
+    //       dataLength={posts.length}
+    //       next={loadmore}
+    //       hasMore={after ? true : false}
+    //       loader={<div className="flex flex-row justify-center"><h1>Loading More..</h1></div>}
+    //       endMessage={
+    //         <div className="flex flex-row justify-center">
+    //           <b>You have reached the end after {posts?.length ?? 0} posts from {count+1} pages</b>
+    //         </div>
+    //       }
+    //     >
+    //       <Masonry
+    //         breakpointCols={breakpointColumnsObj}
+    //         className="my-masonry-grid"
+    //         columnClassName="my-masonry-grid_column"
+    //       >
+    //         {posts.map((post, i) => (
+    //           <Post key={`${post.data.id}_${i}`} post={post.data} />
+    //         ))}
+    //       </Masonry>
+    //     </InfiniteScroll>
+    //   </div>
+    //   <button className={"mt-2 " + (after ? "block" : "hidden")} name="load more" onClick={loadmore}>Load More</button>
+    // </section>
   );
 };
 

@@ -242,10 +242,10 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           //   1280: 2,
           //   767: 1,
           // };
-
+          let done = false;
+          let width = screen.width;
           if (!imgFull) {
-            let done = false;
-            let width = screen.width;
+            
             if (width > 767 && width < 1280) {
               width = width / 2;
             } else if (width < 2560) {
@@ -253,17 +253,18 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             } else {
               width = width / 4;
             }
-            post.preview.images[0].resolutions.forEach((res, i) => {
-              //console.log(width,res,i);
-              if (!done) {
-                if (res.width > width) {
-                  num = i;
-                  //console.log("DONE",num);
-                  done = true;
-                }
-              }
-            });
+            
           }
+          post.preview.images[0].resolutions.forEach((res, i) => {
+            //console.log(width,res,i);
+            if (!done) {
+              if (res.width > width) {
+                num = i;
+                //console.log("DONE",num);
+                done = true;
+              }
+            }
+          });
 
           setImageInfo({
             url: checkURL(

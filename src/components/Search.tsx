@@ -116,7 +116,7 @@ const Search = ({ id }) => {
   };
 
   const goToSub = (e, suggestion) => {
-    e.preventDefault();
+    //e.preventDefault();
     router.push(`/r/${suggestion}`);
   };
 
