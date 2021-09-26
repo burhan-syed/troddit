@@ -8,7 +8,7 @@ export const index = ({ query }) => {
   return (
     <div className="overflow-x-hidden ">
       <Head>
-        <title>Troddit - Browse Reddit Better</title>
+        <title>troddit · a web client for Reddit </title>
         <meta
           name="description"
           content="A seamless experience for browsing through Reddit with a masonry grid layout. Login with Reddit to experience your personalized home page, immediate access to your followed subreddits, and access to vote and comment."

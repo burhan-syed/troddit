@@ -14,7 +14,7 @@ const Subs = ({ query }) => {
     <div>
       <Head>
         <title>
-          {query?.frontsort ? `troddit/${query?.frontsort}` : "troddit"}
+          {query?.frontsort ? `troddit · ${query?.frontsort}` : "troddit"}
         </title>
       </Head>
 

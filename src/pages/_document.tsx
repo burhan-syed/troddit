@@ -12,7 +12,7 @@ class MyDocument extends Document {
         <Head>
           <meta
             name="description"
-            content="A seamless experience for browsing through Reddit with a grid layout. Login with Reddit to experience your personalized home page, immediate access to your followed subreddits, and access to vote and comment."
+            content="A seamless experience for browsing through Reddit with a grid layout. Login with Reddit to experience your personalized home page, have immediate access to your followed subreddits, and access to vote on posts."
           ></meta>
           
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />

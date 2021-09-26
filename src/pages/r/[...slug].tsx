@@ -7,7 +7,7 @@ const Sort = ({ query }) => {
   return (
     <div className="overflow-x-hidden overflow-y-auto ">
       <Head>
-        <title>{query?.slug?.[0] ? `r/${query?.slug?.[0]}` : "troddit"}</title>
+        <title>{query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}</title>
       </Head>
       <main>
         <NavBar />

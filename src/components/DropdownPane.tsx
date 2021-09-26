@@ -12,7 +12,7 @@ import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
 
-import InfiniteScroll from "react-infinite-scroll-component";
+// import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/client";
 import DropdownItem from "./DropdownItem";
@@ -38,7 +38,11 @@ const DropdownPane = ({ hide }) => {
     //console.log(router.query);
     if (router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0].split("+");
-      setLocation(loc[0]);
+      if (loc.length > 1) {
+        setLocation(loc[0].toString() + "..");
+      } else {
+        setLocation(loc[0].toString());
+      }
     } else {
       setLocation("home");
     }
