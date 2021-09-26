@@ -84,7 +84,7 @@ const Post = ({ post }) => {
       >
         <div className="p-1">
           <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-            <h1 className="text-base cursor-pointer">{post?.title ?? ""}</h1>
+            <h1 className="text-lg font-medium cursor-pointer ">{post?.title ?? ""}</h1>
           </a>
           <div className="flex flex-row text-xs font-light truncate text-gray ">
             <Link href={`/r/${post?.subreddit}`}>

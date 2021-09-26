@@ -11,12 +11,16 @@ const Gallery = ({ images }) => {
     }
   }, [images]);
 
-  const advance = () => {
+  const advance = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (index < images.length - 1) {
       setIndex(index + 1);
     }
   };
-  const previous = () => {
+  const previous = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (index > 0) {
       setIndex(index - 1);
     }
@@ -25,7 +29,7 @@ const Gallery = ({ images }) => {
   if (loaded) {
     return (
       <div className="flex flex-row items-center">
-        <button className={index === 0 ? "opacity-0" : ""} onClick={previous}>
+        <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button>
         <div className="">
@@ -37,7 +41,7 @@ const Gallery = ({ images }) => {
                   src={image.url}
                   height={image.height}
                   width={image.width}
-                  alt="thumbnail"
+                  alt="image"
                   layout="intrinsic"
                   priority={true}
                   unoptimized={true}
@@ -58,7 +62,7 @@ const Gallery = ({ images }) => {
         ></Image> */}
         <button
           className={index === images.length - 1 ? "opacity-0" : ""}
-          onClick={advance}
+          onClick={(e) => advance(e)}
         >
           {">"}
         </button>
