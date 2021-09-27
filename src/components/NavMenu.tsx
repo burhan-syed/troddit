@@ -86,9 +86,9 @@ const NavMenu = ({ hide = false }) => {
                     "block px-4 py-2 text-sm"
                   )}
                 >
-                  <div className="flex flex-row justify-center">
-                    <Link href="/about">About</Link>
-                  </div>
+                  <Link href="/about" passHref={true}>
+                    <div className="flex flex-row justify-center select-none">About</div>
+                  </Link>
                 </div>
               )}
             </Menu.Item>

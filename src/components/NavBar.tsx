@@ -20,7 +20,7 @@ import { useScroll } from "../hooks/useScroll";
 
 const NavBar = () => {
   const [hidden, setHidden] = useState(false);
-
+  const [allowHide, setallowHide] = useState(true);
   const session = useSession();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const router = useRouter();
@@ -45,14 +45,24 @@ const NavBar = () => {
 
   const { scrollY, scrollX, scrollDirection } = useScroll();
   useEffect(() => {
-    scrollDirection === "down" ? setHidden(false) : setHidden(true);
-  }, [scrollDirection]);
+    if (allowHide) {
+      scrollDirection === "down" ? setHidden(false) : setHidden(true);
+    }
+  }, [scrollDirection, allowHide]);
 
   useEffect(() => {
     //console.log("NAVBAR", router.query);
-    if (router.query?.slug?.[1] === "comments" || true) {
-      setHidden(false);
+    setHidden(false);
+
+    if (
+      router.query?.slug?.[1] === "comments" ||
+      router.pathname.includes("/about")
+    ) {
+      setallowHide(false);
     }
+    return () => {
+      setallowHide(true);
+    };
   }, [router]);
 
   return (
