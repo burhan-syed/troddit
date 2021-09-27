@@ -117,6 +117,38 @@ export const loadSubreddits = async (
   }
 };
 
+export const loadUserPosts = async (
+  username: string,
+  sort: string = "hot",
+  range: string,
+  after: string = "",
+  count: number = 0
+) => {
+  //console.log(subreddits, sort, range);
+  try {
+    const res = await (
+      await axios.get(`${REDDIT}/user/${username}/.json?sort=${sort}`, {
+        params: {
+          raw_json: 1,
+          t: range,
+          after: after,
+          count: count,
+        },
+      })
+    ).data;
+    //console.log(res);
+    const filtered_children = res.data.children.filter(child => (child?.kind === "t3"))
+    return {
+      after: res.data.after,
+      before: res.data.before,
+      children: filtered_children,
+    };
+  } catch (err) {
+    //console.log(err);
+    return null;
+  }
+};
+
 export const getMySubs = async (after?, count?) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {

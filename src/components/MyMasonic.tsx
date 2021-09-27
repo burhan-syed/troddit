@@ -10,7 +10,7 @@ import {
   usePositioner,
   useInfiniteLoader,
 } from "masonic";
-import { loadFront, loadSubreddits } from "../RedditAPI";
+import { loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
 import Post from "./Post";
 import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
@@ -41,7 +41,7 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter }) => {
+const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -60,12 +60,12 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
   useEffect(() => {
     allowload = true;
     if (query.frontsort) {
-      setSort(query?.frontsort ?? "best");
+      setSort(query?.frontsort ?? "hot");
       setRange(query?.t ?? "");
     }
     if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "best");
+      setSort(query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
     }
 
@@ -90,12 +90,12 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
 
   useEffect(() => {
     if (query.frontsort) {
-      setSort(query?.frontsort ?? "best");
+      setSort(query?.frontsort ?? "hot");
       setRange(query?.t ?? "");
     }
     if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "best");
+      setSort(query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
     }
     return () => {
@@ -241,7 +241,14 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
         loadafter
         //items.length
       );
-    } else {
+    } else if (isUser) {
+        data = await loadUserPosts(
+          query?.slug?.[0] ?? "",
+          query?.slug?.[1] ?? "hot",
+          query?.t ?? "",
+          loadafter
+        );
+    }else {
       data = await loadSubreddits(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
@@ -271,7 +278,7 @@ const MyMasonic = ({ query, initItems, initAfter }) => {
       //console.log(posts);
       let data = await (await loadmore(fastafter)).data;
       if (!data.after) {
-        console.log("NO MORE DATA");
+        //console.log("NO MORE DATA");
         setEnd(true);
         caughtup = true;
         allowload = false;

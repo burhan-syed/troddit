@@ -126,7 +126,7 @@ const DropdownPane = ({ hide }) => {
           ) : location === "all" ? (
             <CgLivePhoto className="w-6 h-6" />
           ) : (
-            <div>r/</div>
+            <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
           )}
           <h1 className="ml-2 capitalize truncate">{location}</h1>
         </div>

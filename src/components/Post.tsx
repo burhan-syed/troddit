@@ -42,8 +42,6 @@ const Post = ({ post }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
- 
-
   const calculateScore = (x: number) => {
     if (x < 10000) {
       return x.toString();
@@ -62,6 +60,8 @@ const Post = ({ post }) => {
       // router.push("/", post.permalink);
       // console.log("FRONSORT");
       setReturnRoute(router.asPath);
+    } else if (router.pathname.includes("/user/")) {
+      router.push(post.permalink);
     } else {
       router.push("", post.permalink, { shallow: true });
     }
@@ -100,9 +100,10 @@ const Post = ({ post }) => {
         className="px-3 pt-3 pb-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
       >
         <div className="">
-        
           <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-            <h1 className="text-lg font-medium leading-none cursor-pointer">{post?.title ?? ""}</h1>
+            <h1 className="text-lg font-medium leading-none cursor-pointer">
+              {post?.title ?? ""}
+            </h1>
           </a>
 
           <div className="flex flex-row py-1 text-xs font-light truncate text-gray">
@@ -117,7 +118,15 @@ const Post = ({ post }) => {
               </a>
             </Link>
             <p>•</p>
-            <p className="ml-1 mr-1">u/{post?.author ?? ""}</p>
+            <Link href={`/user/${post?.author}`}>
+              <a
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <h2 className="ml-1 mr-1">u/{post?.author ?? ""}</h2>
+              </a>
+            </Link>
             <p>•</p>
 
             <p className="ml-1">
@@ -130,7 +139,7 @@ const Post = ({ post }) => {
               <p className="ml-1">{`(${post.domain})`}</p>
             </div>
           </div>
-          
+
           <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
             <div className="py-1">
               {!hide ? (
@@ -143,7 +152,7 @@ const Post = ({ post }) => {
             </div>
           </a>
           {/* <p>{post?.url ?? "ERR"}</p> */}
-          
+
           <div className="flex flex-row justify-between py-1 text-sm align-bottom select-none">
             <div className="flex flex-row items-center space-x-1">
               <div className="flex-none hover:cursor-pointer ">

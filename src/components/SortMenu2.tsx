@@ -16,10 +16,10 @@ const SortMenu2 = ({ hide = false }) => {
   const [show, setShow] = useState(false);
   const [sort, setSort] = useState<any>("hot");
   const [range, setRange] = useState("");
-
+  const [isUser, setIsUser] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    //console.log(router.query);
+    if (router.pathname.includes("/user/")) setIsUser(true);
     if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
     if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
     if (router?.query?.t ?? false) {
@@ -29,7 +29,7 @@ const SortMenu2 = ({ hide = false }) => {
     return () => {
       setSort("hot");
     };
-  }, [router.query]);
+  }, [router]);
 
   const updateSort = (e, s) => {
     e.preventDefault();
@@ -38,7 +38,9 @@ const SortMenu2 = ({ hide = false }) => {
       //console.log(`r/${router?.query ?? "popular"}/${s}`);
 
       if (router.query?.slug?.[0] ?? false) {
-        router.push(`/r/${router.query?.slug?.[0] ?? "popular"}/${s}`);
+        router.push(
+          `/${isUser ? "user" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}`
+        );
       } else {
         router.push(`/${s}`);
       }
@@ -51,7 +53,9 @@ const SortMenu2 = ({ hide = false }) => {
     setRange(r);
     if (router.query?.slug?.[0] ?? false) {
       router.push(
-        `/r/${router.query?.slug?.[0] ?? "popular"}/top/?t=${encodeURI(r)}`
+        `/${isUser ? "user" : "r"}/${
+          router.query?.slug?.[0] ?? "hot"
+        }/top/?t=${encodeURI(r)}`
       );
     } else if (router.query.frontsort) {
       router.push({
@@ -154,22 +158,26 @@ const SortMenu2 = ({ hide = false }) => {
             >
               <div className="py-1">
                 {/* Best */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => updateSort(e, "best")}
-                      className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                        "block px-4 py-1 text-sm"
-                      )}
-                    >
-                      <div className="flex flex-row items-center justify-between h-10">
-                        <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
-                        <span> Best </span>
+                {!isUser && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={(e) => updateSort(e, "best")}
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10">
+                          <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
+                          <span> Best </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                    )}
+                  </Menu.Item>
+                )}
                 {/* Hot */}
                 <Menu.Item>
                   {({ active }) => (
@@ -313,22 +321,26 @@ const SortMenu2 = ({ hide = false }) => {
                   )}
                 </Menu.Item>
                 {/* Rising */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => updateSort(e, "rising")}
-                      className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                        "block px-4 py-1 text-sm "
-                      )}
-                    >
-                      <div className="flex flex-row items-center justify-between h-10">
-                        <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
-                        <span> Rising </span>
+                {!isUser && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={(e) => updateSort(e, "rising")}
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm "
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10">
+                          <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
+                          <span> Rising </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                    )}
+                  </Menu.Item>
+                )}
               </div>
             </Menu.Items>
           </Transition>

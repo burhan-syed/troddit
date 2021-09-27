@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
 //import Masonry from "react-masonry-css";
-import { loadFront, loadPost, loadSubreddits } from "../RedditAPI";
+import {
+  loadFront,
+  loadPost,
+  loadSubreddits,
+  loadUserPosts,
+} from "../RedditAPI";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
@@ -12,7 +17,7 @@ import LoginModal from "./LoginModal";
 import * as gtag from "../../lib/gtag";
 import MyMasonic from "./MyMasonic";
 
-const Feed = ({ query }) => {
+const Feed = ({ query, isUser = false }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
@@ -76,7 +81,7 @@ const Feed = ({ query }) => {
   const fetchFront = async () => {
     //console.log(query);
     let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
-    if (data) {
+    if (data?.children) {
       //console.log("DATA", data);
 
       setLoading(false);
@@ -85,35 +90,39 @@ const Feed = ({ query }) => {
       setAfter(data?.after);
       setPosts(data.children);
       return data.children;
+    } else {
+      setLoading(false);
+      setError(true);
     }
   };
 
   const fetchSubs = async () => {
+    //console.log(query);
+    let data: any;
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
-    } else {
-      let data: any = await loadSubreddits(
+    } else if (isUser) {
+      data = await loadUserPosts(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
-      if (data) {
-        let n = numposts;
-        // for (let c = 0; c < data.children.length; c++) {
-        //   data.children[c]["id"] = n;
-        //   n = n + 1;
-        //   data.children[c]["height"] = randInt();
-        // }
-
-        setAfter(data?.after);
-        setPosts(data.children);
-        setNumPosts((n) => n + data.children.length);
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setError(true);
-      }
+    } else {
+      data = await loadSubreddits(
+        query?.slug?.[0] ?? "",
+        query?.slug?.[1] ?? "hot",
+        query?.t ?? ""
+      );
+    }
+    if (data?.children) {
+      setAfter(data?.after);
+      setPosts(data.children);
+      setNumPosts((n) => n + data.children.length);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      setError(true);
     }
   };
 
@@ -134,18 +143,23 @@ const Feed = ({ query }) => {
     );
   }
   if (error) {
-    return <div>{"Oops something went wrong :("}</div>;
+    return <div className="flex flex-row items-center justify-center mt-16">{"Oops something went wrong :("}</div>;
   }
   return (
     <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen pt-16">
-      <div className="w-full md:w-5/6 ">
-        <MyMasonic query={query} initItems={posts} initAfter={after} />
+        <div className="w-full md:w-5/6 ">
+          <MyMasonic
+            query={query}
+            initItems={posts}
+            initAfter={after}
+            isUser={isUser}
+          />
+        </div>
       </div>
-    </div>
     </main>
-    
+
     // <section className="flex flex-col items-center flex-none w-screen pt-16">
     //   <LoginModal />
     //   {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}

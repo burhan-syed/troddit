@@ -40,6 +40,19 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       //console.log("ERRRRRR");
     }
     forceCheck();
+    return () => {
+      setIsGallery(false);
+      setGalleryInfo([]);
+      setIsImage(false);
+      setIsMP4(false);
+      setShowMP4(true);
+      setImageInfo({ url: "", height: 0, width: 0 });
+      setVideoInfo({ url: "", height: 0, width: 0 });
+      setPlaceholderInfo({ url: "", height: 0, width: 0 });
+      setMediaLoaded(false);
+      setLoaded(false);
+      setToLoad(false);
+    }
   }, [post]);
 
   const shouldLoad = () => {
@@ -326,6 +339,11 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
     });
     setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
     setmaxheightnum(Math.floor(screen.height * 0.75));
+    return () => {
+      setheight({});
+      setmaxheight({});
+      setmaxheightnum(0);
+    }
   }, [imageInfo]);
 
   return (
