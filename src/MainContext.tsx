@@ -13,6 +13,17 @@ export const MainProvider = ({ children }) => {
   const [loginModal, setLoginModal] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
   const [columns, setColumns] = useState(3);
+  const [columnOverride, setColumnOverride] = useState(0);
+  const [maximize, setMaximize] = useState(false);
+  const [mediaOnly, setMediaOnly] = useState(false);
+
+  const toggleMediaOnly = () => {
+    setMediaOnly(m => !m);
+  }
+  
+  const toggleMaximize = () => {
+    setMaximize(m => !m);
+  }
 
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => {
@@ -52,6 +63,12 @@ export const MainProvider = ({ children }) => {
         toggleAutoplay,
         columns,
         setColumns,
+        maximize, 
+        toggleMaximize,
+        columnOverride,
+        setColumnOverride,
+        mediaOnly,
+        toggleMediaOnly
       }}
     >
       {children}

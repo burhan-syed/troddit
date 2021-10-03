@@ -170,7 +170,7 @@ const SortMenu2 = ({ hide = false }) => {
                           "block px-4 py-1 text-sm"
                         )}
                       >
-                        <div className="flex flex-row items-center justify-between h-10">
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                           <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
                           <span> Best </span>
                         </div>
@@ -188,7 +188,7 @@ const SortMenu2 = ({ hide = false }) => {
                         "block px-4 py-1 text-sm"
                       )}
                     >
-                      <div className="flex flex-row items-center justify-between h-10">
+                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                         <AiOutlineFire className="flex-none w-5 h-5" />{" "}
                         <span> Hot </span>
                       </div>
@@ -210,7 +210,7 @@ const SortMenu2 = ({ hide = false }) => {
                           "block px-4 py-1 text-sm"
                         )}
                       >
-                        <div className="flex flex-row items-center justify-between h-10">
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                           <RiBarChart2Line className="flex-none w-5 h-5" />{" "}
                           <span> Top </span>{" "}
                         </div>
@@ -226,7 +226,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "hour" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1"
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                               }
                               onClick={(e) => updateRange(e, "hour")}
                             >
@@ -239,7 +239,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "today" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onClick={(e) => updateRange(e, "today")}
                             >
@@ -252,7 +252,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "week" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onClick={(e) => updateRange(e, "week")}
                             >
@@ -265,7 +265,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "month" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onClick={(e) => updateRange(e, "month")}
                             >
@@ -278,7 +278,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "year" ? `font-bold` : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onClick={(e) => updateRange(e, "year")}
                             >
@@ -291,7 +291,7 @@ const SortMenu2 = ({ hide = false }) => {
                             <div
                               className={
                                 (range === "all" ? `font-bold ` : "") +
-                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onClick={(e) => updateRange(e, "all")}
                             >
@@ -313,7 +313,7 @@ const SortMenu2 = ({ hide = false }) => {
                         "block px-4 py-1 text-sm"
                       )}
                     >
-                      <div className="flex flex-row items-center justify-between h-10">
+                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                         <BsCircle className="flex-none w-5 h-5" />{" "}
                         <span> New </span>
                       </div>
@@ -333,7 +333,7 @@ const SortMenu2 = ({ hide = false }) => {
                           "block px-4 py-1 text-sm "
                         )}
                       >
-                        <div className="flex flex-row items-center justify-between h-10">
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                           <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
                           <span> Rising </span>
                         </div>

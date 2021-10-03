@@ -3,14 +3,14 @@ import ReactSwitch from "react-switch";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
-const NSFWToggle = () => {
+const ToggleNSFW = () => {
   const context: any = useMainContext();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {}, [context]);
   return (
     <div onClick={(e) => e.stopPropagation()}>
-      <label className="flex flex-row items-center justify-between">
+      <label className="flex flex-row items-center justify-between cursor-pointer">
         <span>NSFW</span>
 
         <ReactSwitch
@@ -47,4 +47,4 @@ const NSFWToggle = () => {
   );
 };
 
-export default NSFWToggle;
+export default ToggleNSFW;

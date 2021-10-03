@@ -150,19 +150,19 @@ const DropdownPane = ({ hide }) => {
           {/* Quick Links */}
           <div className="flex flex-col py-2 font-light">
             <Link href="/" passHref>
-              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
+              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <AiOutlineHome className="w-6 h-6" />
                 <h1 className="">Home</h1>
               </div>
             </Link>
             <Link href="/r/popular" passHref>
-              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
+              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <BiRightTopArrowCircle className="w-6 h-6" />
                 <h1>Popular</h1>
               </div>
             </Link>
             <Link href="/r/all" passHref>
-              <div className="flex flex-row items-center  py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4">
+              <div className="flex flex-row items-center  py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <CgLivePhoto className="w-6 h-6" />
                 <h1>All</h1>
               </div>

@@ -41,7 +41,7 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
+const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -53,7 +53,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
   const [cols, setCols] = useState(3);
   const [items, setItems] = useState([]);
   const [end, setEnd] = useState(false);
-
+  const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
@@ -120,6 +120,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
     [items]
   );
 
+
   useEffect(() => {
     // const breakpointColumnsObj = {
     //   default: 4,
@@ -127,22 +128,33 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
     //   1280: 2,
     //   767: 1,
     // };
+    
     //console.log(windowWidth);
-    if (windowWidth > 2560) {
-      setCols(4);
-      context.setColumns(4);
-    } else if (windowWidth > 1280) {
-      setCols(3);
-      context.setColumns(3);
-    } else if (windowWidth > 767) {
-      setCols(2);
-      context.setColumns(2);
+    if (context?.columnOverride ?? 0 !== 0) {
+      setItemHeightEstimate(Math.floor(2000/(context.columnOverride)))
+      setCols(context.columnOverride);
+      context.setColumns(context.columnOverride);
     } else {
-      setCols(1);
-      context.setColumns(1);
+      if (windowWidth > 2560) {
+        setItemHeightEstimate(500);
+        setCols(4);
+        context.setColumns(4);
+      } else if (windowWidth > 1280) {
+        setItemHeightEstimate(600);
+        setCols(3);
+        context.setColumns(3);
+      } else if (windowWidth > 767) {
+        setItemHeightEstimate(900);
+        setCols(2);
+        context.setColumns(2);
+      } else {
+        setItemHeightEstimate(1200);
+        setCols(1);
+        context.setColumns(1);
+      }
     }
     return () => {};
-  }, [windowWidth]);
+  }, [windowWidth, context]);
 
   const maybeLoadMore = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
@@ -242,13 +254,13 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
         //items.length
       );
     } else if (isUser) {
-        data = await loadUserPosts(
-          query?.slug?.[0] ?? "",
-          query?.slug?.[1] ?? "hot",
-          query?.t ?? "",
-          loadafter
-        );
-    }else {
+      data = await loadUserPosts(
+        query?.slug?.[0] ?? "",
+        query?.slug?.[1] ?? "hot",
+        query?.t ?? "",
+        loadafter
+      );
+    } else {
       data = await loadSubreddits(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
@@ -323,7 +335,8 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
   // }, []);
 
   return (
-    <div>
+    <div         
+    >
       <Masonry
         onRender={maybeLoadMorePosts}
         //positioner={positioner}
@@ -333,14 +346,16 @@ const MyMasonic = ({ query, initItems, initAfter, isUser=false }) => {
         // The height of the virtualization window
         //height={windowHeight}
         // Forwards the ref to the masonry container element
-        //containerRef={containerRef}
+        
         columnGutter={10}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
         columnCount={cols}
         items={items}
-        itemHeightEstimate={600}
+        itemHeightEstimate={itemheightestimate}
         overscanBy={2}
         render={FakeCard}
+        className=""
+        ssrWidth={500}
       />
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">

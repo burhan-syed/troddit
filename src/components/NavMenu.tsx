@@ -1,20 +1,24 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import ThemeToggle from "./ThemeToggle";
-import NSFWToggle from "./NSFWToggle";
+import ToggleTheme from "./ToggleTheme";
+import ToggleNSFW from "./ToggleNSFW";
 import ToggleAutoplay from "./ToggleAutoplay";
 import Link from "next/link";
+import ToggleMaximize from "./ToggleMaximize";
+import { useMainContext } from "../MainContext";
+import ToggleMediaOnly from "./ToggleMediaOnly";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const NavMenu = ({ hide = false }) => {
+  const context: any = useMainContext();
   return (
     <Menu
       as="div"
-      className="relative flex flex-col items-center flex-grow w-full h-full"
+      className="relative flex flex-col items-center flex-grow w-full h-full select-none"
     >
       <div className="flex-grow w-full">
         <Menu.Button
@@ -44,15 +48,135 @@ const NavMenu = ({ hide = false }) => {
             <Menu.Item>
               {({ active }) => (
                 <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight " : "",
-                    "block px-4 py-2 text-sm"
-                  )}
+                  className="group"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    context.setColumnOverride(0);
+                  }}
                 >
-                  <ThemeToggle />
+                  <div
+                    className={classNames(
+                      active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                      "block px-4 py-2 text-sm"
+                    )}
+                  >
+                    <div className="flex flex-row items-center justify-center h-6">
+                      Column Override
+                    </div>
+                  </div>
+                  <ul
+                    className={
+                      (active ? "block " : "hidden ") +
+                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                    }
+                  >
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "0"
+                              ? `font-bold`
+                              : "") +
+                            " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(0);
+                          }}
+                        >
+                          Default
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "1"
+                              ? `font-bold`
+                              : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(1);
+                          }}
+                        >
+                          One
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "2"
+                              ? `font-bold`
+                              : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(2);
+                          }}
+                        >
+                          Two
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "3"
+                              ? `font-bold`
+                              : "") +
+                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(3);
+                          }}
+                        >
+                          Three
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "5"
+                              ? `font-bold`
+                              : "") +
+                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(5);
+                          }}
+                        >
+                          Five
+                        </div>
+                      )}
+                    </Menu.Item>
+                  </ul>
                 </div>
               )}
             </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <ToggleMediaOnly />
+                </div>
+              )}
+            </Menu.Item>
+            
             <Menu.Item>
               {({ active }) => (
                 <div
@@ -65,6 +189,30 @@ const NavMenu = ({ hide = false }) => {
                 </div>
               )}
             </Menu.Item>
+            {/* <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <ToggleMaximize />
+                </div>
+              )}
+            </Menu.Item> */}
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight " : "",
+                    "block px-4 py-2 text-sm  "
+                  )}
+                >
+                  <ToggleTheme />
+                </div>
+              )}
+            </Menu.Item>
             <Menu.Item>
               {({ active }) => (
                 <div
@@ -73,7 +221,7 @@ const NavMenu = ({ hide = false }) => {
                     "block px-4 py-2 text-sm"
                   )}
                 >
-                  <NSFWToggle />
+                  <ToggleNSFW />
                 </div>
               )}
             </Menu.Item>
@@ -87,7 +235,9 @@ const NavMenu = ({ hide = false }) => {
                   )}
                 >
                   <Link href="/about" passHref={true}>
-                    <div className="flex flex-row justify-center select-none">About</div>
+                    <div className="flex flex-row justify-center cursor-pointer select-none">
+                      About
+                    </div>
                   </Link>
                 </div>
               )}

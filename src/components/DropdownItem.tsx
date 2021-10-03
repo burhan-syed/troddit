@@ -43,7 +43,7 @@ const DropdownItem = ({ sub }) => {
   return (
     <div>
       <div
-        className="flex flex-row items-center text-sm text-center"
+        className="flex flex-row items-center text-sm text-center cursor-pointer"
         onClick={(e) => goTo(e)}
       >
         {/* Image */}

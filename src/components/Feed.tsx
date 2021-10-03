@@ -21,7 +21,7 @@ const Feed = ({ query, isUser = false }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
-
+  const context:any = useMainContext();
   // const breakpointColumnsObj = {
   //   default: 4,
   //   2560: 3,
@@ -149,7 +149,8 @@ const Feed = ({ query, isUser = false }) => {
     <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen pt-16">
-        <div className="w-full md:w-5/6 ">
+        <div className={"w-full md:w-11/12" }>
+          {/* + (context?.maximize ? " " : " md:w-5/6") */}
           <MyMasonic
             query={query}
             initItems={posts}

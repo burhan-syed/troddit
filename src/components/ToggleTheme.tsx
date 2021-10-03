@@ -4,12 +4,12 @@ import { FaSun } from "react-icons/fa";
 import { RiMoonLine } from "react-icons/ri";
 import {FaRegMoon} from 'react-icons/fa'
 import {BiMoon,BiSun} from 'react-icons/bi'
-const ThemeToggle = () => {
+const ToggleTheme = () => {
   const { theme, setTheme } = useTheme();
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
-      <label className="flex flex-row items-center justify-between">
+      <label className="flex flex-row items-center justify-between cursor-pointer">
         <span>Theme</span>
         <ReactSwitch
           onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -45,7 +45,7 @@ const ThemeToggle = () => {
             </div>
           }
           offColor="#EA580C"
-          onColor="#4B5563"
+          onColor={theme === "dark" ? "#4B5563" : "#D1D5DB"}
           offHandleColor="#F59E0B"
           onHandleColor="#0284C7"
         />
@@ -54,4 +54,4 @@ const ThemeToggle = () => {
   );
 };
 
-export default ThemeToggle;
+export default ToggleTheme;

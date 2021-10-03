@@ -52,7 +52,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       setMediaLoaded(false);
       setLoaded(false);
       setToLoad(false);
-    }
+    };
   }, [post]);
 
   const shouldLoad = () => {
@@ -220,7 +220,6 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   };
 
   const findImage = async () => {
-    //console.log("find iframe", post?.title);
     if (post.media_metadata) {
       let gallery = [];
       for (let i in post.media_metadata) {
@@ -258,15 +257,14 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           let done = false;
           let width = screen.width;
           if (!imgFull) {
-            
-            if (width > 767 && width < 1280) {
-              width = width / 2;
-            } else if (width < 2560) {
-              width = width / 3;
-            } else {
-              width = width / 4;
-            }
-            
+            // if (width > 767 && width < 1280) {
+            //   width = width / 2;
+            // } else if (width < 2560) {
+            //   width = width / 3;
+            // } else {
+            //   width = width / 4;
+            // }
+            width = width / (context?.columns ?? 1);
           }
           post.preview.images[0].resolutions.forEach((res, i) => {
             //console.log(width,res,i);
@@ -278,13 +276,16 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               }
             }
           });
-
+          let imgheight = post.preview?.images[0]?.resolutions[num].height;
+          let imgwidth = post.preview?.images[0]?.resolutions[num].width;
+          //if (imgheight = 0 || !imgheight) imgheight = 100;
+          //if (imgwidth = 0 || !imgwidth) imgwidth = 100;
           setImageInfo({
             url: checkURL(
               post.preview?.images[0]?.resolutions[num].url.replace("amp;", "")
             ),
-            height: post.preview?.images[0]?.resolutions[num].height,
-            width: post.preview?.images[0]?.resolutions[num].width,
+            height: imgheight,
+            width: imgwidth,
           });
           setPlaceholderInfo({
             url: checkURL(post.thumbnail),
@@ -343,17 +344,21 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
       setheight({});
       setmaxheight({});
       setmaxheightnum(0);
-    }
+    };
   }, [imageInfo]);
 
   return (
     <div>
-      {isIFrame && allowIFrame ? (
-        <div
-          className="relative"
-          style={imgFull && isYTVid ? ytVidHeight : imgFull ? imgheight : {}}
-        >
-          {/* <Iframe
+      {loaded && (
+        <>
+          {isIFrame && allowIFrame ? (
+            <div
+              className="relative"
+              style={
+                imgFull && isYTVid ? ytVidHeight : imgFull ? imgheight : {}
+              }
+            >
+              {/* <Iframe
                     url={iFrame[3]}
                     width={iFrame[5] + "px"}
                     height={iFrame[7 + "px"]}
@@ -362,104 +367,106 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
                     scrolling={"no"}
                     id={"player"}
                   /> */}
-          {/* <iframe
+              {/* <iframe
                     src={Iframe[3]}
                     height={Iframe[7]}
                     width={iFrame[5]}
                     allowFullScreen={true}
                   ></iframe> */}
-          {/* {iFrame} */}
-          <div
-            className="w-full h-full"
-            dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
-          ></div>
-        </div>
-      ) : (
-        ""
-      )}
-
-      {isGallery ? (
-        <div className="flex flex-col items-center">
-          <Gallery images={galleryInfo} />{" "}
-        </div>
-      ) : (
-        ""
-      )}
-
-      {isImage && !isIFrame && !isMP4 ? (
-        // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-        <div className={"relative"} style={imgFull ? imgheight : {}}>
-          {mediaLoaded ? (
-            ""
+              {/* {iFrame} */}
+              <div
+                className="w-full h-full"
+                dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
+              ></div>
+            </div>
           ) : (
-            <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
+            ""
           )}
 
-          <Image
-            src={imageInfo.url}
-            height={imageInfo.height}
-            width={imageInfo.width}
-            alt="image"
-            layout={imgFull ? "fill" : "responsive"}
-            onLoadingComplete={onLoaded}
-            lazyBoundary={imgFull ? "0px" : "2000px"}
-            objectFit={imgFull ? "contain" : "contain"}
-            priority={imgFull}
-            unoptimized={true}
-            // placeholder="blur"
-            // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
-          />
-          {/* <MyImage imageInfo={imageInfo}/> */}
-        </div>
-      ) : (
-        // <LazyLoad height={imageInfo.height}>
-        //   <img src={imageInfo.url} alt="img" />
-        // </LazyLoad>
-        ""
-      )}
+          {isGallery ? (
+            <div className="flex flex-col items-center">
+              <Gallery images={galleryInfo} />{" "}
+            </div>
+          ) : (
+            ""
+          )}
 
-      {isMP4 && !isIFrame ? (
-        showMP4 ? (
-          <div
-            className="flex flex-col items-center flex-none "
-            style={imgFull ? maxheight : {}}
-          >
-            <LazyLoad
-              height={videoInfo.height}
-              once={true}
-              offset={2000}
-              unmountIfInvisible={false}
-            >
-              <VideoHandler
-                placeholder={placeholderInfo}
-                videoInfo={videoInfo}
-                maxHeight={maxheight}
-                imgFull={imgFull}
+          {isImage && !isIFrame && !isMP4 ? (
+            // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
+            <div className={"relative"} style={imgFull ? imgheight : {}}>
+              {mediaLoaded ? (
+                ""
+              ) : (
+                <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
+              )}
+
+              <Image
+                src={imageInfo.url}
+                height={imageInfo.height}
+                width={imageInfo.width}
+                alt="image"
+                layout={imgFull ? "fill" : "responsive"}
+                onLoadingComplete={onLoaded}
+                lazyBoundary={imgFull ? "0px" : "2000px"}
+                objectFit={imgFull ? "contain" : "contain"}
+                priority={imgFull}
+                unoptimized={true}
+                // placeholder="blur"
+                // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
               />
-            </LazyLoad>
-          </div>
-        ) : (
-          ""
-        )
-      ) : (
-        ""
-      )}
+              {/* <MyImage imageInfo={imageInfo}/> */}
+            </div>
+          ) : (
+            // <LazyLoad height={imageInfo.height}>
+            //   <img src={imageInfo.url} alt="img" />
+            // </LazyLoad>
+            ""
+          )}
 
-      {post?.selftext_html ? (
-        // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
-        //   {post?.selftext}
-        // </Markdown>
-        <div className="overflow-y-auto max-h-96 overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800">
-          {" "}
-          <div
-            className="mr-1.5"
-            id="innerhtml"
-            dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
-          ></div>
-        </div>
-      ) : (
-        // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-        ""
+          {isMP4 && !isIFrame ? (
+            showMP4 ? (
+              <div
+                className="flex flex-col items-center flex-none "
+                style={imgFull ? maxheight : {}}
+              >
+                <LazyLoad
+                  height={videoInfo.height}
+                  once={true}
+                  offset={2000}
+                  unmountIfInvisible={false}
+                >
+                  <VideoHandler
+                    placeholder={placeholderInfo}
+                    videoInfo={videoInfo}
+                    maxHeight={maxheight}
+                    imgFull={imgFull}
+                  />
+                </LazyLoad>
+              </div>
+            ) : (
+              ""
+            )
+          ) : (
+            ""
+          )}
+
+          {(post?.selftext_html && (!context.mediaOnly || imgFull) ) ? (
+            // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
+            //   {post?.selftext}
+            // </Markdown>
+            <div className="overflow-y-auto max-h-96 overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800">
+              {" "}
+              <div
+                className="mr-1.5"
+                id="innerhtml"
+                dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
+              ></div>
+            </div>
+          ) : (
+            // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
+            ""
+          )}
+        </>
       )}
     </div>
   );
