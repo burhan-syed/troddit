@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
 
 const VideoHandler = ({
@@ -9,7 +9,7 @@ const VideoHandler = ({
   imgFull = false,
 }) => {
   const context: any = useMainContext();
-
+  const video:any = useRef();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
@@ -29,6 +29,12 @@ const VideoHandler = ({
     setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
     setmaxheightnum(Math.floor(screen.height * 0.75));
   }, [videoInfo]);
+
+  useEffect(() => {
+    if(context?.autoplay){
+      video?.current?.play();
+    }
+  }, [context])
 
   return (
     <div className="relative overflow-hidden">
@@ -57,6 +63,7 @@ const VideoHandler = ({
       </div>
 
       <video
+      ref={video}
         className={
           (videoLoaded ? "opacity-100" : "opacity-0") + " absolute top-0 left-0"
         }
