@@ -9,8 +9,14 @@ import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
+let regex = /([A-Z])\w+/g;
 
-const Media = ({ post, allowIFrame = false, imgFull = false }) => {
+const Media = ({
+  post,
+  allowIFrame = false,
+  imgFull = false,
+  forceMute = 0,
+}) => {
   const context: any = useMainContext();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
@@ -19,6 +25,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   const [showMP4, setShowMP4] = useState(true);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({ url: "", height: 0, width: 0 });
+  const [videoAudio, setvideoAudio] = useState("");
   const [placeholderInfo, setPlaceholderInfo] = useState({
     url: "",
     height: 0,
@@ -28,6 +35,13 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [toLoad, setToLoad] = useState(false);
+  const [showIframe, setshowIframe] = useState(false);
+  useEffect(() => {
+    setshowIframe(allowIFrame);
+    return () => {
+      setshowIframe(false);
+    }
+  }, [allowIFrame])
   const onLoaded = () => {
     setMediaLoaded(true);
   };
@@ -119,6 +133,14 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           height: post.preview.reddit_video_preview.height,
           width: post.preview.reddit_video_preview.width,
         });
+        if (
+          post.preview.reddit_video_preview.fallback_url.includes("v.redd.it")
+        ) {
+          let a: string = post.preview.reddit_video_preview.fallback_url;
+          a = a.replace(regex, "DASH_audio");
+          //console.log(a);
+          setvideoAudio(a);
+        }
 
         setPlaceholderInfo({
           url: checkURL(post?.thumbnail),
@@ -146,6 +168,12 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           height: post.media.reddit_video.height,
           width: post.media.reddit_video.width,
         });
+        if (post.media.reddit_video.fallback_url.includes("v.redd.it")) {
+          let a: string = post.media.reddit_video.fallback_url;
+          a = a.replace(regex, "DASH_audio");
+          //console.log(a);
+          setvideoAudio(a);
+        }
         setPlaceholderInfo({
           url: checkURL(post.thumbnail),
           height: post.media.reddit_video.height,
@@ -192,11 +220,15 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
               post?.url.split("/")?.[3]
             }&parent=${TWITCH_PARENT}`
           );
+          //allowIFrame=true;
+          //setshowIframe(true);
           // console.log(html);
         }
         if (htmlsrc.includes("youtube.com")) {
           setytVidHeight({ height: `${Math.floor(screen.height * 0.75)}px` });
           setisYTVid(true);
+          //allowIFrame=true;
+          //setshowIframe(true);
         }
         //console.log(html);
         setIFrame(html);
@@ -257,13 +289,6 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           let done = false;
           let width = screen.width;
           if (!imgFull) {
-            // if (width > 767 && width < 1280) {
-            //   width = width / 2;
-            // } else if (width < 2560) {
-            //   width = width / 3;
-            // } else {
-            //   width = width / 4;
-            // }
             width = width / (context?.columns ?? 1);
           }
           post.preview.images[0].resolutions.forEach((res, i) => {
@@ -278,6 +303,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
           });
           let imgheight = post.preview?.images[0]?.resolutions[num].height;
           let imgwidth = post.preview?.images[0]?.resolutions[num].width;
+
           //if (imgheight = 0 || !imgheight) imgheight = 100;
           //if (imgwidth = 0 || !imgwidth) imgwidth = 100;
           setImageInfo({
@@ -292,16 +318,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             height: post.thumbnail_height,
             width: post.thumbnail_width,
           });
-          // try {
-          //   const base64 = await imageToBase64(post.thumbnail.replace("amp;", ""));
-          //   setBase64(base64);
-          // } catch (err) {
-          //   console.log(err);
-          // }
-
-          //console.log(imageInfo);
           setIsImage(true);
-          //setLoaded(true);
           return true;
         }
       }
@@ -312,23 +329,46 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
         purl.includes(".png") ||
         purl.includes(".gif")
       ) {
-        // let img = new Image()
-        // img.addEventListener("load", function(){
-        //     alert( this.naturalWidth +' '+ this.naturalHeight );
-        // });
-        // img.src = purl;
-        imgFull = true;
-        setImageInfo({
-          url: checkURL(purl),
-          height: 1080,
-          width: 1080,
-        });
-        setIsImage(true);
+        
+        await loadImg(purl);
         return true;
+        // imgFull = true;
+        // setImageInfo({
+        //   url: checkURL(purl),
+        //   height: 1080,
+        //   width: 1080,
+        // });
+        // setIsImage(true);
+        // return true;
       }
     }
     return false;
   };
+
+  const loadImg = async (purl) => {
+    //let img =  Image()
+    let img = document.createElement("img");
+    setImageInfo({
+      url: checkURL(purl),
+      height: 1080,
+      width: 1080,
+    });
+    setIsImage(true);
+        img.onload = function (event)
+        {
+          // console.log("natural:", img.naturalWidth, img.naturalHeight);
+          // console.log("width,height:", img.width, img.height);
+          // console.log("offsetW,offsetH:", img.offsetWidth, img.offsetHeight);
+          setImageInfo({
+            url: checkURL(purl),
+            height: img.naturalHeight,
+            width: img.naturalWidth,
+          });
+          setIsImage(true);
+        }
+        img.src = purl;
+        //document.body.appendChild(img);
+  }
 
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
@@ -351,7 +391,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
     <div>
       {loaded && (
         <>
-          {isIFrame && allowIFrame ? (
+          {isIFrame && showIframe ? (
             <div
               className="relative"
               style={
@@ -440,6 +480,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
                     videoInfo={videoInfo}
                     maxHeight={maxheight}
                     imgFull={imgFull}
+                    audio={videoAudio}
                   />
                 </LazyLoad>
               </div>
@@ -450,7 +491,7 @@ const Media = ({ post, allowIFrame = false, imgFull = false }) => {
             ""
           )}
 
-          {(post?.selftext_html && (!context.mediaOnly || imgFull) ) ? (
+          {post?.selftext_html && (!context.mediaOnly || imgFull) ? (
             // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
             //   {post?.selftext}
             // </Markdown>

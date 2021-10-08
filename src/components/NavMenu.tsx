@@ -92,24 +92,6 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "1"
-                              ? `font-bold`
-                              : "") +
-                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(1);
-                          }}
-                        >
-                          One
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
                             (context.columnOverride === "2"
                               ? `font-bold`
                               : "") +
@@ -131,7 +113,7 @@ const NavMenu = ({ hide = false }) => {
                             (context.columnOverride === "3"
                               ? `font-bold`
                               : "") +
-                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
                           onClick={(e) => {
                             e.preventDefault();
@@ -146,10 +128,28 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
+                            (context.columnOverride === "4"
+                              ? `font-bold`
+                              : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(4);
+                          }}
+                        >
+                          Four
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
                             (context.columnOverride === "5"
                               ? `font-bold`
                               : "") +
-                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
+                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
                           onClick={(e) => {
                             e.preventDefault();
@@ -157,6 +157,24 @@ const NavMenu = ({ hide = false }) => {
                           }}
                         >
                           Five
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.columnOverride === "7"
+                              ? `font-bold`
+                              : "") +
+                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setColumnOverride(7);
+                          }}
+                        >
+                          Seven
                         </div>
                       )}
                     </Menu.Item>

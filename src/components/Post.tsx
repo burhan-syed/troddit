@@ -18,7 +18,7 @@ const Post = ({ post }) => {
   const [hideNSFW, setHideNSFW] = useState(false);
   const [score, setScore] = useState("");
   const [select, setSelect] = useState(false);
-
+  const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
   const [session, loading] = useSession();
   const [hasMedia, setHasMedia] = useState(false);
@@ -41,6 +41,7 @@ const Post = ({ post }) => {
     if (lastRoute === router.asPath) {
       //console.log("match");
       setSelect(false);
+      context.setPauseAll(false);
     }
     //don't add lastRoute to the array, breaks things
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,6 +59,7 @@ const Post = ({ post }) => {
 
   const handleClick = () => {
     setLastRoute(router.asPath);
+    context.setPauseAll(true);
     setSelect(true);
     //need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
     if (router.query?.frontsort) {
@@ -260,7 +262,7 @@ const Post = ({ post }) => {
               <div className={!context.mediaOnly && "pt-1 pb-1.5"}>
                 {!hideNSFW ? (
                   <div className="relative group">
-                    <Media post={post} />
+                    <Media post={post} forceMute={forceMute}/>
                   </div>
                 ) : (
                   <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">

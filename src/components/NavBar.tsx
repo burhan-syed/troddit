@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Login from "./Login";
 import DropdownPane from "./DropdownPane";
-import Sort from "./Sort";
-import ThemeToggle from "./ThemeToggle";
-import NSFWToggle from "./NSFWToggle";
+import Sort from "./Sort"; 
 
 import { CgMenu } from "react-icons/cg";
 import SideNav from "./SideNav";

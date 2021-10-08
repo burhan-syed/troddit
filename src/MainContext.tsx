@@ -16,6 +16,7 @@ export const MainProvider = ({ children }) => {
   const [columnOverride, setColumnOverride] = useState(0);
   const [maximize, setMaximize] = useState(false);
   const [mediaOnly, setMediaOnly] = useState(false);
+  const [pauseAll, setPauseAll] = useState(false);
 
   const toggleMediaOnly = () => {
     setMediaOnly(m => !m);
@@ -42,6 +43,10 @@ export const MainProvider = ({ children }) => {
     saved_nsfw?.includes("true") ? setNSFW("true") : setNSFW("false");
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
+    const saved_mediaOnly = localStorage.getItem("mediaOnly");
+    saved_mediaOnly?.includes("true") ? setMediaOnly(true) : setMediaOnly(false);
+    const saved_columnOverride = parseInt(localStorage.getItem("columnOverride"));
+    saved_columnOverride && setColumnOverride(saved_columnOverride)
   }, []);
 
   useEffect(() => {
@@ -50,6 +55,12 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("autoplay", JSON.stringify(autoplay));
   }, [autoplay]);
+  useEffect(() => {
+    localStorage.setItem("columnOverride", JSON.stringify(columnOverride));
+  }, [columnOverride]);
+  useEffect(() => {
+    localStorage.setItem("mediaOnly", JSON.stringify(mediaOnly));
+  }, [mediaOnly]);
 
   return (
     <MainContext.Provider
@@ -68,7 +79,9 @@ export const MainProvider = ({ children }) => {
         columnOverride,
         setColumnOverride,
         mediaOnly,
-        toggleMediaOnly
+        toggleMediaOnly,
+        pauseAll,
+        setPauseAll
       }}
     >
       {children}

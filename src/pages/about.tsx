@@ -12,7 +12,7 @@ const about = () => {
       <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-gray-300">
         <div className="flex flex-col max-w-lg space-y-1 ">
           <p className="">
-            Troddit is built to enhance your browsing experience for Reddit.
+            Troddit is a web client for Reddit.
             While an account is not required, we do support secure logins with
             Reddit so you can vote and have immediate access to your personal
             front page, subreddits, and collections.
