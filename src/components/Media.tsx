@@ -11,6 +11,17 @@ import { useMainContext } from "../MainContext";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 let regex = /([A-Z])\w+/g;
 
+async function fileExists(url){
+  console.log('fileexist?');
+  let http = new XMLHttpRequest();
+
+  http.open('HEAD', url, false);
+  http.send();
+  console.log(http.status);
+  return http.status != (403 || 404);
+
+}
+
 const Media = ({
   post,
   allowIFrame = false,
@@ -138,8 +149,15 @@ const Media = ({
         ) {
           let a: string = post.preview.reddit_video_preview.fallback_url;
           a = a.replace(regex, "DASH_audio");
-          //console.log(a);
-          setvideoAudio(a);
+          let status = await fileExists(a);
+          console.log(status);
+          if(status){
+            setvideoAudio(a);
+          } else{
+            a = a.split("DASH")[0] + "audio";
+            console.log(a);
+            setvideoAudio(a);
+          }
         }
 
         setPlaceholderInfo({
@@ -171,8 +189,17 @@ const Media = ({
         if (post.media.reddit_video.fallback_url.includes("v.redd.it")) {
           let a: string = post.media.reddit_video.fallback_url;
           a = a.replace(regex, "DASH_audio");
+          let status = await fileExists(a);
+          console.log(status);
+          if(status){
+            setvideoAudio(a);
+          } else{
+            a = a.split("DASH")[0] + "audio";
+            console.log(a);
+            setvideoAudio(a);
+          }
           //console.log(a);
-          setvideoAudio(a);
+          
         }
         setPlaceholderInfo({
           url: checkURL(post.thumbnail),

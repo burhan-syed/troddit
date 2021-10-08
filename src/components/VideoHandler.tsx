@@ -115,7 +115,7 @@ const VideoHandler = ({
       }
     }
   };
-  const playAll = () => {
+  const playAll = (override = false) => {
     if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
       video?.current?.play().catch((e) => console.log(e));
     }
@@ -124,7 +124,7 @@ const VideoHandler = ({
       !audioPlaying &&
       hasAudio
     ) {
-      if (!prevMuted) {
+      if (!prevMuted || override) {
         audioRef.current.muted = false;
         setMuted(false);
         setPrevMuted(true);
@@ -133,6 +133,15 @@ const VideoHandler = ({
       audioRef?.current?.play().catch((e) => console.log(e));
     }
   };
+
+  const handleMouseOver = () => {
+    console.log("mouseover");
+    if(videoPlaying ){
+      console.log('playaudio');
+      playAll(true);
+    }
+  }
+  
 
   return (
     <div className="relative overflow-hidden group">
@@ -190,6 +199,7 @@ const VideoHandler = ({
         controls={false} //{!context?.autoplay}
         onLoadedData={onLoadedData}
         playsInline
+        //onMouseOver={}
       >
         <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
       </video>
