@@ -144,7 +144,7 @@ const Feed = ({ query, isUser = false }) => {
   }
   if (error) {
     return (
-      <div className="flex flex-row items-center justify-center mt-16">
+      <div className="flex flex-col items-center justify-center mt-16">
         <div>{"Oops something went wrong :("}</div>
         <div>
           {"Please make sure you're not blocking access to oauth.reddit.com"}
