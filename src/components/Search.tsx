@@ -144,7 +144,7 @@ const Search = ({ id }) => {
                     <span className="text-blue-500 dark:text-blue-600">
                       Login
                     </span>{" "}
-                    with Reddit to Autocomplete Search
+                    with Reddit for improved search
                   </button>
                 </div>
               )}
@@ -160,7 +160,7 @@ const Search = ({ id }) => {
                   <span className="text-blue-500 dark:text-blue-600">
                     Login
                   </span>{" "}
-                  with Reddit to Autocomplete Search
+                  with Reddit for improved search
                 </button>
               </div>
             )}

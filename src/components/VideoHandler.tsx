@@ -44,8 +44,8 @@ const VideoHandler = ({
   useEffect(() => {
     if (context?.autoplay && !videoPlaying && !context.pauseAll) {
       video?.current?.play().catch((e) => console.log(e));
-    } else if (!context?.autoplay && videoPlaying){
-      video?.current?.pause()?.catch(e => null)
+    } else if (!context?.autoplay && videoPlaying) {
+      video?.current?.pause()?.catch((e) => null);
     }
   }, [context.autoplay]);
   useEffect(() => {
@@ -62,14 +62,17 @@ const VideoHandler = ({
     if (videoLoaded) {
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
         //console.log("video playing true");
-        setVideoPlaying(true);
-        video?.current?.play().catch((e) => {
-         // console.log(e);
-          setVideoPlaying(false);
-        });
+
+        video?.current
+          ?.play()
+          .then(setVideoPlaying(true))
+          .catch((e) => {
+            // console.log(e);
+            setVideoPlaying(false);
+          });
       } else if (!video?.current?.paused && videoPlaying) {
         setVideoPlaying(false);
-       // console.log("video playing false");
+        // console.log("video playing false");
         video?.current?.pause();
       }
       if (hasAudio) {
@@ -88,7 +91,7 @@ const VideoHandler = ({
   const audioControl = (e) => {
     e.preventDefault();
     e.stopPropagation();
-   // console.log("AUDIO CONTROL");
+    // console.log("AUDIO CONTROL");
     if (audioRef?.current?.muted !== undefined && hasAudio) {
       if (audioRef.current.muted === true && videoPlaying) {
         audioRef.current.currentTime = video.current.currentTime;
@@ -103,6 +106,7 @@ const VideoHandler = ({
     // if (!video?.current?.paused && videoPlaying) {
     //   video?.current?.pause();
     // }
+    setVideoPlaying(false);
     if (!audioRef?.current?.paused && audioPlaying && hasAudio) {
       audioRef.current.pause();
       if (!audioRef.current.muted) {
@@ -120,7 +124,11 @@ const VideoHandler = ({
       !audioPlaying &&
       hasAudio
     ) {
-      if (!prevMuted) {audioRef.current.muted = false; setMuted(false); setPrevMuted(true);}
+      if (!prevMuted) {
+        audioRef.current.muted = false;
+        setMuted(false);
+        setPrevMuted(true);
+      }
       audioRef.current.currentTime = video.current.currentTime;
       audioRef?.current?.play().catch((e) => console.log(e));
     }
@@ -170,11 +178,11 @@ const VideoHandler = ({
           pauseAll();
         }}
         onPlaying={() => {
+          setVideoPlaying(true);
           playAll();
         }}
         onPlay={() => {
           //.log("VIDEO PLAYING");
-          setVideoPlaying(true);
         }}
         onPause={() => {
           setVideoPlaying(false);
@@ -188,7 +196,10 @@ const VideoHandler = ({
       <div className="absolute bottom-0 flex flex-row min-w-full p-1 mb-1 text-white ">
         <button
           onClick={(e) => playControl(e)}
-          className={(context?.autoplay ? " hidden group-hover:flex " : " flex ") + "items-center justify-center w-8 h-8 rounded opacity-100 "}
+          className={
+            (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
+            "items-center justify-center w-8 h-8 rounded opacity-100 "
+          }
         >
           <div className="">
             {videoPlaying ? (
