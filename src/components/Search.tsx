@@ -7,12 +7,15 @@ import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/client";
 import Image from "next/dist/client/image";
+import AllSubs from "../../public/subs.json";
 
 const Search = ({ id }) => {
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
   const [session, loading] = useSession();
+  const [lastsuggestion, setlastsuggestion] = useState("");
+  const [morethanonesuggestion, setmorethanonesuggestion] = useState(false);
   const context: any = useMainContext();
 
   const onSuggestionsFetchRequested = async ({ value }) => {
@@ -32,6 +35,14 @@ const Search = ({ id }) => {
     ];
     if (!session) {
       //suggestions.push({ name: value });
+      let search = localSearch(value.value);
+      if (search?.length > 0) {
+        suggestions = [...suggestions, ...search];
+      }
+      setlastsuggestion(
+        suggestions[suggestions.length - 1]?.data?.display_name_prefixed
+      );
+      setmorethanonesuggestion(suggestions.length > 1);
       return suggestions;
     } else if (session) {
       //console.log(context);
@@ -41,6 +52,32 @@ const Search = ({ id }) => {
         else if (sub?.data?.over18 !== true) return sub;
       });
       //console.log(suggestions);
+    }
+    return suggestions;
+  };
+
+  //https://frontpagemetrics.com/
+  //https://www.molbiotools.com/textextractor.html
+  //https://www.htmlstrip.com/string-text-to-json-list-to-json-converter
+  const localSearch = (value) => {
+    let suggestions = [];
+    try {
+      let data = AllSubs.SFW;
+      if (context.nsfw === "true") data = [...data, ...AllSubs.NSFW];
+      const search = data
+        .filter((item) => {
+          return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
+        })
+        .slice(0, 4);
+      search.forEach((s) => {
+        if (s != value) {
+          suggestions.push({
+            data: { display_name_prefixed: s, display_name: s },
+          });
+        }
+      });
+    } catch (e) {
+      console.log(e);
     }
     return suggestions;
   };
@@ -95,16 +132,39 @@ const Search = ({ id }) => {
             </div>
           </div>
         </div>
-        {!session && (
-          <div className="flex flex-row items-center flex-grow w-full">
-            <button
-              className="w-full h-full py-3 bg-white border rounded-lg dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-              onClick={(e) => handleSignIn(e)}
-            >
-              <span className="text-blue-500 dark:text-blue-600">Login</span>{" "}
-              with Reddit to Autocomplete Search
-            </button>
-          </div>
+        {morethanonesuggestion ? (
+          <>
+            {!session &&
+              lastsuggestion === suggestion?.data?.display_name_prefixed && (
+                <div className="flex flex-row items-center flex-grow w-full">
+                  <button
+                    className="w-full h-full py-3 bg-white border rounded-lg dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                    onClick={(e) => handleSignIn(e)}
+                  >
+                    <span className="text-blue-500 dark:text-blue-600">
+                      Login
+                    </span>{" "}
+                    with Reddit to Autocomplete Search
+                  </button>
+                </div>
+              )}
+          </>
+        ) : (
+          <>
+            {!session && (
+              <div className="flex flex-row items-center flex-grow w-full">
+                <button
+                  className="w-full h-full py-3 bg-white border rounded-lg dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                  onClick={(e) => handleSignIn(e)}
+                >
+                  <span className="text-blue-500 dark:text-blue-600">
+                    Login
+                  </span>{" "}
+                  with Reddit to Autocomplete Search
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     );
