@@ -12,12 +12,13 @@ const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 let regex = /([A-Z])\w+/g;
 
 async function fileExists(url){
-  let http = new XMLHttpRequest();
+  // let http = new XMLHttpRequest();
 
-  http.open('HEAD', url, false);
-  http.send();
-  //console.log(http.status);
-  return http.status != (403 || 404);
+  // http.open('HEAD', url, false);
+  // http.send();
+  // //console.log(http.status);
+  // return http.status != (403 || 404);
+  return true;
 
 }
 
