@@ -143,7 +143,8 @@ const Feed = ({ query, isUser = false }) => {
     );
   }
   if (error) {
-    return <div className="flex flex-row items-center justify-center mt-16">{"Oops something went wrong :("}</div>;
+    return <div className="flex flex-row items-center justify-center mt-16"><div>{"Oops something went wrong :("}</div><div>Please make sure you're not blocking access to oauth.reddit.com
+    </div><div>Also, this content may not exist on Reddit</div></div>;
   }
   return (
     <main>
