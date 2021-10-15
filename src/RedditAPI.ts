@@ -31,13 +31,16 @@ const getToken = async () => {
 };
 
 export const loadFront = async (
+  loggedIn=false,
   sort: string = "best",
   range?: string,
   after?: string,
   count?: number
 ) => {
-  let token = await (await getToken())?.accessToken;
-
+  let token = undefined;
+  if (loggedIn){
+    token = await (await getToken())?.accessToken;
+  }
   if (token && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
@@ -269,12 +272,12 @@ export const searchSubreddits = async (query, over18 = false) => {
       let data = await res.data;
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(res);
-      return data?.data?.children;
+      return data?.data?.children ?? [];
     } catch (err) {
       //console.log(err);
     }
   } else {
-    return null;
+    return [];
   }
   return [];
 };

@@ -18,6 +18,7 @@ import * as gtag from "../../lib/gtag";
 import MyMasonic from "./MyMasonic";
 
 const Feed = ({ query, isUser = false }) => {
+  const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
@@ -32,9 +33,17 @@ const Feed = ({ query, isUser = false }) => {
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
   const [subreddits, setSubreddits] = useState("");
-
+  const [loggedIn, setloggedIn] = useState(false)
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
+
+  useEffect(() => {
+    session ? setloggedIn(true) : setloggedIn(false);
+    return () => {
+      setloggedIn(false);
+    }
+  }, [session])
+
   useEffect(() => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
@@ -78,9 +87,11 @@ const Feed = ({ query, isUser = false }) => {
     };
   }, [subreddits, sort, range]);
 
+
+
   const fetchFront = async () => {
     //console.log(query);
-    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
+    let data = await loadFront(loggedIn,query?.frontsort ?? "hot", query?.t ?? "");
     if (data?.children) {
       //console.log("DATA", data);
 
@@ -144,12 +155,12 @@ const Feed = ({ query, isUser = false }) => {
   }
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center mt-16">
+      <div className="flex flex-col items-center justify-center mt-16 text-center">
         <div>{"Oops something went wrong :("}</div>
         <div>
-          {"Please make sure you're not blocking access to oauth.reddit.com"}
+          {"Please make sure you're not blocking traffic from Reddit"}
         </div>
-        <div>{"Also, this content may not exist on Reddit"}</div>
+        {subreddits!=="" && <div>{"Otherwise, this subreddit may not exist"}</div>}
       </div>
     );
   }
@@ -164,6 +175,7 @@ const Feed = ({ query, isUser = false }) => {
             initItems={posts}
             initAfter={after}
             isUser={isUser}
+            loggedIn={loggedIn}
           />
         </div>
       </div>

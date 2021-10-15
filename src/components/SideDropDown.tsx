@@ -61,6 +61,18 @@ const SideDropDown = ({ hide = false }) => {
     };
   }, [session]);
 
+  const [error, seterror] = useState(false);
+  useEffect(() => {
+    if(session && loadedSubs && mySubs.length<1){
+      seterror(true);
+    } else {
+      seterror(false);
+    }
+    return () => {
+      seterror(false);
+    }
+  }, [mySubs,session,loadedSubs])
+
   return (
     <div className="grid h-full grid-cols-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
       {/* Quick Links */}
@@ -96,6 +108,13 @@ const SideDropDown = ({ hide = false }) => {
           </button>
         </>
       )}
+      {session && error && (
+            <>
+            <div className="flex flex-row items-center justify-center p-4">
+              {"Can't connect to Reddit"}
+            </div>
+            </>
+          )}
 
       {session && (
         <>

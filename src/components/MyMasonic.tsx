@@ -41,7 +41,13 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
+const MyMasonic = ({
+  query,
+  initItems,
+  initAfter,
+  isUser = false,
+  loggedIn,
+}) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -120,7 +126,6 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     [items]
   );
 
-
   useEffect(() => {
     // const breakpointColumnsObj = {
     //   default: 4,
@@ -128,10 +133,10 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //   1280: 2,
     //   767: 1,
     // };
-    
+
     //console.log(windowWidth);
     if (context?.columnOverride ?? 0 !== 0) {
-      setItemHeightEstimate(Math.floor(2000/(context.columnOverride)))
+      setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
       setCols(context.columnOverride);
       context.setColumns(context.columnOverride);
     } else {
@@ -191,7 +196,11 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
 
   const fetchFront = async () => {
     //console.log(query);
-    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
+    let data = await loadFront(
+      loggedIn,
+      query?.frontsort ?? "hot",
+      query?.t ?? ""
+    );
     if (data) {
       //console.log("DATA", data);
       let n = numposts;
@@ -248,6 +257,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     let data = { after: "", children: [] };
     if (!subreddits) {
       data = await loadFront(
+        loggedIn,
         query?.frontsort ?? "best",
         query?.t ?? "",
         loadafter
@@ -275,8 +285,14 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       label: `${subreddits ? subreddits : "home"}`,
       value: count,
     });
-    setAfter(data?.after);
-    return { data: { posts: data?.children, after: data?.after } };
+    if (data?.after) {
+      setAfter(data?.after);
+      return { data: { posts: data?.children, after: data?.after } };
+    } else {
+      setError(true);
+      return { data: { posts: [], after: "" } };
+    }
+
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
@@ -289,12 +305,12 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       //console.log("getposts");
       //console.log(posts);
       let data = await (await loadmore(fastafter)).data;
-      if (!data.after) {
+      if (!data.after || data.after=="") {
         //console.log("NO MORE DATA");
         setEnd(true);
         caughtup = true;
         allowload = false;
-        return data.posts;
+        return payload;
       }
       //console.log("data returned", data.after);
       fastafter = data?.after;
@@ -333,10 +349,11 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   //   //const items = getFakeItems();
   //   //setItems(items);
   // }, []);
+  
 
   return (
-    <div         
-    >
+    <div>
+     
       <Masonry
         onRender={maybeLoadMorePosts}
         //positioner={positioner}
@@ -346,7 +363,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         // The height of the virtualization window
         //height={windowHeight}
         // Forwards the ref to the masonry container element
-        
+
         columnGutter={10}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
         columnCount={cols}
@@ -357,10 +374,18 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         className=""
         ssrWidth={500}
       />
+      {error && (
+        <div className="flex flex-col items-center justify-center ">
+        <div>{"Oops something went wrong :("}</div>
+        <div>
+          {"Please make sure you're not blocking content from Reddit.com"}
+        </div>
+      </div>
+      )}
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
-            You have reached the end after {numposts} posts on {count + 1}{" "}
+            Loaded {numposts} posts on {count + 1}{" "}
             pages.{" "}
           </h1>
         </div>

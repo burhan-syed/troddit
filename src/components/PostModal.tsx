@@ -265,9 +265,15 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                   <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                     {/* Title etc*/}
                     <div className="flex flex-row flex-none pt-1.5 text-xs font-light text-gray md:pl-3">
-                      <a className="mr-1 ">
-                        {"Posted by " + `u/${apost?.author ?? ""}`}
-                      </a>
+                      <Link href={`/user/${apost?.author}`}>
+                        <a
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <h2 className="ml-1 mr-1">u/{apost?.author ?? ""}</h2>
+                        </a>
+                      </Link>
                       <Link href={`/r/${apost?.subreddit}`}>
                         <a
                           className="mr-1"

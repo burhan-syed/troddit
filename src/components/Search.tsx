@@ -11,6 +11,7 @@ import AllSubs from "../../public/subs.json";
 
 const Search = ({ id }) => {
   const [query, setQuery] = useState("");
+  const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
   const [session, loading] = useSession();
@@ -33,8 +34,21 @@ const Search = ({ id }) => {
         },
       },
     ];
-    if (!session) {
+    if (session) {
+      suggestions = await searchSubreddits(value.value, context.nsfw);
+      if (suggestions.length == 0) {
+        seterror(true);
+      } else {
+        seterror(false);
+        suggestions = suggestions.filter((sub) => {
+          if (context.nsfw === "true") return sub;
+          else if (sub?.data?.over18 !== true) return sub;
+        });
+      }
+    }
+    if (!session || suggestions.length == 0) {
       //suggestions.push({ name: value });
+
       let search = localSearch(value.value);
       if (search?.length > 0) {
         suggestions = [...suggestions, ...search];
@@ -44,14 +58,6 @@ const Search = ({ id }) => {
       );
       setmorethanonesuggestion(suggestions.length > 1);
       return suggestions;
-    } else if (session) {
-      //console.log(context);
-      suggestions = await searchSubreddits(value.value, context.nsfw);
-      suggestions = suggestions.filter((sub) => {
-        if (context.nsfw === "true") return sub;
-        else if (sub?.data?.over18 !== true) return sub;
-      });
-      //console.log(suggestions);
     }
     return suggestions;
   };
@@ -166,6 +172,16 @@ const Search = ({ id }) => {
             )}
           </>
         )}
+        {session &&
+          error &&
+          lastsuggestion === suggestion?.data?.display_name_prefixed && (
+            <>
+              <div className="flex flex-col items-center justify-center w-full h-full py-3 bg-white border rounded-lg select-none dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight">
+                <h1>{"Can't connect to Reddit"}</h1>
+                <h1>{"You may be blocking acccess"}</h1>
+              </div>
+            </>
+          )}
       </div>
     );
   };

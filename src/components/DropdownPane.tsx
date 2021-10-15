@@ -100,6 +100,18 @@ const DropdownPane = ({ hide }) => {
     }
   };
 
+  const [error, seterror] = useState(false);
+  useEffect(() => {
+    if(session && loadedSubs && mySubs.length<1){
+      seterror(true);
+    } else {
+      seterror(false);
+    }
+    return () => {
+      seterror(false);
+    }
+  }, [mySubs,session,loadedSubs])
+
   return (
     <div className="flex flex-col items-center w-full h-full select-none">
       {/* Close when clicking outside element */}
@@ -267,6 +279,13 @@ const DropdownPane = ({ hide }) => {
                     : ""}
                 </div>
               )}
+            </>
+          )}
+          {session && error && (
+            <>
+            <div className="flex flex-row items-center justify-center p-4">
+              {"Can't connect to Reddit"}
+            </div>
             </>
           )}
         </div>
