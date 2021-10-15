@@ -48,7 +48,15 @@ const Search = ({ id }) => {
     }
     if (!session || suggestions.length == 0) {
       //suggestions.push({ name: value });
-
+      suggestions = [
+        {
+          data: {
+            display_name_prefixed: value.value,
+            display_name: value.value,
+            over18: false,
+          },
+        },
+      ];
       let search = localSearch(value.value);
       if (search?.length > 0) {
         suggestions = [...suggestions, ...search];

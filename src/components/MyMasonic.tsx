@@ -376,9 +376,9 @@ const MyMasonic = ({
       />
       {error && (
         <div className="flex flex-col items-center justify-center ">
-        <div>{"Oops something went wrong :("}</div>
+        <div>{"Can't load your front page :("}</div>
         <div>
-          {"Please make sure you're not blocking content from Reddit.com"}
+          {"Please make sure you're not blocking content from Reddit OAuth"}
         </div>
       </div>
       )}
