@@ -161,6 +161,10 @@ const MyMasonic = ({
     return () => {};
   }, [windowWidth, context]);
 
+  // useEffect(() => {
+  //   context.setColumnOverride(0);
+  // }, [windowWidth])
+
   const maybeLoadMore = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       const nextItems = await getFakeItemsPromise(startIndex, stopIndex);

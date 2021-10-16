@@ -17,6 +17,7 @@ const VideoHandler = ({
   const [useFallback, setUseFallback] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [manualPlay, setmanualPlay] = useState(false);
   const [muted, setMuted] = useState(true);
   const [prevMuted, setPrevMuted] = useState(true);
 
@@ -64,13 +65,15 @@ const VideoHandler = ({
 
         video?.current
           ?.play()
-          .then(setVideoPlaying(true))
+          .then(() => {setVideoPlaying(true);setmanualPlay(true);})
           .catch((e) => {
             // console.log(e);
             setVideoPlaying(false);
+            setmanualPlay(false);
           });
       } else if (!video?.current?.paused && videoPlaying) {
         setVideoPlaying(false);
+        setmanualPlay(false);
         // console.log("video playing false");
         video?.current?.pause();
       }
@@ -102,9 +105,9 @@ const VideoHandler = ({
   };
 
   const pauseAll = () => {
-    // if (!video?.current?.paused && videoPlaying) {
-    //   video?.current?.pause();
-    // }
+    if (!video?.current?.paused && videoPlaying) {
+      video?.current?.pause();
+    }
     setVideoPlaying(false);
     if (!audioRef?.current?.paused && audioPlaying && hasAudio) {
       audioRef.current.pause();
@@ -119,7 +122,7 @@ const VideoHandler = ({
       video?.current?.play().catch((e) => console.log(e));
     }
     if (
-      (audioRef?.current?.paused || audioRef?.current?.ended) &&
+      (audioRef?.current?.paused || audioRef?.current?.ended || override) &&
       !audioPlaying &&
       hasAudio
     ) {
@@ -133,17 +136,10 @@ const VideoHandler = ({
     }
   };
 
-  const handleMouseOver = () => {
-    console.log("mouseover");
-    if(videoPlaying ){
-      console.log('playaudio');
-      playAll(true);
-    }
-  }
   
 
   return (
-    <div className="relative overflow-hidden border-2 border-blue-600 group" style={imgFull ? maxHeight : {}}
+    <div className="relative overflow-hidden group" style={imgFull ? maxHeight : {}}
     >
       {videoLoaded ? (
         ""
@@ -196,6 +192,8 @@ const VideoHandler = ({
           setVideoPlaying(false);
         }}
         controls={false} //{!context?.autoplay}
+        onMouseOver={event => {(!manualPlay && videoLoaded) && playAll(true)}}
+        onMouseOut={event => {(!manualPlay && videoLoaded) && pauseAll()}}
         onLoadedData={onLoadedData}
         playsInline
         //onMouseOver={}
