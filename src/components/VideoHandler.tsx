@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
-import { GrPause, GrPlay, GrVolume, GrVolumeMute } from "react-icons/gr";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 const VideoHandler = ({
   placeholder,
@@ -144,7 +143,8 @@ const VideoHandler = ({
   
 
   return (
-    <div className="relative overflow-hidden group">
+    <div className="relative overflow-hidden border-2 border-blue-600 group" style={imgFull ? maxHeight : {}}
+    >
       {videoLoaded ? (
         ""
       ) : (
@@ -168,14 +168,13 @@ const VideoHandler = ({
           }}
         />
       </div>
-
+      
       <video
         ref={video}
         className={
           (videoLoaded ? "opacity-100" : "opacity-0") +
           " absolute top-0 left-0 "
         }
-        style={imgFull ? maxHeight : {}}
         width={`${videoInfo.width} !important`}
         height={`${videoInfo.height} !important`}
         autoPlay={context?.autoplay}

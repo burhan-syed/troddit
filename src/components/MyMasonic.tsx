@@ -374,14 +374,7 @@ const MyMasonic = ({
         className=""
         ssrWidth={500}
       />
-      {error && (
-        <div className="flex flex-col items-center justify-center ">
-        <div>{"Can't load your front page :("}</div>
-        <div>
-          {"Please make sure you're not blocking content from Reddit OAuth"}
-        </div>
-      </div>
-      )}
+      
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
@@ -389,6 +382,14 @@ const MyMasonic = ({
             pages.{" "}
           </h1>
         </div>
+      )}
+      {error && (
+        <div className="flex flex-col items-center justify-center text-center ">
+        
+        <div>
+          {"Expect more? Please assure you're not blocking content from Reddit OAuth"}
+        </div>
+      </div>
       )}
     </div>
   );

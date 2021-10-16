@@ -399,7 +399,7 @@ const Media = ({
 
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
-  const [maxheightnum, setmaxheightnum] = useState<Number>();
+  const [maxheightnum, setmaxheightnum] = useState<number>();
   useEffect(() => {
     setheight({
       height: `${imageInfo.height}px`,
@@ -451,8 +451,8 @@ const Media = ({
           )}
 
           {isGallery ? (
-            <div className="flex flex-col items-center">
-              <Gallery images={galleryInfo} />{" "}
+            <div className="flex flex-col items-center" style={imgFull ? maxheight : {}}>
+              <Gallery images={galleryInfo} maxheight={maxheightnum} />{" "}
             </div>
           ) : (
             ""
@@ -471,7 +471,7 @@ const Media = ({
                 src={imageInfo.url}
                 height={imageInfo.height}
                 width={imageInfo.width}
-                alt="image"
+                alt=""
                 layout={imgFull ? "fill" : "responsive"}
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
