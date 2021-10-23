@@ -4,7 +4,6 @@ import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 
 
-let regex = /([A-Z])\w+/g;
 const VideoHandler = ({
   placeholder,
   videoInfo,
@@ -18,44 +17,7 @@ const VideoHandler = ({
   // const [audioSrc, setaudioSrc] = useState("");
   // const [mounted, setMounted] = useState(false);
   // const [loaded, setLoaded] = useState(false);
-  // useEffect(() => {
-  //   setMounted(true);
-  // }, [])
-  // useEffect(() => {
-  //   async function fileExists(url) {
-  //     try{
-  //     let http = new XMLHttpRequest();
-  //     http.open('HEAD', url, false);
-  //     http.send();
-  //     // console.log(http.status);
-  //     return http.status != (403 || 404);
-      
-  //     } catch (e) {
-  //       console.log('err',e)
-  //       return false;
-  //     }
-  //     return true
-  //   }
-  //   const findAudio = async(url) => {
-  //     let a: string = url;
-  //     a = a.replace(regex, "DASH_audio");
-  //     let status = await fileExists(a);
-  //     //console.log(status);
-  //     if (status) {
-  //       setaudioSrc(a);
-  //     } else {
-  //       a = a.split("DASH")[0] + "audio";
-  //       status = await fileExists(a);
-  //       if (status) setaudioSrc(a);
-  //       else setaudioSrc("");
-        
-  //     }
-  //     setLoaded(true);
-  //   };
-  //   if(mounted){
-  //     findAudio(audio);
-  //   }
-  // }, [mounted, audio])
+ 
 
   const [hasAudio, sethasAudio] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -88,9 +50,9 @@ const VideoHandler = ({
 
   useEffect(() => {
     if (context?.autoplay && !videoPlaying && !context.pauseAll) {
-      video?.current?.play().catch((e) => undefined);
+      video?.current?.play().catch((e) => console.log(e));
     } else if (!context?.autoplay && videoPlaying) {
-      video?.current?.pause()?.catch((e) => undefined);
+      video?.current?.pause()?.catch((e) => console.log(e));
     }
   }, [context.autoplay]);
   useEffect(() => {
@@ -234,7 +196,7 @@ const VideoHandler = ({
           }}
         />
       </div>
-      
+
       <video
         ref={video}
         className={
@@ -325,23 +287,22 @@ const VideoHandler = ({
           </>
         )}
       </div>
-      
-        <video
-          autoPlay={false}
-          controls={false}
-          ref={audioRef}
-          muted
-          loop={false}
-          className="hidden"
-          playsInline
-          onCanPlay={onAudioLoaded}
-          onPlay={() => setAudioPlaying(true)}
-          onPause={() => setAudioPlaying(false)}
-          onError={(err) => null}
-        >
-          <source data-src={audio} src={audio} type="video/mp4" />
-        </video>
-      
+
+      <video
+        autoPlay={false}
+        controls={false}
+        ref={audioRef}
+        muted
+        loop={false}
+        className="hidden"
+        playsInline
+        onCanPlay={onAudioLoaded}
+        onPlay={() => setAudioPlaying(true)}
+        onPause={() => setAudioPlaying(false)}
+        onError={(err) => null}
+      >
+        <source data-src={audio} src={audio} type="video/mp4" />
+      </video>
     </div>
   );
 };

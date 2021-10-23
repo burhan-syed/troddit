@@ -10,7 +10,21 @@ import { useMainContext } from "../MainContext";
 
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
+let regex = /([A-Z])\w+/g;
+async function fileExists(url) {
+  // try{
+  // let http = new XMLHttpRequest();
+  // http.open('HEAD', url, false);
+  // http.send();
+  // // console.log(http.status);
+  // return http.status != (403 || 404);
 
+  // } catch (e) {
+  //   console.log('err',e)
+  //   return false;
+  // }
+  return true
+}
 
 const Media = ({
   post,
@@ -125,7 +139,21 @@ const Media = ({
     return url;
   };
 
-  
+  const findAudio = async(url) => {
+    let a: string = url;
+    a = a.replace(regex, "DASH_audio");
+    let status = await fileExists(a);
+    //console.log(status);
+    if (status) {
+      setvideoAudio(a);
+    } else {
+      a = a.split("DASH")[0] + "audio";
+      status = await fileExists(a);
+      if (status) setvideoAudio(a);
+      else setvideoAudio("");
+
+    }
+  };
 
   const findVideo = async () => {
     // console.log("find vid", post?.title);
@@ -139,7 +167,7 @@ const Media = ({
         if (
           post.preview.reddit_video_preview.fallback_url.includes("v.redd.it")
         ) {
-          setvideoAudio(post.preview.reddit_video_preview.fallback_url);
+          findAudio(post.preview.reddit_video_preview.fallback_url);
         }
 
         setPlaceholderInfo({
@@ -169,7 +197,7 @@ const Media = ({
           width: post.media.reddit_video.width,
         });
         if (post.media.reddit_video.fallback_url.includes("v.redd.it")) {
-          setvideoAudio(post.media.reddit_video.fallback_url);
+          findAudio(post.media.reddit_video.fallback_url);
         }
         setPlaceholderInfo({
           url: checkURL(post.thumbnail),
