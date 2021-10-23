@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/dist/client/image";
 import { useState, useEffect, createRef } from "react";
+import {AiOutlineRight, AiOutlineLeft} from 'react-icons/ai'
 
 const Gallery = ({ images, maxheight=0 }) => {
   const [loaded, setLoaded] = useState(false);
@@ -53,7 +54,7 @@ const Gallery = ({ images, maxheight=0 }) => {
       // style={{ top: '40%' }}
     >
       <span role="img" aria-label={`Arrow ${isLeft ? 'left' : 'right'}`}>
-        {isLeft ? '◀' : '▶'}
+        {isLeft ? <AiOutlineLeft/>: <AiOutlineRight/>}
       </span>
     </button>
   );
