@@ -9,18 +9,8 @@ import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
-let regex = /([A-Z])\w+/g;
 
-async function fileExists(url){
-  // let http = new XMLHttpRequest();
 
-  // http.open('HEAD', url, false);
-  // http.send();
-  // //console.log(http.status);
-  // return http.status != (403 || 404);
-  return true;
-
-}
 
 const Media = ({
   post,
@@ -51,8 +41,8 @@ const Media = ({
     setshowIframe(allowIFrame);
     return () => {
       setshowIframe(false);
-    }
-  }, [allowIFrame])
+    };
+  }, [allowIFrame]);
   const onLoaded = () => {
     setMediaLoaded(true);
   };
@@ -135,6 +125,8 @@ const Media = ({
     return url;
   };
 
+  
+
   const findVideo = async () => {
     // console.log("find vid", post?.title);
     if (post.preview) {
@@ -147,17 +139,7 @@ const Media = ({
         if (
           post.preview.reddit_video_preview.fallback_url.includes("v.redd.it")
         ) {
-          let a: string = post.preview.reddit_video_preview.fallback_url;
-          a = a.replace(regex, "DASH_audio");
-          let status = await fileExists(a);
-          //console.log(status);
-          if(status){
-            setvideoAudio(a);
-          } else{
-            a = a.split("DASH")[0] + "audio";
-            //console.log(a);
-            setvideoAudio(a);
-          }
+          setvideoAudio(post.preview.reddit_video_preview.fallback_url);
         }
 
         setPlaceholderInfo({
@@ -187,19 +169,7 @@ const Media = ({
           width: post.media.reddit_video.width,
         });
         if (post.media.reddit_video.fallback_url.includes("v.redd.it")) {
-          let a: string = post.media.reddit_video.fallback_url;
-          a = a.replace(regex, "DASH_audio");
-          let status = await fileExists(a);
-          //console.log(status);
-          if(status){
-            setvideoAudio(a);
-          } else{
-            a = a.split("DASH")[0] + "audio";
-            //console.log(a);
-            setvideoAudio(a);
-          }
-          //console.log(a);
-          
+          setvideoAudio(post.media.reddit_video.fallback_url);
         }
         setPlaceholderInfo({
           url: checkURL(post.thumbnail),
@@ -356,7 +326,6 @@ const Media = ({
         purl.includes(".png") ||
         purl.includes(".gif")
       ) {
-        
         await loadImg(purl);
         return true;
         // imgFull = true;
@@ -381,21 +350,20 @@ const Media = ({
       width: 1080,
     });
     setIsImage(true);
-        img.onload = function (event)
-        {
-          // console.log("natural:", img.naturalWidth, img.naturalHeight);
-          // console.log("width,height:", img.width, img.height);
-          // console.log("offsetW,offsetH:", img.offsetWidth, img.offsetHeight);
-          setImageInfo({
-            url: checkURL(purl),
-            height: img.naturalHeight,
-            width: img.naturalWidth,
-          });
-          setIsImage(true);
-        }
-        img.src = purl;
-        //document.body.appendChild(img);
-  }
+    img.onload = function (event) {
+      // console.log("natural:", img.naturalWidth, img.naturalHeight);
+      // console.log("width,height:", img.width, img.height);
+      // console.log("offsetW,offsetH:", img.offsetWidth, img.offsetHeight);
+      setImageInfo({
+        url: checkURL(purl),
+        height: img.naturalHeight,
+        width: img.naturalWidth,
+      });
+      setIsImage(true);
+    };
+    img.src = purl;
+    //document.body.appendChild(img);
+  };
 
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
@@ -451,7 +419,10 @@ const Media = ({
           )}
 
           {isGallery ? (
-            <div className="flex flex-col items-center" style={imgFull ? maxheight : {}}>
+            <div
+              className="flex flex-col items-center"
+              style={imgFull ? maxheight : {}}
+            >
               <Gallery images={galleryInfo} maxheight={maxheightnum} />{" "}
             </div>
           ) : (
@@ -508,7 +479,6 @@ const Media = ({
                     maxHeight={maxheight}
                     imgFull={imgFull}
                     audio={videoAudio}
-
                   />
                 </LazyLoad>
               </div>

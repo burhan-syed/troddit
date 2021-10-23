@@ -91,7 +91,7 @@ const Feed = ({ query, isUser = false }) => {
 
   const fetchFront = async () => {
     //console.log(query);
-    let data = await loadFront(loggedIn,query?.frontsort ?? "hot", query?.t ?? "");
+    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data?.children) {
       //console.log("DATA", data);
 
@@ -145,6 +145,7 @@ const Feed = ({ query, isUser = false }) => {
   if (fetchPost) {
     return (
       <div className="mt-10">
+        <LoginModal />
         <PostModal
           permalink={"/r/" + query.slug.join("/")}
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
@@ -175,7 +176,6 @@ const Feed = ({ query, isUser = false }) => {
             initItems={posts}
             initAfter={after}
             isUser={isUser}
-            loggedIn={loggedIn}
           />
         </div>
       </div>

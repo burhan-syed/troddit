@@ -3,6 +3,8 @@ import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
+import CommentReply from "./CommentReply";
+import { secondsToTime } from "../../lib/utils";
 
 const ChildComments = ({ comment, depth, hide }) => {
   const [moreComments, setMoreComments] = useState([]);
@@ -13,6 +15,41 @@ const ChildComments = ({ comment, depth, hide }) => {
   const [vote, setVote] = useState(0);
   const [session, loading] = useSession();
   const context: any = useMainContext();
+
+  const [childcomments, setchildcomments] = useState([]);
+
+  const [myReplies, setmyReplies] = useState([]);
+  const [openReply, setopenReply] = useState(false);
+  const updateMyReplies = (html) => {
+    const newreply = {
+      myreply: true,
+      kind: "t1",
+      data: {
+        author: session?.user?.name,
+        body_html: html,
+        created_utc: Math.floor(Date.now() / 1000),
+        depth: comment?.depth + 1,
+        parent_id: comment?.name,
+        score: 1,
+      },
+    };
+    setmyReplies((replies) => [newreply, ...myReplies]);
+    setopenReply(false);
+  };
+
+  useEffect(() => {
+    setchildcomments(comment?.data?.replies?.data?.children);
+  }, [comment]);
+
+  useEffect(() => {
+    if (childcomments?.length > 0) {
+      setchildcomments(p => p.filter(pr => (pr?.myreply !== true)));
+      setchildcomments(p => [...myReplies, ...p]);
+    } else if(!comment?.data?.replies?.data?.children) {
+      setchildcomments(myReplies);
+    }
+  }, [myReplies]);
+
   const castVote = async (e, v) => {
     e.stopPropagation();
     if (session) {
@@ -128,14 +165,14 @@ const ChildComments = ({ comment, depth, hide }) => {
           }
         >
           <BiUpvote
-            onClick={(e) => castVote(e, 1)}
+            onClick={(e) => !comment?.myreply && castVote(e, 1)}
             className={
-              (vote === 1 && "text-upvote ") +
+              ((vote === 1 || comment?.myreply) && "text-upvote ") +
               " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
             }
           />{" "}
           <BiDownvote
-            onClick={(e) => castVote(e, -1)}
+            onClick={(e) => !comment?.myreply && castVote(e, -1)}
             className={
               (vote === -1 && "text-downvote ") +
               " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
@@ -159,19 +196,26 @@ const ChildComments = ({ comment, depth, hide }) => {
             <p>•</p>
             <h1
               className={
-                vote === 1 ? "text-upvote" : vote === -1 ? "text-downvote" : ""
+                (vote === 1 || comment?.myreply) ? "text-upvote" : vote === -1 ? "text-downvote" : ""
               }
             >
               {score ?? "0"} pts
             </h1>
             <p>•</p>
             <p className="">
-              {Math.floor(
-                (Math.floor(Date.now() / 1000) - comment?.data?.created_utc) /
-                  3600
-              )}{" "}
-              hours ago
+              {secondsToTime(comment?.data?.created_utc, ['hr','day','mnth','yr'])}
             </p>
+            <p className={(hideChildren || comment?.myreply) ? "hidden" : "block"}>•</p>
+            <button
+              className={(hideChildren || comment?.myreply) ? "hidden" : "block"}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                session ? setopenReply((p) => !p) : context.toggleLoginModal();
+              }}
+            >
+              Reply
+            </button>
           </div>
 
           {/* Main Comment Body */}
@@ -188,51 +232,63 @@ const ChildComments = ({ comment, depth, hide }) => {
                 }}
               ></div>
 
+              <div
+                className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <CommentReply
+                  parent={comment?.data?.name}
+                  getHtml={updateMyReplies}
+                />
+              </div>
+
               {/* Children */}
               <div className="min-w-full py-2">
-                {comment?.data?.replies?.data?.children.map(
-                  (childcomment, i) => (
-                    <div key={`${i}_${childcomment?.data?.id}`}>
-                      {childcomment.kind == "more" ? (
-                        <div className={hideChildren ? "hidden" : " "}>
-                          {!moreLoaded ? (
-                            <div
-                              className="pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (session) {
-                                  loadChildComments(
-                                    childcomment?.data?.children,
-                                    comment?.data?.link_id
-                                  );
-                                } else {
-                                  context.setLoginModal(true);
-                                }
-                              }}
-                            >
-                              {"Load More... " +
-                                `(${childcomment.data?.count})`}
-                            </div>
-                          ) : (
-                            moreComments?.map((morecomment, i) => (
-                              <ChildComments
-                                key={i + morecomment?.data?.id}
-                                comment={morecomment}
-                                depth={morecomment?.data?.depth ?? depth + 1}
-                                hide={hideChildren}
-                              />
-                            ))
-                          )}
-                        </div>
-                      ) : (
-                        <ChildComments
-                          comment={childcomment}
-                          depth={depth + 1}
-                          hide={hideChildren}
-                        />
-                      )}
-                    </div>
-                  )
+                {childcomments && (
+                  <>
+                    {childcomments.map((childcomment, i) => (
+                      <div key={`${i}_${childcomment?.data?.id}`}>
+                        {childcomment.kind == "more" ? (
+                          <div className={hideChildren ? "hidden" : " "}>
+                            {!moreLoaded ? (
+                              <div
+                                className="pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (session) {
+                                    loadChildComments(
+                                      childcomment?.data?.children,
+                                      comment?.data?.link_id
+                                    );
+                                  } else {
+                                    context.setLoginModal(true);
+                                  }
+                                }}
+                              >
+                                {"Load More... " +
+                                  `(${childcomment.data?.count})`}
+                              </div>
+                            ) : (
+                              moreComments?.map((morecomment, i) => (
+                                <ChildComments
+                                  key={i + morecomment?.data?.id}
+                                  comment={morecomment}
+                                  depth={morecomment?.data?.depth ?? depth + 1}
+                                  hide={hideChildren}
+                                />
+                              ))
+                            )}
+                          </div>
+                        ) : (
+                          <ChildComments
+                            comment={childcomment}
+                            depth={depth + 1}
+                            hide={hideChildren}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </>
                 )}
               </div>
             </div>

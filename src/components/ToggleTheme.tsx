@@ -4,8 +4,12 @@ import { FaSun } from "react-icons/fa";
 import { RiMoonLine } from "react-icons/ri";
 import {FaRegMoon} from 'react-icons/fa'
 import {BiMoon,BiSun} from 'react-icons/bi'
+import { useEffect } from "react";
 const ToggleTheme = () => {
   const { theme, setTheme } = useTheme();
+  useEffect(() => {
+    
+  }, [])
 
   return (
     <div onClick={(e) => e.stopPropagation()}>

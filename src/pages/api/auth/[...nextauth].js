@@ -108,7 +108,7 @@ export default NextAuth({
       name: "Reddit",
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      scope: "identity mysubreddits read vote", //Check Reddit API Documentation for more. The identity scope is required.
+      scope: "identity mysubreddits read vote submit", //Check Reddit API Documentation for more. The identity scope is required.
       type: "oauth",
       version: "2.0",
       params: { grant_type: "authorization_code" },

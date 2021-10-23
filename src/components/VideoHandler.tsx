@@ -2,6 +2,9 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
+
+
+let regex = /([A-Z])\w+/g;
 const VideoHandler = ({
   placeholder,
   videoInfo,
@@ -12,6 +15,48 @@ const VideoHandler = ({
   const context: any = useMainContext();
   const video: any = useRef();
   const audioRef: any = useRef();
+  // const [audioSrc, setaudioSrc] = useState("");
+  // const [mounted, setMounted] = useState(false);
+  // const [loaded, setLoaded] = useState(false);
+  // useEffect(() => {
+  //   setMounted(true);
+  // }, [])
+  // useEffect(() => {
+  //   async function fileExists(url) {
+  //     try{
+  //     let http = new XMLHttpRequest();
+  //     http.open('HEAD', url, false);
+  //     http.send();
+  //     // console.log(http.status);
+  //     return http.status != (403 || 404);
+      
+  //     } catch (e) {
+  //       console.log('err',e)
+  //       return false;
+  //     }
+  //     return true
+  //   }
+  //   const findAudio = async(url) => {
+  //     let a: string = url;
+  //     a = a.replace(regex, "DASH_audio");
+  //     let status = await fileExists(a);
+  //     //console.log(status);
+  //     if (status) {
+  //       setaudioSrc(a);
+  //     } else {
+  //       a = a.split("DASH")[0] + "audio";
+  //       status = await fileExists(a);
+  //       if (status) setaudioSrc(a);
+  //       else setaudioSrc("");
+        
+  //     }
+  //     setLoaded(true);
+  //   };
+  //   if(mounted){
+  //     findAudio(audio);
+  //   }
+  // }, [mounted, audio])
+
   const [hasAudio, sethasAudio] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
@@ -43,9 +88,9 @@ const VideoHandler = ({
 
   useEffect(() => {
     if (context?.autoplay && !videoPlaying && !context.pauseAll) {
-      video?.current?.play().catch((e) => console.log(e));
+      video?.current?.play().catch((e) => undefined);
     } else if (!context?.autoplay && videoPlaying) {
-      video?.current?.pause()?.catch((e) => null);
+      video?.current?.pause()?.catch((e) => undefined);
     }
   }, [context.autoplay]);
   useEffect(() => {
@@ -65,7 +110,10 @@ const VideoHandler = ({
 
         video?.current
           ?.play()
-          .then(() => {setVideoPlaying(true);setmanualPlay(true);})
+          .then(() => {
+            setVideoPlaying(true);
+            setmanualPlay(true);
+          })
           .catch((e) => {
             // console.log(e);
             setVideoPlaying(false);
@@ -117,7 +165,17 @@ const VideoHandler = ({
       }
     }
   };
+  const pauseAudio = () => {
+    if (!audioRef?.current?.paused && audioPlaying && hasAudio) {
+      audioRef.current.pause();
+      if (!audioRef.current.muted) {
+        audioRef.current.muted = true;
+        setMuted(true);
+      }
+    }
+  };
   const playAll = (override = false) => {
+    audioRef.current.currentTime = video.current.currentTime;
     if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
       video?.current?.play().catch((e) => console.log(e));
     }
@@ -131,15 +189,27 @@ const VideoHandler = ({
         setMuted(false);
         setPrevMuted(true);
       }
-      audioRef.current.currentTime = video.current.currentTime;
       audioRef?.current?.play().catch((e) => console.log(e));
     }
   };
-
-  
+  const playAudio = (bool) => {
+    if (bool) {
+      audioRef.current.currentTime = video.current.currentTime;
+      audioRef.current.muted = false;
+      setMuted(false);
+      audioRef?.current?.play().catch((e) => console.log(e));
+    } else {
+      audioRef.current.muted = true;
+      setMuted(true);
+      if (!audioRef?.current?.paused || !audioRef?.current?.ended)
+        audioRef?.current?.pause();
+    }
+  };
 
   return (
-    <div className="relative overflow-hidden group" style={imgFull ? maxHeight : {}}
+    <div
+      className="relative overflow-hidden group"
+      style={imgFull ? maxHeight : {}}
     >
       {videoLoaded ? (
         ""
@@ -179,7 +249,8 @@ const VideoHandler = ({
         preload={context?.autoplay ? "auto" : "metadata"}
         onWaiting={() => {
           if (!muted) setPrevMuted(false);
-          pauseAll();
+          //pauseAll();
+          pauseAudio();
         }}
         onPlaying={() => {
           setVideoPlaying(true);
@@ -187,13 +258,34 @@ const VideoHandler = ({
         }}
         onPlay={() => {
           //.log("VIDEO PLAYING");
+          playAll();
         }}
         onPause={() => {
           setVideoPlaying(false);
         }}
         controls={false} //{!context?.autoplay}
-        onMouseOver={event => {(!manualPlay && videoLoaded) && playAll(true)}}
-        onMouseOut={event => {(!manualPlay && videoLoaded) && pauseAll()}}
+        onMouseOver={(event) => {
+          !manualPlay &&
+            videoLoaded &&
+            !context.mediaOnly &&
+            !context.autoplay &&
+            playAll(true);
+          videoLoaded &&
+            !context.mediaOnly &&
+            context.autoplay &&
+            playAudio(true);
+        }}
+        onMouseOut={(event) => {
+          !manualPlay &&
+            videoLoaded &&
+            !context.autoplay &&
+            !context.mediaOnly &&
+            pauseAll();
+          videoLoaded &&
+            !context.mediaOnly &&
+            context.autoplay &&
+            playAudio(false);
+        }}
         onLoadedData={onLoadedData}
         playsInline
         //onMouseOver={}
@@ -233,22 +325,23 @@ const VideoHandler = ({
           </>
         )}
       </div>
-
-      <video
-        autoPlay={false}
-        controls={false}
-        ref={audioRef}
-        muted
-        loop={false}
-        className="hidden"
-        playsInline
-        onCanPlay={onAudioLoaded}
-        onPlay={() => setAudioPlaying(true)}
-        onPause={() => setAudioPlaying(false)}
-        onError={(err) => null}
-      >
-        <source data-src={audio} src={audio} type="video/mp4" />
-      </video>
+      
+        <video
+          autoPlay={false}
+          controls={false}
+          ref={audioRef}
+          muted
+          loop={false}
+          className="hidden"
+          playsInline
+          onCanPlay={onAudioLoaded}
+          onPlay={() => setAudioPlaying(true)}
+          onPause={() => setAudioPlaying(false)}
+          onError={(err) => null}
+        >
+          <source data-src={audio} src={audio} type="video/mp4" />
+        </video>
+      
     </div>
   );
 };

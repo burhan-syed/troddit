@@ -44,7 +44,7 @@ function MyApp({ Component, pageProps }) {
             content="width=device-width, initial-scale=1.0"
           ></meta>
       </Head>
-    <ThemeProvider attribute="class">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <MainProvider>
         <Provider session={pageProps.session}>
           <Component {...pageProps} />

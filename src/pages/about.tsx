@@ -14,8 +14,8 @@ const about = () => {
           <p className="">
             Troddit is a web client for Reddit.
             While an account is not required, we do support secure logins with
-            Reddit so you can vote and have immediate access to your personal
-            front page, subreddits, and collections.
+            Reddit so you can vote, comment, and have immediate access to your personal
+            subreddits.
           </p>
 
           <p className="py-4">
@@ -46,11 +46,11 @@ const about = () => {
               dev@troddit.com
             </a>
           </p>
-          <p className="text-transparent select-none">
+          {/* <p className="text-transparent select-none">
             Hello there, why are you snooping here? {"Don't"} mind this. Troddit
             supports infinite scrolling for Reddit in a grid format. Masonry
             layout of Reddit Posts. Reddit Scroller. Reddit browswer. 
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

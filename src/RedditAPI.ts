@@ -31,16 +31,12 @@ const getToken = async () => {
 };
 
 export const loadFront = async (
-  loggedIn=false,
   sort: string = "best",
   range?: string,
   after?: string,
   count?: number
 ) => {
-  let token = undefined;
-  if (loggedIn){
-    token = await (await getToken())?.accessToken;
-  }
+  let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
@@ -398,3 +394,29 @@ export const postVote = async (dir: number, id) => {
     }
   }
 };
+
+export const postComment = async(parent, text) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      //console.log(parent, text, token);
+      const res = await fetch("https://oauth.reddit.com/api/comment", {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${text}&thing_id=${parent}`,
+      });
+
+      if (res.ok) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+  }
+  return false;
+}

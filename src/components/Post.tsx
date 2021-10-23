@@ -12,6 +12,7 @@ import { useRouter } from "next/dist/client/router";
 import Media from "./Media";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/client";
+import { secondsToTime } from "../../lib/utils";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -164,10 +165,7 @@ const Post = ({ post }) => {
                 <p>•</p>
 
                 <p className="ml-1">
-                  {Math.floor(
-                    (Math.floor(Date.now() / 1000) - post.created_utc) / 3600
-                  )}
-                  hr
+                  {secondsToTime(post?.created_utc, ['hr','day','mnth','yr'])}
                 </p>
                 <div className="flex flex-row ml-auto">
                   <p className="ml-1">{`(${post.domain})`}</p>
@@ -213,12 +211,7 @@ const Post = ({ post }) => {
                           <p>•</p>
 
                           <p className="ml-1">
-                            {Math.floor(
-                              (Math.floor(Date.now() / 1000) -
-                                post.created_utc) /
-                                3600
-                            )}
-                            hr
+                          {secondsToTime(post?.created_utc, ['hr','day','mnth','yr'])}
                           </p>
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${post.domain})`}</p>

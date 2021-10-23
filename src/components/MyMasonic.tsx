@@ -46,7 +46,6 @@ const MyMasonic = ({
   initItems,
   initAfter,
   isUser = false,
-  loggedIn,
 }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
@@ -201,7 +200,6 @@ const MyMasonic = ({
   const fetchFront = async () => {
     //console.log(query);
     let data = await loadFront(
-      loggedIn,
       query?.frontsort ?? "hot",
       query?.t ?? ""
     );
@@ -261,7 +259,6 @@ const MyMasonic = ({
     let data = { after: "", children: [] };
     if (!subreddits) {
       data = await loadFront(
-        loggedIn,
         query?.frontsort ?? "best",
         query?.t ?? "",
         loadafter

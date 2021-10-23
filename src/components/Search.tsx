@@ -218,8 +218,10 @@ const Search = ({ id }) => {
     onChange: onChange,
   };
 
+
   return (
     <div className="flex flex-row w-full h-full ">
+     
       <Autosuggest
         id={id}
         suggestions={suggestions}
@@ -230,6 +232,7 @@ const Search = ({ id }) => {
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         onSuggestionSelected={onSuggestionSelected}
+        
       />
     </div>
   );

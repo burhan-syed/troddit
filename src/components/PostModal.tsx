@@ -9,11 +9,14 @@ import { BiComment } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
+import { BsReply } from "react-icons/bs";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
 import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
 import CommentSort from "./CommentSort";
+import CommentReply from "./CommentReply";
+import { secondsToTime } from "../../lib/utils";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
@@ -21,9 +24,10 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const [post_comments, setComments] = useState([]);
   const [loadingPost, setLoadingPost] = useState(true);
   const [loadingComments, setLoadingComments] = useState(true);
+  const [myReplies, setmyReplies] = useState([]);
   const [score, setScore] = useState("");
   const [vote, setVote] = useState(0);
-
+  const [openReply, setopenReply] = useState(false);
   const [session, loading] = useSession();
   const context: any = useMainContext();
   const castVote = async (e, v) => {
@@ -37,6 +41,33 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
     }
   };
   const divRef = useRef<HTMLDivElement>(null);
+
+  const updateMyReplies = (html) => {
+    const newreply = {
+      myreply: true,
+      kind: "t1",
+      data: {
+        author: session?.user?.name,
+        body_html: html,
+        created_utc: Math.floor(Date.now() / 1000),
+        depth: 0,
+        parent_id: apost?.name,
+        score: 1,
+      },
+    };
+    setmyReplies((replies) => [newreply, ...myReplies]);
+    setopenReply(false);
+  };
+
+  const [hideNSFW, setHideNSFW] = useState(false);
+  useEffect(() => {
+    context.nsfw === "false" && apost?.over_18
+      ? setHideNSFW(true)
+      : setHideNSFW(false);
+    return () => {
+      setHideNSFW(false);
+    };
+  }, [apost, context]);
 
   //prevent scrolling on main body when open
   useEffect(() => {
@@ -201,6 +232,17 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       </div>
                       <div></div>
                       <div className="flex flex-row items-center justify-end space-x-1">
+                        <div>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                            }}
+                            className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                          >
+                            <BsReply className="flex-none w-6 h-6 md:pr-2 scale-x-[-1]" />
+                            <h1 className="hidden md:block">Reply</h1>
+                          </button>
+                        </div>
                         <a
                           href={`${apost?.url}` ?? "https://reddit.com"}
                           target="_blank"
@@ -285,13 +327,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                         </a>
                       </Link>
 
-                      <p className="">
-                        {Math.floor(
-                          (Math.floor(Date.now() / 1000) - apost?.created_utc) /
-                            3600
-                        )}{" "}
-                        hours ago
-                      </p>
+                      <p className="">{secondsToTime(apost?.created_utc)}</p>
                       <div className="flex flex-row ml-auto">
                         <p className="ml-1">{`(${apost?.domain})`}</p>
                       </div>
@@ -309,7 +345,13 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
 
                     {/* Image/Video/Text Body */}
                     <div className="block md:pl-3">
-                      <Media post={apost} allowIFrame={true} imgFull={true} />
+                      {!hideNSFW ? (
+                        <Media post={apost} allowIFrame={true} imgFull={true} />
+                      ) : (
+                        <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">
+                          NSFW
+                        </div>
+                      )}
                     </div>
 
                     {/* Bottom Buttons */}
@@ -344,6 +386,20 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                       </div>
                       <div></div>
                       <div className="flex flex-row items-center justify-end space-x-1">
+                        <div>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              session
+                                ? setopenReply((r) => !r)
+                                : context.toggleLoginModal();
+                            }}
+                            className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                          >
+                            <BsReply className="flex-none w-6 h-6 md:pr-2 scale-x-[-1]" />
+                            <h1 className="hidden md:block">Reply</h1>
+                          </button>
+                        </div>
                         <a
                           href={`${apost?.url}` ?? "https://reddit.com"}
                           target="_blank"
@@ -355,7 +411,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                           </div>
                         </a>
                         <a
-                          href={`https://www.reddit.com/${
+                          href={`https://www.reddit.com${
                             apost?.permalink ?? ""
                           }`}
                           target="_blank"
@@ -372,6 +428,17 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                 </div>
               </div>
             )}
+
+            {/* post reply */}
+
+            <div
+              className={
+                (openReply ? "block " : "hidden ") +
+                "bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG p-2 mb-3"
+              }
+            >
+              <CommentReply parent={apost?.name} getHtml={updateMyReplies} />
+            </div>
 
             {/* comments */}
             <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
@@ -394,7 +461,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     </h1>
                   </div>
                 </div>
-                <div className="flex-none">
+                <div className="z-10 flex-none">
                   <CommentSort updateSort={updateSort} />
                 </div>
               </div>
@@ -462,6 +529,7 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                     {post_comments?.[0] ? "" : "no comments :("}
                   </h1>
                   <div className="flex-grow w-full px-2">
+                    <Comments comments={myReplies} depth={0} />
                     <Comments comments={post_comments} depth={0} />
                   </div>
                 </div>
