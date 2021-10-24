@@ -55,7 +55,7 @@ const VideoHandler = ({
     } else if (!context?.autoplay && videoPlaying) {
       video?.current?.pause()?.catch((e) => console.log(e));
     }
-  }, [context.autoplay]);
+  }, [context.autoplay, context.pauseAll]);
   useEffect(() => {
     if (hasAudio && audioPlaying && context.pauseAll) {
       //console.log("forcemute");
