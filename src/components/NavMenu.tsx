@@ -8,6 +8,7 @@ import Link from "next/link";
 import ToggleMaximize from "./ToggleMaximize";
 import { useMainContext } from "../MainContext";
 import ToggleMediaOnly from "./ToggleMediaOnly";
+import ToggleAudioOnHover from "./ToggleAudioOnHover";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -204,6 +205,18 @@ const NavMenu = ({ hide = false }) => {
                   )}
                 >
                   <ToggleAutoplay />
+                </div>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <ToggleAudioOnHover />
                 </div>
               )}
             </Menu.Item>

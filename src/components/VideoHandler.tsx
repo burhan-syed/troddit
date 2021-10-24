@@ -27,6 +27,7 @@ const VideoHandler = ({
   const [manualPlay, setmanualPlay] = useState(false);
   const [muted, setMuted] = useState(true);
   const [prevMuted, setPrevMuted] = useState(true);
+  const [manualAudio, setManualAudio] = useState(false);
 
   const onLoadedData = () => {
     setVideoLoaded(true);
@@ -62,111 +63,131 @@ const VideoHandler = ({
     }
   }, [context.pauseAll]);
 
+  //main control for play/pause button
   const playControl = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    //console.log("playcontrol");
+    //only allow play if video loaded
     if (videoLoaded) {
+      //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
-        //console.log("video playing true");
-
+       
+        //play the video
         video?.current
           ?.play()
           .then(() => {
-            setVideoPlaying(true);
+            //setVideoPlaying(true); this will be handled directly from the video element
             setmanualPlay(true);
           })
           .catch((e) => {
-            // console.log(e);
-            setVideoPlaying(false);
+            //setVideoPlaying(false); this will be handled directly from the video element
             setmanualPlay(false);
           });
-      } else if (!video?.current?.paused && videoPlaying) {
+      } 
+      //pause the video
+      else if (!video?.current?.paused && videoPlaying) {
         setVideoPlaying(false);
         setmanualPlay(false);
-        // console.log("video playing false");
         video?.current?.pause();
       }
+
+      //play audio if there is audio
       if (hasAudio) {
+        //if audio is paused, sync it and play
         if (
           (audioRef?.current?.paused || audioRef?.current?.ended) &&
           !audioPlaying
         ) {
           audioRef.current.currentTime = video.current.currentTime;
           audioRef?.current?.play().catch((e) => console.log(e));
-        } else if (!audioRef?.current?.paused && audioPlaying) {
+        }
+        //otherwise pause the audio
+        else if (!audioRef?.current?.paused && audioPlaying) {
           audioRef.current.pause();
         }
       }
     }
   };
+  //main controls for audio
   const audioControl = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // console.log("AUDIO CONTROL");
+    //if audio exists
     if (audioRef?.current?.muted !== undefined && hasAudio) {
-      if (audioRef.current.muted === true && videoPlaying) {
-        audioRef.current.currentTime = video.current.currentTime;
+      //always sync audio
+      audioRef.current.currentTime = video.current.currentTime;
+      //if audio is not playing and video is playing, play audio
+      if (!audioPlaying && videoPlaying) {
         audioRef?.current?.play().catch((e) => console.log(e));
-      }
+      } 
+      //toggle audio mute
       audioRef.current.muted = !audioRef.current.muted;
+      if (audioRef.current.muted) audioRef.current.pause();
+      //mark manual unmute
+      muted ? setManualAudio(true) : setManualAudio(false);
+
       setMuted((m) => !m);
     }
   };
 
+  //for pausing media when another post is opened
   const pauseAll = () => {
-    if (!video?.current?.paused && videoPlaying) {
-      video?.current?.pause();
-    }
-    setVideoPlaying(false);
-    if (!audioRef?.current?.paused && audioPlaying && hasAudio) {
-      audioRef.current.pause();
-      if (!audioRef.current.muted) {
-        audioRef.current.muted = true;
-        setMuted(true);
-      }
-    }
+      videoLoaded && video?.current?.pause();
+      hasAudio && audioRef.current.pause();
   };
+
+  const pauseVideo = () => {
+    videoLoaded && video?.current?.pause();
+  }
+
+  //pause Audio while video is loading
   const pauseAudio = () => {
-    if (!audioRef?.current?.paused && audioPlaying && hasAudio) {
+    if (hasAudio) {
       audioRef.current.pause();
-      if (!audioRef.current.muted) {
-        audioRef.current.muted = true;
-        setMuted(true);
-      }
     }
   };
-  const playAll = (override = false) => {
-    audioRef.current.currentTime = video.current.currentTime;
-    if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
-      video?.current?.play().catch((e) => console.log(e));
-    }
-    if (
-      (audioRef?.current?.paused || audioRef?.current?.ended || override) &&
-      !audioPlaying &&
-      hasAudio
-    ) {
-      if (!prevMuted || override) {
-        audioRef.current.muted = false;
-        setMuted(false);
-        setPrevMuted(true);
-      }
-      audioRef?.current?.play().catch((e) => console.log(e));
-    }
-  };
-  const playAudio = (bool) => {
-    if (bool) {
+  //play Audio..
+  const playAudio = () => {
+    if (hasAudio) {
       audioRef.current.currentTime = video.current.currentTime;
-      audioRef.current.muted = false;
-      setMuted(false);
-      audioRef?.current?.play().catch((e) => console.log(e));
-    } else {
-      audioRef.current.muted = true;
-      setMuted(true);
-      if (!audioRef?.current?.paused || !audioRef?.current?.ended)
-        audioRef?.current?.pause();
+      audioRef.current.play();
     }
-  };
+  }
+
+  //play Video..
+  const playVideo = () => {
+    videoLoaded && video?.current?.play().catch((e) => console.log(e));
+  }
+
+  const handleMouseIn = () => {
+    //if video was not played manually, in card mode,
+    if (!manualPlay && videoLoaded && !context.mediaOnly) {
+      //play video if not in autoplay
+      if (!context.autoplay) playVideo();
+      
+      //unmute play audio if allowed and video playing
+      if ((context.audioOnHover || !muted)){
+        audioRef.current.muted = false; 
+        setMuted(false);
+        playAudio();
+      } 
+    } 
+  } 
+
+  const handleMouseOut = () => {
+    //not in manual play, then pause audio and video
+    if (!manualPlay && !context.autoplay) {
+      pauseAudio();
+      pauseVideo();
+    }
+
+    //also mute if not manually unmuted manipulation
+    if (!manualAudio) {
+      setMuted(true);
+      audioRef.current.muted = true;
+    }
+
+  }
 
   return (
     <div
@@ -212,45 +233,30 @@ const VideoHandler = ({
         onWaiting={() => {
           if (!muted) setPrevMuted(false);
           //pauseAll();
+          setVideoPlaying(false);
           pauseAudio();
         }}
         onPlaying={() => {
           setVideoPlaying(true);
-          playAll();
+          playAudio();
         }}
         onPlay={() => {
           //.log("VIDEO PLAYING");
-          playAll();
+          //playAll();
         }}
         onPause={() => {
           setVideoPlaying(false);
         }}
         controls={false} //{!context?.autoplay}
         onMouseOver={(event) => {
-          !manualPlay &&
-            videoLoaded &&
-            !context.mediaOnly &&
-            !context.autoplay &&
-            playAll(true);
-          videoLoaded &&
-            !context.mediaOnly &&
-            context.autoplay &&
-            playAudio(true);
+         
+          handleMouseIn(); 
         }}
         onMouseOut={(event) => {
-          !manualPlay &&
-            videoLoaded &&
-            !context.autoplay &&
-            !context.mediaOnly &&
-            pauseAll();
-          videoLoaded &&
-            !context.mediaOnly &&
-            context.autoplay &&
-            playAudio(false);
+          handleMouseOut();
         }}
         onLoadedData={onLoadedData}
         playsInline
-        //onMouseOver={}
       >
         <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
       </video>
@@ -297,8 +303,9 @@ const VideoHandler = ({
         className="hidden"
         playsInline
         onCanPlay={onAudioLoaded}
-        onPlay={() => setAudioPlaying(true)}
+        onPlaying={() => setAudioPlaying(true)}
         onPause={() => setAudioPlaying(false)}
+        onWaiting={() => setAudioPlaying(false)}
         onError={(err) => null}
       >
         <source data-src={audio} src={audio} type="video/mp4" />

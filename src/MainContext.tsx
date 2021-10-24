@@ -14,9 +14,14 @@ export const MainProvider = ({ children }) => {
   const [autoplay, setAutoplay] = useState(true);
   const [columns, setColumns] = useState(3);
   const [columnOverride, setColumnOverride] = useState(0);
+  const [audioOnHover, setaudioOnHover] = useState(false);
   const [maximize, setMaximize] = useState(false);
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
+
+  const toggleAudioOnHover = () => {
+    setaudioOnHover(a => !a);
+  }
 
   const toggleMediaOnly = () => {
     setMediaOnly(m => !m);
@@ -45,6 +50,8 @@ export const MainProvider = ({ children }) => {
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_mediaOnly = localStorage.getItem("mediaOnly");
     saved_mediaOnly?.includes("true") ? setMediaOnly(true) : setMediaOnly(false);
+    const saved_audioOnHover = localStorage.getItem("audioOnHover");
+    saved_audioOnHover?.includes("true") ? setaudioOnHover(true) : setaudioOnHover(false);
     const saved_columnOverride = parseInt(localStorage.getItem("columnOverride"));
     saved_columnOverride && setColumnOverride(saved_columnOverride)
   }, []);
@@ -61,6 +68,9 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("mediaOnly", JSON.stringify(mediaOnly));
   }, [mediaOnly]);
+  useEffect(() => {
+    localStorage.setItem("audioOnHover", JSON.stringify(audioOnHover));
+  }, [audioOnHover]);
 
   return (
     <MainContext.Provider
@@ -81,7 +91,9 @@ export const MainProvider = ({ children }) => {
         mediaOnly,
         toggleMediaOnly,
         pauseAll,
-        setPauseAll
+        setPauseAll,
+        audioOnHover,
+        toggleAudioOnHover
       }}
     >
       {children}
