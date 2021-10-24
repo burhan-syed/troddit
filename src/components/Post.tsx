@@ -165,7 +165,7 @@ const Post = ({ post }) => {
                 <p>•</p>
 
                 <p className="ml-1">
-                  {secondsToTime(post?.created_utc, ['hr','day','mnth','yr'])}
+                  {secondsToTime(post?.created_utc, ['sec', 'min', 'hr','day','mth','yr'])}
                 </p>
                 <div className="flex flex-row ml-auto">
                   <p className="ml-1">{`(${post.domain})`}</p>
@@ -211,7 +211,7 @@ const Post = ({ post }) => {
                           <p>•</p>
 
                           <p className="ml-1">
-                          {secondsToTime(post?.created_utc, ['hr','day','mnth','yr'])}
+                          {secondsToTime(post?.created_utc, ['sec', 'min', 'hr','day','mth','yr'])}
                           </p>
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${post.domain})`}</p>

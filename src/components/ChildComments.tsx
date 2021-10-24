@@ -5,6 +5,7 @@ import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
+import Link from "next/dist/client/link";
 
 const ChildComments = ({ comment, depth, hide }) => {
   const [moreComments, setMoreComments] = useState([]);
@@ -43,9 +44,9 @@ const ChildComments = ({ comment, depth, hide }) => {
 
   useEffect(() => {
     if (childcomments?.length > 0) {
-      setchildcomments(p => p.filter(pr => (pr?.myreply !== true)));
-      setchildcomments(p => [...myReplies, ...p]);
-    } else if(!comment?.data?.replies?.data?.children) {
+      setchildcomments((p) => p.filter((pr) => pr?.myreply !== true));
+      setchildcomments((p) => [...myReplies, ...p]);
+    } else if (!comment?.data?.replies?.data?.children) {
       setchildcomments(myReplies);
     }
   }, [myReplies]);
@@ -192,22 +193,46 @@ const ChildComments = ({ comment, depth, hide }) => {
         >
           {/* Author and comment data*/}
           <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
-            <h1 className="">{`${comment?.data?.author}`}</h1>
+            {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
+            <Link href={`/user/${comment?.data?.author}`}>
+              <a
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <h1 className="">{comment?.data?.author ?? ""}</h1>
+              </a>
+            </Link>
             <p>•</p>
             <h1
               className={
-                (vote === 1 || comment?.myreply) ? "text-upvote" : vote === -1 ? "text-downvote" : ""
+                vote === 1 || comment?.myreply
+                  ? "text-upvote"
+                  : vote === -1
+                  ? "text-downvote"
+                  : ""
               }
             >
               {score ?? "0"} pts
             </h1>
             <p>•</p>
             <p className="">
-              {secondsToTime(comment?.data?.created_utc, ['hr','day','mnth','yr'])}
+              {secondsToTime(comment?.data?.created_utc, [
+                "sec",
+                "min",
+                "hr",
+                "day",
+                "mth",
+                "yr",
+              ])}
             </p>
-            <p className={(hideChildren || comment?.myreply) ? "hidden" : "block"}>•</p>
+            <p
+              className={hideChildren || comment?.myreply ? "hidden" : "block"}
+            >
+              •
+            </p>
             <button
-              className={(hideChildren || comment?.myreply) ? "hidden" : "block"}
+              className={hideChildren || comment?.myreply ? "hidden" : "block"}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
