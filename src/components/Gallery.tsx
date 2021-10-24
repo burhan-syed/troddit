@@ -65,7 +65,7 @@ const Gallery = ({ images, maxheight=0 }) => {
         {/* <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button> */}
-        <div className="absolute z-10 p-2 bg-black rounded-lg opacity-50 top-2 right-2"><h1>{(index+1) + "/" + images.length}</h1></div>
+        <div className="absolute z-10 p-2 text-white bg-black rounded-lg opacity-50 top-2 right-2"><h1>{(index+1) + "/" + images.length}</h1></div>
         {sliderControl(true)}
         <div className="">
           {images.map((image, i) => {
