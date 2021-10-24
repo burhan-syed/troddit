@@ -2,7 +2,7 @@ export const secondsToTime = (seconds, verbiage = ['seconds ago', 'minutes ago',
   let t = Math.floor((Math.floor(Date.now() / 1000) - seconds));
   if (t < 60) return (`${t} ${verbiage[0]}`);
   t = Math.ceil(t/60);
-  if (t < 60) return (`${t} ${verbiage[``]}`);
+  if (t < 60) return (`${t} ${verbiage[1]}`);
   t = Math.ceil(t/60);
   if (t < 72) return (`${t} ${verbiage[2]}`);
   t = Math.floor(t/24); 
