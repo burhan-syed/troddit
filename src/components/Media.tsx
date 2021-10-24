@@ -527,14 +527,14 @@ const Media = ({
                 dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
               ></div>
             </div>
-          ) : (
+          ) : (!context.mediaOnly) ? (
             // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
             <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
               <p>
                 {post?.selftext}
               </p>
             </div>
-          )}
+          ) : "" }
         </>
       )}
     </div>
