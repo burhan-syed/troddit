@@ -18,6 +18,7 @@ export const MainProvider = ({ children }) => {
   const [maximize, setMaximize] = useState(false);
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
+  const [cardStyle, setCardStyle] = useState('default');
 
   const toggleAudioOnHover = () => {
     setaudioOnHover(a => !a);
@@ -54,6 +55,8 @@ export const MainProvider = ({ children }) => {
     saved_audioOnHover?.includes("true") ? setaudioOnHover(true) : setaudioOnHover(false);
     const saved_columnOverride = parseInt(localStorage.getItem("columnOverride"));
     saved_columnOverride && setColumnOverride(saved_columnOverride)
+    const saved_cardStyle = parseInt(localStorage.getItem("cardStyle"));
+    saved_cardStyle && setColumnOverride(saved_cardStyle)
   }, []);
 
   useEffect(() => {
@@ -69,8 +72,12 @@ export const MainProvider = ({ children }) => {
     localStorage.setItem("mediaOnly", JSON.stringify(mediaOnly));
   }, [mediaOnly]);
   useEffect(() => {
+    localStorage.setItem("cardStyle", JSON.stringify(cardStyle));
+  }, [cardStyle]);
+  useEffect(() => {
     localStorage.setItem("audioOnHover", JSON.stringify(audioOnHover));
   }, [audioOnHover]);
+  
 
   return (
     <MainContext.Provider
@@ -89,11 +96,14 @@ export const MainProvider = ({ children }) => {
         columnOverride,
         setColumnOverride,
         mediaOnly,
+        setMediaOnly,
         toggleMediaOnly,
         pauseAll,
         setPauseAll,
         audioOnHover,
-        toggleAudioOnHover
+        toggleAudioOnHover,
+        cardStyle,
+        setCardStyle
       }}
     >
       {children}

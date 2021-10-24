@@ -102,6 +102,7 @@ const Media = ({
     if (allowIFrame) {
       c = await findIframe();
     }
+    console.log(post);
     //a = await findImage();
 
     //console.log(imageInfo, videoInfo, placeholderInfo);
@@ -518,11 +519,8 @@ const Media = ({
           )}
 
           {post?.selftext_html && (!context.mediaOnly || imgFull) ? (
-            // <Markdown className="overflow-y-scroll react-markdown max-h-60 overflow-ellipsis overscroll-contain">
-            //   {post?.selftext}
-            // </Markdown>
-            <div className="overflow-y-auto max-h-96 overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800">
-              {" "}
+            <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 border-b") }>
+             
               <div
                 className="mr-1.5"
                 id="innerhtml"
@@ -531,7 +529,11 @@ const Media = ({
             </div>
           ) : (
             // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-            ""
+            <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
+              <p>
+                {post?.selftext}
+              </p>
+            </div>
           )}
         </>
       )}

@@ -75,8 +75,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "0"
-                              ? `font-bold`
+                            (context.columnOverride === 0
+                              ? "font-bold "
                               : "") +
                             " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                           }
@@ -93,8 +93,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "2"
-                              ? `font-bold`
+                            (context.columnOverride === 2
+                              ? "font-bold "
                               : "") +
                             " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
@@ -111,8 +111,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "3"
-                              ? `font-bold`
+                            (context.columnOverride === 3
+                              ? "font-bold "
                               : "") +
                             " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
@@ -129,8 +129,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "4"
-                              ? `font-bold`
+                            (context.columnOverride === 4
+                              ? "font-bold "
                               : "") +
                             " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
@@ -147,8 +147,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "5"
-                              ? `font-bold`
+                            (context.columnOverride === 5
+                              ? "font-bold "
                               : "") +
                             " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
@@ -165,8 +165,8 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.columnOverride === "7"
-                              ? `font-bold`
+                            (context.columnOverride === 7
+                              ? "font-bold "
                               : "") +
                             " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
                           }
@@ -186,6 +186,92 @@ const NavMenu = ({ hide = false }) => {
             <Menu.Item>
               {({ active }) => (
                 <div
+                  className="group"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    context.setCardStyle('default');
+                  }}
+                >
+                  <div
+                    className={classNames(
+                      active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                      "block px-4 py-2 text-sm"
+                    )}
+                  >
+                    <div className="flex flex-row items-center justify-center h-6">
+                      Select Card Style
+                    </div>
+                  </div>
+                  <ul
+                    className={
+                      (active ? "block " : "hidden ") +
+                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                    }
+                  >
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.cardStyle === "card1" && !context.mediaOnly
+                              ? " font-bold "
+                              : "") +
+                            " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setCardStyle('card1');
+                            context.setMediaOnly(false);
+                          }}
+                        >
+                          Original
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.cardStyle === "card2"
+                              ? " font-bold "
+                              : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setCardStyle('card2');
+                          }}
+                        >
+                          Compact
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.mediaOnly
+                              ? " font-bold "
+                              : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setCardStyle('card1');
+                            context.setMediaOnly(true);
+                          }}
+                        >
+                          Media Only
+                        </div>
+                      )}
+                    </Menu.Item>
+                   
+                  </ul>
+                </div>
+              )}
+            </Menu.Item>
+            {/* <Menu.Item>
+              {({ active }) => (
+                <div
                   className={classNames(
                     active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
                     "block px-4 py-2 text-sm"
@@ -194,7 +280,7 @@ const NavMenu = ({ hide = false }) => {
                   <ToggleMediaOnly />
                 </div>
               )}
-            </Menu.Item>
+            </Menu.Item> */}
             
             <Menu.Item>
               {({ active }) => (
