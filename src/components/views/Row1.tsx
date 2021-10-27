@@ -184,7 +184,7 @@ const Row1 = ({
         {expand && (
           <div className="block p-1 border-gray-100 md:border-l dark:border-darkHighlight">
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <Media post={post} imgFull={true} allowIFrame={true} />
+              <Media post={post} imgFull={true} allowIFrame={expand} />
             </a>
           </div>
         )}
