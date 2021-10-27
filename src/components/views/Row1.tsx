@@ -8,7 +8,7 @@ import { useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
-import {BsCardText} from 'react-icons/bs'
+import { BsCardText } from "react-icons/bs";
 import {
   AiOutlineShrink,
   AiOutlineExpandAlt,
@@ -59,7 +59,9 @@ const Row1 = ({
       </div>
       {/* Thumbnail */}
       <div className="relative flex items-center justify-center flex-none w-24 h-16 mt-2 border rounded-md">
-        {post?.thumbnail !== "self" && post?.thumbnail !== "default" && post?.thumbnail ? (
+        {post?.thumbnail !== "self" &&
+        post?.thumbnail !== "default" &&
+        post?.thumbnail ? (
           <Image
             src={post?.thumbnail}
             alt=""
@@ -67,7 +69,9 @@ const Row1 = ({
             unoptimized={true}
             className="rounded-md"
           ></Image>
-        ) : post?.thumbnail == "self" ? <BsCardText className="w-6 h-6"/> : (
+        ) : post?.thumbnail == "self" ? (
+          <BsCardText className="w-6 h-6" />
+        ) : (
           <AiOutlineLink className="w-6 h-6" />
         )}
       </div>
@@ -126,9 +130,14 @@ const Row1 = ({
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row items-center justify-start pb-1 space-x-1" >
+          <div className="flex flex-row items-center justify-start pb-1 space-x-1">
             <button
-              className={"flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " + ((!hasMedia && !post?.selftext_html) && "opacity-0 cursor-default")}
+              className={
+                "flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
+                (!hasMedia &&
+                  !post?.selftext_html &&
+                  "opacity-0 cursor-default")
+              }
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -172,13 +181,13 @@ const Row1 = ({
           </div>
         </div>
         {/* Hidden Media */}
-        <div className={expand ? " " : "hidden"}>
+        {expand && (
           <div className="block p-1 border-gray-100 md:border-l dark:border-darkHighlight">
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
               <Media post={post} imgFull={true} allowIFrame={true} />
             </a>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
