@@ -23,6 +23,7 @@ const Card1 = ({
           //   ? "px-3 pt-3 pb-2 "
           //   : "  ") +
           // (!context.mediaOnly && " rounded-md ") +
+          (context?.columnOverride==1 && "") + 
           " text-sm bg-white border  border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
         }
       >
@@ -39,7 +40,7 @@ const Card1 = ({
 
           {/* <p>{post?.url ?? "ERR"}</p> */}
           {true && (
-            <div className="p-1 px-2 pt-1">
+            <div className="p-1 px-2 pt-1.5">
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1 className="text-lg font-medium leading-none cursor-pointer">
                   {post?.title ?? ""}

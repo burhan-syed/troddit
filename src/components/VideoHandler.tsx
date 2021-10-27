@@ -192,7 +192,7 @@ const VideoHandler = ({
   return (
     <div
       className="relative overflow-hidden group"
-      style={imgFull ? maxHeight : {}}
+      style={(imgFull || context?.columnOverride==1) ? maxHeight : {}}
     >
       {videoLoaded ? (
         ""
@@ -202,7 +202,7 @@ const VideoHandler = ({
 
       <div
         className={`blur-xl ` + `${videoLoaded ? "opacity-0" : "opacity-100"}`}
-        style={imgFull && !videoLoaded ? imgheight : {}}
+        style={(imgFull || context?.columnOverride==1) && !videoLoaded ? imgheight : {}}
       >
         <Image
           className="absolute top-0 left-0"

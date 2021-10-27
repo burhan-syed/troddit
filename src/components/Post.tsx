@@ -15,6 +15,7 @@ import { useSession } from "next-auth/client";
 import { secondsToTime } from "../../lib/utils";
 import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
+import Row1 from "./views/Row1";
 
 const Post = ({ post }) => {
   const context: any = useMainContext();
@@ -129,7 +130,17 @@ const Post = ({ post }) => {
       {/* Click wrappter */}
       <div onClick={() => handleClick()}>
         {/* OG Card */}
-        {context?.cardStyle === "card2" ? (
+        { context?.cardStyle === "row1" ? 
+        <Row1
+            post={post}
+            hasMedia={hasMedia}
+            hideNSFW={hideNSFW}
+            score={score}
+            vote={vote}
+            castVote={castVote}
+            forceMute={forceMute}
+          />
+        : context?.cardStyle === "card2" ? (
           <Card2
             post={post}
             hasMedia={hasMedia}
@@ -149,7 +160,7 @@ const Post = ({ post }) => {
             castVote={castVote}
             forceMute={forceMute}
           />
-        )}
+        )} 
       </div>
     </div>
   );

@@ -134,7 +134,11 @@ const MyMasonic = ({
     // };
 
     //console.log(windowWidth);
-    if (context?.columnOverride ?? 0 !== 0) {
+    if(context.cardStyle=="row1"){
+      setItemHeightEstimate(80);
+      setCols(1);
+    }
+    else if (context?.columnOverride ?? 0 !== 0) {
       setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
       setCols(context.columnOverride);
       context.setColumns(context.columnOverride);
@@ -365,13 +369,13 @@ const MyMasonic = ({
         //height={windowHeight}
         // Forwards the ref to the masonry container element
 
-        columnGutter={10}
+        columnGutter={(cols == 1 ? 5 : 10)}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
         columnCount={cols}
         items={items}
         itemHeightEstimate={itemheightestimate}
         overscanBy={2}
-        render={FakeCard}
+        render={PostCard}
         className=""
         ssrWidth={500}
       />
@@ -396,10 +400,11 @@ const MyMasonic = ({
   );
 };
 
-const FakeCard = (props) => {
+const PostCard = (props) => {
   //console.log("fakecard");
+  const context: any = useMainContext();
   return (
-    <div>
+    <div className={""} >
       {/* <span children={`${props.data.id} : ${props.data?.data?.title}`} /> */}
       {/* <p>{props.data.id}</p> */}
       <Post post={props.data.data} />

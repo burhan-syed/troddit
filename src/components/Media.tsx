@@ -102,13 +102,13 @@ const Media = ({
     if (allowIFrame) {
       c = await findIframe();
     }
-    console.log(post);
+    //console.log(post);
     //a = await findImage();
 
     //console.log(imageInfo, videoInfo, placeholderInfo);
 
     //checkURLs();
-    a || b || c ? setLoaded(true) : setLoaded(false);
+    a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
   };
 
   //if deleted by copyright notice may be set to 'self'
@@ -400,16 +400,16 @@ const Media = ({
   useEffect(() => {
     setheight({
       height: `${imageInfo.height}px`,
-      maxHeight: `${Math.floor(screen.height * 0.75)}px`,
+      maxHeight: `${Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull) ? 0.5 : 0.75))}px`,
     });
-    setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
-    setmaxheightnum(Math.floor(screen.height * 0.75));
+    setmaxheight({ maxHeight: `${Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull) ? 0.5 :0.75))}px` });
+    setmaxheightnum(Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull)? 0.5 : 0.75)));
     return () => {
       setheight({});
       setmaxheight({});
       setmaxheightnum(0);
     };
-  }, [imageInfo]);
+  }, [imageInfo, context?.columnOverride, imgFull]);
 
   return (
     <div>
@@ -419,7 +419,7 @@ const Media = ({
             <div
               className="relative"
               style={
-                imgFull && isYTVid ? ytVidHeight : imgFull ? imgheight : {}
+                imgFull && isYTVid ? ytVidHeight : (imgFull || context?.columnOverride==1) ? imgheight : {}
               }
             >
               {/* <Iframe
@@ -450,7 +450,7 @@ const Media = ({
           {isGallery ? (
             <div
               className="flex flex-col items-center"
-              style={imgFull ? maxheight : {}}
+              style={(imgFull || context?.columnOverride==1) ? maxheight : {}}
             >
               <Gallery images={galleryInfo} maxheight={maxheightnum} />{" "}
             </div>
@@ -460,7 +460,7 @@ const Media = ({
 
           {isImage && !isIFrame && !isMP4 ? (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-            <div className={"relative"} style={imgFull ? imgheight : {}}>
+            <div className={"relative"} style={(imgFull || context?.columnOverride==1)? imgheight : {}}>
               {mediaLoaded ? (
                 ""
               ) : (
@@ -472,10 +472,10 @@ const Media = ({
                 height={imageInfo.height}
                 width={imageInfo.width}
                 alt=""
-                layout={imgFull ? "fill" : "responsive"}
+                layout={(imgFull || context?.columnOverride==1) ? "fill" : "responsive"}
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
-                objectFit={imgFull ? "contain" : "contain"}
+                objectFit={(imgFull || context?.columnOverride==1) ? "contain" : "contain"}
                 priority={imgFull}
                 unoptimized={true}
                 // placeholder="blur"
@@ -494,7 +494,7 @@ const Media = ({
             showMP4 ? (
               <div
                 className="flex flex-col items-center flex-none "
-                style={imgFull ? maxheight : {}}
+                style={(imgFull || context?.columnOverride==1) ? maxheight : {}}
               >
                 <LazyLoad
                   height={videoInfo.height}
@@ -518,8 +518,8 @@ const Media = ({
             ""
           )}
 
-          {post?.selftext_html && (!context.mediaOnly || imgFull) ? (
-            <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 border-b") }>
+          {post?.selftext_html && (!context.mediaOnly || imgFull) && (context.cardStyle !== "card2" || imgFull) ? (
+            <div className={"p-1 overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 border-b dark:border-darkBorderHighlight") }>
              
               <div
                 className="mr-1.5"
@@ -527,14 +527,16 @@ const Media = ({
                 dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
               ></div>
             </div>
-          ) : (!context.mediaOnly) ? (
-            // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-            <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
-              <p>
-                {post?.selftext}
-              </p>
-            </div>
-          ) : "" }
+          ) : (!context.mediaOnly) ? ("")
+          // (
+          //   // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
+          //   <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
+          //     <p>
+          //       {post?.selftext}
+          //     </p>
+          //   </div>
+          // ) 
+          : "" }
         </>
       )}
     </div>

@@ -46,12 +46,170 @@ const NavMenu = ({ hide = false }) => {
           }
         >
           <div className="py-1">
+            {context.cardStyle !== "row1" && (
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    className="group"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      context.setColumnOverride(0);
+                    }}
+                  >
+                    <div
+                      className={classNames(
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        "block px-4 py-2 text-sm"
+                      )}
+                    >
+                      <div className="flex flex-row items-center justify-center h-6">
+                        Column Count
+                      </div>
+                    </div>
+                    <ul
+                      className={
+                        (active ? "block " : "hidden ") +
+                        "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                      }
+                    >
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 0
+                                ? "font-bold "
+                                : "") +
+                              " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(0);
+                            }}
+                          >
+                            Default
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 2
+                                ? "font-bold "
+                                : "") +
+                              " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(1);
+                            }}
+                          >
+                            One
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 2
+                                ? "font-bold "
+                                : "") +
+                              " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(2);
+                            }}
+                          >
+                            Two
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 3
+                                ? "font-bold "
+                                : "") +
+                              " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(3);
+                            }}
+                          >
+                            Three
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 4
+                                ? "font-bold "
+                                : "") +
+                              " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(4);
+                            }}
+                          >
+                            Four
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 5
+                                ? "font-bold "
+                                : "") +
+                              " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(5);
+                            }}
+                          >
+                            Five
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (context.columnOverride === 7
+                                ? "font-bold "
+                                : "") +
+                              " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              context.setColumnOverride(7);
+                            }}
+                          >
+                            Seven
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </ul>
+                  </div>
+                )}
+              </Menu.Item>
+            )}
             <Menu.Item>
               {({ active }) => (
                 <div
                   className="group"
                   onClick={(e) => {
                     e.preventDefault();
+                    context.setCardStyle("default");
                     context.setColumnOverride(0);
                   }}
                 >
@@ -62,144 +220,7 @@ const NavMenu = ({ hide = false }) => {
                     )}
                   >
                     <div className="flex flex-row items-center justify-center h-6">
-                      Column Override
-                    </div>
-                  </div>
-                  <ul
-                    className={
-                      (active ? "block " : "hidden ") +
-                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
-                    }
-                  >
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 0
-                              ? "font-bold "
-                              : "") +
-                            " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(0);
-                          }}
-                        >
-                          Default
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 2
-                              ? "font-bold "
-                              : "") +
-                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(2);
-                          }}
-                        >
-                          Two
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 3
-                              ? "font-bold "
-                              : "") +
-                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(3);
-                          }}
-                        >
-                          Three
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 4
-                              ? "font-bold "
-                              : "") +
-                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(4);
-                          }}
-                        >
-                          Four
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 5
-                              ? "font-bold "
-                              : "") +
-                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(5);
-                          }}
-                        >
-                          Five
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (context.columnOverride === 7
-                              ? "font-bold "
-                              : "") +
-                            " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            context.setColumnOverride(7);
-                          }}
-                        >
-                          Seven
-                        </div>
-                      )}
-                    </Menu.Item>
-                  </ul>
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className="group"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    context.setCardStyle('default');
-                  }}
-                >
-                  <div
-                    className={classNames(
-                      active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                      "block px-4 py-2 text-sm"
-                    )}
-                  >
-                    <div className="flex flex-row items-center justify-center h-6">
-                      Select Card Style
+                      Post Style
                     </div>
                   </div>
                   <ul
@@ -219,11 +240,12 @@ const NavMenu = ({ hide = false }) => {
                           }
                           onClick={(e) => {
                             e.preventDefault();
-                            context.setCardStyle('card1');
+                            context.setCardStyle("card1");
+                            context.setColumnOverride(0);
                             context.setMediaOnly(false);
                           }}
                         >
-                          Original
+                          Original Card
                         </div>
                       )}
                     </Menu.Item>
@@ -238,10 +260,12 @@ const NavMenu = ({ hide = false }) => {
                           }
                           onClick={(e) => {
                             e.preventDefault();
-                            context.setCardStyle('card2');
+                            context.setCardStyle("card2");
+                            context.setColumnOverride(0);
+                            context.setMediaOnly(false);
                           }}
                         >
-                          Compact
+                          Compact Card
                         </div>
                       )}
                     </Menu.Item>
@@ -249,22 +273,38 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.mediaOnly
-                              ? " font-bold "
-                              : "") +
+                            (context.mediaOnly ? " font-bold " : "") +
                             " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
                           onClick={(e) => {
                             e.preventDefault();
-                            context.setCardStyle('card1');
+                            context.setCardStyle("card1");
+                            context.setColumnOverride(0);
                             context.setMediaOnly(true);
                           }}
                         >
-                          Media Only
+                          Media Card
                         </div>
                       )}
                     </Menu.Item>
-                   
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (context.mediaOnly ? " font-bold " : "") +
+                            " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            context.setCardStyle("row1");
+                            context.setMediaOnly(false);
+                            context.setColumnOverride(1);
+                          }}
+                        >
+                          Classic Rows
+                        </div>
+                      )}
+                    </Menu.Item>
                   </ul>
                 </div>
               )}
@@ -281,7 +321,7 @@ const NavMenu = ({ hide = false }) => {
                 </div>
               )}
             </Menu.Item> */}
-            
+
             <Menu.Item>
               {({ active }) => (
                 <div

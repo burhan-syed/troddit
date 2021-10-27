@@ -1,14 +1,16 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
-
+import { useMainContext } from "../MainContext";
 const ImageHandler = ({ placeholder, imageInfo }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
-
+  const context:any = useMainContext();
   const onLoadedData = () => {
     //console.log("loaded");
     setImageLoaded(true);
   };
+
+
   return (
     <div className="relative">
       <div className="absolute top-0 left-0 blur">
