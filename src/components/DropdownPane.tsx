@@ -151,10 +151,14 @@ const DropdownPane = ({ hide }) => {
           ) : location === "all" ? (
             <CgLivePhoto className="w-6 h-6" />
           ) : (
-            <DropdownItem
-              sub={subInfo}
-              isUser={router.pathname.includes("user")}
-            />
+            <div >
+              <DropdownItem
+                sub={subInfo}
+                isUser={router.pathname.includes("user")}
+                preventNav={true}
+              />
+            </div>
+
             // <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
           )}
           {(location == "home" ||

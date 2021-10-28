@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 
-const DropdownItem = ({ sub, isUser=false }) => {
+const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
@@ -44,7 +44,7 @@ const DropdownItem = ({ sub, isUser=false }) => {
     <div>
       <div
         className="flex flex-row items-center text-sm text-center cursor-pointer"
-        onClick={(e) => goTo(e)}
+        onClick={(e) => !preventNav && goTo(e)}
       >
         {/* Image */}
         <div className="flex flex-row items-center w-6 h-6 ml-1 ">
