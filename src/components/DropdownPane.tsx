@@ -144,26 +144,29 @@ const DropdownPane = ({ hide }) => {
         onClick={handleClick}
       >
         <div className="flex flex-row items-center">
-          {location === "home" ? (
-            <AiOutlineHome className="w-6 h-6" />
-          ) : location === "popular" ? (
-            <BiRightTopArrowCircle className="w-6 h-6" />
-          ) : location === "all" ? (
-            <CgLivePhoto className="w-6 h-6" />
-          ) : (
-            <div >
-              <DropdownItem
-                sub={subInfo}
-                isUser={router.pathname.includes("user")}
-                preventNav={true}
-              />
-            </div>
-
-            // <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
-          )}
+          {
+            location === "home" ? (
+              <AiOutlineHome className="w-6 h-6" />
+            ) : location === "popular" ? (
+              <BiRightTopArrowCircle className="w-6 h-6" />
+            ) : location === "all" ? (
+              <CgLivePhoto className="w-6 h-6" />
+            ) : session ? (
+              <div>
+                <DropdownItem
+                  sub={subInfo}
+                  isUser={router.pathname.includes("user")}
+                  preventNav={true}
+                />
+              </div>
+            ) : (
+              <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
+            )
+            //
+          }
           {(location == "home" ||
             location == "popular" ||
-            location == "all") && (
+            location == "all" || !session)  && (
             <h1 className="ml-2 capitalize truncate">{location}</h1>
           )}
         </div>
