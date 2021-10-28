@@ -6,6 +6,8 @@ import {
   loadPost,
   loadSubreddits,
   loadUserPosts,
+  loadSubSidebar,
+  loadSubInfo
 } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -125,6 +127,7 @@ const Feed = ({ query, isUser = false }) => {
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
+      
     }
     if (data?.children) {
       setAfter(data?.after);

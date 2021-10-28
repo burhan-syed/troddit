@@ -10,12 +10,18 @@ import { CgArrowTopRightO } from "react-icons/cg";
 import { IoMdList } from "react-icons/io";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
-import { getAllMySubs, getMyMultis, getMySubs } from "../RedditAPI";
+import {
+  getAllMySubs,
+  getMyMultis,
+  getMySubs,
+  loadSubInfo,
+} from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/client";
 import DropdownItem from "./DropdownItem";
+import DropdownSubCard from "./DropdownSubCard";
 
 const DropdownPane = ({ hide }) => {
   const [mySubs, setMySubs] = useState([]);
@@ -33,9 +39,15 @@ const DropdownPane = ({ hide }) => {
 
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
+  const [subInfo, setSubInfo] = useState({});
 
   useEffect(() => {
     //console.log(router.query);
+    const load = async (sub) => {
+      let d = await loadSubInfo(sub);
+      //console.log(d);
+      setSubInfo(d);
+    };
     if (router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0].split("+");
       if (loc.length > 1) {
@@ -43,6 +55,7 @@ const DropdownPane = ({ hide }) => {
       } else {
         setLocation(loc[0].toString());
       }
+      load(loc[0]);
     } else {
       setLocation("home");
     }
@@ -102,15 +115,15 @@ const DropdownPane = ({ hide }) => {
 
   const [error, seterror] = useState(false);
   useEffect(() => {
-    if(session && loadedSubs && mySubs.length<1){
+    if (session && loadedSubs && mySubs.length < 1) {
       seterror(true);
     } else {
       seterror(false);
     }
     return () => {
       seterror(false);
-    }
-  }, [mySubs,session,loadedSubs])
+    };
+  }, [mySubs, session, loadedSubs]);
 
   return (
     <div className="flex flex-col items-center w-full h-full select-none">
@@ -138,9 +151,17 @@ const DropdownPane = ({ hide }) => {
           ) : location === "all" ? (
             <CgLivePhoto className="w-6 h-6" />
           ) : (
-            <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
+            <DropdownItem
+              sub={subInfo}
+              isUser={router.pathname.includes("user")}
+            />
+            // <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
           )}
-          <h1 className="ml-2 capitalize truncate">{location}</h1>
+          {(location == "home" ||
+            location == "popular" ||
+            location == "all") && (
+            <h1 className="ml-2 capitalize truncate">{location}</h1>
+          )}
         </div>
         <BsChevronDown
           className={
@@ -161,6 +182,15 @@ const DropdownPane = ({ hide }) => {
         <div className="grid grid-cols-1 overflow-y-auto overscroll-contain max-h-96 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800 ">
           {/* Quick Links */}
           <div className="flex flex-col py-2 font-light">
+            {router.pathname.includes("/r/") && subInfo && mySubs && (
+              <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                <DropdownSubCard
+                  sub={subInfo}
+                  mySubs={mySubs}
+                  refresh={loadAllSubs}
+                />
+              </div>
+            )}
             <Link href="/" passHref>
               <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <AiOutlineHome className="w-6 h-6" />
@@ -283,9 +313,9 @@ const DropdownPane = ({ hide }) => {
           )}
           {session && error && (
             <>
-            <div className="flex flex-row items-center justify-center p-4">
-              {"Can't connect to Reddit"}
-            </div>
+              <div className="flex flex-row items-center justify-center p-4">
+                {"Can't connect to Reddit"}
+              </div>
             </>
           )}
         </div>

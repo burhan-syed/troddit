@@ -116,6 +116,72 @@ export const loadSubreddits = async (
   }
 };
 
+export const loadSubSidebar = async(subreddit) => {
+  let token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try{
+      const res = await axios.get(`https://oauth.reddit.com/r/${subreddit}/sidebar`, {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+        },
+      });
+    } catch (err) {
+
+    }
+  }
+}
+
+export const loadSubInfo = async(subreddit) => {
+  let token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try{
+      const res = await (await axios.get(`https://oauth.reddit.com/r/${subreddit}/about`, {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+        },
+      })).data;
+      return res; 
+    } catch (err) {
+      return false; 
+    }
+  }
+  return false; 
+}
+
+export const subToSub = async (action,name) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      //console.log(dir, id, token);
+      let skip_initial_defaults = 1; 
+      let action_source="o"
+      if (action=='unsub') skip_initial_defaults = 0;
+      const res = await fetch("https://oauth.reddit.com/api/subscribe", {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `action=${action}&action_source=${action_source}&sr=${name}&skip_initial_defaults=${skip_initial_defaults}`,
+      });
+
+      if (res.ok) {
+        //console.log(res);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      //console.log(err);
+      return false;
+    }
+  }
+};
+
 export const loadUserPosts = async (
   username: string,
   sort: string = "hot",
@@ -420,3 +486,5 @@ export const postComment = async(parent, text) => {
   }
   return false;
 }
+
+

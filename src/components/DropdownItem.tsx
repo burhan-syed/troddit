@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 
-const DropdownItem = ({ sub }) => {
+const DropdownItem = ({ sub, isUser=false }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
@@ -67,7 +67,7 @@ const DropdownItem = ({ sub }) => {
                 " w-6 h-6 text-center text-white"
               }
             >
-              {isMulti ? "m" : "r/"}
+              {isUser ? "u/" : isMulti ? "m" : "r/"}
             </div>
           )}
         </div>
