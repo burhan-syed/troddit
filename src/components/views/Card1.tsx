@@ -19,7 +19,7 @@ const Card1 = ({
     <div>
       <div
         className={
-          (!context.mediaOnly || !hasMedia || hideNSFW
+          (!context.mediaOnly || !hasMedia 
             ? "px-3 pt-3 pb-2 "
             : "  ") +
           (!context.mediaOnly && " rounded-md ") +
@@ -27,7 +27,7 @@ const Card1 = ({
         }
       >
         <div className="">
-          {(!context?.mediaOnly || !hasMedia || hideNSFW) && (
+          {(!context?.mediaOnly || !hasMedia ) && (
             <>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1 className="text-lg font-medium leading-none cursor-pointer">
@@ -83,13 +83,22 @@ const Card1 = ({
             </>
           )}
 
+                  {/* Media Only */}
           {context.mediaOnly ? (
             <div className={!context.mediaOnly && "pt-1 pb-1.5"}>
-              {!hideNSFW ? (
-                <div className="relative group">
+              {true ? (
+                <div className={"relative group" + (hideNSFW && " overflow-hidden")}>
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                    <div className={(hideNSFW && " blur-3xl")}>
                     <Media post={post} />
+                    </div>
+                    
                   </a>
+                  {hideNSFW && 
+                  (
+                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">hidden</div>
+                  )
+                  }
                   {context.mediaOnly && (
                     <div className="">
                       <a

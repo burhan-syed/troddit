@@ -26,7 +26,7 @@ const Row1 = ({
   const [expand, setexpand] = useState(false);
 
   return (
-    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl">
+    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
       {/* Votes */}
       <div>
         <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
@@ -58,19 +58,28 @@ const Row1 = ({
         </div>
       </div>
       {/* Thumbnail */}
-      <div className={"relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md" + (post?.thumbnail == "self" ||
-        post?.thumbnail == "default" ? " border rounded-md" : " border border-transparent")  }>
+      <div
+        className={
+          "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md" +
+          (post?.thumbnail == "self" || post?.thumbnail == "default"
+            ? " border rounded-md"
+            : " border border-transparent ") +
+          (hideNSFW && " overflow-hidden")
+        }
+      >
         {post?.thumbnail !== "self" &&
         post?.thumbnail !== "default" &&
         post?.thumbnail ? (
-          <Image
-            src={post?.thumbnail}
-            alt=""
-            layout={"fill"}
-            priority={true}
-            unoptimized={true}
-            className="rounded-md"
-          ></Image>
+          <div className={(hideNSFW && "")}>
+            <Image
+              src={post?.thumbnail}
+              alt=""
+              layout={"fill"}
+              priority={true}
+              unoptimized={true}
+              className={"rounded-md " + (hideNSFW && " blur")}
+            ></Image>
+          </div>
         ) : post?.thumbnail == "self" ? (
           <BsCardText className="w-6 h-6" />
         ) : (
@@ -184,10 +193,18 @@ const Row1 = ({
         </div>
         {/* Hidden Media */}
         {expand && (
-          <div className="block p-1 border-gray-100 md:border-l dark:border-darkHighlight">
+          <div className={"block p-1 border-gray-100 md:border-l dark:border-darkHighlight " + (hideNSFW && " overflow-hidden relative")}>
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+              <div className={(hideNSFW && "blur-3xl")}>
               <Media post={post} imgFull={true} allowIFrame={expand} />
+              </div>
+              
             </a>
+            {hideNSFW && 
+                  (
+                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">hidden</div>
+                  )
+                  }
           </div>
         )}
       </div>

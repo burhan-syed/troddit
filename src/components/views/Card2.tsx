@@ -29,13 +29,19 @@ const Card1 = ({
       >
         <div className="">
           <div className={""}>
-            {!hideNSFW && (
-              <div className="relative group">
+              <div className={"relative group" + (hideNSFW && " overflow-hidden")}>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <div className={(hideNSFW && " blur-3xl")}>
                   <Media post={post} />
+                  </div>
+                  
                 </a>
+                {hideNSFW && 
+                  (
+                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">hidden</div>
+                  )
+                  }
               </div>
-            )}
           </div>
 
           {/* <p>{post?.url ?? "ERR"}</p> */}
