@@ -52,11 +52,11 @@ const Card1 = ({post,hasMedia,hideNSFW, score, vote, castVote, forceMute}) => {
 
                   <p className="ml-1">
                     {secondsToTime(post?.created_utc, [
-                      "sec",
+                      "s",
                       "min",
                       "hr",
-                      "day",
-                      "mth",
+                      "dy",
+                      "mo",
                       "yr",
                     ])}
                   </p>
@@ -112,11 +112,11 @@ const Card1 = ({post,hasMedia,hideNSFW, score, vote, castVote, forceMute}) => {
 
                             <p className="ml-1">
                               {secondsToTime(post?.created_utc, [
-                                "sec",
+                                "s",
                                 "min",
                                 "hr",
-                                "day",
-                                "mth",
+                                "dy",
+                                "mo",
                                 "yr",
                               ])}
                             </p>

@@ -111,11 +111,11 @@ const Row1 = ({
 
           <p className="ml-1">
             {secondsToTime(post?.created_utc, [
-              "sec",
+              "s",
               "min",
               "hr",
-              "day",
-              "mth",
+              "dy",
+              "mo",
               "yr",
             ])}
           </p>

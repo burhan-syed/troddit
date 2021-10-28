@@ -218,11 +218,11 @@ const ChildComments = ({ comment, depth, hide }) => {
             <p>•</p>
             <p className="">
               {secondsToTime(comment?.data?.created_utc, [
-                "sec",
+                "s",
                 "min",
                 "hr",
-                "day",
-                "mth",
+                "dy",
+                "mo",
                 "yr",
               ])}
             </p>
