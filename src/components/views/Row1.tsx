@@ -26,10 +26,10 @@ const Row1 = ({
   const [expand, setexpand] = useState(false);
 
   return (
-    <div className="flex flex-row items-start text-sm bg-white border border-gray-300 rounded-lg shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500">
+    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl">
       {/* Votes */}
       <div>
-        <div className="flex-col items-center self-start justify-start flex-none hidden w-10 h-full pt-1 md:px-2 md:flex">
+        <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
           <BiUpvote
             onClick={(e) => castVote(e, 1)}
             className={
@@ -58,7 +58,8 @@ const Row1 = ({
         </div>
       </div>
       {/* Thumbnail */}
-      <div className="relative flex items-center justify-center flex-none w-24 h-16 mt-2 border rounded-md">
+      <div className={"relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md" + (post?.thumbnail == "self" ||
+        post?.thumbnail == "default" ? " border rounded-md" : " border border-transparent")  }>
         {post?.thumbnail !== "self" &&
         post?.thumbnail !== "default" &&
         post?.thumbnail ? (
@@ -66,6 +67,7 @@ const Row1 = ({
             src={post?.thumbnail}
             alt=""
             layout={"fill"}
+            priority={true}
             unoptimized={true}
             className="rounded-md"
           ></Image>
