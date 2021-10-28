@@ -162,7 +162,7 @@ const Feed = ({ query, isUser = false }) => {
       <div className="flex flex-col items-center justify-center mt-16 text-center">
         <div>{"Oops something went wrong :("}</div>
         <div>
-          {"Please make sure you're not blocking traffic from Reddit"}
+          {"Please refresh and make sure you're not blocking traffic from Reddit"}
         </div>
         {subreddits!=="" && <div>{"Otherwise, this subreddit may not exist"}</div>}
       </div>

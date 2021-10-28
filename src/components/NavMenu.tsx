@@ -241,7 +241,8 @@ const NavMenu = ({ hide = false }) => {
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card1");
-                            context.setColumnOverride(0);
+                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
+
                             context.setMediaOnly(false);
                           }}
                         >
@@ -261,7 +262,8 @@ const NavMenu = ({ hide = false }) => {
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card2");
-                            context.setColumnOverride(0);
+                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
+                            
                             context.setMediaOnly(false);
                           }}
                         >
@@ -279,7 +281,7 @@ const NavMenu = ({ hide = false }) => {
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card1");
-                            context.setColumnOverride(0);
+                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
                             context.setMediaOnly(true);
                           }}
                         >

@@ -392,7 +392,7 @@ const MyMasonic = ({
         <div className="flex flex-col items-center justify-center text-center ">
         
         <div>
-          {"Expect more? Please assure you're not blocking content from Reddit."}
+          {"Expect more? Please refresh and assure you're not blocking content from Reddit."}
         </div>
       </div>
       )}
