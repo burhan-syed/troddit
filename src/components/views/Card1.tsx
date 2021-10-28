@@ -87,7 +87,7 @@ const Card1 = ({
           {context.mediaOnly ? (
             <div className={!context.mediaOnly && "pt-1 pb-1.5"}>
               {true ? (
-                <div className={"relative group" + (hideNSFW && " overflow-hidden")}>
+                <div className={"relative group " + (hideNSFW && " overflow-hidden")}>
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                     <div className={(hideNSFW && " blur-3xl")}>
                     <Media post={post} />
