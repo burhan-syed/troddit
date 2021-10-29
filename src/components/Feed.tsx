@@ -116,12 +116,14 @@ const Feed = ({ query, isUser = false }) => {
       setFetchPost(true);
       setLoading(false);
     } else if (isUser) {
+      
       data = await loadUserPosts(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
     } else {
+      //console.log(query?.slug?.[0]);
       data = await loadSubreddits(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
