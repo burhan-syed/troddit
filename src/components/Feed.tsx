@@ -123,7 +123,7 @@ const Feed = ({ query, isUser = false }) => {
         query?.t ?? ""
       );
     } else {
-      //console.log(query?.slug?.[0]);
+      console.log(query?.slug?.[0]);
       data = await loadSubreddits(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
