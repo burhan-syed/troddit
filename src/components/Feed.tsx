@@ -123,9 +123,10 @@ const Feed = ({ query, isUser = false }) => {
         query?.t ?? ""
       );
     } else {
-      console.log(query?.slug?.[0]);
+      //console.log(query?.slug?.[0]);
+      let subs = query?.slug?.[0].split(' ').join('+').split(',').join('+').split('%20').join('+');
       data = await loadSubreddits(
-        query?.slug?.[0] ?? "",
+        subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
