@@ -109,7 +109,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
                     width={image.width}
                     alt=""
                     layout="intrinsic"
-                    priority={false}
+                    priority={true}
                     unoptimized={true}
                   ></Image>
                 </div>
