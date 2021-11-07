@@ -6,7 +6,6 @@ import {
   loadPost,
   loadSubreddits,
   loadUserPosts,
-  loadSubSidebar,
   loadSubInfo
 } from "../RedditAPI";
 
