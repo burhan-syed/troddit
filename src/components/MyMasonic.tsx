@@ -276,8 +276,10 @@ const MyMasonic = ({
         loadafter
       );
     } else {
+      let subs = query?.slug?.[0].split(' ').join('+').split(',').join('+').split('%20').join('+');
+
       data = await loadSubreddits(
-        query?.slug?.[0] ?? "",
+        subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? "",
         loadafter
