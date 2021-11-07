@@ -340,8 +340,13 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {apost?.title ?? ""}{"  "}
-                        <span className="text-xs"><TitleFlair post={apost}/></span>
+                        {apost?.title ?? ""}
+                        {apost?.link_flair_richtext?.length > 0 && (
+                          <span className="text-xs">
+                            {"  "}
+                            <TitleFlair post={apost} />
+                          </span>
+                        )}{" "}
                       </a>
                     </h1>
 
