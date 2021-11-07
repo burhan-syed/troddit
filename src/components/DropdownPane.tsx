@@ -15,6 +15,7 @@ import {
   getMyMultis,
   getMySubs,
   loadSubInfo,
+  loadSubFlairs
 } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
@@ -44,9 +45,10 @@ const DropdownPane = ({ hide }) => {
   useEffect(() => {
     //console.log(router.query);
     const load = async (sub) => {
-      let d = await loadSubInfo(sub);
-      //console.log(d);
-      setSubInfo(d);
+      let subinfo = await loadSubInfo(sub);
+      let sidebar = await loadSubFlairs(sub);
+      console.log(sidebar);
+      setSubInfo(subinfo);
     };
     if (router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0].split("+");

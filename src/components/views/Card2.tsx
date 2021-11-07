@@ -3,6 +3,7 @@ import Link from "next/dist/client/link";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
+import TitleFlair from "../TitleFlair";
 
 //og card
 const Card1 = ({
@@ -50,6 +51,13 @@ const Card1 = ({
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1 className="text-lg font-medium leading-none cursor-pointer">
                   {post?.title ?? ""}
+                  {post?.link_flair_richtext?.length > 0 && (
+              <span className="text-xs">
+                {"  "}
+                <TitleFlair post={post} />
+                
+              </span>
+            )}
                 </h1>
               </a>
 

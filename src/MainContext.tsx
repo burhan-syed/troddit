@@ -55,8 +55,8 @@ export const MainProvider = ({ children }) => {
     saved_audioOnHover?.includes("true") ? setaudioOnHover(true) : setaudioOnHover(false);
     const saved_columnOverride = parseInt(localStorage.getItem("columnOverride"));
     saved_columnOverride && setColumnOverride(saved_columnOverride)
-    const saved_cardStyle = parseInt(localStorage.getItem("cardStyle"));
-    saved_cardStyle && setColumnOverride(saved_cardStyle)
+    const saved_cardStyle = localStorage.getItem("cardStyle");
+    saved_cardStyle && setCardStyle(saved_cardStyle);
   }, []);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const MainProvider = ({ children }) => {
     localStorage.setItem("mediaOnly", JSON.stringify(mediaOnly));
   }, [mediaOnly]);
   useEffect(() => {
-    localStorage.setItem("cardStyle", JSON.stringify(cardStyle));
+    localStorage.setItem("cardStyle", cardStyle);
   }, [cardStyle]);
   useEffect(() => {
     localStorage.setItem("audioOnHover", JSON.stringify(audioOnHover));

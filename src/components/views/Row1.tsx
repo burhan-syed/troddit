@@ -14,6 +14,7 @@ import {
   AiOutlineExpandAlt,
   AiOutlineLink,
 } from "react-icons/ai";
+import TitleFlair from "../TitleFlair";
 const Row1 = ({
   post,
   hasMedia,
@@ -70,7 +71,7 @@ const Row1 = ({
         {post?.thumbnail !== "self" &&
         post?.thumbnail !== "default" &&
         post?.thumbnail ? (
-          <div className={(hideNSFW && "")}>
+          <div className={hideNSFW && ""}>
             <Image
               src={post?.thumbnail}
               alt=""
@@ -89,12 +90,18 @@ const Row1 = ({
       <div className="flex flex-col flex-grow mt-2 ml-2">
         {/* Title */}
         <div>
-          <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-            <h1 className="text-lg font-medium leading-none cursor-pointer">
-              {post?.title ?? ""}
-              <span className="ml-4 text-sm font-xs">{`(${post.domain})`}</span>
-            </h1>
-          </a>
+          <h1 className="text-lg font-medium leading-none cursor-pointer">
+            {post?.link_flair_richtext?.length > 0 && (
+              <span className="text-xs">
+                <TitleFlair post={post} />
+                {"  "}
+              </span>
+            )}
+
+            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+              {`${post?.title}  ` ?? ""}
+            </a>
+          </h1>
         </div>
         {/* Info */}
         <div className="flex flex-row">
@@ -138,6 +145,7 @@ const Row1 = ({
               </span>
             </div>
           )}
+          <span className="ml-4 text-sm font-xs">{`(${post.domain})`}</span>
         </div>
         {/* Links */}
         <div>
@@ -193,18 +201,22 @@ const Row1 = ({
         </div>
         {/* Hidden Media */}
         {expand && (
-          <div className={"block p-1 border-gray-100 md:border-l dark:border-darkHighlight " + (hideNSFW && " overflow-hidden relative")}>
+          <div
+            className={
+              "block p-1 border-gray-100 md:border-l dark:border-darkHighlight " +
+              (hideNSFW && " overflow-hidden relative")
+            }
+          >
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <div className={(hideNSFW && "blur-3xl")}>
-              <Media post={post} imgFull={true} allowIFrame={expand} />
+              <div className={hideNSFW && "blur-3xl"}>
+                <Media post={post} imgFull={true} allowIFrame={expand} />
               </div>
-              
             </a>
-            {hideNSFW && 
-                  (
-                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">hidden</div>
-                  )
-                  }
+            {hideNSFW && (
+              <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                hidden
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -17,6 +17,7 @@ import { useMainContext } from "../MainContext";
 import CommentSort from "./CommentSort";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
+import TitleFlair from "./TitleFlair";
 
 const PostModal = ({ setSelect, returnRoute, permalink }) => {
   const router = useRouter();
@@ -339,7 +340,8 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {apost?.title ?? ""}
+                        {apost?.title ?? ""}{"  "}
+                        <span className="text-xs"><TitleFlair post={apost}/></span>
                       </a>
                     </h1>
 

@@ -116,19 +116,19 @@ export const loadSubreddits = async (
   }
 };
 
-export const loadSubSidebar = async(subreddit) => {
+export const loadSubFlairs = async(subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try{
-      const res = await axios.get(`https://oauth.reddit.com/r/${subreddit}/sidebar`, {
-        headers: {
-          authorization: `bearer ${token}`,
-        },
+      const res = await axios.get(`https://www.reddit.com/r/${subreddit}/api/link_flair_v2.json`, {
         params: {
-        },
+          raw_json: 1,
+        }
       });
+      return res; 
     } catch (err) {
-
+      console.log(err);
+      return false;
     }
   }
 }
