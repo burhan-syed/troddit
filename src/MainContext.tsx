@@ -18,7 +18,7 @@ export const MainProvider = ({ children }) => {
   const [maximize, setMaximize] = useState(false);
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
-  const [cardStyle, setCardStyle] = useState('card2');
+  const [cardStyle, setCardStyle] = useState('default');
 
   const toggleAudioOnHover = () => {
     setaudioOnHover(a => !a);
