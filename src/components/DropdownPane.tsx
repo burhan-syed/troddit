@@ -46,8 +46,7 @@ const DropdownPane = ({ hide }) => {
     //console.log(router.query);
     const load = async (sub) => {
       let subinfo = await loadSubInfo(sub);
-      let sidebar = await loadSubFlairs(sub);
-      console.log(sidebar);
+      // let sidebar = await loadSubFlairs(sub);
       setSubInfo(subinfo);
     };
     if (router?.query?.slug?.[0]) {

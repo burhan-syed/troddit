@@ -12,10 +12,9 @@ const about = () => {
       <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-gray-300">
         <div className="flex flex-col max-w-lg space-y-1 ">
           <p className="">
-            Troddit is a web client for Reddit.
-            While an account is not required, we do support secure logins with
-            Reddit so you can vote, comment, and have immediate access to your personal
-            subreddits.
+            Troddit is a web client for Reddit. While an account is not
+            required, we do support secure logins with Reddit so you can vote,
+            comment, and have immediate access to your personal subreddits.
           </p>
 
           <p className="py-4">
@@ -24,8 +23,9 @@ const about = () => {
             this site is retrieved from the Reddit API.
           </p>
           <p>
-            If you would like to support us and assure Troddit remains ad-free
-            you can donate via{" "}
+            {
+              "You can support us by sharing this site and if you're feeling generous donations are welcome via "
+            }
             <a
               className="text-blue-500 underline"
               href="https://www.paypal.com/donate?hosted_button_id=74C839HD2W2KL"
@@ -38,12 +38,12 @@ const about = () => {
           </p>
           <p className="py-4">
             For any inquiries, questions, feature requests, or bug reports, I
-            can be reached here:{" "}
+            can be reached at{" "}
             <a
               className="text-blue-500 underline"
-              href="mailto: dev@troddit.com"
+              href="mailto: trodditdev@gmail.com"
             >
-              dev@troddit.com
+              trodditdev@gmail.com
             </a>
           </p>
           {/* <p className="text-transparent select-none">
