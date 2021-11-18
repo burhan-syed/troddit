@@ -2,26 +2,26 @@ import "../../styles/globals.css";
 import { Provider } from "next-auth/client";
 import { ThemeProvider } from "next-themes";
 import { MainProvider } from "../MainContext";
-import Script from 'next/script'
-import { useRouter } from 'next/router'
-import * as gtag from '../../lib/gtag'
+import Script from "next/script";
+import { useRouter } from "next/router";
+import * as gtag from "../../lib/gtag";
 import { useEffect } from "react";
-import  Head from "next/head";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
     const handleRouteChange = (url) => {
-      gtag.pageview(url)
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
+      gtag.pageview(url);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
   return (
     <>
-    <Script
+      <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
       />
@@ -39,18 +39,19 @@ function MyApp({ Component, pageProps }) {
         }}
       />
       <Head>
-      <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          ></meta>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        ></meta>
+        <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
-    <ThemeProvider attribute="class" defaultTheme="light">
-      <MainProvider>
-        <Provider session={pageProps.session}>
-          <Component {...pageProps} />
-        </Provider>
-      </MainProvider>
-    </ThemeProvider>
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <MainProvider>
+          <Provider session={pageProps.session}>
+            <Component {...pageProps} />
+          </Provider>
+        </MainProvider>
+      </ThemeProvider>
     </>
   );
 }
