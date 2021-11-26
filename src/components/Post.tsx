@@ -124,6 +124,7 @@ const Post = ({ post }) => {
           permalink={post?.permalink}
           setSelect={setSelect}
           returnRoute={returnRoute}
+          postData={post}
         />
       )}
 

@@ -248,7 +248,7 @@ const ChildComments = ({ comment, depth, hide }) => {
             <div className="flex-grow ">
               {/* Comment Text */}
               <div
-                className="pb-2 pl-3 md:pl-0"
+                className="pb-2 pl-3 mr-1 md:pl-0" 
                 id="innerhtml"
                 dangerouslySetInnerHTML={{
                   __html:

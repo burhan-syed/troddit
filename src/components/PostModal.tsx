@@ -19,7 +19,7 @@ import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 
-const PostModal = ({ setSelect, returnRoute, permalink }) => {
+const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
   const [post_comments, setComments] = useState([]);
@@ -89,9 +89,16 @@ const PostModal = ({ setSelect, returnRoute, permalink }) => {
 
   useEffect(() => {
     const fetchPost = async () => {
+      if (Object.keys(postData).length > 0){
+        setPost(postData);
+        setLoadingPost(false);
+      }
       const { post, comments } = await loadPost(permalink);
-      setPost(post);
-      setLoadingPost(false);
+      if (Object.keys(postData).length === 0){
+        setPost(post);
+        setLoadingPost(false);
+      }
+      
       setComments(comments);
       setLoadingComments(false);
     };
