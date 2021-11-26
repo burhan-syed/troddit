@@ -171,7 +171,7 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
       ></div>
       <div className="flex flex-row justify-center flex-grow w-full h-full ">
         {/* Main Card */}
-        <div className="z-10 w-11/12 pt-2 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
+        <div className="z-10 w-full pt-2 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
           <div className="absolute md:fixed left-4 top-16">
             <RiArrowGoBackLine
               onClick={() => handleBack()}
