@@ -10,7 +10,7 @@ export default function Login() {
       <div className="flex flex-row items-center w-full h-full">
         {!session && (
           <>
-            <button className="w-full h-full" onClick={() => signIn()}>
+            <button className="w-full h-full" onClick={() => signIn('reddit')}>
               Login
             </button>
           </>

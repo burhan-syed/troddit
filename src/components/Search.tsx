@@ -196,7 +196,7 @@ const Search = ({ id }) => {
 
   const handleSignIn = (e) => {
     e.stopPropagation();
-    signIn();
+    signIn('reddit');
   };
 
   const goToSub = (e, suggestion) => {
