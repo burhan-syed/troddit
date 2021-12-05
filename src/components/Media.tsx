@@ -7,7 +7,8 @@ import ImageHandler from "./ImageHandler";
 import { forceCheck } from "react-lazyload";
 import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
-
+import { TwitterTweetEmbed } from "react-twitter-embed";
+import { useTheme } from "next-themes";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
@@ -23,7 +24,7 @@ async function fileExists(url) {
   //   console.log('err',e)
   //   return false;
   // }
-  return true
+  return true;
 }
 
 const Media = ({
@@ -33,10 +34,12 @@ const Media = ({
   forceMute = 0,
 }) => {
   const context: any = useMainContext();
+  const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
   const [isImage, setIsImage] = useState(false);
   const [isMP4, setIsMP4] = useState(false);
+  const [isTweet, setIsTweet] = useState(false);
   const [showMP4, setShowMP4] = useState(true);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({ url: "", height: 0, width: 0 });
@@ -74,6 +77,7 @@ const Media = ({
       setGalleryInfo([]);
       setIsImage(false);
       setIsMP4(false);
+      setIsTweet(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
       setVideoInfo({ url: "", height: 0, width: 0 });
@@ -140,7 +144,7 @@ const Media = ({
     return url;
   };
 
-  const findAudio = async(url) => {
+  const findAudio = async (url) => {
     let a: string = url;
     a = a.replace(regex, "DASH_audio");
     let status = await fileExists(a);
@@ -152,7 +156,6 @@ const Media = ({
       status = await fileExists(a);
       if (status) setvideoAudio(a);
       else setvideoAudio("");
-
     }
   };
 
@@ -278,6 +281,11 @@ const Media = ({
   };
 
   const findImage = async () => {
+    if (post.url.includes("twitter.com")) {
+      setIsTweet(true);
+      return true;
+    }
+
     if (post.media_metadata) {
       let gallery = [];
       for (let i in post.media_metadata) {
@@ -400,10 +408,20 @@ const Media = ({
   useEffect(() => {
     setheight({
       height: `${imageInfo.height}px`,
-      maxHeight: `${Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull) ? 0.5 : 0.75))}px`,
+      maxHeight: `${Math.floor(
+        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+      )}px`,
     });
-    setmaxheight({ maxHeight: `${Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull) ? 0.5 :0.75))}px` });
-    setmaxheightnum(Math.floor(screen.height * ((context?.columnOverride==1 && !imgFull)? 0.5 : 0.75)));
+    setmaxheight({
+      maxHeight: `${Math.floor(
+        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+      )}px`,
+    });
+    setmaxheightnum(
+      Math.floor(
+        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+      )
+    );
     return () => {
       setheight({});
       setmaxheight({});
@@ -415,11 +433,28 @@ const Media = ({
     <div>
       {loaded && (
         <>
+          {isTweet && (
+            <div >
+                <TwitterTweetEmbed
+                  
+                  options={{ theme: theme, conversation: "none", align:"center" }}
+                  tweetId={
+                    post.url
+                      .split("/")
+                      [post.url.split("/").length - 1].split("?")[0]
+                  }
+                />
+            </div>
+          )}
           {isIFrame && showIframe ? (
             <div
               className="relative"
               style={
-                imgFull && isYTVid ? ytVidHeight : (imgFull || context?.columnOverride==1) ? imgheight : {}
+                imgFull && isYTVid
+                  ? ytVidHeight
+                  : imgFull || context?.columnOverride == 1
+                  ? imgheight
+                  : {}
               }
             >
               {/* <Iframe
@@ -450,7 +485,7 @@ const Media = ({
           {isGallery ? (
             <div
               className="flex flex-col items-center"
-              style={(imgFull || context?.columnOverride==1) ? maxheight : {}}
+              style={imgFull || context?.columnOverride == 1 ? maxheight : {}}
             >
               <Gallery images={galleryInfo} maxheight={maxheightnum} />{" "}
             </div>
@@ -460,7 +495,10 @@ const Media = ({
 
           {isImage && !isIFrame && !isMP4 ? (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
-            <div className={"relative"} style={(imgFull || context?.columnOverride==1)? imgheight : {}}>
+            <div
+              className={"relative"}
+              style={imgFull || context?.columnOverride == 1 ? imgheight : {}}
+            >
               {mediaLoaded ? (
                 ""
               ) : (
@@ -472,10 +510,18 @@ const Media = ({
                 height={imageInfo.height}
                 width={imageInfo.width}
                 alt=""
-                layout={(imgFull || context?.columnOverride==1) ? "fill" : "responsive"}
+                layout={
+                  imgFull || context?.columnOverride == 1
+                    ? "fill"
+                    : "responsive"
+                }
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
-                objectFit={(imgFull || context?.columnOverride==1) ? "contain" : "contain"}
+                objectFit={
+                  imgFull || context?.columnOverride == 1
+                    ? "contain"
+                    : "contain"
+                }
                 priority={imgFull}
                 unoptimized={true}
                 // placeholder="blur"
@@ -494,7 +540,7 @@ const Media = ({
             showMP4 ? (
               <div
                 className="flex flex-col items-center flex-none "
-                style={(imgFull || context?.columnOverride==1) ? maxheight : {}}
+                style={imgFull || context?.columnOverride == 1 ? maxheight : {}}
               >
                 <LazyLoad
                   height={videoInfo.height}
@@ -518,25 +564,35 @@ const Media = ({
             ""
           )}
 
-          {post?.selftext_html && (!context.mediaOnly || imgFull) && (context.cardStyle !== "card2" || imgFull) ? (
-            <div className={"p-1 overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 border-b dark:border-darkBorderHighlight") }>
-             
+          {post?.selftext_html &&
+          (!context.mediaOnly || imgFull) &&
+          (context.cardStyle !== "card2" || imgFull) ? (
+            <div
+              className={
+                "p-1 overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
+                (!imgFull &&
+                  " max-h-96 border-b dark:border-darkBorderHighlight")
+              }
+            >
               <div
                 className="mr-1.5"
                 id="innerhtml"
                 dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
               ></div>
             </div>
-          ) : (!context.mediaOnly) ? ("")
-          // (
-          //   // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-          //   <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
-          //     <p>
-          //       {post?.selftext}
-          //     </p>
-          //   </div>
-          // ) 
-          : "" }
+          ) : !context.mediaOnly ? (
+            ""
+          ) : (
+            // (
+            //   // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
+            //   <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
+            //     <p>
+            //       {post?.selftext}
+            //     </p>
+            //   </div>
+            // )
+            ""
+          )}
         </>
       )}
     </div>

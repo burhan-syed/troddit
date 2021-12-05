@@ -75,6 +75,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
         <h1 className="ml-2">
           {" "}
           {sub.data?.display_name_prefixed ?? sub.data?.display_name}
+          {isUser && router?.query?.slug?.[0].toString()}
         </h1>
       </div>
     </div>

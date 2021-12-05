@@ -217,8 +217,8 @@ const SortMenu2 = ({ hide = false }) => {
                       </div>
                       <ul
                         className={
-                          (active ? "block " : "hidden ") +
-                          "absolute top-24 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                          (active ? "block " : "hidden ") + (!isUser ? "top-24 " : "top-12 ") +
+                          "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                         }
                       >
                         <Menu.Item>
