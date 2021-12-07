@@ -41,12 +41,7 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({
-  query,
-  initItems,
-  initAfter,
-  isUser = false,
-}) => {
+const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -73,7 +68,7 @@ const MyMasonic = ({
       setSort(query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
     }
-    lastload=initAfter;
+    lastload = initAfter;
     setAfter(initAfter);
     setNumPosts(initItems.length);
     setItems(initItems);
@@ -134,11 +129,10 @@ const MyMasonic = ({
     // };
 
     //console.log(windowWidth);
-    if(context.cardStyle=="row1"){
+    if (context.cardStyle == "row1") {
       setItemHeightEstimate(80);
       setCols(1);
-    }
-    else if (context?.columnOverride ?? 0 !== 0) {
+    } else if (context?.columnOverride ?? 0 !== 0) {
       setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
       setCols(context.columnOverride);
       context.setColumns(context.columnOverride);
@@ -182,9 +176,9 @@ const MyMasonic = ({
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       //console.log("load more posts..", startIndex, stopIndex);
-      if (allowload && lastload===after ) {
+      if (allowload && lastload === after) {
         //preventing more calls prior to new page fetch
-        lastload="";
+        lastload = "";
         const nextItems = await getPostsPromise(startIndex, stopIndex);
         //console.log("nextitems", nextItems, after);
         setItems((current) => {
@@ -205,10 +199,7 @@ const MyMasonic = ({
 
   const fetchFront = async () => {
     //console.log(query);
-    let data = await loadFront(
-      query?.frontsort ?? "hot",
-      query?.t ?? ""
-    );
+    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
     if (data) {
       //console.log("DATA", data);
       let n = numposts;
@@ -278,7 +269,13 @@ const MyMasonic = ({
         loadafter
       );
     } else {
-      let subs = query?.slug?.[0].split(' ').join('+').split(',').join('+').split('%20').join('+');
+      let subs = query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%20")
+        .join("+");
 
       data = await loadSubreddits(
         subs ?? "",
@@ -305,7 +302,7 @@ const MyMasonic = ({
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    console.log('getpost call', after, allowload)
+    //console.log('getpost call', after, allowload)
 
     allowload = false;
     let caughtup = false;
@@ -316,16 +313,16 @@ const MyMasonic = ({
       //console.log("getposts");
       //console.log(posts);
       let data = await (await loadmore(fastafter)).data;
-      if (!data.after || data.after=="") {
+      if (!data.after || data.after == "") {
         //console.log("NO MORE DATA");
         setEnd(true);
         caughtup = true;
         allowload = false;
         return payload;
       }
-      console.log("data returned", data.after);
+      //console.log("data returned", data.after);
       fastafter = data?.after;
-      lastload=fastafter;
+      lastload = fastafter;
       //console.log("data", data.data);
 
       // for (let c = 0; c < data.posts.length; c++) {
@@ -339,7 +336,7 @@ const MyMasonic = ({
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
-    
+
     return payload;
     // const fakeItems = [];
     // for (let i = start; i < end + 10; i++)
@@ -361,11 +358,9 @@ const MyMasonic = ({
   //   //const items = getFakeItems();
   //   //setItems(items);
   // }, []);
-  
 
   return (
     <div>
-     
       <Masonry
         onRender={maybeLoadMorePosts}
         //positioner={positioner}
@@ -376,7 +371,7 @@ const MyMasonic = ({
         //height={windowHeight}
         // Forwards the ref to the masonry container element
 
-        columnGutter={(cols == 1 ? 5 : 10)}
+        columnGutter={cols == 1 ? 5 : 10}
         //columnWidth={(windowWidth*5/6 - 8*2) / 3}
         columnCount={cols}
         items={items}
@@ -386,12 +381,11 @@ const MyMasonic = ({
         className=""
         ssrWidth={500}
       />
-      
+
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
-            Loaded {numposts} posts on {count + 1}{" "}
-            pages.{" "}
+            Loaded {numposts} posts on {count + 1} pages.{" "}
           </h1>
         </div>
       )}
@@ -411,7 +405,7 @@ const PostCard = (props) => {
   //console.log("fakecard");
   const context: any = useMainContext();
   return (
-    <div className={""} >
+    <div className={""}>
       {/* <span children={`${props.data.id} : ${props.data?.data?.title}`} /> */}
       {/* <p>{props.data.id}</p> */}
       <Post post={props.data.data} />

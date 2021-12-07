@@ -434,16 +434,19 @@ const Media = ({
       {loaded && (
         <>
           {isTweet && (
-            <div >
-                <TwitterTweetEmbed
-                  
-                  options={{ theme: theme, conversation: "none", align:"center" }}
-                  tweetId={
-                    post.url
-                      .split("/")
-                      [post.url.split("/").length - 1].split("?")[0]
-                  }
-                />
+            <div className={!imgFull && "flex justify-center "}>
+              <TwitterTweetEmbed
+                options={{
+                  theme: theme,
+                  conversation: "none",
+                  align: "center",
+                }}
+                tweetId={
+                  post.url
+                    .split("/")
+                    [post.url.split("/").length - 1].split("?")[0]
+                }
+              />
             </div>
           )}
           {isIFrame && showIframe ? (

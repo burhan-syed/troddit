@@ -15,7 +15,7 @@ import {
   getMyMultis,
   getMySubs,
   loadSubInfo,
-  loadSubFlairs
+  loadSubFlairs,
 } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
@@ -50,7 +50,12 @@ const DropdownPane = ({ hide }) => {
       setSubInfo(subinfo);
     };
     if (router?.query?.slug?.[0]) {
-      let loc = router?.query?.slug?.[0].split("+");
+      let loc = router?.query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split("%20")
+        .join("+")
+        .split("+");
       if (loc.length > 1) {
         setLocation(loc[0].toString() + "..");
       } else {
@@ -167,7 +172,8 @@ const DropdownPane = ({ hide }) => {
           }
           {(location == "home" ||
             location == "popular" ||
-            location == "all" || !session)  && (
+            location == "all" ||
+            !session) && (
             <h1 className="ml-2 capitalize truncate">{location}</h1>
           )}
         </div>
@@ -223,7 +229,7 @@ const DropdownPane = ({ hide }) => {
             <>
               <button
                 className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-                onClick={() => signIn('reddit')}
+                onClick={() => signIn("reddit")}
               >
                 <span className="text-blue-300 dark:text-blue-600">Login</span>{" "}
                 to see your subs
