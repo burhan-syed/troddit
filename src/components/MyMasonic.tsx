@@ -34,8 +34,8 @@ const getFakeItems = (start = 0, end = 32) => {
 const getFakeItemsPromise = (start, end) =>
   Promise.resolve(getFakeItems(start, end));
 
-let allowload = true;
-
+let allowload = false;
+let lastload = "";
 interface ColumnContext {
   columns: number;
   setColumns: Function;
@@ -73,7 +73,7 @@ const MyMasonic = ({
       setSort(query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
     }
-
+    lastload=initAfter;
     setAfter(initAfter);
     setNumPosts(initItems.length);
     setItems(initItems);
@@ -182,7 +182,9 @@ const MyMasonic = ({
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       //console.log("load more posts..", startIndex, stopIndex);
-      if (allowload) {
+      if (allowload && lastload===after ) {
+        //preventing more calls prior to new page fetch
+        lastload="";
         const nextItems = await getPostsPromise(startIndex, stopIndex);
         //console.log("nextitems", nextItems, after);
         setItems((current) => {
@@ -303,6 +305,8 @@ const MyMasonic = ({
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
+    console.log('getpost call', after, allowload)
+
     allowload = false;
     let caughtup = false;
     let n = numposts;
@@ -319,9 +323,9 @@ const MyMasonic = ({
         allowload = false;
         return payload;
       }
-      //console.log("data returned", data.after);
+      console.log("data returned", data.after);
       fastafter = data?.after;
-
+      lastload=fastafter;
       //console.log("data", data.data);
 
       // for (let c = 0; c < data.posts.length; c++) {
@@ -335,6 +339,7 @@ const MyMasonic = ({
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
+    
     return payload;
     // const fakeItems = [];
     // for (let i = start; i < end + 10; i++)
