@@ -21,6 +21,7 @@ const getToken = async () => {
       return {
         accessToken: tokendata.data.accessToken,
         refreshToken: tokendata.data.refreshToken,
+        // username: tokendata.data.username,
       };
     } catch (err) {
       //console.log(err);
@@ -116,50 +117,54 @@ export const loadSubreddits = async (
   }
 };
 
-export const loadSubFlairs = async(subreddit) => {
+export const loadSubFlairs = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
-    try{
-      const res = await axios.get(`https://www.reddit.com/r/${subreddit}/api/link_flair_v2.json`, {
-        params: {
-          raw_json: 1,
+    try {
+      const res = await axios.get(
+        `https://www.reddit.com/r/${subreddit}/api/link_flair_v2.json`,
+        {
+          params: {
+            raw_json: 1,
+          },
         }
-      });
-      return res; 
+      );
+      return res;
     } catch (err) {
       console.log(err);
       return false;
     }
   }
-}
+};
 
-export const loadSubInfo = async(subreddit) => {
+export const loadSubInfo = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
-    try{
-      const res = await (await axios.get(`https://oauth.reddit.com/r/${subreddit}/about`, {
-        headers: {
-          authorization: `bearer ${token}`,
-        },
-        params: {
-        },
-      })).data;
-      return res; 
+    try {
+      const res = await (
+        await axios.get(`https://oauth.reddit.com/r/${subreddit}/about`, {
+          headers: {
+            authorization: `bearer ${token}`,
+          },
+          params: {},
+        })
+      ).data;
+      return res;
     } catch (err) {
-      return false; 
+      return false;
     }
   }
-  return false; 
-}
+  return false;
+};
 
-export const subToSub = async (action,name) => {
+export const subToSub = async (action, name) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       //console.log(dir, id, token);
-      let skip_initial_defaults = 1; 
-      let action_source="o"
-      if (action=='unsub') skip_initial_defaults = 0;
+      let skip_initial_defaults = 1;
+      let action_source = "o";
+      if (action == "unsub") skip_initial_defaults = 0;
       const res = await fetch("https://oauth.reddit.com/api/subscribe", {
         method: "POST",
         headers: {
@@ -202,7 +207,9 @@ export const loadUserPosts = async (
       })
     ).data;
     //console.log(res);
-    const filtered_children = res.data.children.filter(child => (child?.kind === "t3"))
+    const filtered_children = res.data.children.filter(
+      (child) => child?.kind === "t3"
+    );
     return {
       after: res.data.after,
       before: res.data.before,
@@ -461,7 +468,7 @@ export const postVote = async (dir: number, id) => {
   }
 };
 
-export const postComment = async(parent, text) => {
+export const postComment = async (parent, text) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
@@ -485,6 +492,61 @@ export const postComment = async(parent, text) => {
     }
   }
   return false;
-}
+};
 
+export const getUserVotes = async () => {
+  const data = await getToken();
+  const token = await data.accessToken;
+  const username = "talezus"; //await data.username;
 
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/user/${username}/upvoted`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+};
+
+export const getMyVotes = async () => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      let res = await axios.get(
+        "https://oauth.reddit.com/user/talezus/upvoted",
+        {
+          headers: {
+            authorization: `bearer ${token}`,
+          },
+          params: {
+            context: 2,
+            sort: "new",
+            type: "links",
+            username: "talezus",
+            limit: 10,
+          },
+        }
+      );
+      let data = await res.data;
+      console.log(data);
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      if (data?.data?.children ?? false) {
+        return { after: data.data.after, children: data.data.children };
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  }
+  return null;
+};

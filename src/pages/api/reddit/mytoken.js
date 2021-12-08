@@ -14,6 +14,7 @@ export default async (req, res) => {
       data: {
         accessToken: token.reddit.accessToken,
         refreshToken: token.reddit.refreshToken,
+        //username: token.reddit.username,
       },
     });
   } catch (e) {

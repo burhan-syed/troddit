@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Comments from "./Comments";
 import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
-import { loadComments, loadPost, postVote } from "../RedditAPI";
+import { loadComments, loadPost, postVote, getUserVotes } from "../RedditAPI";
 import Media from "./Media";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { BiComment } from "react-icons/bi";
@@ -43,6 +43,7 @@ const PostModal = ({
     e.stopPropagation();
     if (session) {
       v === vote ? (v = 0) : undefined;
+      //getUserVotes();
       let res = await postVote(v, apost?.name);
       res ? setVote(v) : undefined;
     } else {
@@ -197,6 +198,7 @@ const PostModal = ({
         //   shallow: true,
         // });
         context.setPostNum((p) => p + 1);
+        setVote(0);
       }
     } else if (move === -1 && (context.postNum > 0 || postNum > 0)) {
       if (context.posts?.[context.postNum - 1]?.data) {
@@ -208,6 +210,7 @@ const PostModal = ({
         // });
 
         context.setPostNum((p) => p - 1);
+        setVote(0);
       }
     }
   };
