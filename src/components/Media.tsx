@@ -227,6 +227,15 @@ const Media = ({
   const [iFrame, setIFrame] = useState<Element>();
   const [isYTVid, setisYTVid] = useState(false);
   const [ytVidHeight, setytVidHeight] = useState({});
+  useEffect(() => {
+    //
+    return () => {
+      setIsIFrame(false);
+      setIFrame(null);
+      setisYTVid(false);
+      setytVidHeight({});
+    };
+  }, [post]);
   const stringToHTML = function (str) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(str, "text/html");

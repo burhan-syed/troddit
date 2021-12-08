@@ -7,6 +7,8 @@ import Media from "./Media";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { BiComment } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
+import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
+
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
 import { BsReply } from "react-icons/bs";
@@ -19,7 +21,13 @@ import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 
-const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
+const PostModal = ({
+  setSelect,
+  returnRoute,
+  permalink,
+  postData = {},
+  postNum = 0,
+}) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
   const [post_comments, setComments] = useState([]);
@@ -89,16 +97,16 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (Object.keys(postData).length > 0){
+      if (Object.keys(postData).length > 0) {
         setPost(postData);
         setLoadingPost(false);
       }
       const { post, comments } = await loadPost(permalink);
-      if (Object.keys(postData).length === 0){
+      if (Object.keys(postData).length === 0) {
         setPost(post);
         setLoadingPost(false);
       }
-      
+
       setComments(comments);
       setLoadingComments(false);
     };
@@ -159,6 +167,51 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
     }
   };
 
+  useEffect(() => {
+    context.setPostNum(postNum);
+    return () => {
+      context.setPostNum(0);
+    };
+  }, [postNum]);
+
+  const updateComments = async (newlink) => {
+    setLoadingComments(true);
+    const { post, comments } = await loadPost(newlink);
+    // if (Object.keys(postData).length === 0) {
+    //   setPost(post);
+    //   setLoadingPost(false);
+    // }
+
+    setComments(comments);
+    setLoadingComments(false);
+  };
+
+  const changePost = (move) => {
+    if (move === 1) {
+      //console.log(postNum, context.postNum, context.posts.length);
+      if (context.posts?.[context.postNum + 1]?.data) {
+        //console.log("movenext");
+        setPost(context.posts[context.postNum + 1].data);
+        updateComments(context.posts[context.postNum + 1]?.data?.permalink);
+        // router.push("", context.posts[context.postNum + 1]?.data?.permalink, {
+        //   shallow: true,
+        // });
+        context.setPostNum((p) => p + 1);
+      }
+    } else if (move === -1 && (context.postNum > 0 || postNum > 0)) {
+      if (context.posts?.[context.postNum - 1]?.data) {
+        //console.log("moveback");
+        setPost(context.posts[context.postNum - 1].data);
+        updateComments(context.posts[context.postNum - 1]?.data?.permalink);
+        // router.push("", context.posts[context.postNum - 1]?.data?.permalink, {
+        //   shallow: true,
+        // });
+
+        context.setPostNum((p) => p - 1);
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain">
       {/* <div
@@ -169,6 +222,14 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
         onClick={() => handleBack()}
         className="fixed top-0 left-0 w-screen h-full bg-black backdrop-filter backdrop-blur-lg opacity-80 overscroll-none"
       ></div>
+      {context.posts?.[context.postNum - 1]?.data && (
+        <div
+          onClick={(e) => changePost(-1)}
+          className="fixed p-2 text-gray-400 cursor-pointer left-4 hover:text-gray-300 top-1/2"
+        >
+          <AiOutlineLeft className="w-10 h-10" />
+        </div>
+      )}
       <div className="flex flex-row justify-center flex-grow w-full h-full ">
         {/* Main Card */}
         <div className="z-10 w-full pt-2 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
@@ -358,12 +419,18 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
                     </h1>
 
                     {/* Image/Video/Text Body */}
-                    <div className="block md:pl-3">
-                      {!hideNSFW ? (
+                    <div
+                      className={
+                        "block relative md:pl-3" +
+                        (hideNSFW && " overflow-hidden")
+                      }
+                    >
+                      <div className={hideNSFW && "blur-3xl"}>
                         <Media post={apost} allowIFrame={true} imgFull={true} />
-                      ) : (
-                        <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">
-                          NSFW
+                      </div>
+                      {hideNSFW && (
+                        <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                          hidden
                         </div>
                       )}
                     </div>
@@ -556,6 +623,14 @@ const PostModal = ({ setSelect, returnRoute, permalink, postData={} }) => {
           onClick={() => handleBack()}
           className="right-0 bg-black lg:w-1/12 opacity-80 "
         ></div> */}
+      {context.posts?.length > 0 && (
+        <div
+          onClick={(e) => changePost(1)}
+          className="fixed p-2 text-gray-400 cursor-pointer right-4 hover:text-gray-300 top-1/2"
+        >
+          <AiOutlineRight className="w-10 h-10" />
+        </div>
+      )}
     </div>
   );
 };

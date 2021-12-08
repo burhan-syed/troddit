@@ -8,12 +8,15 @@ import {
   Masonry,
   useContainerPosition,
   usePositioner,
+  useScroller,
+  useScrollToIndex,
   useInfiniteLoader,
 } from "masonic";
 import { loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
 import Post from "./Post";
 import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
+import { CgEnter } from "react-icons/cg";
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -71,6 +74,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     lastload = initAfter;
     setAfter(initAfter);
     setNumPosts(initItems.length);
+    context.setPosts(initItems);
     setItems(initItems);
     setLoading(false);
 
@@ -183,6 +187,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         //console.log("nextitems", nextItems, after);
         setItems((current) => {
           //console.log("after", after);
+          context.setPosts([...current, ...nextItems]);
           return [...current, ...nextItems];
         });
       }
@@ -196,6 +201,27 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       threshold: 10,
     }
   );
+
+  const scrollToIndex = useScrollToIndex(positioner, {
+    align: "center",
+    offset: offset,
+    height: windowHeight,
+    element: containerRef,
+  });
+
+  useEffect(() => {
+    // console.log("scrolling");
+    // scrollToIndex(10);
+    let n = items.length - context.postNum;
+    //console.log("posts left:", n, "total posts: ", items.length);
+    if (n > 0 && n < 10) {
+      //console.log("maybe loading more");
+      maybeLoadMorePosts(posts.length, posts.length + 10, posts);
+    }
+    return () => {
+      //
+    };
+  }, [context.postNum]);
 
   const fetchFront = async () => {
     //console.log(query);
@@ -408,7 +434,7 @@ const PostCard = (props) => {
     <div className={""}>
       {/* <span children={`${props.data.id} : ${props.data?.data?.title}`} /> */}
       {/* <p>{props.data.id}</p> */}
-      <Post post={props.data.data} />
+      <Post post={props.data.data} postNum={props.index} />
     </div>
   );
 };

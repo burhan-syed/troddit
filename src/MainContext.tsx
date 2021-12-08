@@ -18,19 +18,21 @@ export const MainProvider = ({ children }) => {
   const [maximize, setMaximize] = useState(false);
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
-  const [cardStyle, setCardStyle] = useState('default');
+  const [cardStyle, setCardStyle] = useState("default");
+  const [posts, setPosts] = useState([]);
+  const [postNum, setPostNum] = useState(0);
 
   const toggleAudioOnHover = () => {
-    setaudioOnHover(a => !a);
-  }
+    setaudioOnHover((a) => !a);
+  };
 
   const toggleMediaOnly = () => {
-    setMediaOnly(m => !m);
-  }
-  
+    setMediaOnly((m) => !m);
+  };
+
   const toggleMaximize = () => {
-    setMaximize(m => !m);
-  }
+    setMaximize((m) => !m);
+  };
 
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => {
@@ -50,11 +52,17 @@ export const MainProvider = ({ children }) => {
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_mediaOnly = localStorage.getItem("mediaOnly");
-    saved_mediaOnly?.includes("true") ? setMediaOnly(true) : setMediaOnly(false);
+    saved_mediaOnly?.includes("true")
+      ? setMediaOnly(true)
+      : setMediaOnly(false);
     const saved_audioOnHover = localStorage.getItem("audioOnHover");
-    saved_audioOnHover?.includes("true") ? setaudioOnHover(true) : setaudioOnHover(false);
-    const saved_columnOverride = parseInt(localStorage.getItem("columnOverride"));
-    saved_columnOverride && setColumnOverride(saved_columnOverride)
+    saved_audioOnHover?.includes("true")
+      ? setaudioOnHover(true)
+      : setaudioOnHover(false);
+    const saved_columnOverride = parseInt(
+      localStorage.getItem("columnOverride")
+    );
+    saved_columnOverride && setColumnOverride(saved_columnOverride);
     const saved_cardStyle = localStorage.getItem("cardStyle");
     saved_cardStyle && setCardStyle(saved_cardStyle);
   }, []);
@@ -77,7 +85,6 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("audioOnHover", JSON.stringify(audioOnHover));
   }, [audioOnHover]);
-  
 
   return (
     <MainContext.Provider
@@ -91,7 +98,7 @@ export const MainProvider = ({ children }) => {
         toggleAutoplay,
         columns,
         setColumns,
-        maximize, 
+        maximize,
         toggleMaximize,
         columnOverride,
         setColumnOverride,
@@ -103,7 +110,11 @@ export const MainProvider = ({ children }) => {
         audioOnHover,
         toggleAudioOnHover,
         cardStyle,
-        setCardStyle
+        setCardStyle,
+        posts,
+        setPosts,
+        postNum,
+        setPostNum,
       }}
     >
       {children}

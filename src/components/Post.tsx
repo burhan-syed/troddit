@@ -17,7 +17,7 @@ import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
 import Row1 from "./views/Row1";
 
-const Post = ({ post }) => {
+const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [score, setScore] = useState("");
@@ -125,14 +125,16 @@ const Post = ({ post }) => {
           setSelect={setSelect}
           returnRoute={returnRoute}
           postData={post}
+          postNum={postNum}
         />
       )}
 
       {/* Click wrappter */}
       <div onClick={() => handleClick()}>
         {/* OG Card */}
-        { context?.cardStyle === "row1" ? 
-        <Row1
+        {/* <h1>{postNum}</h1> */}
+        {context?.cardStyle === "row1" ? (
+          <Row1
             post={post}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
@@ -141,7 +143,7 @@ const Post = ({ post }) => {
             castVote={castVote}
             forceMute={forceMute}
           />
-        : context?.cardStyle === "card2" ? (
+        ) : context?.cardStyle === "card2" ? (
           <Card2
             post={post}
             hasMedia={hasMedia}
@@ -161,7 +163,7 @@ const Post = ({ post }) => {
             castVote={castVote}
             forceMute={forceMute}
           />
-        )} 
+        )}
       </div>
     </div>
   );
