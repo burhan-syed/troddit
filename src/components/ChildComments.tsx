@@ -7,7 +7,7 @@ import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import Link from "next/dist/client/link";
 
-const ChildComments = ({ comment, depth, hide }) => {
+const ChildComments = ({ comment, depth, hide, op="" }) => {
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [score, setScore] = useState("");
@@ -203,6 +203,17 @@ const ChildComments = ({ comment, depth, hide }) => {
                 <h1 className="">{comment?.data?.author ?? ""}</h1>
               </a>
             </Link>
+            {(comment?.data?.author == op || comment?.data?.is_submitter) && <>
+            <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">{"OP"}</p>
+            </>}
+            {comment?.data?.distinguished == "moderator" && <>
+            <p className="px-0.5 font-medium text-green-500 dark:text-green-700 dark:opacity-80">{"MOD"}</p>
+
+            </>}
+            {comment?.data?.distinguished == "admin" && <>
+            <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">{"ADMIN"}</p>
+
+            </>}
             <p>•</p>
             <h1
               className={

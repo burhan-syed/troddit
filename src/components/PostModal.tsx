@@ -614,7 +614,7 @@ const PostModal = ({
                   </h1>
                   <div className="flex-grow w-full px-2">
                     <Comments comments={myReplies} depth={0} />
-                    <Comments comments={post_comments} depth={0} />
+                    <Comments comments={post_comments} depth={0} op={apost?.author} />
                   </div>
                 </div>
               )}
