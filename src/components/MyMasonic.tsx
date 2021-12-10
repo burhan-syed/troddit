@@ -1,5 +1,5 @@
 /* eslint-disable react/no-children-prop */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import ReactDOM from "react-dom";
 import useWindowScroll from "@react-hook/window-scroll";
 import { useWindowSize } from "@react-hook/window-size";
@@ -39,6 +39,7 @@ const getFakeItemsPromise = (start, end) =>
 
 let allowload = false;
 let lastload = "";
+let loadonce = 0;
 interface ColumnContext {
   columns: number;
   setColumns: Function;
@@ -62,6 +63,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
 
   useEffect(() => {
     allowload = true;
+    loadonce = 0; 
     if (query.frontsort) {
       setSort(query?.frontsort ?? "hot");
       setRange(query?.t ?? "");
@@ -177,20 +179,24 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       threshold: 3,
     }
   );
+
+
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       //console.log("load more posts..", startIndex, stopIndex);
       if (allowload && lastload === after) {
         //preventing more calls prior to new page fetch
         lastload = "";
+        
         const nextItems = await getPostsPromise(startIndex, stopIndex);
         //console.log("nextitems", nextItems, after);
         setItems((current) => {
           //console.log("after", after);
           context.setPosts([...current, ...nextItems]);
           return [...current, ...nextItems];
+          
         });
-      }
+      }      
     },
     {
       isItemLoaded: (index, items) => {
@@ -201,6 +207,11 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       threshold: 10,
     }
   );
+
+  //const maybeLoadMoreMemo = useMemo(() => {return maybeLoadMorePosts} , [after])
+
+
+
 
   const scrollToIndex = useScrollToIndex(positioner, {
     align: "center",
@@ -334,6 +345,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     let caughtup = false;
     let n = numposts;
     let payload = [];
+    
     let fastafter = after;
     while (payload.length < end - start && !caughtup) {
       //console.log("getposts");
@@ -364,6 +376,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     allowload = true;
 
     return payload;
+  
     // const fakeItems = [];
     // for (let i = start; i < end + 10; i++)
     //   fakeItems.push({ id: i, height: randInt() });
