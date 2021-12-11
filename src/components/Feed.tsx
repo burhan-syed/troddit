@@ -6,7 +6,7 @@ import {
   loadPost,
   loadSubreddits,
   loadUserPosts,
-  loadSubInfo
+  loadSubInfo,
 } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -34,7 +34,7 @@ const Feed = ({ query, isUser = false }) => {
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
   const [subreddits, setSubreddits] = useState("");
-  const [loggedIn, setloggedIn] = useState(false)
+  const [loggedIn, setloggedIn] = useState(false);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
@@ -42,17 +42,28 @@ const Feed = ({ query, isUser = false }) => {
     session ? setloggedIn(true) : setloggedIn(false);
     return () => {
       setloggedIn(false);
-    }
-  }, [session])
+    };
+  }, [session]);
 
   useEffect(() => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
     } else if (query.frontsort) {
-      setSort(query?.frontsort ?? "best");
-      setRange(query?.t ?? "");
-
+      if (
+        query?.frontsort == "" ||
+        query?.frontsort?.includes("best") ||
+        query?.frontsort?.includes("top") ||
+        query?.frontsort?.includes("hot") ||
+        query?.frontsort?.includes("new") || 
+        query?.frontsort?.includes("rising")
+      ) {
+        setSort(query?.frontsort ?? "best");
+        setRange(query?.t ?? "");
+      } else {
+        setFetchPost(true);
+        setLoading(false);
+      }
       //fetchFront();
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
@@ -68,10 +79,20 @@ const Feed = ({ query, isUser = false }) => {
       setFetchPost(true);
       setLoading(false);
     } else if (query.frontsort) {
-      setSort(query?.frontsort ?? "best");
-      setRange(query?.t ?? "");
+      if (
+        query?.frontsort == "" ||
+        query?.frontsort?.includes("best") ||
+        query?.frontsort?.includes("top") ||
+        query?.frontsort?.includes("hot") ||
+        query?.frontsort?.includes("new") || 
+        query?.frontsort?.includes("rising")
+      ) {
+        setSort(query?.frontsort ?? "best");
+        setRange(query?.t ?? "");
+        fetchFront();
 
-      fetchFront();
+      }
+
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
@@ -87,8 +108,6 @@ const Feed = ({ query, isUser = false }) => {
       setLoading(true);
     };
   }, [subreddits, sort, range]);
-
-
 
   const fetchFront = async () => {
     //console.log(query);
@@ -115,7 +134,6 @@ const Feed = ({ query, isUser = false }) => {
       setFetchPost(true);
       setLoading(false);
     } else if (isUser) {
-      
       data = await loadUserPosts(
         query?.slug?.[0] ?? "",
         query?.slug?.[1] ?? "hot",
@@ -123,13 +141,18 @@ const Feed = ({ query, isUser = false }) => {
       );
     } else {
       //console.log(query?.slug?.[0]);
-      let subs = query?.slug?.[0].split(' ').join('+').split(',').join('+').split('%20').join('+');
+      let subs = query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%20")
+        .join("+");
       data = await loadSubreddits(
         subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
       );
-      
     }
     if (data?.children) {
       setAfter(data?.after);
@@ -152,7 +175,7 @@ const Feed = ({ query, isUser = false }) => {
       <div className="mt-10">
         <LoginModal />
         <PostModal
-          permalink={"/r/" + query.slug.join("/")}
+          permalink={query?.frontsort ? (`/${query.frontsort}`) : ("/r/" + query.slug.join("/"))}
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
           setSelect={setFetchPost}
         />
@@ -164,9 +187,13 @@ const Feed = ({ query, isUser = false }) => {
       <div className="flex flex-col items-center justify-center mt-16 text-center">
         <div>{"Oops something went wrong :("}</div>
         <div>
-          {"Please refresh and make sure you're not blocking traffic from Reddit"}
+          {
+            "Please refresh and make sure you're not blocking traffic from Reddit"
+          }
         </div>
-        {subreddits!=="" && <div>{"Otherwise, this subreddit may not exist"}</div>}
+        {subreddits !== "" && (
+          <div>{"Otherwise, this subreddit may not exist"}</div>
+        )}
       </div>
     );
   }

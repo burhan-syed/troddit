@@ -65,16 +65,18 @@ const Post = ({ post, postNum = 0 }) => {
     setLastRoute(router.asPath);
     context.setPauseAll(true);
     setSelect(true);
-    //need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
+    // need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
     if (router.query?.frontsort) {
       // router.push("/", post.permalink);
       // console.log("FRONSORT");
-      setReturnRoute(router.asPath);
+      //setReturnRoute(router.asPath);
+      router.push("", post.id, { shallow: true });
     } else if (router.pathname.includes("/user/")) {
-      router.push(post.permalink);
+     router.push("",`/user/p/${post.id}`,{shallow:true});
     } else {
       router.push("", post.permalink, { shallow: true });
     }
+
   };
 
   const findMedia = () => {
