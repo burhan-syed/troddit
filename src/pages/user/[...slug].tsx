@@ -9,7 +9,7 @@ const Sort = ({ query }) => {
   const [isUser, setIsUser] = useState(false);
   const [feedQuery, setFeedQuery] = useState("");
   useEffect(() => {
-    console.log(query);
+    //console.log(query);
     if (query?.slug?.[0] === "p") {
       router.replace(`/${query.slug?.[1]}`);
     } else {
