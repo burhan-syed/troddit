@@ -149,7 +149,7 @@ const Row1 = ({
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row items-center justify-start pb-1 space-x-1">
+          <div className="flex flex-row items-center justify-start pb-1 space-x-1 select-none">
             <button
               className={
                 "flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
@@ -170,13 +170,15 @@ const Row1 = ({
               )}
             </button>
 
-            <button className="flex flex-row items-center px-2 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-              <BiComment className="flex-none w-6 h-6 md:pr-2 " />
-              <h1 className="">{`${post?.num_comments ?? "??"}`}</h1>
-              <h1 className="">{`${
-                post?.num_comments === 1 ? "comment" : "comments"
-              }`}</h1>
-            </button>
+            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+              <button className="flex flex-row items-center px-2 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                <BiComment className="flex-none w-6 h-6 md:pr-2 " />
+                <h1 className="">{`${post?.num_comments ?? "??"}`}</h1>
+                <h1 className="">{`${
+                  post?.num_comments === 1 ? "comment" : "comments"
+                }`}</h1>
+              </button>
+            </a>
             <a
               href={`${post?.url}` ?? "https://troddit.com"}
               target="_blank"
