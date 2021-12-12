@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
 import { loadComments, loadPost, postVote, getUserVotes } from "../RedditAPI";
 import Media from "./Media";
-import { BiDownvote, BiUpvote } from "react-icons/bi";
+import { BiDownvote, BiUpvote, BiExpand, BiCollapse } from "react-icons/bi";
+import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BiComment } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
@@ -43,6 +44,7 @@ const PostModal = ({
   const [openReply, setopenReply] = useState(false);
   const [session, loading] = useSession();
   const context: any = useMainContext();
+  const [imgFull, setimgFull] = useState(true);
   const [windowWidth, windowHeight] = useWindowSize();
 
   // const {checkIfPortrait, isPortrait} = FindMedia(postData);
@@ -285,7 +287,7 @@ const PostModal = ({
                       <Media
                         post={apost}
                         allowIFrame={true}
-                        imgFull={true}
+                        imgFull={imgFull}
                         portraitMode={true}
                       />
                     </div>
@@ -514,7 +516,7 @@ const PostModal = ({
                                 <Media
                                   post={apost}
                                   allowIFrame={true}
-                                  imgFull={true}
+                                  imgFull={imgFull}
                                 />
                               </div>
                               {hideNSFW && (
@@ -556,16 +558,60 @@ const PostModal = ({
                               }
                             />
                           </div>
-                          <div></div>
-                          <div className="flex flex-row items-center justify-end space-x-1">
-                            <button
-                              onClick={(e) => {
-                                setUsePortrait((p) => !p);
-                              }}
-                            >
-                              switch
-                            </button>
+                          <div className="flex flex-row items-center justify-start space-x-1">
+                            {windowWidth > 1300 && (
+                              <>
+                                <button
+                                  onClick={(e) => {
+                                    setUsePortrait((p) => !p);
+                                  }}
+                                  className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                >
+                                  <HiOutlineSwitchHorizontal className={"flex-none  " + (usePortrait ? " w-6 h-6 " : " w-5 h-5 m-0.5")} />
+                                </button>
+                              </>
+                            )}
 
+                            <button
+                              onClick={(e) => setimgFull((p) => !p)}
+                              className="flex flex-row items-center p-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                            >
+                              {imgFull ? (
+                                <>
+                                  <h1
+                                    className={
+                                      "hidden " + (!usePortrait && " md:block ")
+                                    }
+                                  >
+                                    Expand
+                                  </h1>
+                                  <BiExpand
+                                    className={
+                                      "flex-none w-6 h-6 " +
+                                      (!usePortrait && " md:pl-2")
+                                    }
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <h1
+                                    className={
+                                      "hidden " + (!usePortrait && " md:block ")
+                                    }
+                                  >
+                                    Collapse
+                                  </h1>
+                                  <BiCollapse
+                                    className={
+                                      "flex-none w-6 h-6 " +
+                                      (!usePortrait && " md:pl-2")
+                                    }
+                                  />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <div className="flex flex-row items-center justify-end space-x-1">
                             <div>
                               <button
                                 onClick={(e) => {
@@ -576,8 +622,19 @@ const PostModal = ({
                                 }}
                                 className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                               >
-                                <BsReply className="flex-none w-6 h-6 md:pr-2 scale-x-[-1]" />
-                                <h1 className="hidden md:block">Reply</h1>
+                                <BsReply
+                                  className={
+                                    "flex-none w-6 h-6 scale-x-[-1] " +
+                                    (!usePortrait && " md:pr-2")
+                                  }
+                                />
+                                <h1
+                                  className={
+                                    "hidden " + (!usePortrait && " md:block ")
+                                  }
+                                >
+                                  Reply
+                                </h1>
                               </button>
                             </div>
                             <a
@@ -586,8 +643,19 @@ const PostModal = ({
                               rel="noreferrer"
                             >
                               <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                                <BiExit className="flex-none w-6 h-6 md:pr-2" />
-                                <h1 className="hidden md:block">Source</h1>
+                                <BiExit
+                                  className={
+                                    "flex-none w-6 h-6 " +
+                                    (!usePortrait && " md:pr-2")
+                                  }
+                                />
+                                <h1
+                                  className={
+                                    "hidden " + (!usePortrait && " md:block ")
+                                  }
+                                >
+                                  Source
+                                </h1>
                               </div>
                             </a>
                             <a
@@ -598,8 +666,19 @@ const PostModal = ({
                               rel="noreferrer"
                             >
                               <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
-                                <ImReddit className="flex-none w-6 h-6 md:pr-2" />
-                                <h1 className="hidden md:block ">Original</h1>
+                                <ImReddit
+                                  className={
+                                    "flex-none w-6 h-6 " +
+                                    (!usePortrait && " md:pr-2")
+                                  }
+                                />
+                                <h1
+                                  className={
+                                    "hidden " + (!usePortrait && " md:block ")
+                                  }
+                                >
+                                  Original
+                                </h1>
                               </div>
                             </a>
                           </div>
