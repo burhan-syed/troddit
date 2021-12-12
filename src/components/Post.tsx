@@ -72,7 +72,7 @@ const Post = ({ post, postNum = 0 }) => {
       //setReturnRoute(router.asPath);
       router.push("", post.id, { shallow: true });
     } else if (router.pathname.includes("/user/")) {
-     router.push("",`/user/p/${post.id}`,{shallow:true});
+     router.push("",`/user/${post.author}/p/${post.id}`,{shallow:true});
     } else {
       router.push("", post.permalink, { shallow: true });
     }
