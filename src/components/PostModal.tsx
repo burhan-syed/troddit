@@ -27,6 +27,7 @@ const PostModal = ({
   permalink,
   postData = {},
   postNum = 0,
+  isPortrait = false,
 }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
@@ -234,8 +235,14 @@ const PostModal = ({
         </div>
       )}
       <div className="flex flex-row justify-center flex-grow w-full h-full ">
+        
         {/* Main Card */}
-        <div className="z-10 w-full pt-2 md:w-10/12 lg:w-3/4 md:flex md:flex-col md:items-center ">
+        <div
+          className={
+            (!isPortrait ? "w-full md:w-10/12 lg:w-3/4 " : " md:w-4/12 ") +
+            " z-10 pt-2  md:flex md:flex-col md:items-center "
+          }
+        >
           <div className="absolute md:fixed left-4 top-16">
             <RiArrowGoBackLine
               onClick={() => handleBack()}
@@ -422,21 +429,29 @@ const PostModal = ({
                     </h1>
 
                     {/* Image/Video/Text Body */}
-                    <div
-                      className={
-                        "block relative md:pl-3" +
-                        (hideNSFW && " overflow-hidden")
-                      }
-                    >
-                      <div className={hideNSFW && "blur-3xl"}>
-                        <Media post={apost} allowIFrame={true} imgFull={true} />
-                      </div>
-                      {hideNSFW && (
-                        <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
-                          hidden
+                    {!isPortrait && (
+                      <>
+                        <div
+                          className={
+                            "block relative md:pl-3" +
+                            (hideNSFW && " overflow-hidden")
+                          }
+                        >
+                          <div className={hideNSFW && "blur-3xl"}>
+                            <Media
+                              post={apost}
+                              allowIFrame={true}
+                              imgFull={true}
+                            />
+                          </div>
+                          {hideNSFW && (
+                            <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                              hidden
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
 
                     {/* Bottom Buttons */}
                     <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
@@ -525,7 +540,7 @@ const PostModal = ({
             </div>
 
             {/* comments */}
-            <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+            <div className={"flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG"}>
               <div
                 id="anchor-name"
                 //className="border-4 border-red-500"
@@ -552,7 +567,7 @@ const PostModal = ({
               {/* Loading Comments */}
               {loadingComments ? (
                 // Comment Loader
-                <div className="flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG h-96">
+                <div className={"flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG h-96"}>
                   <div className="mx-2 my-6 border rounded-md border-lightBorder dark:border-darkBorder h-80">
                     <div className={"flex flex-row"}>
                       {/* Left column */}
@@ -612,16 +627,42 @@ const PostModal = ({
                   <h1 className="">
                     {post_comments?.[0] ? "" : "no comments :("}
                   </h1>
-                  <div className="flex-grow w-full px-2">
+                  <div className={"flex-grow  w-full px-2"}>
                     <Comments comments={myReplies} depth={0} />
-                    <Comments comments={post_comments} depth={0} op={apost?.author} />
+                    <Comments
+                      comments={post_comments}
+                      depth={0}
+                      op={apost?.author}
+                    />
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
+        {/* Portrait Media */}
+        {isPortrait && (
+          <div className="z-10 ml-3 bg-white border rounded-lg mt-[68px] border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
+            <div className="items-center justify-center block">
+              <div
+                className={
+                  "block relative md:pl-3" + (hideNSFW && " overflow-hidden")
+                }
+              >
+                <div className={hideNSFW && "blur-3xl"}>
+                  <Media post={apost} allowIFrame={true} imgFull={false} />
+                </div>
+                {hideNSFW && (
+                  <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                    hidden
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      
       {/* <div
           onClick={() => handleBack()}
           className="right-0 bg-black lg:w-1/12 opacity-80 "

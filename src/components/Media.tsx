@@ -34,6 +34,7 @@ const Media = ({
   forceMute = 0,
 }) => {
   const context: any = useMainContext();
+  const [isPortrait, setisPortrait] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
@@ -78,6 +79,7 @@ const Media = ({
       setIsImage(false);
       setIsMP4(false);
       setIsTweet(false);
+      setisPortrait(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
       setVideoInfo({ url: "", height: 0, width: 0 });
@@ -96,6 +98,14 @@ const Media = ({
     //console.log(post);
     return true;
   };
+
+  const checkIfPortrait = () => {
+    if (imageInfo.height > imageInfo.width) {setisPortrait(true); return true;}
+    if (videoInfo.height > videoInfo.width) {setisPortrait(true); return true;}
+    else {
+      return false; 
+    }
+  }
 
   const initialize = async () => {
     let a, b, c;
