@@ -26,7 +26,15 @@ const Post = ({ post, postNum = 0 }) => {
   const router = useRouter();
   const [session, loading] = useSession();
   const [hasMedia, setHasMedia] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
   //console.log(post);
+
+  useEffect(() => {
+    
+    return () => {
+      setIsPortrait(false);
+    }
+  }, [post])
 
   useEffect(() => {
     context.nsfw === "false" && post.over_18

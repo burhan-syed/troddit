@@ -7,7 +7,13 @@ import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import Link from "next/dist/client/link";
 
-const ChildComments = ({ comment, depth, hide, op="" }) => {
+const ChildComments = ({
+  comment,
+  depth,
+  hide,
+  op = "",
+  portraitMode = false,
+}) => {
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [score, setScore] = useState("");
@@ -40,6 +46,15 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
 
   useEffect(() => {
     setchildcomments(comment?.data?.replies?.data?.children);
+  }, [comment]);
+
+  useEffect(() => {
+    if (comment?.data?.body_html?.includes("<a ")) {
+      comment.data.body_html = comment.data.body_html?.replaceAll("<a ", '<a target="_blank" ')
+      //console.log(comment?.data?.body_html);
+    }
+
+    return () => {};
   }, [comment]);
 
   useEffect(() => {
@@ -91,7 +106,7 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
   };
 
   const fixformat = async (comments) => {
-    if (comments.length > 0) {
+    if (comments?.length > 0) {
       let basedepth = comments[0].data.depth;
 
       let idIndex = new Map();
@@ -136,15 +151,21 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
-          ? "bg-white dark:bg-darkBG"
+          ? "bg-white dark:bg-darkBG border-r "
           : depth % 2 === 0
           ? " bg-white dark:bg-darkBG"
           : "bg-lightHighlight dark:bg-black") +
         (hide ? " hidden " : "") +
-        " border border-lightBorder dark:border-darkBorder rounded-md"
+        " border-t border-l border-b border-lightBorder dark:border-darkBorder rounded-md"
       }
     >
-      <div className={"flex flex-row"}>
+      <div
+        className={"flex flex-row"}
+        onClick={(e) => {
+          e.stopPropagation();
+          setHideChildren((h) => !h);
+        }}
+      >
         {/* Left column */}
         {/* Left Ribbon */}
         <div
@@ -162,7 +183,7 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
         <div
           className={
             " flex-col items-center justify-start flex-none lg:pr-2 md:pr-0.5 pt-4 hidden " +
-            (hideChildren ? " hidden " : " md:flex ")
+            (hideChildren || portraitMode ? " hidden " : " md:flex ")
           }
         >
           <BiUpvote
@@ -203,29 +224,44 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                 <h1 className="">{comment?.data?.author ?? ""}</h1>
               </a>
             </Link>
-            {(comment?.data?.author == op || comment?.data?.is_submitter) && <>
-            <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">{"OP"}</p>
-            </>}
-            {comment?.data?.distinguished == "moderator" && <>
-            <p className="px-0.5 font-medium text-green-500 dark:text-green-700 dark:opacity-80">{"MOD"}</p>
+            {(comment?.data?.author == op || comment?.data?.is_submitter) && (
+              <>
+                <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">
+                  {"OP"}
+                </p>
+              </>
+            )}
+            {comment?.data?.distinguished == "moderator" && (
+              <>
+                <p className="px-0.5 font-medium text-green-500 dark:text-green-700 dark:opacity-80">
+                  {"MOD"}
+                </p>
+              </>
+            )}
+            {comment?.data?.distinguished == "admin" && (
+              <>
+                <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">
+                  {"ADMIN"}
+                </p>
+              </>
+            )}
+            {!portraitMode && (
+              <div className="flex-row hidden md:flex">
+                <p>•</p>
+                <h1
+                  className={
+                    vote === 1 || comment?.myreply
+                      ? "text-upvote"
+                      : vote === -1
+                      ? "text-downvote"
+                      : ""
+                  }
+                >
+                  {score ?? "0"} pts
+                </h1>
+              </div>
+            )}
 
-            </>}
-            {comment?.data?.distinguished == "admin" && <>
-            <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">{"ADMIN"}</p>
-
-            </>}
-            <p>•</p>
-            <h1
-              className={
-                vote === 1 || comment?.myreply
-                  ? "text-upvote"
-                  : vote === -1
-                  ? "text-downvote"
-                  : ""
-              }
-            >
-              {score ?? "0"} pts
-            </h1>
             <p>•</p>
             <p className="">
               {secondsToTime(comment?.data?.created_utc, [
@@ -237,21 +273,31 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                 "yr",
               ])}
             </p>
-            <p
-              className={hideChildren || comment?.myreply ? "hidden" : "block"}
-            >
-              •
-            </p>
-            <button
-              className={hideChildren || comment?.myreply ? "hidden" : "block"}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                session ? setopenReply((p) => !p) : context.toggleLoginModal();
-              }}
-            >
-              Reply
-            </button>
+            {!portraitMode && (
+              <div className="flex-row hidden md:flex">
+                <p
+                  className={
+                    hideChildren || comment?.myreply ? "hidden" : "block"
+                  }
+                >
+                  •
+                </p>
+                <button
+                  className={
+                    hideChildren || comment?.myreply ? "hidden" : "block"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    session
+                      ? setopenReply((p) => !p)
+                      : context.toggleLoginModal();
+                  }}
+                >
+                  Reply
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Main Comment Body */}
@@ -259,7 +305,13 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
             <div className="flex-grow ">
               {/* Comment Text */}
               <div
-                className="pb-2 pl-3 mr-1 md:pl-0" 
+                onClick={(e) => {
+                  const cellText = document.getSelection();
+                  //console.log(cellText);
+                  if (cellText.anchorNode.nodeName != "#text" ) e.stopPropagation();
+                  if (cellText.type === "Range") e.stopPropagation();
+                }}
+                className="pb-2 pl-3 mr-1 md:pl-0"
                 id="innerhtml"
                 dangerouslySetInnerHTML={{
                   __html:
@@ -268,6 +320,62 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                 }}
               ></div>
 
+              {/* Mobile/Portrait vote */}
+              <div
+                className={
+                  (portraitMode ? "flex " : "flex md:hidden") +
+                  " flex-row items-center justify-start flex-none text-gray-400 dark:text-gray-500 space-x-1 "
+                }
+              >
+                <div
+                  className={
+                    (!portraitMode && "ml-1.5 ") +
+                    " flex flex-row items-center justify-center p-0.5  space-x-1 border border-transparent rounded-md "
+                  }
+                >
+                  <BiUpvote
+                    onClick={(e) => !comment?.myreply && castVote(e, 1)}
+                    className={
+                      (vote === 1 || comment?.myreply ? "text-upvote " : " ") +
+                      " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
+                    }
+                  />
+                  <h1
+                    className={
+                      vote === 1 || comment?.myreply
+                        ? "text-upvote"
+                        : vote === -1
+                        ? "text-downvote"
+                        : ""
+                    }
+                  >
+                    {score ?? "0"}
+                  </h1>
+                  <BiDownvote
+                    onClick={(e) => !comment?.myreply && castVote(e, -1)}
+                    className={
+                      (vote === -1 && "text-downvote ") +
+                      " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
+                    }
+                  />
+                </div>
+                <button
+                  className={
+                    hideChildren || comment?.myreply ? "hidden" : "block"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    session
+                      ? setopenReply((p) => !p)
+                      : context.toggleLoginModal();
+                  }}
+                >
+                  Reply
+                </button>
+              </div>
+
+              {/* Comment Reply */}
               <div
                 className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
                 onClick={(e) => e.stopPropagation()}
@@ -288,7 +396,10 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                           <div className={hideChildren ? "hidden" : " "}>
                             {!moreLoaded ? (
                               <div
-                                className="pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
+                                className={
+                                  (portraitMode ? "pl-1" : "pl-3") +
+                                  " pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
+                                }
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (session) {
@@ -311,6 +422,7 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                                   comment={morecomment}
                                   depth={morecomment?.data?.depth ?? depth + 1}
                                   hide={hideChildren}
+                                  portraitMode={portraitMode}
                                 />
                               ))
                             )}
@@ -320,6 +432,7 @@ const ChildComments = ({ comment, depth, hide, op="" }) => {
                             comment={childcomment}
                             depth={depth + 1}
                             hide={hideChildren}
+                            portraitMode={portraitMode}
                           />
                         )}
                       </div>

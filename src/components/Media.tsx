@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
+import { useWindowSize } from "@react-hook/window-size";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
@@ -32,9 +33,12 @@ const Media = ({
   allowIFrame = false,
   imgFull = false,
   forceMute = 0,
+  portraitMode = false,
 }) => {
   const context: any = useMainContext();
-  const [isPortrait, setisPortrait] = useState(false);
+  const [windowWidth, windowHeight] = useWindowSize();
+
+  const [isPortrait, setIsPortrait] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState([]);
@@ -79,7 +83,6 @@ const Media = ({
       setIsImage(false);
       setIsMP4(false);
       setIsTweet(false);
-      setisPortrait(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
       setVideoInfo({ url: "", height: 0, width: 0 });
@@ -99,13 +102,22 @@ const Media = ({
     return true;
   };
 
-  const checkIfPortrait = () => {
-    if (imageInfo.height > imageInfo.width) {setisPortrait(true); return true;}
-    if (videoInfo.height > videoInfo.width) {setisPortrait(true); return true;}
-    else {
-      return false; 
+  useEffect(() => {
+    const checkIfPortrait = () => {
+      //console.log('media', imageInfo,videoInfo);
+      if (imageInfo.height > imageInfo.width) {setIsPortrait(true); return true;}
+      if (videoInfo.height > videoInfo.width) {setIsPortrait(true); return true;}
+      else {
+        return false; 
+      }
     }
-  }
+    checkIfPortrait();
+    return () => {
+      setIsPortrait(false);
+    }
+  }, [imageInfo, videoInfo])
+
+  
 
   const initialize = async () => {
     let a, b, c;
@@ -120,7 +132,6 @@ const Media = ({
     //a = await findImage();
 
     //console.log(imageInfo, videoInfo, placeholderInfo);
-
     //checkURLs();
     a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
   };
@@ -425,20 +436,22 @@ const Media = ({
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<number>();
   useEffect(() => {
+    let cropamount = 0.77;
+    if (portraitMode) cropamount = 0.93;
     setheight({
       height: `${imageInfo.height}px`,
       maxHeight: `${Math.floor(
-        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )}px`,
     });
     setmaxheight({
       maxHeight: `${Math.floor(
-        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )}px`,
     });
     setmaxheightnum(
       Math.floor(
-        screen.height * (context?.columnOverride == 1 && !imgFull ? 0.5 : 0.75)
+        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )
     );
     return () => {
@@ -446,7 +459,7 @@ const Media = ({
       setmaxheight({});
       setmaxheightnum(0);
     };
-  }, [imageInfo, context?.columnOverride, imgFull]);
+  }, [imageInfo, context?.columnOverride, imgFull, portraitMode, windowHeight]);
 
   return (
     <div>
