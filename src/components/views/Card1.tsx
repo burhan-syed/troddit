@@ -243,7 +243,17 @@ const Card1 = ({
                     onClick={(e) => castVote(e, 1)}
                   />
                 </div>
-                <p className="">{score}</p>
+                <p
+                  className={
+                    vote === 1
+                      ? "text-upvote "
+                      : vote === -1
+                      ? "text-downvote "
+                      : " "
+                  }
+                >
+                  {score}
+                </p>
 
                 <div className="flex-none hover:cursor-pointer ">
                   <BiDownvote

@@ -24,25 +24,26 @@ const Card1 = ({
           //   ? "px-3 pt-3 pb-2 "
           //   : "  ") +
           // (!context.mediaOnly && " rounded-md ") +
-          (context?.columnOverride==1 && "") + 
+          (context?.columnOverride == 1 && "") +
           " text-sm bg-white border  border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
         }
       >
         <div className="">
           <div className={""}>
-              <div className={"relative group" + (hideNSFW && " overflow-hidden")}>
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                  <div className={(hideNSFW && " blur-3xl")}>
+            <div
+              className={"relative group" + (hideNSFW && " overflow-hidden")}
+            >
+              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <div className={hideNSFW && " blur-3xl"}>
                   <Media post={post} />
-                  </div>
-                  
-                </a>
-                {hideNSFW && 
-                  (
-                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">hidden</div>
-                  )
-                  }
-              </div>
+                </div>
+              </a>
+              {hideNSFW && (
+                <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                  hidden
+                </div>
+              )}
+            </div>
           </div>
 
           {/* <p>{post?.url ?? "ERR"}</p> */}
@@ -52,12 +53,11 @@ const Card1 = ({
                 <h1 className="text-lg font-medium leading-none cursor-pointer">
                   {post?.title ?? ""}
                   {post?.link_flair_richtext?.length > 0 && (
-              <span className="text-xs">
-                {"  "}
-                <TitleFlair post={post} />
-                
-              </span>
-            )}
+                    <span className="text-xs">
+                      {"  "}
+                      <TitleFlair post={post} />
+                    </span>
+                  )}
                 </h1>
               </a>
 
@@ -95,10 +95,12 @@ const Card1 = ({
                   ])}
                 </p>
                 {post?.over_18 && (
-                    <div className="flex flex-row pl-1 space-x-1">
-                      <p>•</p>
-                      <span className="text-red-400 text-color dark:text-red-700">NSFW</span>
-                    </div>
+                  <div className="flex flex-row pl-1 space-x-1">
+                    <p>•</p>
+                    <span className="text-red-400 text-color dark:text-red-700">
+                      NSFW
+                    </span>
+                  </div>
                 )}
 
                 <div className="flex flex-row ml-auto">
@@ -119,7 +121,17 @@ const Card1 = ({
                       onClick={(e) => castVote(e, 1)}
                     />
                   </div>
-                  <p className="">{score}</p>
+                  <p
+                    className={
+                      vote === 1
+                        ? "text-upvote "
+                        : vote === -1
+                        ? "text-downvote "
+                        : " "
+                    }
+                  >
+                    {score}
+                  </p>
 
                   <div className="flex-none hover:cursor-pointer ">
                     <BiDownvote
