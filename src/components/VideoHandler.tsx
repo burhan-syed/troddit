@@ -3,12 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 
-
 const VideoHandler = ({
   placeholder,
   videoInfo,
   maxHeight = {},
+  maxHeightNum = 6000,
   imgFull = false,
+  postMode = false,
   audio,
 }) => {
   const context: any = useMainContext();
@@ -17,7 +18,6 @@ const VideoHandler = ({
   // const [audioSrc, setaudioSrc] = useState("");
   // const [mounted, setMounted] = useState(false);
   // const [loaded, setLoaded] = useState(false);
- 
 
   const [hasAudio, sethasAudio] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -39,6 +39,24 @@ const VideoHandler = ({
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<Number>();
+
+  const [vidHeight, setVidHeight] = useState(videoInfo?.height);
+  const [vidWidth, setVidWidth] = useState(videoInfo?.width);
+
+  useEffect(() => {
+    if (imgFull) {
+      if (videoInfo?.height && maxHeightNum) {
+        let r = maxHeightNum / videoInfo.height;
+        setVidHeight(Math.floor(videoInfo.height * r));
+        setVidWidth(Math.floor(videoInfo.width * r));
+      }
+    }
+
+    return () => {
+      setVidHeight(videoInfo.height);
+      setVidWidth(videoInfo.width);
+    };
+  }, [imgFull, maxHeightNum, videoInfo]);
 
   useEffect(() => {
     setheight({
@@ -71,7 +89,6 @@ const VideoHandler = ({
     if (videoLoaded) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
-       
         //play the video
         video?.current
           ?.play()
@@ -83,7 +100,7 @@ const VideoHandler = ({
             //setVideoPlaying(false); this will be handled directly from the video element
             setmanualPlay(false);
           });
-      } 
+      }
       //pause the video
       else if (!video?.current?.paused && videoPlaying) {
         setVideoPlaying(false);
@@ -119,7 +136,7 @@ const VideoHandler = ({
       //if audio is not playing and video is playing, play audio
       if (!audioPlaying && videoPlaying) {
         audioRef?.current?.play().catch((e) => console.log(e));
-      } 
+      }
       //toggle audio mute
       audioRef.current.muted = !audioRef.current.muted;
       if (audioRef.current.muted) audioRef.current.pause();
@@ -132,13 +149,13 @@ const VideoHandler = ({
 
   //for pausing media when another post is opened
   const pauseAll = () => {
-      videoLoaded && video?.current?.pause();
-      hasAudio && audioRef.current.pause();
+    videoLoaded && video?.current?.pause();
+    hasAudio && audioRef.current.pause();
   };
 
   const pauseVideo = () => {
     videoLoaded && video?.current?.pause();
-  }
+  };
 
   //pause Audio while video is loading
   const pauseAudio = () => {
@@ -152,27 +169,27 @@ const VideoHandler = ({
       audioRef.current.currentTime = video.current.currentTime;
       audioRef.current.play();
     }
-  }
+  };
 
   //play Video..
   const playVideo = () => {
     videoLoaded && video?.current?.play().catch((e) => console.log(e));
-  }
+  };
 
   const handleMouseIn = () => {
     //if video was not played manually, in card mode,
     if (!manualPlay && videoLoaded && !context.mediaOnly) {
       //play video if not in autoplay
       if (!context.autoplay) playVideo();
-      
+
       //unmute play audio if allowed and video playing
-      if ((context.audioOnHover || !muted)){
-        audioRef.current.muted = false; 
+      if (context.audioOnHover || !muted) {
+        audioRef.current.muted = false;
         setMuted(false);
         playAudio();
-      } 
-    } 
-  } 
+      }
+    }
+  };
 
   const handleMouseOut = () => {
     //not in manual play, then pause audio and video
@@ -186,13 +203,16 @@ const VideoHandler = ({
       setMuted(true);
       audioRef.current.muted = true;
     }
-
-  }
+  };
 
   return (
     <div
-      className="relative overflow-hidden group"
-      style={(imgFull || context?.columnOverride==1) ? maxHeight : {}}
+      className={
+        "relative overflow-hidden group  " +
+        (postMode && " flex items-center justify-center  ")
+      }
+      // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
+      style={postMode ? {height: `${vidHeight}px`} : {}}
     >
       {videoLoaded ? (
         ""
@@ -201,14 +221,28 @@ const VideoHandler = ({
       )}
 
       <div
-        className={`blur-xl ` + `${videoLoaded ? "opacity-0" : "opacity-100"}`}
-        style={(imgFull || context?.columnOverride==1) && !videoLoaded ? imgheight : {}}
+        className={
+          `blur-xl ` +
+          `${
+            videoLoaded
+              ? postMode
+                ? " hidden "
+                : " opacity-0 "
+              : " opacity-100"
+          }` +
+          (!videoLoaded && postMode && " absolute")
+        }
+        style={
+          (imgFull || context?.columnOverride == 1) && !videoLoaded
+            ? imgheight
+            : {}
+        }
       >
         <Image
-          className="absolute top-0 left-0"
+          className={!postMode ? "absolute top-0 left-0" : " "}
           src={placeholder.url}
-          height={placeholder.height}
-          width={placeholder.width}
+          height={vidHeight}
+          width={vidWidth}
           alt="placeholder"
           unoptimized={true}
           priority={imgFull}
@@ -222,10 +256,10 @@ const VideoHandler = ({
         ref={video}
         className={
           (videoLoaded ? "opacity-100" : "opacity-0") +
-          " absolute top-0 left-0 "
+          (!postMode && " absolute top-0 left-0 ")
         }
-        width={`${videoInfo.width} !important`}
-        height={`${videoInfo.height} !important`}
+        width={`${vidWidth} !important`}
+        height={`${vidHeight} !important`}
         autoPlay={context?.autoplay}
         muted
         loop
@@ -249,8 +283,7 @@ const VideoHandler = ({
         }}
         controls={false} //{!context?.autoplay}
         onMouseOver={(event) => {
-         
-          handleMouseIn(); 
+          handleMouseIn();
         }}
         onMouseOut={(event) => {
           handleMouseOut();

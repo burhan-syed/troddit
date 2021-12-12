@@ -409,10 +409,10 @@ export const loadMoreComments = async (
   }
 };
 
-export const loadPost = async (permalink) => {
+export const loadPost = async (permalink, sort="top") => {
   try {
     const res = await (
-      await axios.get(`${REDDIT}${permalink}.json?sort=top`, {
+      await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
         params: { raw_json: 1 },
       })
     ).data;

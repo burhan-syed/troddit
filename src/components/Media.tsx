@@ -34,6 +34,7 @@ const Media = ({
   imgFull = false,
   forceMute = 0,
   portraitMode = false,
+  postMode = false,
 }) => {
   const context: any = useMainContext();
   const [windowWidth, windowHeight] = useWindowSize();
@@ -587,8 +588,10 @@ const Media = ({
                     placeholder={placeholderInfo}
                     videoInfo={videoInfo}
                     maxHeight={maxheight}
+                    maxHeightNum={maxheightnum}
                     imgFull={imgFull}
                     audio={videoAudio}
+                    postMode={postMode}
                   />
                 </LazyLoad>
               </div>

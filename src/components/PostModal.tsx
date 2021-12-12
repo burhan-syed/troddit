@@ -289,6 +289,7 @@ const PostModal = ({
                         allowIFrame={true}
                         imgFull={imgFull}
                         portraitMode={true}
+                        postMode={true}
                       />
                     </div>
                     {hideNSFW && (
@@ -517,6 +518,7 @@ const PostModal = ({
                                   post={apost}
                                   allowIFrame={true}
                                   imgFull={imgFull}
+                                  postMode={true}
                                 />
                               </div>
                               {hideNSFW && (
@@ -583,7 +585,7 @@ const PostModal = ({
                                       "hidden " + (!usePortrait && " md:block ")
                                     }
                                   >
-                                    Expand
+                                    Size
                                   </h1>
                                   <BiExpand
                                     className={
@@ -599,7 +601,7 @@ const PostModal = ({
                                       "hidden " + (!usePortrait && " md:block ")
                                     }
                                   >
-                                    Collapse
+                                    Size
                                   </h1>
                                   <BiCollapse
                                     className={
