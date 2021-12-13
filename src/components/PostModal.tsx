@@ -23,6 +23,7 @@ import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { findMediaInfo } from "../../lib/utils";
+import { useKeyPress } from "../hooks/KeyPress";
 const PostModal = ({
   setSelect,
   returnRoute,
@@ -48,9 +49,20 @@ const PostModal = ({
   const [imgFull, setimgFull] = useState(true);
   const [windowWidth, windowHeight] = useWindowSize();
 
-  // const {checkIfPortrait, isPortrait} = FindMedia(postData);
+  const nextPress = useKeyPress("ArrowRight");
+  const backPress = useKeyPress("ArrowLeft");
+  const escapePress = useKeyPress("Escape");
 
- 
+  useEffect(() => {
+    if (nextPress) {
+      changePost(1);
+    } else if (backPress) {
+      changePost(-1);
+    } else if (escapePress) {
+      handleBack();
+    }
+    return () => {};
+  }, [nextPress, backPress, escapePress]);
 
   useEffect(() => {
     const checkPortrait = async () => {
@@ -219,7 +231,7 @@ const PostModal = ({
 
   const updateComments = async (newlink) => {
     setLoadingComments(true);
-    const { post, comments } = await loadPost(newlink,sort);
+    const { post, comments } = await loadPost(newlink, sort);
     // if (Object.keys(postData).length === 0) {
     //   setPost(post);
     //   setLoadingPost(false);
@@ -297,7 +309,7 @@ const PostModal = ({
                       />
                     </div>
                     {hideNSFW && (
-                      <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
+                      <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                         hidden
                       </div>
                     )}
@@ -321,7 +333,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg sm:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
+                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg md:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
@@ -484,6 +496,14 @@ const PostModal = ({
                           <p className="">
                             {secondsToTime(apost?.created_utc)}
                           </p>
+                          {apost?.over_18 && (
+                            <div className="flex flex-row pl-1 space-x-1">
+                              <p>•</p>
+                              <span className="text-red-400 text-color dark:text-red-700">
+                                NSFW
+                              </span>
+                            </div>
+                          )}
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${apost?.domain})`}</p>
                           </div>
@@ -525,7 +545,7 @@ const PostModal = ({
                                 />
                               </div>
                               {hideNSFW && (
-                                <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
+                                <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                                   hidden
                                 </div>
                               )}
@@ -572,7 +592,14 @@ const PostModal = ({
                                   }}
                                   className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                                 >
-                                  <HiOutlineSwitchHorizontal className={"flex-none  " + (usePortrait ? " w-6 h-6 " : " w-5 h-5 m-0.5")} />
+                                  <HiOutlineSwitchHorizontal
+                                    className={
+                                      "flex-none  " +
+                                      (usePortrait
+                                        ? " w-6 h-6 "
+                                        : " w-5 h-5 m-0.5")
+                                    }
+                                  />
                                 </button>
                               </>
                             )}
