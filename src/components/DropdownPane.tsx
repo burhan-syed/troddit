@@ -253,7 +253,7 @@ const DropdownPane = ({ hide }) => {
                           <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                             {/* Image */}
                             <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                              <div className="w-6 h-6 text-center text-white bg-red-400 rounded ">
+                              <div className="w-6 h-6 text-center text-lightText bg-red-400 rounded ">
                                 {"m"}
                               </div>
                             </div>
@@ -295,7 +295,7 @@ const DropdownPane = ({ hide }) => {
                           <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                             {/* Image */}
                             <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                              <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full ">
+                              <div className="w-6 h-6 text-center text-lightText bg-blue-700 rounded-full ">
                                 {"r/"}
                               </div>
                             </div>

@@ -39,7 +39,7 @@ const Card1 = ({
                 </div>
               </a>
               {hideNSFW && (
-                <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
                   hidden
                 </div>
               )}
@@ -115,7 +115,7 @@ const Card1 = ({
                       className={
                         (vote === 1
                           ? "text-upvote "
-                          : " text-black dark:text-white") +
+                          : " text-black dark:text-lightText") +
                         " w-5 h-5 hover:scale-110 hover:text-upvote"
                       }
                       onClick={(e) => castVote(e, 1)}
@@ -138,7 +138,7 @@ const Card1 = ({
                       className={
                         (vote === -1
                           ? " text-downvote "
-                          : " text-black dark:text-white ") +
+                          : " text-black dark:text-lightText ") +
                         " w-5 h-5 hover:scale-110 hover:text-downvote"
                       }
                       onClick={(e) => castVote(e, -1)}

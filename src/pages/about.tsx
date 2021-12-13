@@ -9,7 +9,7 @@ const about = () => {
         <title>troddit · about</title>
       </Head>
       <NavBar />
-      <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-gray-300">
+      <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-lightText">
         <div className="flex flex-col max-w-lg space-y-1 ">
           <p className="">
             Troddit is a web client for Reddit. While an account is not

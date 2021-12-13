@@ -293,7 +293,7 @@ const VideoHandler = ({
       >
         <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
       </video>
-      <div className="absolute bottom-0 flex flex-row min-w-full p-1 mb-1 text-white ">
+      <div className="absolute bottom-0 flex flex-row min-w-full p-1 mb-1 text-lightText ">
         <button
           onClick={(e) => playControl(e)}
           className={

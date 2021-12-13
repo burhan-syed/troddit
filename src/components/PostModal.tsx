@@ -50,6 +50,8 @@ const PostModal = ({
 
   // const {checkIfPortrait, isPortrait} = FindMedia(postData);
 
+ 
+
   useEffect(() => {
     const checkPortrait = async () => {
       let check = await findMediaInfo(apost);
@@ -295,7 +297,7 @@ const PostModal = ({
                       />
                     </div>
                     {hideNSFW && (
-                      <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                      <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
                         hidden
                       </div>
                     )}
@@ -523,7 +525,7 @@ const PostModal = ({
                                 />
                               </div>
                               {hideNSFW && (
-                                <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                                <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
                                   hidden
                                 </div>
                               )}

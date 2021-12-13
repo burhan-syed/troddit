@@ -9,7 +9,7 @@ const TitleFlair = ({ post }) => {
   return (
     <div
       className={`p-0.5 px-1 rounded-lg inline-block select-none ${
-        (post?.link_flair_text_color == "light" ? " text-white " : "text-black")
+        (post?.link_flair_text_color == "light" ? " text-lightText " : "text-black")
       }`}
       style={{ backgroundColor: `${post?.link_flair_background_color ? post?.link_flair_background_color : "#EDEFF1"}` }}
     >

@@ -18,7 +18,7 @@ class MyDocument extends Document {
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
           <meta />
         </Head>
-        <body className="overflow-x-hidden text-gray-900 bg-coolGray-200 dark:bg-black dark:text-gray-100 scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full">
+        <body className="overflow-x-hidden text-gray-900 bg-coolGray-200 dark:bg-black dark:text-lightText scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full">
           <Main />
           <NextScript />
         </body>

@@ -103,18 +103,18 @@ const Card1 = ({
                     </div>
                   </a>
                   {hideNSFW && (
-                    <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                    <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
                       hidden
                     </div>
                   )}
                   {context.mediaOnly && (
                     <div className="">
                       <a
-                        className="top-0 hidden w-full p-2 text-white h-5/6 group-hover:absolute group-hover:block bg-gradient-to-b from-black"
+                        className="top-0 hidden w-full p-2 text-lightText h-5/6 group-hover:absolute group-hover:block bg-gradient-to-b from-black"
                         href={post?.permalink}
                         onClick={(e) => e.preventDefault()}
                       ></a>
-                      <div className="top-0 hidden w-full p-2 text-white group-hover:absolute group-hover:block ">
+                      <div className="top-0 hidden w-full p-2 text-lightText group-hover:absolute group-hover:block ">
                         <div className="flex flex-row text-xs font-light truncate text-gray">
                           <Link href={`/r/${post?.subreddit}`}>
                             <a
@@ -214,7 +214,7 @@ const Card1 = ({
                   <Media post={post} forceMute={forceMute} />
                 </div>
                 {hideNSFW && (
-                  <div className="absolute flex flex-row justify-center w-full text-white opacity-50 top-1/2">
+                  <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
                     hidden
                   </div>
                 )}
@@ -237,7 +237,7 @@ const Card1 = ({
                     className={
                       (vote === 1
                         ? "text-upvote "
-                        : " text-black dark:text-white") +
+                        : " text-black dark:text-lightText") +
                       " w-5 h-5 hover:scale-110 hover:text-upvote"
                     }
                     onClick={(e) => castVote(e, 1)}
@@ -260,7 +260,7 @@ const Card1 = ({
                     className={
                       (vote === -1
                         ? " text-downvote "
-                        : " text-black dark:text-white ") +
+                        : " text-black dark:text-lightText ") +
                       " w-5 h-5 hover:scale-110 hover:text-downvote"
                     }
                     onClick={(e) => castVote(e, -1)}

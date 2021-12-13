@@ -64,7 +64,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
             <div
               className={
                 (isMulti ? "rounded bg-red-400" : "rounded-full bg-blue-700") +
-                " w-6 h-6 text-center text-white"
+                " w-6 h-6 text-center text-lightText"
               }
             >
               {isUser ? "u/" : isMulti ? "m" : "r/"}

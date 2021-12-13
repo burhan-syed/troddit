@@ -51,7 +51,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
 
   // Tailwind styles. Most importantly notice position absolute, this will sit relative to the carousel's outer div.
   const arrowStyle =
-    "absolute text-white text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center opacity-50";
+    "absolute text-lightText text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center opacity-50";
 
   // Let's create dynamic buttons. It can be either left or right. Using
   // isLeft boolean we can determine which side we'll be rendering our button
@@ -77,7 +77,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
         {/* <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button> */}
-        <div className="absolute z-10 p-2 text-white bg-black rounded-lg opacity-50 top-2 right-2">
+        <div className="absolute z-10 p-2 text-lightText bg-black rounded-lg opacity-50 top-2 right-2">
           <h1>{index + 1 + "/" + images.length}</h1>
         </div>
         {/* <div className="block border-2 opacity-100 border-upvote">

@@ -126,7 +126,7 @@ const Search = ({ id }) => {
                 ></Image>
               </div>
             ) : (
-              <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full">
+              <div className="w-6 h-6 text-center text-lightText bg-blue-700 rounded-full">
                 r/
               </div>
             )}
