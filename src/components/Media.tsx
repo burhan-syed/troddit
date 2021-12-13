@@ -463,7 +463,7 @@ const Media = ({
   }, [imageInfo, context?.columnOverride, imgFull, portraitMode, windowHeight]);
 
   return (
-    <div>
+    <div className="block">
       {loaded && (
         <>
           {isTweet && (
@@ -532,7 +532,7 @@ const Media = ({
           {isImage && !isIFrame && !isMP4 ? (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
-              className={"relative"}
+              className={"relative block "}
               style={imgFull || context?.columnOverride == 1 ? imgheight : {}}
             >
               {mediaLoaded ? (
