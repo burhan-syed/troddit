@@ -38,6 +38,7 @@ const PostModal = ({
   const [post_comments, setComments] = useState([]);
   const [loadingPost, setLoadingPost] = useState(true);
   const [loadingComments, setLoadingComments] = useState(true);
+  const [sort, setSort] = useState("top");
   const [myReplies, setmyReplies] = useState([]);
   const [score, setScore] = useState("");
   const [vote, setVote] = useState(0);
@@ -52,12 +53,12 @@ const PostModal = ({
   useEffect(() => {
     const checkPortrait = async () => {
       let check = await findMediaInfo(apost);
-      console.log("check", check);
+      //console.log("check", check);
       check && setUsePortrait(true);
       setWait(false);
     };
     if (apost?.id) {
-      console.log(windowWidth, windowHeight);
+      //console.log(windowWidth, windowHeight);
       if (windowWidth > 1300) {
         if (portrait) {
           setUsePortrait(true);
@@ -140,7 +141,7 @@ const PostModal = ({
         setPost(postData);
         setLoadingPost(false);
       }
-      const { post, comments } = await loadPost(permalink);
+      const { post, comments } = await loadPost(permalink, sort);
       if (Object.keys(postData).length === 0) {
         setPost(post);
         setLoadingPost(false);
@@ -161,6 +162,7 @@ const PostModal = ({
   const updateSort = async (e, sort) => {
     e.preventDefault();
     setLoadingComments(true);
+    setSort(sort);
     const newcomments = await loadComments(permalink, sort);
     setComments(newcomments);
     setLoadingComments(false);
@@ -215,7 +217,7 @@ const PostModal = ({
 
   const updateComments = async (newlink) => {
     setLoadingComments(true);
-    const { post, comments } = await loadPost(newlink);
+    const { post, comments } = await loadPost(newlink,sort);
     // if (Object.keys(postData).length === 0) {
     //   setPost(post);
     //   setLoadingPost(false);
@@ -308,7 +310,6 @@ const PostModal = ({
                 (!usePortrait ? "w-full md:w-10/12 lg:w-3/4 " : " md:w-4/12 ") +
                 " z-10 pt-2  md:flex md:flex-col md:items-center "
               }
-              onClick={() => handleBack()}
             >
               <div className="absolute md:fixed left-4 top-16">
                 <RiArrowGoBackLine
@@ -318,7 +319,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full overflow-y-auto border-t border-transparent rounded-lg mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
+                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg sm:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
@@ -732,7 +733,7 @@ const PostModal = ({
                       </div>
                     </div>
                     <div className="z-10 flex-none">
-                      <CommentSort updateSort={updateSort} />
+                      <CommentSort updateSort={updateSort} sortBy={sort} />
                     </div>
                   </div>
                   {/* Loading Comments */}
@@ -802,7 +803,7 @@ const PostModal = ({
                       <h1 className="">
                         {post_comments?.[0] ? "" : "no comments :("}
                       </h1>
-                      <div className={"flex-grow  w-full px-2"}>
+                      <div className={"flex-grow  w-full px-2 "}>
                         <Comments comments={myReplies} depth={0} />
                         <Comments
                           comments={post_comments}

@@ -205,7 +205,7 @@ const ChildComments = ({
         {/* Comment Body */}
         <div
           className={
-            "flex-grow mt-3 max-w-full  " + (hideChildren && " md:pl-8 mb-3")
+            "flex-grow mt-3 max-w-full   " + (hideChildren && " md:pl-8 mb-3")
           }
           onClick={(e) => {
             e.stopPropagation();
@@ -302,7 +302,7 @@ const ChildComments = ({
 
           {/* Main Comment Body */}
           <div className={(hideChildren ? "hidden" : " ") + " "}>
-            <div className="flex-grow ">
+            <div className="">
               {/* Comment Text */}
               <div
                 onClick={(e) => {
@@ -397,8 +397,8 @@ const ChildComments = ({
                             {!moreLoaded ? (
                               <div
                                 className={
-                                  (portraitMode ? "pl-1" : "pl-3") +
-                                  " pt-2 pl-3 cursor-pointer hover:font-semibold md:pl-0"
+                                  (portraitMode ? "" : "") +
+                                  " pt-2  cursor-pointer hover:font-semibold md:pl-0"
                                 }
                                 onClick={(e) => {
                                   e.stopPropagation();

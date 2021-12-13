@@ -69,6 +69,9 @@
 #innerhtml a {
   @apply text-blue-600 underline dark:text-blue-400;
 }
+#innerhtml p {
+  
+}
 
 .react-markdown a {
   @apply text-blue-800 underline;

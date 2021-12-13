@@ -607,7 +607,7 @@ const Media = ({
           (context.cardStyle !== "card2" || imgFull) ? (
             <div
               className={
-                "p-1 overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
+                "p-1 overflow-y-auto  overscroll-auto scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
                 (!imgFull &&
                   " max-h-96 border-b dark:border-darkBorderHighlight")
               }

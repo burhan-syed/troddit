@@ -11,8 +11,8 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const CommentSort = ({ updateSort }) => {
-  const [sort, setsort] = useState("top");
+const CommentSort = ({ updateSort, sortBy="top" }) => {
+  const [sort, setsort] = useState(sortBy);
   //confidence (best),top,new,controversial,old,qa (Q&A)
 
   return (

@@ -44,9 +44,16 @@ const NavBar = () => {
   const { scrollY, scrollX, scrollDirection } = useScroll();
   useEffect(() => {
     if (allowHide) {
-      scrollDirection === "down" ? setHidden(false) : setHidden(true);
+      //console.log(scrollDirection, scrollY);
+      if (scrollDirection === "down"){
+        setHidden(false);
+      } else if (scrollY > 300) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
     }
-  }, [scrollDirection, allowHide]);
+  }, [scrollDirection, allowHide, scrollY]);
 
   useEffect(() => {
     //console.log("NAVBAR", router.query);
