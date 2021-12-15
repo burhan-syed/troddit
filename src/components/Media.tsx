@@ -528,7 +528,11 @@ const Media = ({
           {isGallery ? (
             <div
               className="flex flex-col items-center"
-              style={imgFull || context?.columnOverride == 1 ? maxheight : {}}
+              style={
+                imgFull || (context?.columnOverride == 1 && !postMode)
+                  ? maxheight
+                  : {}
+              }
             >
               <Gallery
                 images={galleryInfo}
@@ -591,7 +595,11 @@ const Media = ({
             showMP4 ? (
               <div
                 className="flex flex-col items-center flex-none "
-                style={imgFull || context?.columnOverride == 1 ? maxheight : {}}
+                style={
+                  imgFull || (context?.columnOverride == 1 && !postMode)
+                    ? maxheight
+                    : {}
+                }
               >
                 <LazyLoad
                   height={videoInfo.height}
