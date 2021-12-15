@@ -68,6 +68,7 @@ const Search = ({ id }) => {
         }
       } else {
         //fallback to local search
+        seterror(true);
         suggestions = [];
       }
     }
@@ -210,8 +211,7 @@ const Search = ({ id }) => {
           lastsuggestion === suggestion?.data?.display_name_prefixed && (
             <>
               <div className="flex flex-col items-center justify-center w-full h-full py-3 bg-white border rounded-lg select-none dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight">
-                <h1>{"Can't connect to Reddit"}</h1>
-                <h1>{"You may be blocking acccess"}</h1>
+                <h1>{"Can't connect to Reddit for search"}</h1>
               </div>
             </>
           )}
