@@ -30,11 +30,10 @@ const Post = ({ post, postNum = 0 }) => {
   //console.log(post);
 
   useEffect(() => {
-    
     return () => {
       setIsPortrait(false);
-    }
-  }, [post])
+    };
+  }, [post]);
 
   useEffect(() => {
     context.nsfw === "false" && post.over_18
@@ -69,22 +68,27 @@ const Post = ({ post, postNum = 0 }) => {
     }
   };
 
-  const handleClick = () => {
-    setLastRoute(router.asPath);
-    context.setPauseAll(true);
-    setSelect(true);
-    // need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
-    if (router.query?.frontsort) {
-      // router.push("/", post.permalink);
-      // console.log("FRONSORT");
-      //setReturnRoute(router.asPath);
-      router.push("", post.id, { shallow: true });
-    } else if (router.pathname.includes("/user/")) {
-     router.push("",`/user/${post.author}/p/${post.id}`,{shallow:true});
+  const handleClick = (e) => {
+    e.stopPropagation();
+    console.log(e);
+    if (!e.ctrlKey) {
+      setLastRoute(router.asPath);
+      context.setPauseAll(true);
+      setSelect(true);
+      // need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
+      if (router.query?.frontsort) {
+        // router.push("/", post.permalink);
+        // console.log("FRONSORT");
+        //setReturnRoute(router.asPath);
+        router.push("", post.id, { shallow: true });
+      } else if (router.pathname.includes("/user/")) {
+        router.push("", `/user/${post.author}/p/${post.id}`, { shallow: true });
+      } else {
+        router.push("", post.permalink, { shallow: true });
+      }
     } else {
-      router.push("", post.permalink, { shallow: true });
+      window.open(`${post.permalink}`, "_blank");
     }
-
   };
 
   const findMedia = () => {
@@ -140,7 +144,7 @@ const Post = ({ post, postNum = 0 }) => {
       )}
 
       {/* Click wrappter */}
-      <div onClick={() => handleClick()}>
+      <div onClick={(e) => handleClick(e)}>
         {/* OG Card */}
         {/* <h1>{postNum}</h1> */}
         {context?.cardStyle === "row1" ? (
