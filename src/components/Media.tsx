@@ -106,19 +106,22 @@ const Media = ({
   useEffect(() => {
     const checkIfPortrait = () => {
       //console.log('media', imageInfo,videoInfo);
-      if (imageInfo.height > imageInfo.width) {setIsPortrait(true); return true;}
-      if (videoInfo.height > videoInfo.width) {setIsPortrait(true); return true;}
-      else {
-        return false; 
+      if (imageInfo.height > imageInfo.width) {
+        setIsPortrait(true);
+        return true;
       }
-    }
+      if (videoInfo.height > videoInfo.width) {
+        setIsPortrait(true);
+        return true;
+      } else {
+        return false;
+      }
+    };
     checkIfPortrait();
     return () => {
       setIsPortrait(false);
-    }
-  }, [imageInfo, videoInfo])
-
-  
+    };
+  }, [imageInfo, videoInfo]);
 
   const initialize = async () => {
     let a, b, c;
@@ -442,17 +445,20 @@ const Media = ({
     setheight({
       height: `${imageInfo.height}px`,
       maxHeight: `${Math.floor(
-        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
+        windowHeight *
+          (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )}px`,
     });
     setmaxheight({
       maxHeight: `${Math.floor(
-        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
+        windowHeight *
+          (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )}px`,
     });
     setmaxheightnum(
       Math.floor(
-        windowHeight * (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
+        windowHeight *
+          (context?.columnOverride == 1 && !imgFull ? 0.5 : cropamount)
       )
     );
     return () => {
@@ -523,7 +529,10 @@ const Media = ({
               className="flex flex-col items-center"
               style={imgFull || context?.columnOverride == 1 ? maxheight : {}}
             >
-              <Gallery images={galleryInfo} maxheight={maxheightnum} />{" "}
+              <Gallery
+                images={galleryInfo}
+                maxheight={postMode && imgFull ? maxheightnum : 0}
+              />
             </div>
           ) : (
             ""

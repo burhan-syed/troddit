@@ -293,7 +293,12 @@ const PostModal = ({
             {/* Portrait Media */}
             {usePortrait && (
               <div className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
-                <div className={"items-center justify-center flex-grow block " + (!imgFull && " my-auto")}>
+                <div
+                  className={
+                    "items-center justify-center flex-grow block " +
+                    (!imgFull && " my-auto")
+                  }
+                >
                   <div
                     className={
                       "block relative " + (hideNSFW && " overflow-hidden")
@@ -606,7 +611,7 @@ const PostModal = ({
 
                             <button
                               onClick={(e) => setimgFull((p) => !p)}
-                              className="flex flex-row items-center p-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                              className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                             >
                               {imgFull ? (
                                 <>

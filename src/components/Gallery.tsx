@@ -9,29 +9,46 @@ const Gallery = ({ images, maxheight = 0 }) => {
   const [imgtall, setimgtall] = useState(0);
   const [imgwidth, setimgwidth] = useState(0);
   const [style, setStyle] = useState({});
+  const [imagesRender, setImagesRender] = useState(images);
+
   useEffect(() => {
     let ratio = 1;
     let tallest = 0;
     let widest = 0;
     if (images.length > 0) {
       //console.log(images, "gallery");
+
       if (maxheight > 0) {
+        let newimages = [];
         //console.log(maxheight);
         images.forEach((img, i) => {
           if (img.height > maxheight) {
             ratio = maxheight / img.height;
-            images[i].height = Math.floor(img.height * ratio);
-            images[i].width = Math.floor(img.width * ratio);
+            newimages.push({
+              url: img.url,
+              height: Math.floor(img.height * ratio),
+              width: Math.floor(img.width * ratio),
+            });
           }
-          if (images[i].height > tallest) {tallest = images[i].height};
-          if (images[i].width > widest) {widest = images[i].width};
+          if (images[i].height > tallest) {
+            tallest = images[i].height;
+          }
+          if (images[i].width > widest) {
+            widest = images[i].width;
+          }
         });
+        setImagesRender(newimages);
         setimgtall(tallest);
         setimgwidth(widest);
         setStyle({ height: `${tallest}px`, width: `${widest}px` });
+      } else {
+        setImagesRender(images);
       }
-      setLoaded(true);
     }
+    setLoaded(true);
+    return () => {
+      setLoaded(false);
+    };
   }, [images, maxheight]);
 
   const advance = (e) => {
@@ -77,7 +94,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
         {/* <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button> */}
-        <div className="absolute z-10 p-2 text-lightText bg-black rounded-lg opacity-50 top-2 right-2">
+        <div className="absolute z-10 p-2 bg-black rounded-lg opacity-50 text-lightText top-2 right-2">
           <h1>{index + 1 + "/" + images.length}</h1>
         </div>
         {/* <div className="block border-2 opacity-100 border-upvote">
@@ -94,14 +111,12 @@ const Gallery = ({ images, maxheight = 0 }) => {
         </div> */}
         {sliderControl(true)}
         <div className="">
-          {images.map((image, i) => {
+          {imagesRender.map((image, i) => {
             if (i < index + 3 || i > index - 3) {
               return (
                 <div
                   key={i + image.url}
-                  className={`${
-                    i === index ? " opacity-100 block" : "hidden"
-                  }`}
+                  className={`${i === index ? " opacity-100 block" : "hidden"}`}
                 >
                   <Image
                     src={image.url}
