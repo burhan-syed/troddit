@@ -70,7 +70,6 @@ const Post = ({ post, postNum = 0 }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
-    console.log(e);
     if (!e.ctrlKey) {
       setLastRoute(router.asPath);
       context.setPauseAll(true);

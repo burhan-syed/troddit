@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Autosuggest from "react-autosuggest";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import router from "next/router";
 import { useMainContext } from "../MainContext";
@@ -18,10 +18,23 @@ const Search = ({ id }) => {
   const [lastsuggestion, setlastsuggestion] = useState("");
   const [morethanonesuggestion, setmorethanonesuggestion] = useState(false);
   const context: any = useMainContext();
+  const lastRequest = useRef(null);
+  const [updated, setUpdated] = useState(false);
+
+  useEffect(() => {
+    //console.log("f", updated);
+    setUpdated(false);
+  }, [lastRequest?.current]);
 
   const onSuggestionsFetchRequested = async ({ value }) => {
+    lastRequest.current = value;
     const suggestions = await getSuggestions({ value });
-    setSuggestions(suggestions);
+    if (Object.keys(suggestions).length > 0) {
+      setSuggestions(suggestions);
+
+      setUpdated(true);
+      // console.log("u", updated);
+    }
   };
 
   const getSuggestions = async (value) => {
@@ -41,10 +54,9 @@ const Search = ({ id }) => {
         value.value,
         context.nsfw
       ));
-      console.log(returnQuery + "  " + value.value);
-      if (data.length == 0 || returnQuery !== value.value) {
+      if (data.length == 0) {
         seterror(true);
-      } else {
+      } else if (lastRequest.current === value.value) {
         seterror(false);
         suggestions = data.filter((sub) => {
           if (context.nsfw === "true") return sub;
@@ -52,6 +64,10 @@ const Search = ({ id }) => {
             return sub;
           }
         });
+        //console.log("kept", lastRequest);
+      } else {
+        // console.log("discard", lastRequest, value.value);
+        return {};
       }
     }
     if (!session || suggestions.length == 0) {
@@ -92,7 +108,7 @@ const Search = ({ id }) => {
         })
         .slice(0, 4);
       search.forEach((s) => {
-        if (s != value) {
+        if (s.toLowerCase() != value.toLowerCase()) {
           suggestions.push({
             data: { display_name_prefixed: s, display_name: s },
           });
@@ -214,7 +230,18 @@ const Search = ({ id }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     setValue("");
-    goToSub(event, suggestion?.data?.display_name ?? "popular");
+    //console.log(updated);
+    if (
+      suggestion?.data?.display_name
+        ?.toLowerCase()
+        .includes(lastRequest.current.toLowerCase()) ||
+      updated
+    ) {
+      goToSub(event, suggestion?.data?.display_name ?? "popular");
+    } else {
+      //console.log(lastRequest, suggestion?.data?.display_name);
+      goToSub(event, lastRequest.current);
+    }
   };
 
   const onChange = (event, { newValue, method }) => {
