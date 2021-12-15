@@ -341,25 +341,15 @@ export const searchSubreddits = async (query, over18 = false) => {
       let data = await res.data;
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(res);
-      return (
-        { data: data?.data?.children, returnQuery: query } ?? {
-          data: [],
-          returnQuery: query,
-        }
-      );
+      return data?.data?.children ?? [];
     } catch (err) {
-      //console.log(err);
+      console.log(err);
+      return [];
     }
   } else {
-    return {
-      data: [],
-      returnQuery: query,
-    };
+    return [];
   }
-  return {
-    data: [],
-    returnQuery: query,
-  };
+  return [];
 };
 
 const loadAll = async (func) => {

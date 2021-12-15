@@ -38,6 +38,7 @@ const Search = ({ id }) => {
   };
 
   const getSuggestions = async (value) => {
+    console.log(value);
     let suggestions = [
       {
         data: {
@@ -47,27 +48,27 @@ const Search = ({ id }) => {
         },
       },
     ];
+    let data = [];
     if (session) {
-      let data = [];
-      let returnQuery = "";
-      ({ data, returnQuery } = await searchSubreddits(
-        value.value,
-        context.nsfw
-      ));
-      if (data.length == 0) {
-        seterror(true);
-      } else if (lastRequest.current === value.value) {
-        seterror(false);
-        suggestions = data.filter((sub) => {
-          if (context.nsfw === "true") return sub;
-          else if (sub?.data?.over18 !== true) {
-            return sub;
-          }
-        });
-        //console.log("kept", lastRequest);
+      data = await searchSubreddits(value.value, context.nsfw);
+      console.log(data);
+      if (data?.length > 0) {
+        if (lastRequest.current === value.value) {
+          seterror(false);
+          suggestions = data.filter((sub) => {
+            if (context.nsfw === "true") return sub;
+            else if (sub?.data?.over18 !== true) {
+              return sub;
+            }
+          });
+          //console.log("kept", lastRequest);
+        } else {
+          // console.log("discard", lastRequest, value.value);
+          // return {};
+        }
       } else {
-        // console.log("discard", lastRequest, value.value);
-        return {};
+        //fallback to local search
+        suggestions = [];
       }
     }
     if (!session || suggestions.length == 0) {
