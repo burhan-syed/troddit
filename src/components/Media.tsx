@@ -470,7 +470,7 @@ const Media = ({
   }, [imageInfo, context?.columnOverride, imgFull, portraitMode, windowHeight]);
 
   return (
-    <div className="block">
+    <div className="block select-none">
       {loaded && (
         <>
           {isTweet && (
@@ -552,7 +552,11 @@ const Media = ({
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
               className={"relative block "}
-              style={imgFull || context?.columnOverride == 1 ? imgheight : {}}
+              style={
+                imgFull || (context?.columnOverride == 1 && !postMode)
+                  ? imgheight
+                  : {}
+              }
             >
               {mediaLoaded ? (
                 ""
@@ -566,7 +570,7 @@ const Media = ({
                 width={imageInfo.width}
                 alt=""
                 layout={
-                  imgFull || context?.columnOverride == 1
+                  imgFull || (context?.columnOverride == 1 && !postMode)
                     ? "fill"
                     : "responsive"
                 }
@@ -630,7 +634,7 @@ const Media = ({
           (context.cardStyle !== "card2" || imgFull) ? (
             <div
               className={
-                "p-1 overflow-y-auto  overscroll-auto scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
+                "p-1 overflow-y-auto select-text  overscroll-auto scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
                 (!imgFull &&
                   " max-h-96 border-b dark:border-darkBorderHighlight")
               }
