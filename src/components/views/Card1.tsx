@@ -99,11 +99,14 @@ const Card1 = ({
                 >
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                     <div className={hideNSFW && " blur-3xl"}>
-                      <Media post={post} />
+                      <Media
+                        post={post}
+                        allowIFrame={context.columnOverride == 1}
+                      />
                     </div>
                   </a>
                   {hideNSFW && (
-                    <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
+                    <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                       hidden
                     </div>
                   )}
@@ -211,10 +214,14 @@ const Card1 = ({
               >
                 {/* {!hideNSFW ? ( */}
                 <div className={"relative group " + (hideNSFW && " blur-3xl")}>
-                  <Media post={post} forceMute={forceMute} />
+                  <Media
+                    post={post}
+                    forceMute={forceMute}
+                    allowIFrame={context.columnOverride == 1}
+                  />
                 </div>
                 {hideNSFW && (
-                  <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
+                  <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                     hidden
                   </div>
                 )}

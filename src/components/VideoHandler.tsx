@@ -44,7 +44,7 @@ const VideoHandler = ({
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
 
   useEffect(() => {
-    if (imgFull) {
+    if (imgFull || (context.columnOverride == 1 && !postMode)) {
       if (videoInfo?.height && maxHeightNum) {
         let r = maxHeightNum / videoInfo.height;
         setVidHeight(Math.floor(videoInfo.height * r));
@@ -56,7 +56,7 @@ const VideoHandler = ({
       setVidHeight(videoInfo.height);
       setVidWidth(videoInfo.width);
     };
-  }, [imgFull, maxHeightNum, videoInfo]);
+  }, [imgFull, maxHeightNum, videoInfo, context.columnOverride, postMode]);
 
   useEffect(() => {
     setheight({
@@ -212,7 +212,7 @@ const VideoHandler = ({
         (postMode && " flex items-center justify-center  ")
       }
       // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
-      style={postMode ? {height: `${vidHeight}px`} : {}}
+      style={postMode ? { height: `${vidHeight}px` } : {}}
     >
       {videoLoaded ? (
         ""

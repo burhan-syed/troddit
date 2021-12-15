@@ -241,7 +241,7 @@ const NavMenu = ({ hide = false }) => {
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card1");
-                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
+                            // if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
 
                             context.setMediaOnly(false);
                           }}
@@ -262,8 +262,8 @@ const NavMenu = ({ hide = false }) => {
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card2");
-                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
-                            
+                            //if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
+
                             context.setMediaOnly(false);
                           }}
                         >
@@ -275,13 +275,15 @@ const NavMenu = ({ hide = false }) => {
                       {({ active }) => (
                         <div
                           className={
-                            (context.cardStyle == "card1" && context.mediaOnly ? " font-bold " : "") +
+                            (context.cardStyle == "card1" && context.mediaOnly
+                              ? " font-bold "
+                              : "") +
                             " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
                           }
                           onClick={(e) => {
                             e.preventDefault();
                             context.setCardStyle("card1");
-                            if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
+                            //if(context.columnOverride == 1 || context.columns == 1) {context.setColumnOverride(0);};
                             context.setMediaOnly(true);
                           }}
                         >

@@ -61,11 +61,12 @@ const Media = ({
   const [toLoad, setToLoad] = useState(false);
   const [showIframe, setshowIframe] = useState(false);
   useEffect(() => {
-    setshowIframe(allowIFrame);
+    if (context.columnOverride == 1 || allowIFrame) setshowIframe(true);
     return () => {
       setshowIframe(false);
     };
-  }, [allowIFrame]);
+  }, [allowIFrame, context.columnOverride]);
+
   const onLoaded = () => {
     setMediaLoaded(true);
   };
@@ -129,7 +130,7 @@ const Media = ({
     if (!b) {
       a = await findImage();
     }
-    if (allowIFrame) {
+    if (true) {
       c = await findIframe();
     }
     //console.log(post);
@@ -288,7 +289,7 @@ const Media = ({
           // console.log(html);
         }
         if (htmlsrc.includes("youtube.com")) {
-          setytVidHeight({ height: `${Math.floor(screen.height * 0.75)}px` });
+          setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
           setisYTVid(true);
           //allowIFrame=true;
           //setshowIframe(true);
@@ -305,7 +306,7 @@ const Media = ({
         //   iframe = iframe.replace("")
         // }
         //setIFrame(post.media_embed.content);
-        allowIFrame && setIsIFrame(true);
+        (showIframe || allowIFrame) && setIsIFrame(true);
         return true;
       } else {
         // console.log(post.media_embed.content);
@@ -495,7 +496,7 @@ const Media = ({
                 imgFull && isYTVid
                   ? ytVidHeight
                   : imgFull || context?.columnOverride == 1
-                  ? imgheight
+                  ? { height: `${Math.floor(windowHeight * 0.5)}px` }
                   : {}
               }
             >
@@ -531,7 +532,12 @@ const Media = ({
             >
               <Gallery
                 images={galleryInfo}
-                maxheight={postMode && imgFull ? maxheightnum : 0}
+                maxheight={
+                  (postMode && imgFull) ||
+                  (context.columnOverride == 1 && !postMode)
+                    ? maxheightnum
+                    : 0
+                }
               />
             </div>
           ) : (
