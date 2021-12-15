@@ -341,14 +341,25 @@ export const searchSubreddits = async (query, over18 = false) => {
       let data = await res.data;
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(res);
-      return data?.data?.children ?? [];
+      return (
+        { data: data?.data?.children, returnQuery: query } ?? {
+          data: [],
+          returnQuery: query,
+        }
+      );
     } catch (err) {
       //console.log(err);
     }
   } else {
-    return [];
+    return {
+      data: [],
+      returnQuery: query,
+    };
   }
-  return [];
+  return {
+    data: [],
+    returnQuery: query,
+  };
 };
 
 const loadAll = async (func) => {
@@ -409,7 +420,7 @@ export const loadMoreComments = async (
   }
 };
 
-export const loadPost = async (permalink, sort="top") => {
+export const loadPost = async (permalink, sort = "top") => {
   try {
     const res = await (
       await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {

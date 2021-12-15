@@ -35,14 +35,22 @@ const Search = ({ id }) => {
       },
     ];
     if (session) {
-      suggestions = await searchSubreddits(value.value, context.nsfw);
-      if (suggestions.length == 0) {
+      let data = [];
+      let returnQuery = "";
+      ({ data, returnQuery } = await searchSubreddits(
+        value.value,
+        context.nsfw
+      ));
+      console.log(returnQuery + "  " + value.value);
+      if (data.length == 0 || returnQuery !== value.value) {
         seterror(true);
       } else {
         seterror(false);
-        suggestions = suggestions.filter((sub) => {
+        suggestions = data.filter((sub) => {
           if (context.nsfw === "true") return sub;
-          else if (sub?.data?.over18 !== true) return sub;
+          else if (sub?.data?.over18 !== true) {
+            return sub;
+          }
         });
       }
     }
@@ -126,7 +134,7 @@ const Search = ({ id }) => {
                 ></Image>
               </div>
             ) : (
-              <div className="w-6 h-6 text-center text-lightText bg-blue-700 rounded-full">
+              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
                 r/
               </div>
             )}
@@ -196,7 +204,7 @@ const Search = ({ id }) => {
 
   const handleSignIn = (e) => {
     e.stopPropagation();
-    signIn('reddit');
+    signIn("reddit");
   };
 
   const goToSub = (e, suggestion) => {
@@ -205,11 +213,12 @@ const Search = ({ id }) => {
   };
 
   const onSuggestionSelected = (event, { suggestion }) => {
+    setValue("");
     goToSub(event, suggestion?.data?.display_name ?? "popular");
   };
 
-  const onChange = (event, { newValue }) => {
-    setValue(newValue);
+  const onChange = (event, { newValue, method }) => {
+    setValue(method === "click" || method === "enter" ? "" : newValue);
   };
 
   const inputProps = {
@@ -218,10 +227,8 @@ const Search = ({ id }) => {
     onChange: onChange,
   };
 
-
   return (
     <div className="flex flex-row w-full h-full ">
-     
       <Autosuggest
         id={id}
         suggestions={suggestions}
@@ -232,7 +239,6 @@ const Search = ({ id }) => {
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         onSuggestionSelected={onSuggestionSelected}
-        
       />
     </div>
   );
