@@ -5,24 +5,23 @@ import { MainProvider } from "../MainContext";
 import Script from "next/script";
 import { useRouter } from "next/router";
 // import * as gtag from "../../lib/gtag";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
-
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [dataDomain, setDataDomain] = useState('')
+  const [dataDomain, setDataDomain] = useState("");
   useEffect(() => {
-    console.log("FIRST", window.location.host);
-    if (window.location.host.includes('troddit.com')){
-      setDataDomain('troddit.com');
+    //console.log("FIRST", window.location.host);
+    if (window.location.host.includes("troddit.com")) {
+      setDataDomain("troddit.com");
     } else {
       setDataDomain(window.location.host);
     }
     return () => {
-      setDataDomain('')
-    }
-  }, [])
+      setDataDomain("");
+    };
+  }, []);
   // useEffect(() => {
   //   const handleRouteChange = (url) => {
   //     gtag.pageview(url);
@@ -51,18 +50,17 @@ function MyApp({ Component, pageProps }) {
           `,
         }}
       /> */}
-      <Script
-        defer
-        data-domain={dataDomain}
-        src="/js/script.js"
-      ></Script>
+      <Script defer data-domain={"troddit.com"} src="/js/script.js"></Script>
 
       <Head>
         {/* <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0"
         ></meta> */}
-        <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover' />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+        />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <ThemeProvider attribute="class" defaultTheme="light">
