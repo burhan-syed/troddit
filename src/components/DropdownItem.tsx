@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
+import {usePlausible} from 'next-plausible'
+
 
 const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
+  const plausible = usePlausible();
   useEffect(() => {
     if (sub.data?.icon_url) {
       setThumbURL(sub.data.icon_url);
@@ -24,11 +27,13 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
 
   const goToSub = (e, suggestion) => {
     e.preventDefault();
+    plausible('goToSub');
     router.push(`/r/${suggestion}`);
   };
 
   const goToMulti = (e) => {
     let suggestions = "";
+    plausible('goToMulti');
     for (let s of sub.data.subreddits) {
       suggestions.length === 0
         ? (suggestions = s.name)

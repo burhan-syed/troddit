@@ -24,6 +24,8 @@ import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
+import {usePlausible} from 'next-plausible'
+
 const PostModal = ({
   setSelect,
   returnRoute,
@@ -48,6 +50,8 @@ const PostModal = ({
   const context: any = useMainContext();
   const [imgFull, setimgFull] = useState(true);
   const [windowWidth, windowHeight] = useWindowSize();
+
+  const plausible = usePlausible();
 
   const nextPress = useKeyPress("ArrowRight");
   const backPress = useKeyPress("ArrowLeft");
@@ -94,6 +98,7 @@ const PostModal = ({
 
   const castVote = async (e, v) => {
     e.stopPropagation();
+    plausible('castVote');
     if (session) {
       v === vote ? (v = 0) : undefined;
       //getUserVotes();
@@ -267,6 +272,8 @@ const PostModal = ({
         setVote(0);
       }
     }
+    plausible('postChange');
+
   };
 
   return (

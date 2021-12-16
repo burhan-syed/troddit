@@ -10,12 +10,14 @@ import { useMainContext } from "../MainContext";
 import ToggleMediaOnly from "./ToggleMediaOnly";
 import ToggleAudioOnHover from "./ToggleAudioOnHover";
 
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const NavMenu = ({ hide = false }) => {
   const context: any = useMainContext();
+ 
   return (
     <Menu
       as="div"

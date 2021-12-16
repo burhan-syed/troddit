@@ -101,7 +101,7 @@ const SideDropDown = ({ hide = false }) => {
         <>
           <button
             className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-            onClick={() => signIn()}
+            onClick={() => signIn("reddit")}
           >
             <span className="text-blue-500 dark:text-blue-600">Login</span> to
             see your subs
@@ -132,7 +132,7 @@ const SideDropDown = ({ hide = false }) => {
                       <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                         {/* Image */}
                         <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                          <div className="w-6 h-6 text-center text-lightText bg-red-400 rounded ">
+                          <div className="w-6 h-6 text-center bg-red-400 rounded text-lightText ">
                             {"m"}
                           </div>
                         </div>
@@ -174,7 +174,7 @@ const SideDropDown = ({ hide = false }) => {
                       <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                         {/* Image */}
                         <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                          <div className="w-6 h-6 text-center text-lightText bg-blue-700 rounded-full ">
+                          <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText ">
                             {"r/"}
                           </div>
                         </div>

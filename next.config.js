@@ -1,28 +1,20 @@
-module.exports = {
-  reactStrictMode: false,//true
+const { withPlausibleProxy } = require("next-plausible");
+
+module.exports = withPlausibleProxy()({
+  reactStrictMode: false, //true
   images: {
-    domains: [
-      "b.thumbs.redditmedia.com",
-      "a.thumbs.redditmedia.com",
-      "styles.redditmedia.com",
-      "www.redditstatic.com",
-      "external-preview.redd.it",
-      "preview.redd.it",
-      "v.redd.it",
-      "youtu.be",
-      "i.redd.it",
-      "www.nbcnews.com",
-      "gfycat.com",
-      "www.theguardian.com",
-      "en.wikipedia.org",
-      "www.newsweek.com",
-      "www.independent.co.uk",
-      "i.imgur.com",
-      "imgur.com",
-      "goo.gl",
-      "im2.ezgif.com",
-      "dummyimage.com",
-      "www.publicdomainpictures.net"
-    ],
+    domains: [],
   },
-};
+  async rewrites() {
+    return [
+      {
+        source: "/js/script.js",
+        destination: "https://plausible.io/js/plausible.js",
+      },
+      {
+        source: "/api/event", // Or '/api/event/' if you have `trailingSlash: true` in this config
+        destination: "https://plausible.io/api/event",
+      },
+    ];
+  },
+});

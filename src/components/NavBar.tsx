@@ -16,6 +16,9 @@ import SortMenu2 from "./SortMenu2";
 import { useSession } from "next-auth/client";
 import { useScroll } from "../hooks/useScroll";
 
+import {usePlausible} from 'next-plausible'
+
+
 const NavBar = () => {
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
@@ -23,6 +26,7 @@ const NavBar = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const router = useRouter();
   const [prevScrollpos, setScrollpos] = useState(0);
+  const plausible = usePlausible();
   // useEffect(() => {
   //   const onScroll = () => {
   //     setSidebarVisible(false);
@@ -81,7 +85,7 @@ const NavBar = () => {
       <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-trueGray-900">
         <CgMenu
           className="w-10 h-10 cursor-pointer md:hidden"
-          onClick={() => setSidebarVisible((vis) => !vis)}
+          onClick={() => {setSidebarVisible((vis) => !vis); plausible('sidenav');}}
         />
         <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
           <Link href="/" passHref>
@@ -90,7 +94,7 @@ const NavBar = () => {
             </h1>
           </Link>
 
-          <div className="flex-none hidden h-full py-2 md:block w-60">
+          <div className="flex-none hidden h-full py-2 md:block w-60" onClick={() => plausible('dropdownPane')}>
             <DropdownPane hide={hidden} />
           </div>
 
@@ -108,10 +112,11 @@ const NavBar = () => {
                 ? "hidden"
                 : "hidden w-20 h-full border border-white dark:hover:border-darkBorder hover:border-lightBorder dark:border-darkBG rounded-md md:block"
             }
+            onClick={() => plausible('login')}
           >
             <Login />
           </div>
-          <div className="flex flex-row items-center w-10 h-full mr-2 ">
+          <div className="flex flex-row items-center w-10 h-full mr-2 " onClick={() => plausible('options')}>
             <NavMenu hide={hidden} />
           </div>
         </div>

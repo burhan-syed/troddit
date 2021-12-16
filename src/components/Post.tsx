@@ -15,7 +15,9 @@ import { useSession } from "next-auth/client";
 import { secondsToTime } from "../../lib/utils";
 import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
-import Row1 from "./views/Row1";
+import Row1 from './views/Row1';
+
+import {usePlausible} from 'next-plausible'
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
@@ -28,6 +30,7 @@ const Post = ({ post, postNum = 0 }) => {
   const [hasMedia, setHasMedia] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   //console.log(post);
+  const plausible = usePlausible()
 
   useEffect(() => {
     return () => {
@@ -70,6 +73,7 @@ const Post = ({ post, postNum = 0 }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
+    plausible('postOpen');
     if (!e.ctrlKey) {
       setLastRoute(router.asPath);
       context.setPauseAll(true);

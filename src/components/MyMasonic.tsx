@@ -17,6 +17,8 @@ import Post from "./Post";
 import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
+import {usePlausible} from 'next-plausible'
+
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -60,6 +62,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
+  const plausible = usePlausible();
 
   useEffect(() => {
     allowload = true;
@@ -328,6 +331,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       label: `${subreddits ? subreddits : "home"}`,
       value: count,
     });
+    plausible('infinitescroll');
     if (data?.after) {
       setAfter(data?.after);
       return { data: { posts: data?.children, after: data?.after } };

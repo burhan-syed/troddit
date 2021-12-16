@@ -11,13 +11,13 @@ export const index = ({ query }) => {
         <title>troddit · a web client for Reddit </title>
         <meta
           name="description"
-          content="Browse Reddit better with Troddit. Full size photos and videos in grid layout with infinite scrolling. Login with Reddit to vote, comment, and see your own frontpage."
+          content="Browse Reddit better with Troddit. Grid views, single column mode, galleries, and a number of post styles. Login with Reddit to see your own subs, vote, and comment. Open source."
         ></meta>
       </Head>
-      <main>
-        <NavBar />
-        <Feed query={query} />
-      </main>
+        <main>
+          <NavBar />
+          <Feed query={query} />
+        </main>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/client";
 import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
+import {usePlausible} from 'next-plausible'
 
 const Search = ({ id }) => {
   const [query, setQuery] = useState("");
@@ -20,6 +21,7 @@ const Search = ({ id }) => {
   const context: any = useMainContext();
   const lastRequest = useRef(null);
   const [updated, setUpdated] = useState(false);
+  const plausible = usePlausible();
 
   useEffect(() => {
     //console.log("f", updated);
@@ -243,6 +245,7 @@ const Search = ({ id }) => {
       //console.log(lastRequest, suggestion?.data?.display_name);
       goToSub(event, lastRequest.current);
     }
+    plausible("search");
   };
 
   const onChange = (event, { newValue, method }) => {
