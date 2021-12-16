@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
   }, [router.events]);
   return (
     <>
-      <Script
+      {/* <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
       />
@@ -37,7 +37,13 @@ function MyApp({ Component, pageProps }) {
             });
           `,
         }}
-      />
+      /> */}
+      <Script
+        defer
+        data-domain="troddit.com"
+        src="https://plausible.io/js/plausible.js"
+      ></Script>
+
       <Head>
         <meta
           name="viewport"
