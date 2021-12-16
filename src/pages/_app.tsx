@@ -40,7 +40,9 @@ function MyApp({ Component, pageProps }) {
       /> */}
       <Script
         defer
-        data-domain="troddit.com"
+        // data-domain="troddit.com"
+  
+        onLoad={this.setAttribute('data-domain',window.location.host)}
         src="/js/script.js"
       ></Script>
 
