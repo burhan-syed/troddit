@@ -5,6 +5,7 @@ import {usePlausible} from 'next-plausible'
 
 
 const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
+  const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
@@ -13,6 +14,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
     if (sub.data?.icon_url) {
       setThumbURL(sub.data.icon_url);
       setisMulti(true);
+      
     } else {
       if (sub.data?.icon_img && sub.data?.icon_img !== "") {
         setThumbURL(sub.data.icon_img);
@@ -20,6 +22,9 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
       if (sub.data?.community_icon && sub.data?.community_icon !== "") {
         setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
       }
+    }
+    if (sub?.data){
+      setLoaded(true);
     }
 
     return () => {};
@@ -45,6 +50,35 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
   const goTo = (e) => {
     isMulti ? goToMulti(e) : goToSub(e, sub.data.display_name);
   };
+  // if (!loaded){
+  //   return (
+  //     <div className="">
+  //       <div
+  //       className="flex flex-row items-center text-sm text-center cursor-pointer"
+        
+  //     >
+  //       {/* Image */}
+  //       <div className="flex flex-row items-center w-6 h-6 ml-1 animate-pulse">
+          
+  //           <div
+  //             className={
+  //               (isMulti ? "rounded " : "rounded-full ") +
+  //               " w-6 h-6 text-center text-lightText  bg-gray-400 dark:bg-gray-900"
+  //             }
+  //           >
+  //             {isUser ? "u/" : isMulti ? "m" : "r/"}
+  //           </div>
+         
+  //       </div>
+  //       {/* Text */}
+  //       <h1 className="ml-2 animate-pulse">
+  //       <div className="h-6 bg-gray-400 rounded w-36 dark:bg-gray-900"></div>
+
+  //       </h1>
+  //     </div>
+  //     </div>
+  //   )
+  // }
   return (
     <div>
       <div
@@ -65,7 +99,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
                 (isMulti ? "rounded" : "rounded-full") + " flex-none border "
               }
             />
-          ) : (
+          ) : loaded && (
             <div
               className={
                 (isMulti ? "rounded bg-red-400" : "rounded-full bg-blue-700") +

@@ -1,6 +1,7 @@
 const { withPlausibleProxy } = require("next-plausible");
+const withPWA = require("next-pwa");
 
-module.exports = withPlausibleProxy()({
+module.exports = withPlausibleProxy()(withPWA({
   reactStrictMode: false, //true
   images: {
     domains: [],
@@ -17,4 +18,9 @@ module.exports = withPlausibleProxy()({
       },
     ];
   },
-});
+  pwa: {
+    dest: "public",
+    register: true,
+    skipWaiting: true,
+  },
+}));

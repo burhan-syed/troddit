@@ -27,9 +27,10 @@ const Row1 = ({
   const [expand, setexpand] = useState(false);
 
   return (
-    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
+    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-[#212121] dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
       {/* Votes */}
-      <div>
+      <div className={ (post?.link_flair_richtext?.length > 0 && "mt-2") + " flex flex-row items-center justify-center "}>
+      <div className="flex flex-row items-center justify-center">
         <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
           <BiUpvote
             onClick={(e) => castVote(e, 1)}
@@ -68,6 +69,11 @@ const Row1 = ({
           (hideNSFW && " overflow-hidden")
         }
       >
+       <a
+              href={`${post?.url}` ?? `https://troddit.com${post?.permalink}`}
+              target="_blank"
+              rel="noreferrer"
+            >
         {post?.thumbnail !== "self" &&
         post?.thumbnail !== "default" &&
         post?.thumbnail ? (
@@ -86,25 +92,28 @@ const Row1 = ({
         ) : (
           <AiOutlineLink className="w-6 h-6" />
         )}
+        </a>
       </div>
-      <div className="flex flex-col flex-grow mt-2 ml-2">
+      </div>
+      <div className="flex flex-col flex-grow pr-2 mt-2 ml-2">
         {/* Title */}
         <div>
-          <h1 className="text-lg font-medium leading-none cursor-pointer">
-            {post?.link_flair_richtext?.length > 0 && (
-              <span className="text-xs">
+        {post?.link_flair_richtext?.length > 0 && (
+              <div className="pb-1 text-xs">
                 <TitleFlair post={post} />
                 {"  "}
-              </span>
+              </div>
             )}
+          <h1 className={" text-base leading-none cursor-pointer"}>
+            
 
-            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+            <a href={post?.permalink} onClick={(e) => e.preventDefault()} className={(post?.distinguished == "moderator" && " text-green-500 dark:text-green-700")}>
               {`${post?.title}  ` ?? ""}
             </a>
           </h1>
         </div>
         {/* Info */}
-        <div className="flex flex-row">
+        <div className="flex flex-row pt-1 text-xs text-lightBorderHighlight">
           <Link href={`/r/${post?.subreddit}`}>
             <a
               className="mr-1"
@@ -145,11 +154,11 @@ const Row1 = ({
               </span>
             </div>
           )}
-          <span className="ml-4 text-sm font-xs">{`(${post.domain})`}</span>
+          <span className="ml-4 text-xs font-xs">{`(${post.domain})`}</span>
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row items-center justify-start pb-1 space-x-1 select-none">
+          <div className="flex flex-row items-center justify-start pb-1 space-x-1 text-xs select-none text-lightBorderHighlight dark:text-darkBorderHighlight">
             <button
               className={
                 "flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +

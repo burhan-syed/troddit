@@ -28,18 +28,6 @@ const Card1 = ({
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <>
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1 className="items-center text-lg font-medium leading-none cursor-pointer">
-                  {`${post?.title}` ?? ""}
-                  {post?.link_flair_richtext?.length > 0 && (
-                    <span className="text-xs">
-                      {"  "}
-                      <TitleFlair post={post} />
-                    </span>
-                  )}
-                </h1>
-              </a>
-
               <div className="flex flex-row py-1 pb-1 text-xs font-light truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
@@ -85,6 +73,23 @@ const Card1 = ({
                   <p className="ml-1">{`(${post.domain})`}</p>
                 </div>
               </div>
+              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <h1
+                  className={
+                    (post?.distinguished == "moderator" &&
+                      " text-green-500 dark:text-green-700") +
+                    " items-center text-lg  leading-none cursor-pointer pb-2"
+                  }
+                >
+                  {`${post?.title}` ?? ""}
+                </h1>
+                {post?.link_flair_richtext?.length > 0 && (
+                  <div className="pb-1 text-xs">
+                    {"  "}
+                    <TitleFlair post={post} />
+                  </div>
+                )}
+              </a>
             </>
           )}
 

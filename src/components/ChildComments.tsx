@@ -151,10 +151,10 @@ const ChildComments = ({
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
-          ? "bg-white dark:bg-darkBG border-r "
+          ? "bg-white dark:bg-[#121212] darkBG border-r "
           : depth % 2 === 0
-          ? " bg-white dark:bg-darkBG"
-          : "bg-lightHighlight dark:bg-black") +
+          ? " bg-white dark:bg-[#121212] darkBG"
+          : "bg-lightHighlight dark:bg-darkBG black") +
         (hide ? " hidden " : "") +
         " border-t border-l border-b border-lightBorder dark:border-darkBorder rounded-md"
       }
@@ -398,7 +398,7 @@ const ChildComments = ({
                               <div
                                 className={
                                   (portraitMode ? "" : "") +
-                                  " pt-2  cursor-pointer hover:font-semibold md:pl-0"
+                                  " pt-2  cursor-pointer hover:font-semibold ml-3 md:pl-0"
                                 }
                                 onClick={(e) => {
                                   e.stopPropagation();

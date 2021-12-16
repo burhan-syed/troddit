@@ -14,7 +14,7 @@ import {
 } from "masonic";
 import { loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
 import Post from "./Post";
-import * as gtag from "../../lib/gtag";
+// import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
 import {usePlausible} from 'next-plausible'
@@ -325,12 +325,12 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         //numposts //posts.length
       );
     }
-    gtag.event({
-      action: "infinite-scroll",
-      category: "main-feed",
-      label: `${subreddits ? subreddits : "home"}`,
-      value: count,
-    });
+    // gtag.event({
+    //   action: "infinite-scroll",
+    //   category: "main-feed",
+    //   label: `${subreddits ? subreddits : "home"}`,
+    //   value: count,
+    // });
     plausible('infinitescroll');
     if (data?.after) {
       setAfter(data?.after);

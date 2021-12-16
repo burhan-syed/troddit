@@ -40,7 +40,7 @@ const Search = ({ id }) => {
   };
 
   const getSuggestions = async (value) => {
-    console.log(value);
+    //console.log(value);
     let suggestions = [
       {
         data: {
@@ -53,7 +53,7 @@ const Search = ({ id }) => {
     let data = [];
     if (session) {
       data = await searchSubreddits(value.value, context.nsfw);
-      console.log(data);
+      //console.log(data);
       if (data?.length > 0) {
         if (lastRequest.current === value.value) {
           seterror(false);

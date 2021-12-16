@@ -39,7 +39,7 @@ const Card1 = ({
                 </div>
               </a>
               {hideNSFW && (
-                <div className="absolute flex flex-row justify-center w-full text-lightText opacity-50 top-1/2">
+                <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                   hidden
                 </div>
               )}
@@ -50,7 +50,7 @@ const Card1 = ({
           {true && (
             <div className="p-1 px-2 pt-1.5">
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1 className="text-lg font-medium leading-none cursor-pointer">
+                <h1 className={(post?.distinguished == "moderator" && " text-green-500 dark:text-green-700") + " text-lg  leading-none cursor-pointer"}>
                   {post?.title ?? ""}
                   {post?.link_flair_richtext?.length > 0 && (
                     <span className="text-xs">

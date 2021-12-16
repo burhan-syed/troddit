@@ -4,24 +4,24 @@ import { ThemeProvider } from "next-themes";
 import { MainProvider } from "../MainContext";
 import Script from "next/script";
 import { useRouter } from "next/router";
-import * as gtag from "../../lib/gtag";
+// import * as gtag from "../../lib/gtag";
 import { useEffect } from "react";
 import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  useEffect(() => {
-    const handleRouteChange = (url) => {
-      gtag.pageview(url);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
+  // useEffect(() => {
+  //   const handleRouteChange = (url) => {
+  //     gtag.pageview(url);
+  //   };
+  //   router.events.on("routeChangeComplete", handleRouteChange);
+  //   return () => {
+  //     router.events.off("routeChangeComplete", handleRouteChange);
+  //   };
+  // }, [router.events]);
   return (
     <>
-      <Script
+      {/* <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
       />
@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }) {
             });
           `,
         }}
-      />
+      /> */}
       <Script
         defer
         data-domain="troddit.com"
@@ -45,10 +45,11 @@ function MyApp({ Component, pageProps }) {
       ></Script>
 
       <Head>
-        <meta
+        {/* <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0"
-        ></meta>
+        ></meta> */}
+        <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover' />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <ThemeProvider attribute="class" defaultTheme="light">
