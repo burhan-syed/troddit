@@ -5,11 +5,24 @@ import { MainProvider } from "../MainContext";
 import Script from "next/script";
 import { useRouter } from "next/router";
 // import * as gtag from "../../lib/gtag";
-import { useEffect } from "react";
+import {  useEffect, useState } from "react";
 import Head from "next/head";
+
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const [dataDomain, setDataDomain] = useState('')
+  useEffect(() => {
+    console.log("FIRST", window.location.host);
+    if (window.location.host.includes('troddit.com')){
+      setDataDomain('troddit.com');
+    } else {
+      setDataDomain(window.location.host);
+    }
+    return () => {
+      setDataDomain('')
+    }
+  }, [])
   // useEffect(() => {
   //   const handleRouteChange = (url) => {
   //     gtag.pageview(url);
@@ -40,9 +53,7 @@ function MyApp({ Component, pageProps }) {
       /> */}
       <Script
         defer
-        // data-domain="troddit.com"
-  
-        onLoad={this.setAttribute('data-domain',window.location.host)}
+        data-domain={dataDomain}
         src="/js/script.js"
       ></Script>
 
