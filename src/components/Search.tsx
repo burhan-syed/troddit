@@ -33,7 +33,7 @@ const Search = ({ id }) => {
     lastRequest.current = value;
     setSuggestions([value]);
     const suggestions = await getSuggestions({ value });
-    if (suggestions?.length > 1) {
+    if (suggestions?.length > 1 || !session) {
       setSuggestions(suggestions);
       setLoading(false);
       setUpdated(true);
