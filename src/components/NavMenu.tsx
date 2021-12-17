@@ -212,7 +212,6 @@ const NavMenu = ({ hide = false }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     context.setCardStyle("default");
-                    context.setColumnOverride(0);
                   }}
                 >
                   <div
