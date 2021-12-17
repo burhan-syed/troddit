@@ -474,7 +474,7 @@ const Media = ({
       {loaded && (
         <>
           {isTweet && (
-            <div className={!imgFull && "flex justify-center "}>
+            <div className={!imgFull && "flex justify-center " + " bg-transparent"}>
               <TwitterTweetEmbed
                 options={{
                   theme: theme,

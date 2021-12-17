@@ -12,15 +12,14 @@ const about = () => {
       <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-lightText">
         <div className="flex flex-col max-w-lg space-y-1 ">
           <p className="">
-            Troddit is a web client for Reddit. While an account is not
+            Troddit is a web app for Reddit. While an account is not
             required, we do support secure logins with Reddit so you can vote,
             comment, and have immediate access to your personal subreddits.
           </p>
 
           <p className="py-4">
-            This is an independently run site. We do not serve ads but do use
-            Google Analytics to better understand our traffic. All content on
-            this site is retrieved from the Reddit API.
+            This is an independently run site not affiliated with Reddit. All content on
+            this site is retrieved from the public Reddit API. 
           </p>
           <p>
             {

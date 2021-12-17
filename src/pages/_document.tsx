@@ -29,7 +29,7 @@ class MyDocument extends Document {
             content="default"
           />
           <meta name="apple-mobile-web-app-title" content="troddit" />
-          <meta name="description" content="A web client for Reddit" />
+          <meta name="description" content="A web app for Reddit" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
           {/* <meta
@@ -48,7 +48,7 @@ class MyDocument extends Document {
           <meta name="twitter:title" content="troddit" />
           <meta
             name="twitter:description"
-            content="A web client for Reddit"
+            content="A web app for Reddit"
           />
           <meta
             name="twitter:image"
@@ -56,8 +56,8 @@ class MyDocument extends Document {
           />
           {/* <meta name="twitter:creator" content="@DavidWShadow" /> */}
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="troddit" />
-          <meta property="og:description" content="A web client for Reddit" />
+          {/* <meta property="og:title" content="troddit" />
+          <meta property="og:description" content="A web app for Reddit" /> */}
           <meta property="og:site_name" content="troddit" />
           <meta property="og:url" content="https://troddit.com" />
           <meta

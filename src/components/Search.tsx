@@ -8,14 +8,15 @@ import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/client";
 import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
-import {usePlausible} from 'next-plausible'
+import { usePlausible } from "next-plausible";
 
 const Search = ({ id }) => {
   const [query, setQuery] = useState("");
   const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any>([]);
-  const [session, loading] = useSession();
+  const [session] = useSession();
+  const [loading, setLoading] = useState(false);
   const [lastsuggestion, setlastsuggestion] = useState("");
   const [morethanonesuggestion, setmorethanonesuggestion] = useState(false);
   const context: any = useMainContext();
@@ -30,10 +31,11 @@ const Search = ({ id }) => {
 
   const onSuggestionsFetchRequested = async ({ value }) => {
     lastRequest.current = value;
+    setSuggestions([value]);
     const suggestions = await getSuggestions({ value });
-    if (Object.keys(suggestions).length > 0) {
+    if (suggestions?.length > 1) {
       setSuggestions(suggestions);
-
+      setLoading(false);
       setUpdated(true);
       // console.log("u", updated);
     }
@@ -52,6 +54,7 @@ const Search = ({ id }) => {
     ];
     let data = [];
     if (session) {
+      setLoading(true);
       data = await searchSubreddits(value.value, context.nsfw);
       //console.log(data);
       if (data?.length > 0) {
@@ -74,7 +77,7 @@ const Search = ({ id }) => {
         suggestions = [];
       }
     }
-    if (!session || suggestions.length == 0) {
+    if (!session || (suggestions.length <= 1 && error)) {
       //suggestions.push({ name: value });
       suggestions = [
         {
@@ -134,8 +137,98 @@ const Search = ({ id }) => {
 
   const renderSuggestion = (suggestion) => {
     //console.log(suggestion);
+    if (loading) {
+      return (
+        <div>
+          <Link href={suggestion?.data?.display_name_prefixed ?? `/r/${value}`}>
+        <a>
+          <div
+            // onClick={(e) =>}
+            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+          >
+            <div className="ml-2">
+            {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
+              <div className="relative w-6 h-6 rounded-full">
+                <Image
+                  src={
+                    suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
+                  }
+                  alt="r"
+                  layout="fill"
+                  className="rounded-full"
+                  unoptimized={true}
+                ></Image>
+              </div>
+            ) : (
+              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                r/
+              </div>
+            )}
+            </div>
+            <div className="flex flex-col ml-4">
+              <div>{suggestion?.data?.display_name_prefixed ?? value}</div>
+              <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                {suggestion?.data?.subscribers
+                  ? suggestion.data.subscribers.toLocaleString("en-US") +
+                    " followers "
+                  : "?? followers "}
+                {suggestion?.data?.over18 && (
+                  <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                    nsfw
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          </a>
+          </Link>
+          {!suggestion?.data?.subscribers && <>
+          <div
+            // onClick={(e) =>}
+            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+          >
+            <div className="ml-2">
+            {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
+              <div className="relative w-6 h-6 rounded-full">
+                <Image
+                  src={
+                    suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
+                  }
+                  alt="r"
+                  layout="fill"
+                  className="rounded-full"
+                  unoptimized={true}
+                ></Image>
+              </div>
+            ) : (
+              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText animate-pulse">
+                r/
+              </div>
+            )}
+            </div>
+            <div className="flex flex-col ml-4">
+              <div className="h-4 bg-gray-200 rounded-md w-52 dark:bg-gray-500 animate-pulse"></div>
+              <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight animate-pulse">
+                {suggestion?.data?.subscribers
+                  ? suggestion.data.subscribers.toLocaleString("en-US") +
+                    " followers "
+                  : "?? followers "}
+                {suggestion?.data?.over18 && (
+                  <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                    nsfw
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          </>}
+        </div>
+      );
+    }
     return (
-      <div>
+      <div className="select-none ">
+        <Link href={`${suggestion?.data?.display_name_prefixed}`}>
+        <a>
         <div
           // onClick={(e) =>}
           className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
@@ -174,6 +267,8 @@ const Search = ({ id }) => {
             </div>
           </div>
         </div>
+        </a>
+        </Link>
         {morethanonesuggestion ? (
           <>
             {!session &&
