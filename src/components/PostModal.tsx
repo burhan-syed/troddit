@@ -24,7 +24,8 @@ import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
-import {usePlausible} from 'next-plausible'
+import { usePlausible } from "next-plausible";
+import Vote from "./Vote";
 
 const PostModal = ({
   setSelect,
@@ -98,7 +99,7 @@ const PostModal = ({
 
   const castVote = async (e, v) => {
     e.stopPropagation();
-    plausible('castVote');
+    plausible("castVote");
     if (session) {
       v === vote ? (v = 0) : undefined;
       //getUserVotes();
@@ -272,8 +273,7 @@ const PostModal = ({
         setVote(0);
       }
     }
-    plausible('postChange');
-
+    plausible("postChange");
   };
 
   return (
@@ -377,28 +377,11 @@ const PostModal = ({
                         <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                           {/* Vote buttons for mobiles */}
                           <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
-                            <BiUpvote
-                              className={
-                                (vote === 1 && "text-upvote ") +
-                                " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
-                              }
-                            />
-                            <p
-                              className={
-                                (vote === 1
-                                  ? "text-upvote "
-                                  : vote === -1
-                                  ? "text-downvote "
-                                  : " ") + " text-sm"
-                              }
-                            >
-                              {score ?? "0"}
-                            </p>
-                            <BiDownvote
-                              className={
-                                (vote === -1 && "text-downvote ") +
-                                " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
-                              }
+                            <Vote
+                              likes={apost?.likes}
+                              name={apost?.name}
+                              score={apost?.score}
+                              size={7}
                             />
                           </div>
                           <div></div>
@@ -448,30 +431,11 @@ const PostModal = ({
                     <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                       {/* Upvote column */}
                       <div className="flex-col items-center self-start justify-start hidden h-full pt-1.5 md:px-2 md:flex ">
-                        <BiUpvote
-                          onClick={(e) => castVote(e, 1)}
-                          className={
-                            (vote === 1 && "text-upvote ") +
-                            " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110"
-                          }
-                        />
-                        <p
-                          className={
-                            (vote === 1
-                              ? "text-upvote "
-                              : vote === -1
-                              ? "text-downvote "
-                              : " ") + " text-sm"
-                          }
-                        >
-                          {score ?? "0"}
-                        </p>
-                        <BiDownvote
-                          onClick={(e) => castVote(e, -1)}
-                          className={
-                            (vote === -1 && "text-downvote ") +
-                            " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
-                          }
+                        <Vote
+                          likes={apost?.likes}
+                          name={apost?.name}
+                          score={apost?.score}
+                          size={7}
                         />
                       </div>
                       {/* Main Media Column */}
@@ -517,7 +481,11 @@ const PostModal = ({
                         </div>
                         <h1 className="py-2 md:pl-3">
                           <a
-                            className="text-xl"
+                            className={
+                              (apost?.distinguished == "moderator" &&
+                                " text-green-500 dark:text-green-700") +
+                              " text-xl"
+                            }
                             href={`https://www.reddit.com${
                               apost?.permalink ?? ""
                             }`}
@@ -564,30 +532,11 @@ const PostModal = ({
                         <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                           {/* Vote buttons for mobiles */}
                           <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
-                            <BiUpvote
-                              onClick={(e) => castVote(e, 1)}
-                              className={
-                                (vote === 1 && "text-upvote ") +
-                                " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
-                              }
-                            />
-                            <p
-                              className={
-                                (vote === 1
-                                  ? "text-upvote "
-                                  : vote === -1
-                                  ? "text-downvote "
-                                  : " ") + " text-sm"
-                              }
-                            >
-                              {score ?? "0"}
-                            </p>
-                            <BiDownvote
-                              onClick={(e) => castVote(e, -1)}
-                              className={
-                                (vote === -1 && "text-downvote ") +
-                                " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110"
-                              }
+                            <Vote
+                              likes={apost?.likes}
+                              name={apost?.name}
+                              score={apost?.score}
+                              size={7}
                             />
                           </div>
                           <div className="flex flex-row items-center justify-start space-x-1">

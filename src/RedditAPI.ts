@@ -96,25 +96,56 @@ export const loadSubreddits = async (
   count: number = 0
 ) => {
   //console.log(subreddits, sort, range);
-  try {
-    const res = await (
-      await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
+  let token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      //console.log("WITH LOGIN", token);
+      const res1 = await axios.get(`https://oauth.reddit.com/r/${subreddits}/${sort}`, {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
         params: {
           raw_json: 1,
           t: range,
           after: after,
           count: count,
         },
-      })
-    ).data;
-    return {
-      after: res.data.after,
-      before: res.data.before,
-      children: res.data.children,
-    };
-  } catch (err) {
-    return null;
+      });
+      let res = await res1.data;
+      console.log(res);
+      ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+
+      return {
+        after: res.data.after,
+        before: res.data.before,
+        children: res.data.children,
+      };
+    } catch (err) {
+      //console.log(err);
+    }
+  }else {
+  
+    try {
+      const res = await (
+        await axios.get(`${REDDIT}/r/${subreddits}/${sort}/.json?`, {
+          params: {
+            raw_json: 1,
+            t: range,
+            after: after,
+            count: count,
+          },
+        })
+      ).data;
+      return {
+        after: res.data.after,
+        before: res.data.before,
+        children: res.data.children,
+      };
+    } catch (err) {
+      return null;
+    }
   }
+  
 };
 
 export const loadSubFlairs = async (subreddit) => {

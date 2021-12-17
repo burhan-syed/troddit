@@ -1,9 +1,9 @@
 import { useMainContext } from "../../MainContext";
 import Link from "next/dist/client/link";
-import { BiUpvote, BiDownvote } from "react-icons/bi";
 import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
+import Vote from "../Vote";
 
 //og card
 const Card1 = ({
@@ -110,40 +110,8 @@ const Card1 = ({
 
               <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
                 <div className="flex flex-row items-center space-x-1">
-                  <div className="flex-none hover:cursor-pointer ">
-                    <BiUpvote
-                      className={
-                        (vote === 1
-                          ? "text-upvote "
-                          : " text-black dark:text-lightText") +
-                        " w-5 h-5 hover:scale-110 hover:text-upvote"
-                      }
-                      onClick={(e) => castVote(e, 1)}
-                    />
-                  </div>
-                  <p
-                    className={
-                      vote === 1
-                        ? "text-upvote "
-                        : vote === -1
-                        ? "text-downvote "
-                        : " "
-                    }
-                  >
-                    {score}
-                  </p>
+                <Vote name={post?.name} score={post?.score} likes={post?.likes} size={5}/>
 
-                  <div className="flex-none hover:cursor-pointer ">
-                    <BiDownvote
-                      className={
-                        (vote === -1
-                          ? " text-downvote "
-                          : " text-black dark:text-lightText ") +
-                        " w-5 h-5 hover:scale-110 hover:text-downvote"
-                      }
-                      onClick={(e) => castVote(e, -1)}
-                    />
-                  </div>
                 </div>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                   <h1 className="cursor-pointer ">

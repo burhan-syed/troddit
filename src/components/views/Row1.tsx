@@ -1,6 +1,6 @@
 import { useMainContext } from "../../MainContext";
 import Link from "next/dist/client/link";
-import { BiUpvote, BiDownvote, BiComment } from "react-icons/bi";
+import { BiComment } from "react-icons/bi";
 import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
@@ -15,6 +15,7 @@ import {
   AiOutlineLink,
 } from "react-icons/ai";
 import TitleFlair from "../TitleFlair";
+import Vote from "../Vote";
 const Row1 = ({
   post,
   hasMedia,
@@ -32,31 +33,7 @@ const Row1 = ({
       <div className={ (post?.link_flair_richtext?.length > 0 && "mt-2") + " flex flex-row items-center justify-center "}>
       <div className="flex flex-row items-center justify-center">
         <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
-          <BiUpvote
-            onClick={(e) => castVote(e, 1)}
-            className={
-              (vote === 1 && "text-upvote ") +
-              " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
-            }
-          />
-          <p
-            className={
-              (vote === 1
-                ? "text-upvote "
-                : vote === -1
-                ? "text-downvote "
-                : " ") + " text-sm"
-            }
-          >
-            {score ?? "0"}
-          </p>
-          <BiDownvote
-            onClick={(e) => castVote(e, -1)}
-            className={
-              (vote === -1 && "text-downvote ") +
-              " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
-            }
-          />
+          <Vote  likes={post?.likes} score={post?.score ?? 0 } name={post?.name}/>
         </div>
       </div>
       {/* Thumbnail */}

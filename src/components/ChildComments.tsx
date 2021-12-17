@@ -6,6 +6,8 @@ import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import Link from "next/dist/client/link";
+import Vote from "./Vote";
+import { ImSpinner2 } from "react-icons/im";
 
 const ChildComments = ({
   comment,
@@ -16,6 +18,7 @@ const ChildComments = ({
 }) => {
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
   const [score, setScore] = useState("");
   const [color, setColor] = useState(100);
   const [hideChildren, setHideChildren] = useState(false);
@@ -50,7 +53,10 @@ const ChildComments = ({
 
   useEffect(() => {
     if (comment?.data?.body_html?.includes("<a ")) {
-      comment.data.body_html = comment.data.body_html?.replaceAll("<a ", '<a target="_blank" ')
+      comment.data.body_html = comment.data.body_html?.replaceAll(
+        "<a ",
+        '<a target="_blank" '
+      );
       //console.log(comment?.data?.body_html);
     }
 
@@ -103,6 +109,7 @@ const ChildComments = ({
     const morecomments = await loadMoreComments(childrenstring, link_id);
     setMoreComments(await fixformat(morecomments));
     setMoreLoaded(true);
+    setLoadingComments(false);
   };
 
   const fixformat = async (comments) => {
@@ -177,7 +184,7 @@ const ChildComments = ({
             "min-h-full w-0 md:w-2  lg:w-4 flex-none  cursor-pointer group"
           }
         >
-          <div className="flex-none w-2 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+          <div className="flex-none w-1 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
         </div>
         {/* Vote Buttons */}
         <div
@@ -186,26 +193,18 @@ const ChildComments = ({
             (hideChildren || portraitMode ? " hidden " : " md:flex ")
           }
         >
-          <BiUpvote
-            onClick={(e) => !comment?.myreply && castVote(e, 1)}
-            className={
-              ((vote === 1 || comment?.myreply) && "text-upvote ") +
-              " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
-            }
-          />{" "}
-          <BiDownvote
-            onClick={(e) => !comment?.myreply && castVote(e, -1)}
-            className={
-              (vote === -1 && "text-downvote ") +
-              " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
-            }
-          />{" "}
+          {/* <Vote name={comment?.data?.name} likes={comment?.data?.likes} score={comment?.data?.score} hideScore={true}/> */}
         </div>
 
         {/* Comment Body */}
         <div
           className={
-            "flex-grow mt-3 max-w-full   " + (hideChildren && " md:pl-8 mb-3")
+            "flex-grow mt-3 max-w-full   " +
+            (hideChildren && !portraitMode
+              ? " md:pl-2 mb-3 "
+              : hideChildren
+              ? " mb-3 "
+              : " ")
           }
           onClick={(e) => {
             e.stopPropagation();
@@ -246,15 +245,15 @@ const ChildComments = ({
               </>
             )}
             {!portraitMode && (
-              <div className="flex-row hidden md:flex">
+              <div className="flex-row hidden space-x-1 md:flex ">
                 <p>•</p>
                 <h1
                   className={
-                    vote === 1 || comment?.myreply
+                    vote === 1 || comment?.myreply || comment?.likes
                       ? "text-upvote"
-                      : vote === -1
+                      : vote === -1 || comment?.likes === false
                       ? "text-downvote"
-                      : ""
+                      : "" + " "
                   }
                 >
                   {score ?? "0"} pts
@@ -273,31 +272,6 @@ const ChildComments = ({
                 "yr",
               ])}
             </p>
-            {!portraitMode && (
-              <div className="flex-row hidden md:flex">
-                <p
-                  className={
-                    hideChildren || comment?.myreply ? "hidden" : "block"
-                  }
-                >
-                  •
-                </p>
-                <button
-                  className={
-                    hideChildren || comment?.myreply ? "hidden" : "block"
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    session
-                      ? setopenReply((p) => !p)
-                      : context.toggleLoginModal();
-                  }}
-                >
-                  Reply
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Main Comment Body */}
@@ -308,7 +282,8 @@ const ChildComments = ({
                 onClick={(e) => {
                   const cellText = document.getSelection();
                   //console.log(cellText);
-                  if (cellText.anchorNode.nodeName != "#text" ) e.stopPropagation();
+                  if (cellText.anchorNode.nodeName != "#text")
+                    e.stopPropagation();
                   if (cellText.type === "Range") e.stopPropagation();
                 }}
                 className="pb-2 pl-3 mr-1 md:pl-0"
@@ -320,43 +295,23 @@ const ChildComments = ({
                 }}
               ></div>
 
-              {/* Mobile/Portrait vote */}
+              {/* Vote */}
               <div
                 className={
-                  (portraitMode ? "flex " : "flex md:hidden") +
+                  (portraitMode ? "flex " : "flex ") +
                   " flex-row items-center justify-start flex-none text-gray-400 dark:text-gray-500 space-x-1 "
                 }
               >
                 <div
                   className={
-                    (!portraitMode && "ml-1.5 ") +
-                    " flex flex-row items-center justify-center p-0.5  space-x-1 border border-transparent rounded-md "
+                    (!portraitMode && "ml-1.5 md:ml-0") +
+                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0  space-x-1 border border-transparent rounded-md "
                   }
                 >
-                  <BiUpvote
-                    onClick={(e) => !comment?.myreply && castVote(e, 1)}
-                    className={
-                      (vote === 1 || comment?.myreply ? "text-upvote " : " ") +
-                      " flex-none cursor-pointer w-6 h-6 hover:text-upvote hover:scale-110"
-                    }
-                  />
-                  <h1
-                    className={
-                      vote === 1 || comment?.myreply
-                        ? "text-upvote"
-                        : vote === -1
-                        ? "text-downvote"
-                        : ""
-                    }
-                  >
-                    {score ?? "0"}
-                  </h1>
-                  <BiDownvote
-                    onClick={(e) => !comment?.myreply && castVote(e, -1)}
-                    className={
-                      (vote === -1 && "text-downvote ") +
-                      " flex-none cursor-pointer w-6 h-6 hover:text-downvote hover:scale-110"
-                    }
+                  <Vote
+                    name={comment?.data?.name}
+                    likes={comment?.data?.likes}
+                    score={comment?.data?.score}
                   />
                 </div>
                 <button
@@ -395,14 +350,16 @@ const ChildComments = ({
                         {childcomment.kind == "more" ? (
                           <div className={hideChildren ? "hidden" : " "}>
                             {!moreLoaded ? (
+                              <>
                               <div
                                 className={
-                                  (portraitMode ? "" : "") +
-                                  " pt-2  cursor-pointer hover:font-semibold ml-3 md:pl-0"
+                                  (portraitMode ? "" : "") + (loadingComments && " animate-pulse ") + 
+                                  " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0"
                                 }
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (session) {
+                                    setLoadingComments(true);
                                     loadChildComments(
                                       childcomment?.data?.children,
                                       comment?.data?.link_id
@@ -414,7 +371,16 @@ const ChildComments = ({
                               >
                                 {"Load More... " +
                                   `(${childcomment.data?.count})`}
+                                
                               </div>
+                              {/* {loadingComments && (
+                                  
+                                  <div className="animate-spin">
+                                    <ImSpinner2 />
+                                  </div>
+                                
+                              )} */}
+                              </>
                             ) : (
                               moreComments?.map((morecomment, i) => (
                                 <ChildComments
