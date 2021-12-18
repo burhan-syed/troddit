@@ -15,7 +15,6 @@ import { getSession, useSession } from "next-auth/client";
 import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
 
-import * as gtag from "../../lib/gtag";
 import MyMasonic from "./MyMasonic";
 
 const Feed = ({ query, isUser = false }) => {
@@ -55,7 +54,7 @@ const Feed = ({ query, isUser = false }) => {
         query?.frontsort?.includes("best") ||
         query?.frontsort?.includes("top") ||
         query?.frontsort?.includes("hot") ||
-        query?.frontsort?.includes("new") || 
+        query?.frontsort?.includes("new") ||
         query?.frontsort?.includes("rising")
       ) {
         setSort(query?.frontsort ?? "best");
@@ -84,15 +83,13 @@ const Feed = ({ query, isUser = false }) => {
         query?.frontsort?.includes("best") ||
         query?.frontsort?.includes("top") ||
         query?.frontsort?.includes("hot") ||
-        query?.frontsort?.includes("new") || 
+        query?.frontsort?.includes("new") ||
         query?.frontsort?.includes("rising")
       ) {
         setSort(query?.frontsort ?? "best");
         setRange(query?.t ?? "");
         fetchFront();
-
       }
-
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
@@ -111,7 +108,13 @@ const Feed = ({ query, isUser = false }) => {
 
   const fetchFront = async () => {
     //console.log(query);
-    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
+    let data = await loadFront(
+      query?.frontsort ?? "hot",
+      query?.t ?? "",
+      "",
+      undefined,
+      context?.localSubs
+    );
     if (data?.children) {
       //console.log("DATA", data);
 
@@ -175,7 +178,11 @@ const Feed = ({ query, isUser = false }) => {
       <div className="mt-10">
         <LoginModal />
         <PostModal
-          permalink={query?.frontsort ? (`/${query.frontsort}`) : ("/r/" + query.slug.join("/"))}
+          permalink={
+            query?.frontsort
+              ? `/${query.frontsort}`
+              : "/r/" + query.slug.join("/")
+          }
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
           setSelect={setFetchPost}
         />

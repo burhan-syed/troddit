@@ -26,6 +26,7 @@ import DropdownSubCard from "./DropdownSubCard";
 
 const DropdownPane = ({ hide }) => {
   const [mySubs, setMySubs] = useState([]);
+  const [myLocalSubs, setMyLocalSubs] = useState([]);
   const [myMultis, setMyMultis] = useState([]);
   const [count, setCount] = useState(0);
   const [after, setAfter] = useState("");
@@ -45,9 +46,12 @@ const DropdownPane = ({ hide }) => {
   useEffect(() => {
     //console.log(router.query);
     const load = async (sub) => {
-      let subinfo = await loadSubInfo(sub);
-      // let sidebar = await loadSubFlairs(sub);
-      setSubInfo(subinfo);
+      if (session) {
+        let subinfo = await loadSubInfo(sub);
+        setSubInfo(subinfo);
+      } else if (!session) {
+        setSubInfo({ data: { name: sub, display_name: sub } });
+      }
     };
     if (router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0]
@@ -66,11 +70,15 @@ const DropdownPane = ({ hide }) => {
       setLocation("home");
     }
     return () => {};
-  }, [router.query]);
+  }, [router.query, session]);
 
   const handleClick = async () => {
     if (!clicked) {
-      session && loadAllFast();
+      if (session) {
+        loadAllFast();
+      } else if (!session) {
+        loadLocalSubs();
+      }
       setClicked(true);
     }
     setShow((show) => !show);
@@ -97,13 +105,36 @@ const DropdownPane = ({ hide }) => {
     }
   };
 
-  const loadAllSubs = async () => {
-    try {
-      let data = await getAllMySubs();
-      setMySubs(data);
-    } catch (err) {
-      console.log(err);
+  const loadAllSubs = async (action = "", sub = "") => {
+    if (session) {
+      try {
+        let data = await getAllMySubs();
+        setMySubs(data);
+      } catch (err) {
+        console.log(err);
+      }
+    } else if (!session) {
+      // console.log("load all refresh");
+      // loadLocalSubs();
     }
+  };
+
+  useEffect(() => {
+    loadLocalSubs();
+    return () => {};
+  }, [context.localSubs]);
+
+  const loadLocalSubs = () => {
+    let localsubs = [];
+    context.localSubs.forEach((s) => {
+      let sub = { data: { name: s, display_name: s } };
+      localsubs.push(sub);
+    });
+    localsubs = localsubs.sort((a, b) =>
+      a.data.display_name.localeCompare(b.data.display_name)
+    );
+    console.log("local:", localsubs);
+    setMyLocalSubs(localsubs);
   };
 
   const loadAllFast = async () => {
@@ -200,7 +231,7 @@ const DropdownPane = ({ hide }) => {
               <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                 <DropdownSubCard
                   sub={subInfo}
-                  mySubs={mySubs}
+                  mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                   refresh={loadAllSubs}
                 />
               </div>
@@ -227,13 +258,35 @@ const DropdownPane = ({ hide }) => {
 
           {!session && (
             <>
-              <button
-                className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-                onClick={() => signIn("reddit")}
-              >
-                <span className="text-blue-300 dark:text-blue-600">Login</span>{" "}
-                to see your subs
-              </button>
+              {myLocalSubs?.length > 0 ? (
+                <>
+                  <div className="pl-2 text-xs tracking-widest">local subs</div>
+                  <div className="py-2">
+                    {myLocalSubs
+                      ? myLocalSubs.map((sub, i) => {
+                          return (
+                            <div
+                              className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                              key={i}
+                            >
+                              <DropdownItem sub={sub} />
+                            </div>
+                          );
+                        })
+                      : ""}
+                  </div>
+                </>
+              ) : (
+                <button
+                  className="p-2 m-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                  onClick={() => signIn("reddit")}
+                >
+                  <span className="text-blue-300 dark:text-blue-600">
+                    Login
+                  </span>{" "}
+                  to see your subs
+                </button>
+              )}
             </>
           )}
 
@@ -253,7 +306,7 @@ const DropdownPane = ({ hide }) => {
                           <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                             {/* Image */}
                             <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                              <div className="w-6 h-6 text-center text-lightText bg-red-400 rounded ">
+                              <div className="w-6 h-6 text-center bg-red-400 rounded text-lightText ">
                                 {"m"}
                               </div>
                             </div>
@@ -295,7 +348,7 @@ const DropdownPane = ({ hide }) => {
                           <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                             {/* Image */}
                             <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                              <div className="w-6 h-6 text-center text-lightText bg-blue-700 rounded-full ">
+                              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText ">
                                 {"r/"}
                               </div>
                             </div>
@@ -328,7 +381,7 @@ const DropdownPane = ({ hide }) => {
           {session && error && (
             <>
               <div className="flex flex-row items-center justify-center p-4">
-                {"Can't connect to Reddit"}
+                {"Can't connect to Reddit. Try refreshing."}
               </div>
             </>
           )}

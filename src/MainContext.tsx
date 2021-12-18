@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useSession } from "next-auth/client";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useReducer } from "react";
 
 export const MainContext: any = React.createContext({});
 
@@ -21,6 +21,25 @@ export const MainProvider = ({ children }) => {
   const [cardStyle, setCardStyle] = useState("default");
   const [posts, setPosts] = useState([]);
   const [postNum, setPostNum] = useState(0);
+
+  const [localSubs, setLocalSubs] = useState([]);
+  const subToSub = async (action, sub) => {
+    if (action == "sub") {
+      addLocalSub(sub);
+      return true;
+    } else if (action == "unsub") {
+      removeLocalSub(sub);
+      return true;
+    }
+  };
+  const addLocalSub = (sub) => {
+    if (!localSubs.includes(sub)) {
+      setLocalSubs((p) => [...p, sub]);
+    }
+  };
+  const removeLocalSub = (sub) => {
+    setLocalSubs((p) => p.filter((s) => s !== sub));
+  };
 
   const toggleAudioOnHover = () => {
     setaudioOnHover((a) => !a);
@@ -65,7 +84,13 @@ export const MainProvider = ({ children }) => {
     saved_columnOverride && setColumnOverride(saved_columnOverride);
     const saved_cardStyle = localStorage.getItem("cardStyle");
     saved_cardStyle && setCardStyle(saved_cardStyle);
+    const local_localSubs = localStorage.getItem("localSubs");
+    local_localSubs && setLocalSubs(JSON.parse(local_localSubs));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("localSubs", JSON.stringify(localSubs));
+  }, [localSubs]);
 
   useEffect(() => {
     localStorage.setItem("nsfw", JSON.stringify(nsfw));
@@ -115,6 +140,8 @@ export const MainProvider = ({ children }) => {
         setPosts,
         postNum,
         setPostNum,
+        localSubs,
+        subToSub,
       }}
     >
       {children}

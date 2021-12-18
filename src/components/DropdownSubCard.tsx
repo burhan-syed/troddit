@@ -4,19 +4,20 @@ import { useState, useEffect } from "react";
 import DropdownItem from "./DropdownItem";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
-
+import { useMainContext } from "../MainContext";
 import { subToSub } from "../RedditAPI";
-
+import { useSession } from "next-auth/client";
 const DropdownSubCard = ({ sub, mySubs, refresh }) => {
   const [loaded, setLoaded] = useState(false);
   const [loadAPI, setloadAPI] = useState(true);
   const [subbed, setSubbed] = useState(false);
-
+  const context: any = useMainContext();
+  const [session] = useSession();
   useEffect(() => {
-    //console.log(mySubs);
+    console.log("mySub", mySubs);
     //console.log(sub);
     const thissub = sub?.data?.name;
-    if (mySubs?.length < 1) return;
+    // if (mySubs?.length < 1) return;
     mySubs.forEach((s) => {
       if (s?.data?.name == thissub) {
         setSubbed(true);
@@ -43,9 +44,16 @@ const DropdownSubCard = ({ sub, mySubs, refresh }) => {
     } else {
       action = "unsub";
     }
-    let status = await subToSub(action, sub?.data?.name);
-    if (status) {
-      refresh();
+    if (session) {
+      let status = await subToSub(action, sub?.data?.name);
+      if (status) {
+        refresh();
+      }
+    } else {
+      let status = context.subToSub(action, sub?.data?.name);
+      if (status) {
+        refresh();
+      }
     }
   };
 

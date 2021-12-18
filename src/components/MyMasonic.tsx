@@ -241,7 +241,9 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
       data = await loadFront(
         query?.frontsort ?? "best",
         query?.t ?? "",
-        loadafter
+        loadafter,
+        undefined,
+        context?.localSubs
         //items.length
       );
     } else if (isUser) {
@@ -304,7 +306,6 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
 
     //let fastafter = after;
     while (payload.length < end - start && !caughtup) {
-      
       //console.log("loop", after);
       let data = await (await loadmore(after)).data;
       if (data?.after === "NONE") {
@@ -320,8 +321,6 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         //lastload = fastafter;
         payload = [...payload, ...data.posts];
       }
-    
-    
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
