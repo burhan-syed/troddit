@@ -482,7 +482,7 @@ const PostModal = ({
                         <h1 className="py-2 md:pl-3">
                           <a
                             className={
-                              (apost?.distinguished == "moderator" &&
+                              (apost?.distinguished == "moderator" || apost?.stickied &&
                                 " text-green-500 dark:text-green-700") +
                               " text-xl"
                             }
