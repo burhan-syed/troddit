@@ -214,7 +214,7 @@ const ChildComments = ({
           {/* Author and comment data*/}
           <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
-            <Link href={`/user/${comment?.data?.author}`}>
+            <Link href={`/u/${comment?.data?.author}`}>
               <a
                 onClick={(e) => {
                   e.stopPropagation();
@@ -351,29 +351,29 @@ const ChildComments = ({
                           <div className={hideChildren ? "hidden" : " "}>
                             {!moreLoaded ? (
                               <>
-                              <div
-                                className={
-                                  (portraitMode ? "" : "") + (loadingComments && " animate-pulse ") + 
-                                  " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0"
-                                }
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (session) {
-                                    setLoadingComments(true);
-                                    loadChildComments(
-                                      childcomment?.data?.children,
-                                      comment?.data?.link_id
-                                    );
-                                  } else {
-                                    context.setLoginModal(true);
+                                <div
+                                  className={
+                                    (portraitMode ? "" : "") +
+                                    (loadingComments && " animate-pulse ") +
+                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0"
                                   }
-                                }}
-                              >
-                                {"Load More... " +
-                                  `(${childcomment.data?.count})`}
-                                
-                              </div>
-                              {/* {loadingComments && (
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (session) {
+                                      setLoadingComments(true);
+                                      loadChildComments(
+                                        childcomment?.data?.children,
+                                        comment?.data?.link_id
+                                      );
+                                    } else {
+                                      context.setLoginModal(true);
+                                    }
+                                  }}
+                                >
+                                  {"Load More... " +
+                                    `(${childcomment.data?.count})`}
+                                </div>
+                                {/* {loadingComments && (
                                   
                                   <div className="animate-spin">
                                     <ImSpinner2 />

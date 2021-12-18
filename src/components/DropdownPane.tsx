@@ -192,12 +192,12 @@ const DropdownPane = ({ hide }) => {
               <div>
                 <DropdownItem
                   sub={subInfo}
-                  isUser={router.pathname.includes("user")}
+                  isUser={router.pathname.includes("/u/")}
                   preventNav={true}
                 />
               </div>
             ) : (
-              <div>{router.pathname.includes("/user/") ? "u/" : "r/"}</div>
+              <div>{router.pathname.includes("/u/") ? "u/" : "r/"}</div>
             )
             //
           }

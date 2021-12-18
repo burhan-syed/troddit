@@ -40,7 +40,7 @@ const Card1 = ({
                   </a>
                 </Link>
                 <p>•</p>
-                <Link href={`/user/${post?.author}`}>
+                <Link href={`/u/${post?.author}`}>
                   <a
                     onClick={(e) => {
                       e.stopPropagation();
@@ -135,7 +135,7 @@ const Card1 = ({
                             </a>
                           </Link>
                           <p>•</p>
-                          <Link href={`/user/${post?.author}`}>
+                          <Link href={`/u/${post?.author}`}>
                             <a
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -244,8 +244,12 @@ const Card1 = ({
           {(!context.mediaOnly || !hasMedia) && (
             <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
               <div className="flex flex-row items-center space-x-1">
-              <Vote name={post?.name} score={post?.score} likes={post?.likes} size={5}/>
-
+                <Vote
+                  name={post?.name}
+                  score={post?.score}
+                  likes={post?.likes}
+                  size={5}
+                />
               </div>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1 className="cursor-pointer ">

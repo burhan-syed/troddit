@@ -7,6 +7,15 @@ module.exports = withPlausibleProxy()(
     images: {
       domains: [],
     },
+    async redirects() {
+      return [
+        {
+          source: "/user/:path*",
+          destination: "/u/:path*",
+          permanent: true,
+        },
+      ];
+    },
     async rewrites() {
       return [
         {

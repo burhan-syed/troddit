@@ -84,8 +84,8 @@ const Post = ({ post, postNum = 0 }) => {
         // console.log("FRONSORT");
         //setReturnRoute(router.asPath);
         router.push("", post.id, { shallow: true });
-      } else if (router.pathname.includes("/user/")) {
-        router.push("", `/user/${post.author}/p/${post.id}`, { shallow: true });
+      } else if (router.pathname.includes("/u/")) {
+        router.push("", `/u/${post.author}/p/${post.id}`, { shallow: true });
       } else {
         router.push("", post.permalink, { shallow: true });
       }

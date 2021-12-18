@@ -20,7 +20,7 @@ const SortMenu2 = ({ hide = false }) => {
   const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (router.pathname.includes("/user/")) setIsUser(true);
+    if (router.pathname.includes("/u/")) setIsUser(true);
     if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
     if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
     if (router?.query?.t ?? false) {
@@ -40,7 +40,7 @@ const SortMenu2 = ({ hide = false }) => {
 
       if (router.query?.slug?.[0] ?? false) {
         router.push(
-          `/${isUser ? "user" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}`
+          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}`
         );
       } else {
         router.push(`/${s}`);
@@ -54,7 +54,7 @@ const SortMenu2 = ({ hide = false }) => {
     setRange(r);
     if (router.query?.slug?.[0] ?? false) {
       router.push(
-        `/${isUser ? "user" : "r"}/${
+        `/${isUser ? "u" : "r"}/${
           router.query?.slug?.[0] ?? "hot"
         }/top/?t=${encodeURI(r)}`
       );

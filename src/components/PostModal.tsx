@@ -463,7 +463,7 @@ const PostModal = ({
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
                         <div className="flex flex-row flex-none pt-1.5 text-xs font-light text-gray md:pl-3">
-                          <Link href={`/user/${apost?.author}`}>
+                          <Link href={`/u/${apost?.author}`}>
                             <a
                               onClick={(e) => {
                                 e.stopPropagation();

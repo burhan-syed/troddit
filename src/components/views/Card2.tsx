@@ -50,7 +50,13 @@ const Card1 = ({
           {true && (
             <div className="p-1 px-2 pt-1.5">
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1 className={(post?.distinguished == "moderator" && " text-green-500 dark:text-green-700") + " text-lg  leading-none cursor-pointer"}>
+                <h1
+                  className={
+                    (post?.distinguished == "moderator" &&
+                      " text-green-500 dark:text-green-700") +
+                    " text-lg  leading-none cursor-pointer"
+                  }
+                >
                   {post?.title ?? ""}
                   {post?.link_flair_richtext?.length > 0 && (
                     <span className="text-xs">
@@ -73,7 +79,7 @@ const Card1 = ({
                   </a>
                 </Link>
                 <p>•</p>
-                <Link href={`/user/${post?.author}`}>
+                <Link href={`/u/${post?.author}`}>
                   <a
                     onClick={(e) => {
                       e.stopPropagation();
@@ -110,8 +116,12 @@ const Card1 = ({
 
               <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
                 <div className="flex flex-row items-center space-x-1">
-                <Vote name={post?.name} score={post?.score} likes={post?.likes} size={5}/>
-
+                  <Vote
+                    name={post?.name}
+                    score={post?.score}
+                    likes={post?.likes}
+                    size={5}
+                  />
                 </div>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                   <h1 className="cursor-pointer ">

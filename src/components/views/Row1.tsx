@@ -128,7 +128,7 @@ const Row1 = ({
             </a>
           </Link>
           <p>•</p>
-          <Link href={`/user/${post?.author}`}>
+          <Link href={`/u/${post?.author}`}>
             <a
               onClick={(e) => {
                 e.stopPropagation();
