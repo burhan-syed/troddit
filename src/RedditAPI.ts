@@ -453,6 +453,7 @@ export const loadPost = async (permalink, sort = "top") => {
         params: { raw_json: 1 },
       })
     ).data;
+    console.log(res);
     const data = {
       post: res?.[0]?.data?.children?.[0].data,
       comments: res?.[1]?.data?.children,
@@ -461,6 +462,7 @@ export const loadPost = async (permalink, sort = "top") => {
     return data;
   } catch (err) {
     console.log(err);
+    return { post: undefined, comments: undefined };
   }
 };
 

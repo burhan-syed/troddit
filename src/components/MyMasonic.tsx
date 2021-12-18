@@ -276,12 +276,12 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //   label: `${subreddits ? subreddits : "home"}`,
     //   value: count,
     // });
-    plausible("infinitescroll");
 
     if (data?.after) {
       //console.log("next ", data?.after, "used ", after, " prevafter ", prevAfter.current)
       if (after === prevAfter.current) {
         prevAfter.current = data?.after;
+        plausible("infinitescroll");
         //console.log('update prevAfter ', prevAfter.current);
         setAfter(data?.after);
         return { data: { posts: data?.children, after: data?.after } };

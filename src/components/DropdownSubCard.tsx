@@ -14,7 +14,7 @@ const DropdownSubCard = ({ sub, mySubs, refresh }) => {
   const context: any = useMainContext();
   const [session] = useSession();
   useEffect(() => {
-    console.log("mySub", mySubs);
+    //console.log("mySub", mySubs);
     //console.log(sub);
     const thissub = sub?.data?.name;
     // if (mySubs?.length < 1) return;

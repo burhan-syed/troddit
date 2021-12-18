@@ -51,6 +51,7 @@ const PostModal = ({
   const context: any = useMainContext();
   const [imgFull, setimgFull] = useState(true);
   const [windowWidth, windowHeight] = useWindowSize();
+  const [error, setError] = useState(false);
 
   const plausible = usePlausible();
 
@@ -163,8 +164,13 @@ const PostModal = ({
       }
       const { post, comments } = await loadPost(permalink, sort);
       if (Object.keys(postData).length === 0) {
-        setPost(post);
-        setLoadingPost(false);
+        console.log("post", post);
+        if (post?.id) {
+          setPost(post);
+          setLoadingPost(false);
+        } else {
+          setError(true);
+        }
       }
 
       setComments(comments);
@@ -174,6 +180,7 @@ const PostModal = ({
     return () => {
       setPost({});
       setComments([]);
+      setError(false);
       setLoadingComments(true);
       setLoadingPost(true);
     };
@@ -275,6 +282,20 @@ const PostModal = ({
     }
     plausible("postChange");
   };
+
+  if (wait) {
+    return (
+      <div className="absolute top-0 w-screen h-16 bg-blue-700 animate-pulse"></div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center mt-28">
+        {"page not found"}
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain">
@@ -482,8 +503,9 @@ const PostModal = ({
                         <h1 className="py-2 md:pl-3">
                           <a
                             className={
-                              (apost?.distinguished == "moderator" || apost?.stickied &&
-                                " text-green-500 dark:text-green-700") +
+                              (apost?.distinguished == "moderator" ||
+                                (apost?.stickied &&
+                                  " text-green-500 dark:text-green-700")) +
                               " text-xl"
                             }
                             href={`https://www.reddit.com${

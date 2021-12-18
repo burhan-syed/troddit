@@ -133,7 +133,7 @@ const DropdownPane = ({ hide }) => {
     localsubs = localsubs.sort((a, b) =>
       a.data.display_name.localeCompare(b.data.display_name)
     );
-    console.log("local:", localsubs);
+    //console.log("local:", localsubs);
     setMyLocalSubs(localsubs);
   };
 
