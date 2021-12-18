@@ -277,14 +277,14 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     plausible("infinitescroll");
 
     if (data?.after) {
-      console.log("next ", data?.after, "used ", after, " prevafter ", prevAfter.current)
+      //console.log("next ", data?.after, "used ", after, " prevafter ", prevAfter.current)
       if (after === prevAfter.current) {
         prevAfter.current = data?.after;
-        console.log('update prevAfter ', prevAfter.current);
+        //console.log('update prevAfter ', prevAfter.current);
         setAfter(data?.after);
         return { data: { posts: data?.children, after: data?.after } };
       } else {
-        console.log('reject');
+        //console.log('reject');
         return { data: { posts: [], after: "NONE" } };
       }
     } else {
@@ -295,7 +295,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    console.log('getpost call');
+    //console.log('getpost call');
 
     allowload = false;
     let caughtup = false;
@@ -305,7 +305,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //let fastafter = after;
     while (payload.length < end - start && !caughtup) {
       
-      console.log("loop", after);
+      //console.log("loop", after);
       let data = await (await loadmore(after)).data;
       if (data?.after === "NONE") {
         //ignore
