@@ -30,67 +30,87 @@ const Row1 = ({
   return (
     <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-[#212121] dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
       {/* Votes */}
-      <div className={ (post?.link_flair_richtext?.length > 0 && "mt-2") + " flex flex-row items-center justify-center "}>
-      <div className="flex flex-row items-center justify-center">
-        <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
-          <Vote  likes={post?.likes} score={post?.score ?? 0 } name={post?.name}/>
-        </div>
-      </div>
-      {/* Thumbnail */}
-      <a
-              href={`${post?.url?.replace('reddit.com', 'troddit.com')}` ?? `https://troddit.com${post?.permalink}`}
-              target={"_blank"}
-              rel="noreferrer"
-              onClick={e => e.stopPropagation()}
-            >
-            
       <div
         className={
-          "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md overflow-hidden" +
-          (post?.thumbnail == "self" || post?.thumbnail == "default" || post?.thumbnail == "nsfw"
-            ? " border rounded-md"
-            : " border border-transparent ") +
-          (hideNSFW && " overflow-hidden")
+          (post?.link_flair_richtext?.length > 0 && "mt-2") +
+          " flex flex-row items-center justify-center "
         }
       >
-       
-        {post?.thumbnail !== "self" &&
-        post?.thumbnail !== "default" &&
-        post?.thumbnail && post?.thumbnail !== 'nsfw' ? (
-          <div className={hideNSFW && ""}>
-            <Image
-              src={post?.thumbnail}
-              alt=""
-              layout={"intrinsic"}
-              priority={true}
-              height={post?.thumbnail_height}
-              width={post?.thumbnail_width}
-              unoptimized={true}
-              className={"rounded-md " + (hideNSFW && " blur")}
-            ></Image>
+        <div className="flex flex-row items-center justify-center">
+          <div className="flex-col items-center self-start justify-start flex-none hidden h-full pt-1 w-14 md:flex">
+            <Vote
+              likes={post?.likes}
+              score={post?.score ?? 0}
+              name={post?.name}
+            />
           </div>
-        ) : post?.thumbnail == "self" ? (
-          <BsCardText className="w-6 h-6" />
-        ) : (
-          <AiOutlineLink className="w-6 h-6" />
-        )}
-        
-      </div>
-      </a>
+        </div>
+        {/* Thumbnail */}
+        <a
+          href={
+            `${post?.url?.replace("reddit.com", "troddit.com")}` ??
+            `https://troddit.com${post?.permalink}`
+          }
+          target={"_blank"}
+          rel="noreferrer"
+          onClick={(e) => {
+            // e.stopPropagation();
+            e.preventDefault();
+          }}
+        >
+          <div
+            className={
+              "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md overflow-hidden" +
+              (post?.thumbnail == "self" ||
+              post?.thumbnail == "default" ||
+              post?.thumbnail == "nsfw"
+                ? " border rounded-md"
+                : " border border-transparent ") +
+              (hideNSFW && " overflow-hidden")
+            }
+          >
+            {post?.thumbnail !== "self" &&
+            post?.thumbnail !== "default" &&
+            post?.thumbnail &&
+            post?.thumbnail !== "nsfw" ? (
+              <div className={hideNSFW && ""}>
+                <Image
+                  src={post?.thumbnail}
+                  alt=""
+                  layout={"intrinsic"}
+                  priority={true}
+                  height={post?.thumbnail_height}
+                  width={post?.thumbnail_width}
+                  unoptimized={true}
+                  className={"rounded-md " + (hideNSFW && " blur")}
+                ></Image>
+              </div>
+            ) : post?.thumbnail == "self" ? (
+              <BsCardText className="w-6 h-6" />
+            ) : (
+              <AiOutlineLink className="w-6 h-6" />
+            )}
+          </div>
+        </a>
       </div>
       <div className="flex flex-col flex-grow pr-2 mt-2 ml-2">
         {/* Title */}
         <div>
-        {post?.link_flair_richtext?.length > 0 && (
-              <div className="pb-1 text-xs">
-                <TitleFlair post={post} />
-                {"  "}
-              </div>
-            )}
+          {post?.link_flair_richtext?.length > 0 && (
+            <div className="pb-1 text-xs">
+              <TitleFlair post={post} />
+              {"  "}
+            </div>
+          )}
           <h1 className={" text-base leading-none cursor-pointer"}>
-            
-
-            <a href={post?.permalink} onClick={(e) => e.preventDefault()} className={(post?.distinguished == "moderator" && " text-green-500 dark:text-green-700")}>
+            <a
+              href={post?.permalink}
+              onClick={(e) => e.preventDefault()}
+              className={
+                post?.distinguished == "moderator" &&
+                " text-green-500 dark:text-green-700"
+              }
+            >
               {`${post?.title}  ` ?? ""}
             </a>
           </h1>
