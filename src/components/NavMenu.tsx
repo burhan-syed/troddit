@@ -213,6 +213,7 @@ const NavMenu = ({ hide = false }) => {
                     e.preventDefault();
                     context.setCardStyle("default");
                   }}
+                  
                 >
                   <div
                     className={classNames(

@@ -17,6 +17,7 @@ const SortMenu2 = ({ hide = false }) => {
   const [sort, setSort] = useState<any>("hot");
   const [range, setRange] = useState("");
   const [isUser, setIsUser] = useState(false);
+  const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
   useEffect(() => {
     if (router.pathname.includes("/user/")) setIsUser(true);
@@ -79,7 +80,7 @@ const SortMenu2 = ({ hide = false }) => {
   return (
     <Menu
       as="div"
-      className="relative flex flex-col items-center flex-grow w-full h-full"
+      className="relative flex flex-col items-center flex-grow w-full h-full select-none"
     >
       {({ open }) => (
         <>
@@ -162,6 +163,7 @@ const SortMenu2 = ({ hide = false }) => {
                   <Menu.Item>
                     {({ active }) => (
                       <div
+                        onTouchStart={(e) => setTopTouch(false)}
                         onClick={(e) => updateSort(e, "best")}
                         className={classNames(
                           active
@@ -182,6 +184,7 @@ const SortMenu2 = ({ hide = false }) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
+                      onTouchStart={(e) => setTopTouch(false)}
                       onClick={(e) => updateSort(e, "hot")}
                       className={classNames(
                         active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
@@ -200,7 +203,8 @@ const SortMenu2 = ({ hide = false }) => {
                   {({ active }) => (
                     <div
                       className="group"
-                      onClick={(e) => updateRange(e, "day")}
+                      onTouchStart={(e) => setTopTouch(true)}
+                      onClick={(e) => !topTouch && updateRange(e, "day")}
                     >
                       <div
                         className={classNames(
@@ -217,7 +221,8 @@ const SortMenu2 = ({ hide = false }) => {
                       </div>
                       <ul
                         className={
-                          (active ? "block " : "hidden ") + (!isUser ? "top-24 " : "top-12 ") +
+                          (active || topTouch ? "block " : "hidden ") +
+                          (!isUser ? "top-24 " : "top-12 ") +
                           "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                         }
                       >
@@ -228,6 +233,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "hour" ? `font-bold` : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "hour")}
                             >
                               Now
@@ -241,6 +247,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "today" ? `font-bold` : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "today")}
                             >
                               Today
@@ -254,6 +261,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "week" ? `font-bold` : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "week")}
                             >
                               Week
@@ -267,6 +275,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "month" ? `font-bold` : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "month")}
                             >
                               Month
@@ -280,6 +289,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "year" ? `font-bold` : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "year")}
                             >
                               Year
@@ -293,6 +303,7 @@ const SortMenu2 = ({ hide = false }) => {
                                 (range === "all" ? `font-bold ` : "") +
                                 " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
+                              onTouchStart={(e) => setTopTouch(false)}
                               onClick={(e) => updateRange(e, "all")}
                             >
                               All
@@ -307,6 +318,7 @@ const SortMenu2 = ({ hide = false }) => {
                 <Menu.Item>
                   {({ active }) => (
                     <div
+                      onTouchStart={(e) => setTopTouch(false)}
                       onClick={(e) => updateSort(e, "new")}
                       className={classNames(
                         active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
@@ -325,6 +337,7 @@ const SortMenu2 = ({ hide = false }) => {
                   <Menu.Item>
                     {({ active }) => (
                       <div
+                        onTouchStart={(e) => setTopTouch(false)}
                         onClick={(e) => updateSort(e, "rising")}
                         className={classNames(
                           active

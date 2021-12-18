@@ -27,23 +27,6 @@ const NavBar = () => {
   const router = useRouter();
   const [prevScrollpos, setScrollpos] = useState(0);
   const plausible = usePlausible();
-  // useEffect(() => {
-  //   const onScroll = () => {
-  //     setSidebarVisible(false);
-  //     var currentScrollPos = window.pageYOffset;
-  //     if (prevScrollpos > currentScrollPos) {
-  //       setHidden(false);
-  //     } else if (router.query?.slug?.[1] !== "comments") {
-  //       setHidden(true);
-  //     }
-  //     setScrollpos(currentScrollPos);
-  //   };
-  //   window.addEventListener("scroll", onScroll);
-  //   setScrollpos(window.pageYOffset);
-  //   return () => {
-  //     window.removeEventListener("scroll", onScroll);
-  //   };
-  // }, [prevScrollpos]);
 
   const { scrollY, scrollX, scrollDirection } = useScroll();
   useEffect(() => {
@@ -58,6 +41,14 @@ const NavBar = () => {
       }
     }
   }, [scrollDirection, allowHide, scrollY]);
+
+  const forceShow = () => {
+    console.log('forceshow');
+    if (hidden) {
+      
+      setHidden(false);
+    }
+  }
 
   useEffect(() => {
     //console.log("NAVBAR", router.query);
@@ -75,6 +66,7 @@ const NavBar = () => {
   }, [router]);
 
   return (
+    <>
     <header
       className={
         `${hidden ? "-translate-y-full" : ""}` +
@@ -122,6 +114,9 @@ const NavBar = () => {
         </div>
       </nav>
     </header>
+    <div onMouseOver={e => forceShow()} className="fixed top-0 z-40 w-full bg-transparent h-14 opacity-10 "></div>
+
+    </>
   );
 };
 

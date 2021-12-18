@@ -5,7 +5,6 @@ import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
 
 const calculateScore = (x: number) => {
-  console.log(x);
   if (x < 10000) {
     return x.toString();
   } else {

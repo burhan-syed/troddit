@@ -112,7 +112,6 @@ export const loadSubreddits = async (
         },
       });
       let res = await res1.data;
-      console.log(res);
       ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
 
       return {
