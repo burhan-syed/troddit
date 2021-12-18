@@ -37,29 +37,34 @@ const Row1 = ({
         </div>
       </div>
       {/* Thumbnail */}
+      <a
+              href={`${post?.url?.replace('reddit.com', 'troddit.com')}` ?? `https://troddit.com${post?.permalink}`}
+              target={"_blank"}
+              rel="noreferrer"
+              onClick={e => e.stopPropagation()}
+            >
+            
       <div
         className={
-          "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md" +
-          (post?.thumbnail == "self" || post?.thumbnail == "default"
+          "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md overflow-hidden" +
+          (post?.thumbnail == "self" || post?.thumbnail == "default" || post?.thumbnail == "nsfw"
             ? " border rounded-md"
             : " border border-transparent ") +
           (hideNSFW && " overflow-hidden")
         }
       >
-       <a
-              href={`${post?.url}` ?? `https://troddit.com${post?.permalink}`}
-              target="_blank"
-              rel="noreferrer"
-            >
+       
         {post?.thumbnail !== "self" &&
         post?.thumbnail !== "default" &&
-        post?.thumbnail ? (
+        post?.thumbnail && post?.thumbnail !== 'nsfw' ? (
           <div className={hideNSFW && ""}>
             <Image
               src={post?.thumbnail}
               alt=""
-              layout={"fill"}
+              layout={"intrinsic"}
               priority={true}
+              height={post?.thumbnail_height}
+              width={post?.thumbnail_width}
               unoptimized={true}
               className={"rounded-md " + (hideNSFW && " blur")}
             ></Image>
@@ -69,8 +74,9 @@ const Row1 = ({
         ) : (
           <AiOutlineLink className="w-6 h-6" />
         )}
-        </a>
+        
       </div>
+      </a>
       </div>
       <div className="flex flex-col flex-grow pr-2 mt-2 ml-2">
         {/* Title */}

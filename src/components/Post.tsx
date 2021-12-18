@@ -74,7 +74,7 @@ const Post = ({ post, postNum = 0 }) => {
   const handleClick = (e) => {
     e.stopPropagation();
     plausible('postOpen');
-    if (!e.ctrlKey) {
+    if (!e.ctrlKey || !e.metaKey) {
       setLastRoute(router.asPath);
       context.setPauseAll(true);
       setSelect(true);

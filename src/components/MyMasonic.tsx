@@ -1,5 +1,11 @@
 /* eslint-disable react/no-children-prop */
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import ReactDOM from "react-dom";
 import useWindowScroll from "@react-hook/window-scroll";
 import { useWindowSize } from "@react-hook/window-size";
@@ -17,8 +23,7 @@ import Post from "./Post";
 // import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
-import {usePlausible} from 'next-plausible'
-
+import { usePlausible } from "next-plausible";
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -63,10 +68,12 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
   const plausible = usePlausible();
+  const prevAfter = useRef(null);
 
   useEffect(() => {
+    prevAfter.current = initAfter;
     allowload = true;
-    loadonce = 0; 
+    loadonce = 0;
     if (query.frontsort) {
       setSort(query?.frontsort ?? "hot");
       setRange(query?.t ?? "");
@@ -84,7 +91,6 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     setLoading(false);
 
     return () => {
-      setFetchPost(false);
       setError(false);
       setItems([]);
       setAfter("");
@@ -183,23 +189,21 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     }
   );
 
-
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       //console.log("load more posts..", startIndex, stopIndex);
-      if (allowload && lastload === after) {
+      if (allowload) {
         //preventing more calls prior to new page fetch
         lastload = "";
-        
+
         const nextItems = await getPostsPromise(startIndex, stopIndex);
         //console.log("nextitems", nextItems, after);
         setItems((current) => {
           //console.log("after", after);
           context.setPosts([...current, ...nextItems]);
           return [...current, ...nextItems];
-          
         });
-      }      
+      }
     },
     {
       isItemLoaded: (index, items) => {
@@ -211,11 +215,6 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     }
   );
 
-  //const maybeLoadMoreMemo = useMemo(() => {return maybeLoadMorePosts} , [after])
-
-
-
-
   const scrollToIndex = useScrollToIndex(positioner, {
     align: "center",
     offset: offset,
@@ -223,72 +222,16 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     element: containerRef,
   });
 
+  //load posts for slideshow functionality
   useEffect(() => {
-    // console.log("scrolling");
-    // scrollToIndex(10);
     let n = items.length - context.postNum;
-    //console.log("posts left:", n, "total posts: ", items.length);
     if (n > 0 && n < 10) {
-      //console.log("maybe loading more");
       maybeLoadMorePosts(posts.length, posts.length + 10, posts);
     }
     return () => {
       //
     };
   }, [context.postNum]);
-
-  const fetchFront = async () => {
-    //console.log(query);
-    let data = await loadFront(query?.frontsort ?? "hot", query?.t ?? "");
-    if (data) {
-      //console.log("DATA", data);
-      let n = numposts;
-      for (let c = 0; c < data.children.length; c++) {
-        //console.log(data.children[c]);
-        data.children[c]["id"] = n;
-        n = n + 1;
-        data.children[c]["height"] = randInt();
-        //console.log(data.children[c]);
-      }
-      setLoading(false);
-
-      setNumPosts((n) => n + data.children.length);
-      setAfter(data?.after);
-      setItems(data.children);
-      return data.children;
-    }
-  };
-
-  const [fetchPost, setFetchPost] = useState(false);
-
-  const fetchSubs = async () => {
-    if (query?.slug?.[1] === "comments") {
-      setFetchPost(true);
-      setLoading(false);
-    } else {
-      let data: any = await loadSubreddits(
-        query?.slug?.[0] ?? "",
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? ""
-      );
-      if (data) {
-        let n = numposts;
-        for (let c = 0; c < data.children.length; c++) {
-          data.children[c]["id"] = n;
-          n = n + 1;
-          data.children[c]["height"] = randInt();
-        }
-
-        setLoading(false);
-        setAfter(data?.after);
-        setItems(data.children);
-        setNumPosts((n) => n + data.children.length);
-      } else {
-        setLoading(false);
-        setError(true);
-      }
-    }
-  };
 
   const loadmore = async (loadafter = after) => {
     setCount((c) => c + 1);
@@ -331,10 +274,19 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //   label: `${subreddits ? subreddits : "home"}`,
     //   value: count,
     // });
-    plausible('infinitescroll');
+    plausible("infinitescroll");
+
     if (data?.after) {
-      setAfter(data?.after);
-      return { data: { posts: data?.children, after: data?.after } };
+      console.log("next ", data?.after, "used ", after, " prevafter ", prevAfter.current)
+      if (after === prevAfter.current) {
+        prevAfter.current = data?.after;
+        console.log('update prevAfter ', prevAfter.current);
+        setAfter(data?.after);
+        return { data: { posts: data?.children, after: data?.after } };
+      } else {
+        console.log('reject');
+        return { data: { posts: [], after: "NONE" } };
+      }
     } else {
       setError(true);
       return { data: { posts: [], after: "" } };
@@ -343,48 +295,38 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    //console.log('getpost call', after, allowload)
+    console.log('getpost call');
 
     allowload = false;
     let caughtup = false;
     let n = numposts;
     let payload = [];
-    
-    let fastafter = after;
-    while (payload.length < end - start && !caughtup) {
-      //console.log("getposts");
-      //console.log(posts);
-      let data = await (await loadmore(fastafter)).data;
-      if (!data.after || data.after == "") {
-        //console.log("NO MORE DATA");
-        setEnd(true);
-        caughtup = true;
-        allowload = false;
-        return payload;
-      }
-      //console.log("data returned", data.after);
-      fastafter = data?.after;
-      lastload = fastafter;
-      //console.log("data", data.data);
 
-      // for (let c = 0; c < data.posts.length; c++) {
-      //   //data.posts[c]["id"] = n;
-      //   //n = n + 1;
-      //   //data.posts[c]["height"] = randInt();
-      //   payload.push(data.posts[c]);
-      //   //console.log(payload[c]);
-      // }
-      payload = [...payload, ...data.posts];
+    //let fastafter = after;
+    while (payload.length < end - start && !caughtup) {
+      
+      console.log("loop", after);
+      let data = await (await loadmore(after)).data;
+      if (data?.after === "NONE") {
+        //ignore
+      } else {
+        if (!data.after || data.after == "") {
+          setEnd(true);
+          caughtup = true;
+          allowload = false;
+          return payload;
+        }
+        //fastafter = data?.after;
+        //lastload = fastafter;
+        payload = [...payload, ...data.posts];
+      }
+    
+    
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
 
     return payload;
-  
-    // const fakeItems = [];
-    // for (let i = start; i < end + 10; i++)
-    //   fakeItems.push({ id: i, height: randInt() });
-    // return fakeItems;
   };
 
   const getFakePosts = async (start = 0, end = 32) => {
@@ -404,26 +346,30 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
 
   return (
     <div>
-      <Masonry
-        onRender={maybeLoadMorePosts}
-        //positioner={positioner}
-        // The distance in px between the top of the document and the top of the
-        // masonry grid container
-        //offset={offset}
-        // The height of the virtualization window
-        //height={windowHeight}
-        // Forwards the ref to the masonry container element
+      {!loading && (
+        <>
+          <Masonry
+            onRender={maybeLoadMorePosts}
+            //positioner={positioner}
+            // The distance in px between the top of the document and the top of the
+            // masonry grid container
+            //offset={offset}
+            // The height of the virtualization window
+            //height={windowHeight}
+            // Forwards the ref to the masonry container element
 
-        columnGutter={cols == 1 ? 5 : 10}
-        //columnWidth={(windowWidth*5/6 - 8*2) / 3}
-        columnCount={cols}
-        items={items}
-        itemHeightEstimate={itemheightestimate}
-        overscanBy={2}
-        render={PostCard}
-        className=""
-        ssrWidth={500}
-      />
+            columnGutter={cols == 1 ? 5 : 10}
+            //columnWidth={(windowWidth*5/6 - 8*2) / 3}
+            columnCount={cols}
+            items={items}
+            itemHeightEstimate={itemheightestimate}
+            overscanBy={2}
+            render={PostCard}
+            className=""
+            ssrWidth={500}
+          />
+        </>
+      )}
 
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
