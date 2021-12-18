@@ -244,7 +244,7 @@ const ChildComments = ({
                 </p>
               </>
             )}
-            {!portraitMode && (
+            {/* {!portraitMode && (
               <div className="flex-row hidden space-x-1 md:flex ">
                 <p>•</p>
                 <h1
@@ -259,7 +259,7 @@ const ChildComments = ({
                   {score ?? "0"} pts
                 </h1>
               </div>
-            )}
+            )} */}
 
             <p>•</p>
             <p className="">
