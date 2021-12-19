@@ -55,7 +55,7 @@ const Search = ({ id }) => {
     let data = [];
     setLoading(true);
     data = await searchSubreddits(value.value, context.nsfw);
-    console.log(data);
+    //console.log(data);
     if (data?.length > 0) {
       let match = false;
       if (lastRequest.current === value.value) {
@@ -80,10 +80,10 @@ const Search = ({ id }) => {
           suggestions[suggestions.length - 1]?.data?.display_name_prefixed
         );
         setmorethanonesuggestion(suggestions.length > 1);
-        console.log("kept", lastRequest.current);
+        //console.log("kept", lastRequest.current);
         return suggestions;
       } else {
-        console.log("discard", lastRequest.current, value.value);
+        //console.log("discard", lastRequest.current, value.value);
         // return {};
       }
     } else {
