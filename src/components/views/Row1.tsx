@@ -28,7 +28,7 @@ const Row1 = ({
   const [expand, setexpand] = useState(false);
 
   return (
-    <div className="flex flex-row items-start py-1 text-sm bg-white border-l border-r border-gray-300 shadow-sm dark:bg-[#212121] dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
+    <div className="flex flex-row items-start py-1 text-sm bg-lightPost group hover:bg-lightPostHover border-l border-r border-gray-300 shadow-sm dark:bg-[#212121] dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500 hover:shadow-xl ">
       {/* Votes */}
       <div
         className={
