@@ -383,6 +383,19 @@ export const searchSubreddits = async (query, over18 = false) => {
       return [];
     }
   } else {
+    try {
+      const res = await (
+        await axios.get(`${REDDIT}/search/.json?q=${query}&type=sr`, {
+          params: {
+            raw_json: 1,
+          },
+        })
+      ).data;
+      return res?.data?.children?.slice(0, 4);
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
     return [];
   }
   return [];
@@ -453,7 +466,7 @@ export const loadPost = async (permalink, sort = "top") => {
         params: { raw_json: 1 },
       })
     ).data;
-    console.log(res);
+    //console.log(res);
     const data = {
       post: res?.[0]?.data?.children?.[0].data,
       comments: res?.[1]?.data?.children,

@@ -33,7 +33,7 @@ const Search = ({ id }) => {
     lastRequest.current = value;
     setSuggestions([value]);
     const suggestions = await getSuggestions({ value });
-    if (suggestions?.length > 1 || !session) {
+    if (suggestions?.length > 0) {
       setSuggestions(suggestions);
       setLoading(false);
       setUpdated(true);
@@ -46,48 +46,49 @@ const Search = ({ id }) => {
     let suggestions = [
       {
         data: {
-          display_name_prefixed: value.value,
+          display_name_prefixed: `r/${value.value}`,
           display_name: value.value,
           over18: false,
         },
       },
     ];
     let data = [];
-    if (session) {
-      setLoading(true);
-      data = await searchSubreddits(value.value, context.nsfw);
-      //console.log(data);
-      if (data?.length > 0) {
-        if (lastRequest.current === value.value) {
-          seterror(false);
-          suggestions = data.filter((sub) => {
-            if (context.nsfw === "true") return sub;
-            else if (sub?.data?.over18 !== true) {
-              return sub;
+    setLoading(true);
+    data = await searchSubreddits(value.value, context.nsfw);
+    console.log(data);
+    if (data?.length > 0) {
+      let match = false;
+      if (lastRequest.current === value.value) {
+        seterror(false);
+        let filtered = data.filter((sub) => {
+          if (context.nsfw === "true" || sub?.data?.over18 !== true) {
+            if (
+              sub?.data?.display_name.toLowerCase() ===
+              value.value.toLowerCase()
+            ) {
+              match = true;
             }
-          });
-          //console.log("kept", lastRequest);
+            return sub;
+          }
+        });
+        if (match) {
+          suggestions = filtered;
         } else {
-          // console.log("discard", lastRequest, value.value);
-          // return {};
+          suggestions = [...suggestions, ...filtered];
         }
+        setlastsuggestion(
+          suggestions[suggestions.length - 1]?.data?.display_name_prefixed
+        );
+        setmorethanonesuggestion(suggestions.length > 1);
+        console.log("kept", lastRequest.current);
+        return suggestions;
       } else {
-        //fallback to local search
-        seterror(true);
-        suggestions = [];
+        console.log("discard", lastRequest.current, value.value);
+        // return {};
       }
-    }
-    if (!session || (suggestions.length <= 1 && error)) {
-      //suggestions.push({ name: value });
-      suggestions = [
-        {
-          data: {
-            display_name_prefixed: value.value,
-            display_name: value.value,
-            over18: false,
-          },
-        },
-      ];
+    } else {
+      //fallback to local search
+      session && seterror(true);
       let search = localSearch(value.value);
       if (search?.length > 0) {
         suggestions = [...suggestions, ...search];
@@ -98,7 +99,21 @@ const Search = ({ id }) => {
       setmorethanonesuggestion(suggestions.length > 1);
       return suggestions;
     }
-    return suggestions;
+
+    // if (suggestions.length < 1 || error) {
+    //   //suggestions.push({ name: value });
+    //   suggestions = [
+    //     {
+    //       data: {
+    //         display_name_prefixed: value.value,
+    //         display_name: value.value,
+    //         over18: false,
+    //       },
+    //     },
+    //   ];
+
+    // }
+    //return suggestions;
   };
 
   //https://frontpagemetrics.com/
@@ -141,135 +156,155 @@ const Search = ({ id }) => {
       return (
         <div>
           <Link href={suggestion?.data?.display_name_prefixed ?? `/r/${value}`}>
-        <a>
-          <div
-            // onClick={(e) =>}
-            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-          >
-            <div className="ml-2">
-            {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
-              <div className="relative w-6 h-6 rounded-full">
-                <Image
-                  src={
-                    suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
-                  }
-                  alt="r"
-                  layout="fill"
-                  className="rounded-full"
-                  unoptimized={true}
-                ></Image>
+            <a>
+              <div
+                // onClick={(e) =>}
+                className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+              >
+                <div className="ml-2">
+                  {suggestion?.data?.icon_image ??
+                  suggestion?.data?.icon_img ? (
+                    <div className="relative w-6 h-6 rounded-full">
+                      <Image
+                        src={
+                          suggestion?.data?.icon_image ??
+                          suggestion?.data?.icon_img
+                        }
+                        alt="r"
+                        layout="fill"
+                        className="rounded-full"
+                        unoptimized={true}
+                      ></Image>
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                      r/
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col ml-4">
+                  <div>{suggestion?.data?.display_name_prefixed ?? value}</div>
+                  <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                    {suggestion?.data?.subscribers
+                      ? suggestion.data.subscribers.toLocaleString("en-US") +
+                        " followers "
+                      : "?? followers "}
+                    {suggestion?.data?.over18 && (
+                      <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                        nsfw
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
-                r/
-              </div>
-            )}
-            </div>
-            <div className="flex flex-col ml-4">
-              <div>{suggestion?.data?.display_name_prefixed ?? value}</div>
-              <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
-                {suggestion?.data?.subscribers
-                  ? suggestion.data.subscribers.toLocaleString("en-US") +
-                    " followers "
-                  : "?? followers "}
-                {suggestion?.data?.over18 && (
-                  <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                    nsfw
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          </a>
+            </a>
           </Link>
-          {!suggestion?.data?.subscribers && <>
-          <div
-            // onClick={(e) =>}
-            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-          >
-            <div className="ml-2">
-            {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
-              <div className="relative w-6 h-6 rounded-full">
-                <Image
-                  src={
-                    suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
-                  }
-                  alt="r"
-                  layout="fill"
-                  className="rounded-full"
-                  unoptimized={true}
-                ></Image>
+          {!suggestion?.data?.subscribers && (
+            <>
+              <div
+                // onClick={(e) =>}
+                className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+              >
+                <div className="ml-2">
+                  {suggestion?.data?.icon_image ??
+                  suggestion?.data?.icon_img ? (
+                    <div className="relative w-6 h-6 rounded-full">
+                      <Image
+                        src={
+                          suggestion?.data?.icon_image ??
+                          suggestion?.data?.icon_img
+                        }
+                        alt="r"
+                        layout="fill"
+                        className="rounded-full"
+                        unoptimized={true}
+                      ></Image>
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText animate-pulse">
+                      r/
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col ml-4">
+                  <div className="h-4 bg-gray-200 rounded-md w-52 dark:bg-gray-500 animate-pulse"></div>
+                  <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight animate-pulse">
+                    {suggestion?.data?.subscribers
+                      ? suggestion.data.subscribers.toLocaleString("en-US") +
+                        " followers "
+                      : "?? followers "}
+                    {suggestion?.data?.over18 && (
+                      <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                        nsfw
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText animate-pulse">
-                r/
-              </div>
-            )}
-            </div>
-            <div className="flex flex-col ml-4">
-              <div className="h-4 bg-gray-200 rounded-md w-52 dark:bg-gray-500 animate-pulse"></div>
-              <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight animate-pulse">
-                {suggestion?.data?.subscribers
-                  ? suggestion.data.subscribers.toLocaleString("en-US") +
-                    " followers "
-                  : "?? followers "}
-                {suggestion?.data?.over18 && (
-                  <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                    nsfw
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          </>}
+            </>
+          )}
         </div>
       );
     }
     return (
       <div className="select-none ">
         <Link href={`${suggestion?.data?.display_name_prefixed}`}>
-        <a>
-        <div
-          // onClick={(e) =>}
-          className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-        >
-          <div className="ml-2">
-            {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
-              <div className="relative w-6 h-6 rounded-full">
-                <Image
-                  src={
-                    suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
-                  }
-                  alt="r"
-                  layout="fill"
-                  className="rounded-full"
-                  unoptimized={true}
-                ></Image>
+          <a>
+            <div
+              // onClick={(e) =>}
+              className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+            >
+              <div className="ml-2">
+                {suggestion?.data?.icon_image?.length > 1 ||
+                suggestion?.data?.icon_img?.length > 1 ||
+                suggestion?.data?.community_icon?.length > 1 ? (
+                  <div className="relative w-6 h-6 rounded-full">
+                    <Image
+                      src={
+                        suggestion?.data?.community_icon?.length > 1
+                          ? suggestion?.data?.community_icon.replaceAll(
+                              "amp;",
+                              ""
+                            )
+                          : suggestion?.data?.icon_img?.length > 1
+                          ? suggestion?.data?.icon_img.replaceAll("amp;", "")
+                          : suggestion?.data?.icon_image?.length > 1
+                          ? suggestion?.data?.icon_image.replaceAll("amp;", "")
+                          : "https://styles.redditmedia.com/t5_38jf0/styles/communityIcon_9o27r8mvttb51.png?width=256&s=58e6c9e7f7b36126893dbecb474d234de0ab7f5c"
+                      }
+                      alt="r"
+                      layout="fill"
+                      className="rounded-full"
+                      unoptimized={true}
+                    ></Image>
+                  </div>
+                ) : (
+                  <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                    r/
+                  </div>
+                )}
+                {/* <p>1:{suggestion?.data?.icon_image?.length}</p>
+                <p>2:{suggestion?.data?.icon_img?.length}</p>
+                <p>3:{suggestion?.data?.community_icon?.length}</p> */}
               </div>
-            ) : (
-              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
-                r/
+              <div className="flex flex-col ml-4">
+                <div>{suggestion?.data?.display_name_prefixed}</div>
+                <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                  {suggestion?.data?.subscribers
+                    ? suggestion.data.subscribers.toLocaleString("en-US") +
+                      " followers "
+                    : "?? followers "}
+                  {suggestion?.data?.over18 && (
+                    <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                      nsfw
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-          <div className="flex flex-col ml-4">
-            <div>{suggestion?.data?.display_name_prefixed}</div>
-            <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
-              {suggestion?.data?.subscribers
-                ? suggestion.data.subscribers.toLocaleString("en-US") +
-                  " followers "
-                : "?? followers "}
-              {suggestion?.data?.over18 && (
-                <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                  nsfw
-                </span>
-              )}
             </div>
-          </div>
-        </div>
-        </a>
+          </a>
         </Link>
-        {morethanonesuggestion ? (
+        {/* {morethanonesuggestion ? (
           <>
             {!session &&
               lastsuggestion === suggestion?.data?.display_name_prefixed && (
@@ -302,7 +337,7 @@ const Search = ({ id }) => {
               </div>
             )}
           </>
-        )}
+        )} */}
         {session &&
           error &&
           lastsuggestion === suggestion?.data?.display_name_prefixed && (

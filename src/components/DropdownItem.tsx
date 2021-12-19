@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
-import {usePlausible} from 'next-plausible'
+import { usePlausible } from "next-plausible";
 
-
-const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
+const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
@@ -14,7 +13,6 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
     if (sub.data?.icon_url) {
       setThumbURL(sub.data.icon_url);
       setisMulti(true);
-      
     } else {
       if (sub.data?.icon_img && sub.data?.icon_img !== "") {
         setThumbURL(sub.data.icon_img);
@@ -23,7 +21,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
         setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
       }
     }
-    if (sub?.data){
+    if (sub?.data) {
       setLoaded(true);
     }
 
@@ -32,13 +30,13 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
 
   const goToSub = (e, suggestion) => {
     e.preventDefault();
-    plausible('goToSub');
+    plausible("goToSub");
     router.push(`/r/${suggestion}`);
   };
 
   const goToMulti = (e) => {
     let suggestions = "";
-    plausible('goToMulti');
+    plausible("goToMulti");
     for (let s of sub.data.subreddits) {
       suggestions.length === 0
         ? (suggestions = s.name)
@@ -55,11 +53,11 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
   //     <div className="">
   //       <div
   //       className="flex flex-row items-center text-sm text-center cursor-pointer"
-        
+
   //     >
   //       {/* Image */}
   //       <div className="flex flex-row items-center w-6 h-6 ml-1 animate-pulse">
-          
+
   //           <div
   //             className={
   //               (isMulti ? "rounded " : "rounded-full ") +
@@ -68,7 +66,7 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
   //           >
   //             {isUser ? "u/" : isMulti ? "m" : "r/"}
   //           </div>
-         
+
   //       </div>
   //       {/* Text */}
   //       <h1 className="ml-2 animate-pulse">
@@ -99,15 +97,19 @@ const DropdownItem = ({ sub, isUser=false, preventNav=false }) => {
                 (isMulti ? "rounded" : "rounded-full") + " flex-none border "
               }
             />
-          ) : loaded && (
-            <div
-              className={
-                (isMulti ? "rounded bg-red-400" : "rounded-full bg-blue-700") +
-                " w-6 h-6 text-center text-lightText"
-              }
-            >
-              {isUser ? "u/" : isMulti ? "m" : "r/"}
-            </div>
+          ) : (
+            loaded && (
+              <div
+                className={
+                  (isMulti
+                    ? "rounded bg-red-400"
+                    : "rounded-full bg-blue-700") +
+                  " w-6 h-6 text-center text-lightText"
+                }
+              >
+                {isUser ? "u/" : isMulti ? "m" : "r/"}
+              </div>
+            )
           )}
         </div>
         {/* Text */}
