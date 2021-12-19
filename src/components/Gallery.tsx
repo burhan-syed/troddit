@@ -123,7 +123,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
                     height={image.height}
                     width={image.width}
                     alt=""
-                    layout="intrinsic"
+                    layout={image.url === "spoiler" ? "fill" : "intrinsic"}
                     priority={true}
                     unoptimized={true}
                   ></Image>

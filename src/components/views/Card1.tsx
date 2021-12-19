@@ -22,13 +22,13 @@ const Card1 = ({
         className={
           (!context.mediaOnly || !hasMedia ? "px-3 pt-3 pb-2 " : "  ") +
           (!context.mediaOnly && " rounded-md ") +
-          " text-sm bg-white border  border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
+          " text-sm bg-lightPost hover:bg-lightPostHover hover:shadow-2xl transition-colors border group hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <>
-              <div className="flex flex-row py-1 pb-1 text-xs font-light truncate text-gray">
+              <div className="flex flex-row py-1 text-xs truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -36,7 +36,9 @@ const Card1 = ({
                       e.stopPropagation();
                     }}
                   >
-                    <h2>r/{post?.subreddit ?? "ERR"}</h2>
+                    <h2 className="font-semibold hover:underline">
+                      r/{post?.subreddit ?? ""}
+                    </h2>
                   </a>
                 </Link>
                 <p>•</p>
@@ -46,19 +48,21 @@ const Card1 = ({
                       e.stopPropagation();
                     }}
                   >
-                    <h2 className="ml-1 mr-1">u/{post?.author ?? ""}</h2>
+                    <h2 className="ml-1 mr-1 hover:underline">
+                      u/{post?.author ?? ""}
+                    </h2>
                   </a>
                 </Link>
                 <p>•</p>
 
-                <p className="ml-1">
+                <p className="ml-1 font-">
                   {secondsToTime(post?.created_utc, [
-                    "s",
-                    "min",
-                    "hr",
-                    "dy",
-                    "mo",
-                    "yr",
+                    "s ago",
+                    "m ago",
+                    "h ago",
+                    "d ago",
+                    "mo ago",
+                    "yr ago",
                   ])}
                 </p>
                 {post?.over_18 && (
@@ -73,23 +77,25 @@ const Card1 = ({
                   <p className="ml-1">{`(${post.domain})`}</p>
                 </div>
               </div>
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1
-                  className={
-                    (post?.distinguished == "moderator" &&
-                      " text-green-500 dark:text-green-700") +
-                    " items-center text-lg  leading-none cursor-pointer pb-2"
-                  }
-                >
-                  {`${post?.title}` ?? ""}
-                </h1>
-                {post?.link_flair_richtext?.length > 0 && (
-                  <div className="pb-1 text-xs">
-                    {"  "}
-                    <TitleFlair post={post} />
-                  </div>
-                )}
-              </a>
+              <div className="py-2">
+                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <h1
+                    className={
+                      (post?.distinguished == "moderator" &&
+                        " text-green-500 dark:text-green-700") +
+                      " items-center text-lg font-semibold  leading-none cursor-pointer pb-2"
+                    }
+                  >
+                    {`${post?.title}` ?? ""}
+                  </h1>
+                  {post?.link_flair_richtext?.length > 0 && (
+                    <div className="pb-1 text-xs">
+                      {"  "}
+                      <TitleFlair post={post} />
+                    </div>
+                  )}
+                </a>
+              </div>
             </>
           )}
 
@@ -131,7 +137,9 @@ const Card1 = ({
                                 e.stopPropagation();
                               }}
                             >
-                              <h2>r/{post?.subreddit ?? "ERR"}</h2>
+                              <h2 className="font-semibold hover:underline">
+                                r/{post?.subreddit ?? "ERR"}
+                              </h2>
                             </a>
                           </Link>
                           <p>•</p>
@@ -141,7 +149,7 @@ const Card1 = ({
                                 e.stopPropagation();
                               }}
                             >
-                              <h2 className="ml-1 mr-1">
+                              <h2 className="ml-1 mr-1 hover:underline">
                                 u/{post?.author ?? ""}
                               </h2>
                             </a>
@@ -150,12 +158,12 @@ const Card1 = ({
 
                           <p className="ml-1">
                             {secondsToTime(post?.created_utc, [
-                              "s",
-                              "min",
-                              "hr",
-                              "dy",
-                              "mo",
-                              "yr",
+                              "s ago",
+                              "m ago",
+                              "h ago",
+                              "d ago",
+                              "mo ago",
+                              "yr ago",
                             ])}
                           </p>
                           {post?.over_18 && (
@@ -192,7 +200,7 @@ const Card1 = ({
                             href={post?.permalink}
                             onClick={(e) => e.preventDefault()}
                           >
-                            <h1 className="cursor-pointer ">
+                            <h1 className="cursor-pointer hover:underline ">
                               {`${post.num_comments} ${
                                 post.num_comments === 1 ? "comment" : "comments"
                               }`}
@@ -243,7 +251,7 @@ const Card1 = ({
 
           {(!context.mediaOnly || !hasMedia) && (
             <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
-              <div className="flex flex-row items-center space-x-1">
+              <div className="flex flex-row items-center space-x-1 font-semibold">
                 <Vote
                   name={post?.name}
                   score={post?.score}
@@ -252,7 +260,7 @@ const Card1 = ({
                 />
               </div>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1 className="cursor-pointer ">
+                <h1 className="cursor-pointer group-hover:underline">
                   {`${post.num_comments} ${
                     post.num_comments === 1 ? "comment" : "comments"
                   }`}

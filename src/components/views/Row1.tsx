@@ -63,7 +63,8 @@ const Row1 = ({
               "relative flex items-center justify-center flex-none w-24 h-16 mt-2 rounded-md overflow-hidden" +
               (post?.thumbnail == "self" ||
               post?.thumbnail == "default" ||
-              post?.thumbnail == "nsfw"
+              post?.thumbnail == "nsfw" ||
+              post?.thumbnail == "spoiler"
                 ? " border rounded-md"
                 : " border border-transparent ") +
               (hideNSFW && " overflow-hidden")
@@ -72,7 +73,8 @@ const Row1 = ({
             {post?.thumbnail !== "self" &&
             post?.thumbnail !== "default" &&
             post?.thumbnail &&
-            post?.thumbnail !== "nsfw" ? (
+            post?.thumbnail !== "nsfw" &&
+            post?.thumbnail !== "spoiler" ? (
               <div className={hideNSFW && ""}>
                 <Image
                   src={post?.thumbnail}

@@ -1,22 +1,31 @@
-export const secondsToTime = (seconds, verbiage = ['seconds ago', 'minutes ago', 'hours ago', 'days ago', 'months ago', 'years ago']) => {
-  let t = Math.floor((Math.floor(Date.now() / 1000) - seconds));
-  if (t < 60) return (`${t} ${verbiage[0]}`);
-  t = Math.ceil(t/60);
-  if (t < 60) return (`${t} ${verbiage[1]}`);
-  t = Math.ceil(t/60);
-  if (t < 72) return (`${t} ${verbiage[2]}`);
-  t = Math.floor(t/24); 
-  if (t < 30) return (`${t} ${verbiage[3]}`);
-  t = Math.floor(t/30); 
-  if (t < 24) return (`${t} ${verbiage[4]}`);
-  t = Math.floor(t/12); 
-  return (`${t} ${verbiage[5]}`);
-}
+export const secondsToTime = (
+  seconds,
+  verbiage = [
+    " seconds ago",
+    " minutes ago",
+    " hours ago",
+    " days ago",
+    " months ago",
+    " years ago",
+  ]
+) => {
+  let t = Math.floor(Math.floor(Date.now() / 1000) - seconds);
+  if (t < 60) return `${t}${verbiage[0]}`;
+  t = Math.ceil(t / 60);
+  if (t < 60) return `${t}${verbiage[1]}`;
+  t = Math.ceil(t / 60);
+  if (t < 72) return `${t}${verbiage[2]}`;
+  t = Math.floor(t / 24);
+  if (t < 30) return `${t}${verbiage[3]}`;
+  t = Math.floor(t / 30);
+  if (t < 24) return `${t}${verbiage[4]}`;
+  t = Math.floor(t / 12);
+  return `${t}${verbiage[5]}`;
+};
 
-
-export const findMediaInfo = async(post) => {
-  let videoInfo = { url: "", height: 0, width: 0 }
-  let imageInfo = { url: "", height: 0, width: 0 }
+export const findMediaInfo = async (post) => {
+  let videoInfo = { url: "", height: 0, width: 0 };
+  let imageInfo = { url: "", height: 0, width: 0 };
   let gallery = [];
   let isPortrait = false;
   let isImage = false;
@@ -39,7 +48,7 @@ export const findMediaInfo = async(post) => {
       } else if (gallery?.[0]?.height > gallery?.[0]?.width) {
         return true;
       }
-    } else  {
+    } else {
       return false;
     }
   };
@@ -60,7 +69,7 @@ export const findMediaInfo = async(post) => {
       height: 1080,
       width: 1080,
     };
-    isImage = true
+    isImage = true;
     img.onload = function (event) {
       // console.log("natural:", img.naturalWidth, img.naturalHeight);
       // console.log("width,height:", img.width, img.height);
@@ -115,7 +124,6 @@ export const findMediaInfo = async(post) => {
 
   const findImage = async (post) => {
     if (post.media_metadata) {
-      
       for (let i in post.media_metadata) {
         let image = post.media_metadata[i];
         if (image.p) {
@@ -169,7 +177,6 @@ export const findMediaInfo = async(post) => {
     return false;
   };
 
-   //isPortrait = await checkIfPortrait(post);
-   return checkIfPortrait(post);
-
-}
+  //isPortrait = await checkIfPortrait(post);
+  return checkIfPortrait(post);
+};

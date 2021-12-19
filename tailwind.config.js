@@ -9,8 +9,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        lightText: "#E7E5E4",//"#F1F5F9",
-        lightBG: "#E5E7EB",
+        lightText: "#E7E5E4", //"#F1F5F9",
+        lightBG: "#F1F5F9", //"#E5E7EB",
+        lightPost: "#F8FAFC", //"#F1F5F9", //"#D4D4D8",
+        lightPostHover: "white", // "#FAFAFA",
         lightHighlight: "#F3F4F6",
         lightBorder: "#D4D4D8",
         lightBorderHighlight: "#71717A",

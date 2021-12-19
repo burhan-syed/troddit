@@ -462,15 +462,16 @@ const PostModal = ({
                       {/* Main Media Column */}
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
-                        <div className="flex flex-row flex-none pt-1.5 text-xs font-light text-gray md:pl-3">
+                        <div className="flex flex-row flex-none pt-1.5 text-sm md:pl-3">
                           <Link href={`/u/${apost?.author}`}>
                             <a
                               onClick={(e) => {
                                 e.stopPropagation();
                               }}
                             >
-                              <h2 className="ml-1 mr-1">
-                                u/{apost?.author ?? ""}
+                              <h2 className="ml-1 mr-1 font-semibold hover:underline">
+                                u/
+                                {apost?.author ?? ""}
                               </h2>
                             </a>
                           </Link>
@@ -481,7 +482,10 @@ const PostModal = ({
                                 e.stopPropagation();
                               }}
                             >
-                              on r/{apost?.subreddit ?? "unknown"}
+                              on{" "}
+                              <span className="font-semibold hover:underline">
+                                r/{apost?.subreddit ?? "unknown"}
+                              </span>
                             </a>
                           </Link>
 
@@ -500,13 +504,13 @@ const PostModal = ({
                             <p className="ml-1">{`(${apost?.domain})`}</p>
                           </div>
                         </div>
-                        <h1 className="py-2 md:pl-3">
+                        <h1 className="flex items-center justify-start py-2 md:pl-3">
                           <a
                             className={
                               (apost?.distinguished == "moderator" ||
                                 (apost?.stickied &&
                                   " text-green-500 dark:text-green-700")) +
-                              " text-xl"
+                              " text-xl font-semibold"
                             }
                             href={`https://www.reddit.com${
                               apost?.permalink ?? ""
@@ -515,13 +519,13 @@ const PostModal = ({
                             rel="noreferrer"
                           >
                             {apost?.title ?? ""}
-                            {apost?.link_flair_richtext?.length > 0 && (
-                              <span className="text-xs">
-                                {"  "}
-                                <TitleFlair post={apost} />
-                              </span>
-                            )}{" "}
                           </a>
+                          {apost?.link_flair_richtext?.length > 0 && (
+                            <span className="ml-1 text-xs">
+                              {"  "}
+                              <TitleFlair post={apost} />
+                            </span>
+                          )}
                         </h1>
 
                         {/* Image/Video/Text Body */}
@@ -529,7 +533,7 @@ const PostModal = ({
                           <>
                             <div
                               className={
-                                "block relative md:pl-3" +
+                                "block relative md:ml-4" +
                                 (hideNSFW && " overflow-hidden")
                               }
                             >
@@ -549,7 +553,6 @@ const PostModal = ({
                             </div>
                           </>
                         )}
-
                         {/* Bottom Buttons */}
                         <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                           {/* Vote buttons for mobiles */}

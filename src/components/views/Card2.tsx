@@ -25,7 +25,7 @@ const Card1 = ({
           //   : "  ") +
           // (!context.mediaOnly && " rounded-md ") +
           (context?.columnOverride == 1 && "") +
-          " text-sm bg-white border  border-gray-300 shadow-sm dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500"
+          " text-sm bg-lightPost group hover:bg-lightPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">
@@ -54,7 +54,7 @@ const Card1 = ({
                   className={
                     (post?.distinguished == "moderator" &&
                       " text-green-500 dark:text-green-700") +
-                    " text-lg  leading-none cursor-pointer"
+                    "  text-lg font-semibold  leading-none cursor-pointer"
                   }
                 >
                   {post?.title ?? ""}
@@ -67,7 +67,7 @@ const Card1 = ({
                 </h1>
               </a>
 
-              <div className="flex flex-row py-1 pb-1 text-xs font-light truncate text-gray">
+              <div className="flex flex-row py-1 pb-1 text-xs truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -75,7 +75,9 @@ const Card1 = ({
                       e.stopPropagation();
                     }}
                   >
-                    <h2>r/{post?.subreddit ?? "ERR"}</h2>
+                    <h2 className="font-semibold hover:underline">
+                      r/{post?.subreddit ?? ""}
+                    </h2>
                   </a>
                 </Link>
                 <p>•</p>
@@ -85,7 +87,9 @@ const Card1 = ({
                       e.stopPropagation();
                     }}
                   >
-                    <h2 className="ml-1 mr-1">u/{post?.author ?? ""}</h2>
+                    <h2 className="ml-1 mr-1 hover:underline">
+                      u/{post?.author ?? ""}
+                    </h2>
                   </a>
                 </Link>
                 <p>•</p>
@@ -115,7 +119,7 @@ const Card1 = ({
               </div>
 
               <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
-                <div className="flex flex-row items-center space-x-1">
+                <div className="flex flex-row items-center space-x-1 font-semibold">
                   <Vote
                     name={post?.name}
                     score={post?.score}
@@ -124,7 +128,7 @@ const Card1 = ({
                   />
                 </div>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                  <h1 className="cursor-pointer ">
+                  <h1 className="font-sans cursor-pointer group-hover:underline">
                     {`${post.num_comments} ${
                       post.num_comments === 1 ? "comment" : "comments"
                     }`}

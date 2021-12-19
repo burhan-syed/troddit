@@ -474,7 +474,9 @@ const Media = ({
       {loaded && (
         <>
           {isTweet && (
-            <div className={!imgFull && "flex justify-center " + " bg-transparent"}>
+            <div
+              className={!imgFull && "flex justify-center " + " bg-transparent"}
+            >
               <TwitterTweetEmbed
                 options={{
                   theme: theme,
@@ -570,7 +572,9 @@ const Media = ({
                 width={imageInfo.width}
                 alt=""
                 layout={
-                  imgFull || (context?.columnOverride == 1 && !postMode)
+                  imgFull ||
+                  (context?.columnOverride == 1 && !postMode) ||
+                  imageInfo.url === "spoiler"
                     ? "fill"
                     : "responsive"
                 }
