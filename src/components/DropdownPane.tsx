@@ -78,6 +78,7 @@ const DropdownPane = ({ hide }) => {
         loadAllFast();
       } else if (!session) {
         loadLocalSubs();
+        setloadedSubs(true);
       }
       setClicked(true);
     }
@@ -135,6 +136,7 @@ const DropdownPane = ({ hide }) => {
     );
     //console.log("local:", localsubs);
     setMyLocalSubs(localsubs);
+    //setloadedSubs(true);
   };
 
   const loadAllFast = async () => {
@@ -233,6 +235,7 @@ const DropdownPane = ({ hide }) => {
                   sub={subInfo}
                   mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                   refresh={loadAllSubs}
+                  subsLoaded={loadedSubs}
                 />
               </div>
             )}
