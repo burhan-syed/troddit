@@ -11,6 +11,24 @@ const Gallery = ({ images, maxheight = 0 }) => {
   const [style, setStyle] = useState({});
   const [imagesRender, setImagesRender] = useState(images);
 
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = (e) => {
+    if (touchStart - touchEnd > 50) {
+      advance(e);
+      //console.log("right");
+    } else if (touchStart - touchEnd < -50) {
+      previous(e);
+      //console.log("left");
+    }
+  };
+
   useEffect(() => {
     let ratio = 1;
     let tallest = 0;
@@ -90,7 +108,12 @@ const Gallery = ({ images, maxheight = 0 }) => {
 
   if (loaded) {
     return (
-      <div className={"relative flex flex-row items-center"}>
+      <div
+        className={"relative flex flex-row items-center"}
+        onTouchStart={(e) => handleTouchStart(e)}
+        onTouchMove={(e) => handleTouchMove(e)}
+        onTouchEnd={(e) => handleTouchEnd(e)}
+      >
         {/* <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button> */}

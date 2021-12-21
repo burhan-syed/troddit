@@ -6,10 +6,25 @@ import Search from "./Search";
 import SideDropDown from "./SideDropDown";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useSession, signIn, signOut } from "next-auth/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const SideNav = ({ visible, toggle }) => {
   const [session, loading] = useSession();
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = (e) => {
+    if (touchStart - touchEnd > 50) {
+      toggle(false);
+      //console.log("right");
+    } else if (touchStart - touchEnd < -50) {
+    }
+  };
   //prevent scrolling on main body when open
   useEffect(() => {
     if (visible) {
@@ -27,7 +42,11 @@ const SideNav = ({ visible, toggle }) => {
     };
   }, [visible]);
   return (
-    <div>
+    <div
+      onTouchStart={(e) => handleTouchStart(e)}
+      onTouchMove={(e) => handleTouchMove(e)}
+      onTouchEnd={(e) => handleTouchEnd(e)}
+    >
       <div
         className={
           "absolute h-screen inset-y-0 left-0  space-y-6 z-40 transition duration-200 ease-in-out transform -translate-x-full sidebar py-7" +
