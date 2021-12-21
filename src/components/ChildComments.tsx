@@ -181,10 +181,10 @@ const ChildComments = ({
             setHideChildren((h) => !h);
           }}
           className={
-            "min-h-full w-0 md:w-2  lg:w-4 flex-none  cursor-pointer group"
+            "min-h-full w-1 md:w-2  lg:w-4 flex-none  cursor-pointer group"
           }
         >
-          <div className="flex-none w-1 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+          <div className="flex-none w-0.5 md:w-1 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
         </div>
         {/* Vote Buttons */}
         <div

@@ -70,6 +70,24 @@ const PostModal = ({
     return () => {};
   }, [nextPress, backPress, escapePress]);
 
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = (e) => {
+    if (touchStart - touchEnd > 50) {
+      changePost(1);
+      //console.log("right");
+    } else if (touchStart - touchEnd < -50) {
+      changePost(-1);
+      //console.log("left");
+    }
+  };
+
   useEffect(() => {
     const checkPortrait = async () => {
       let check = await findMediaInfo(apost);
@@ -298,7 +316,12 @@ const PostModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain">
+    <div
+      className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
+      onTouchStart={(e) => handleTouchStart(e)}
+      onTouchMove={(e) => handleTouchMove(e)}
+      onTouchEnd={(e) => handleTouchEnd(e)}
+    >
       {/* <div
           
           className="left-0 bg-black lg:w-1/12 opacity-80 "
