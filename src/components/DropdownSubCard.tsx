@@ -7,33 +7,40 @@ import { ImSpinner2 } from "react-icons/im";
 import { useMainContext } from "../MainContext";
 import { subToSub } from "../RedditAPI";
 import { useSession } from "next-auth/client";
-const DropdownSubCard = ({ sub, mySubs, refresh }) => {
+const DropdownSubCard = ({ sub, mySubs, refresh, subsLoaded }) => {
   const [loaded, setLoaded] = useState(false);
   const [loadAPI, setloadAPI] = useState(true);
   const [subbed, setSubbed] = useState(false);
   const context: any = useMainContext();
   const [session] = useSession();
+
+
   useEffect(() => {
     //console.log("mySub", mySubs);
     //console.log(sub);
-    const thissub = sub?.data?.name;
-    // if (mySubs?.length < 1) return;
-    mySubs.forEach((s) => {
-      if (s?.data?.name == thissub) {
-        setSubbed(true);
-        setLoaded(true);
-        setloadAPI(false);
-      }
-    });
-    setLoaded(true);
-    setloadAPI(false);
+    setloadAPI(true);
+
+    if (subsLoaded){
+      const thissub = sub?.data?.name;
+      // if (mySubs?.length < 1) return;
+      mySubs.forEach((s) => {
+        if (s?.data?.name == thissub) {
+          setSubbed(true);
+          setLoaded(true);
+          setloadAPI(false);
+        }
+      });
+      setloadAPI(false);
+      setLoaded(true);
+    }
+    
 
     return () => {
       setSubbed(false);
       setLoaded(false);
       setloadAPI(true);
     };
-  }, [sub, mySubs]);
+  }, [sub, mySubs, subsLoaded]);
 
   const subscribe = async (follow) => {
     //console.log(sub?.data?.name);
@@ -63,7 +70,7 @@ const DropdownSubCard = ({ sub, mySubs, refresh }) => {
       {/* <div>{sub?.data?.subscribers}</div> */}
       {loaded && (
         <div className="relative">
-          <div className="p-1 rounded cursor-pointer dark:hover:bg-darkBorder hover:bg-lightHighlight group">
+          <div className="p-1 rounded cursor-pointer dark:hover:bg-darkBorder hover:bg-white group">
             {subbed && !loadAPI ? (
               <div
                 onClick={(e) => {
