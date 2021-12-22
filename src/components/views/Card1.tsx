@@ -28,7 +28,7 @@ const Card1 = ({
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <>
-              <div className="flex flex-row py-1 text-xs truncate text-gray">
+              <div className="flex flex-row py-1 text-xs truncate select-auto text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -102,7 +102,7 @@ const Card1 = ({
           {/* Media Only */}
           {context.mediaOnly ? (
             <div className={!context.mediaOnly && "pt-1 pb-1.5"}>
-              {true ? (
+              {hasMedia && (
                 <div
                   className={
                     "relative group " + (hideNSFW && " overflow-hidden")
@@ -211,11 +211,7 @@ const Card1 = ({
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">
-                  NSFW
-                </div>
-              )}
+              ) }
             </div>
           ) : (
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>

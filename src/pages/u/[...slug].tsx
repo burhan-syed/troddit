@@ -24,24 +24,6 @@ const Sort = ({ query }) => {
     };
   }, [query]);
 
-  const [toggleSideNav, setToggleSideNav] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-  const handleTouchEnd = (e) => {
-    if (touchStart - touchEnd > 200) {
-      //console.log("right");
-    } else if (touchStart - touchEnd < -200) {
-      setToggleSideNav((p) => p + 1);
-      //console.log("left");
-    }
-  };
-
   return (
     <div className="overflow-x-hidden overflow-y-auto ">
       <Head>
@@ -49,12 +31,8 @@ const Sort = ({ query }) => {
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
         </title>
       </Head>
-      <main
-        onTouchStart={(e) => handleTouchStart(e)}
-        onTouchMove={(e) => handleTouchMove(e)}
-        onTouchEnd={(e) => handleTouchEnd(e)}
-      >
-        <NavBar toggleSideNav={toggleSideNav} />
+      <main>
+        <NavBar />
         {loaded && <Feed query={feedQuery} isUser={isUser} />}
       </main>
     </div>

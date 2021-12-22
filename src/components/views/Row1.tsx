@@ -104,7 +104,7 @@ const Row1 = ({
               {"  "}
             </div>
           )}
-          <h1 className={" text-base leading-none cursor-pointer"}>
+          <h1 className={" text-base leading-none cursor-pointer select-auto"}>
             <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}

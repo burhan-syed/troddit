@@ -135,7 +135,7 @@ const Post = ({ post, postNum = 0 }) => {
   }, [post, vote]);
 
   return (
-    <div>
+    <div >
       {select && (
         <PostModal
           permalink={post?.permalink}
@@ -147,7 +147,7 @@ const Post = ({ post, postNum = 0 }) => {
       )}
 
       {/* Click wrappter */}
-      <div onClick={(e) => handleClick(e)}>
+      <div className="select-none" onClick={(e) => handleClick(e)}>
         {/* OG Card */}
         {/* <h1>{postNum}</h1> */}
         {context?.cardStyle === "row1" ? (

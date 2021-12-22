@@ -79,11 +79,11 @@ const PostModal = ({
     setTouchEnd(e.targetTouches[0].clientX);
   };
   const handleTouchEnd = (e) => {
-    if (touchStart - touchEnd > 50) {
-      changePost(1);
+    if (touchStart - touchEnd > 100) {
+      //changePost(1);
       //console.log("right");
-    } else if (touchStart - touchEnd < -50) {
-      changePost(-1);
+    } else if (touchStart - touchEnd < -100) {
+      handleBack();
       //console.log("left");
     }
   };

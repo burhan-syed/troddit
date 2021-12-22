@@ -282,9 +282,9 @@ const ChildComments = ({
                 onClick={(e) => {
                   const cellText = document.getSelection();
                   //console.log(cellText);
-                  if (cellText.anchorNode.nodeName != "#text")
+                  if (cellText?.anchorNode?.nodeName != "#text")
                     e.stopPropagation();
-                  if (cellText.type === "Range") e.stopPropagation();
+                  if (cellText?.type === "Range") e.stopPropagation();
                 }}
                 className="pb-2 pl-3 mr-1 md:pl-0"
                 id="innerhtml"

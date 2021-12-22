@@ -48,7 +48,7 @@ const Card1 = ({
 
           {/* <p>{post?.url ?? "ERR"}</p> */}
           {true && (
-            <div className="p-1 px-2 pt-1.5">
+            <div className="p-1 px-2 pt-1.5 select-auto">
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1
                   className={
