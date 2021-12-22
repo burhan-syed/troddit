@@ -460,22 +460,61 @@ export const loadMoreComments = async (
 };
 
 export const loadPost = async (permalink, sort = "top") => {
-  try {
-    const res = await (
-      await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-        params: { raw_json: 1 },
-      })
-    ).data;
-    //console.log(res);
-    const data = {
-      post: res?.[0]?.data?.children?.[0].data,
-      comments: res?.[1]?.data?.children,
-    };
-    //console.log(data);
-    return data;
-  } catch (err) {
-    console.log(err);
-    return { post: undefined, comments: undefined };
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      //console.log(permalink.split('/'));
+      let res = await axios.get(
+        `https://oauth.reddit.com/${permalink}`,
+        {
+          headers: {
+            authorization: `bearer ${token}`,
+          },
+          params: {
+            raw_json: 1,
+            article: permalink.split('/')?.[4],
+            context: 4,
+            showedits: true,
+            showmedia: true,
+            showmore: true,
+            showtitle: true,
+            sort: sort,
+            theme: 'default',
+            threaded: true,
+            truncate: true
+          }
+        }
+      );
+      let data = await res.data;
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //console.log(data);
+      const post = {
+        post: data?.[0]?.data?.children?.[0]?.data,
+        comments: data?.[1]?.data?.children
+      };
+      //console.log(data);
+      return post;
+    } catch (err) {
+      return { post: undefined, comments: undefined };
+    }
+  } else {
+    try {
+      const res = await (
+        await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
+          params: { raw_json: 1 },
+        })
+      ).data;
+      //console.log(res);
+      const data = {
+        post: res?.[0]?.data?.children?.[0].data,
+        comments: res?.[1]?.data?.children,
+      };
+      //console.log(data);
+      return data;
+    } catch (err) {
+      console.log(err);
+      return { post: undefined, comments: undefined };
+    }
   }
 };
 
