@@ -1,4 +1,5 @@
 import { useMainContext } from "../../MainContext";
+import {useState, useEffect} from 'react';
 import Link from "next/dist/client/link";
 import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
@@ -16,6 +17,17 @@ const Card1 = ({
   forceMute,
 }) => {
   const context: any = useMainContext();
+  const [allowIFrame, setallowIFrame] = useState(false)
+  useEffect(() => {
+    if (context?.columnOverride === 1) {
+      setallowIFrame(true);
+    } else {
+      setallowIFrame(false);
+    }
+    return () => {
+      
+    }
+  }, [context?.columnOverride])
   return (
     <div>
       <div
@@ -112,7 +124,7 @@ const Card1 = ({
                     <div className={hideNSFW && " blur-3xl"}>
                       <Media
                         post={post}
-                        allowIFrame={context.columnOverride == 1}
+                        allowIFrame={allowIFrame}
                       />
                     </div>
                   </a>
@@ -226,7 +238,7 @@ const Card1 = ({
                   <Media
                     post={post}
                     forceMute={forceMute}
-                    allowIFrame={context.columnOverride == 1}
+                    allowIFrame={allowIFrame}
                   />
                 </div>
                 {hideNSFW && (
