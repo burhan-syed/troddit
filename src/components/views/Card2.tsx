@@ -25,7 +25,7 @@ const Card1 = ({
           //   : "  ") +
           // (!context.mediaOnly && " rounded-md ") +
           (context?.columnOverride == 1 && "") +
-          " text-sm bg-lightPost group hover:bg-lightPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
+          " text-sm bg-lightPost group hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">

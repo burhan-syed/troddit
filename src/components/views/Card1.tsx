@@ -22,7 +22,7 @@ const Card1 = ({
         className={
           (!context.mediaOnly || !hasMedia ? "px-3 pt-3 pb-2 " : "  ") +
           (!context.mediaOnly && " rounded-md ") +
-          " text-sm bg-lightPost hover:bg-lightPostHover hover:shadow-2xl transition-colors border group hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
+          " text-sm bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border group hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">
