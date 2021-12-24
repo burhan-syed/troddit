@@ -92,18 +92,22 @@ const Gallery = ({ images, maxheight = 0 }) => {
   // isLeft boolean we can determine which side we'll be rendering our button
   // as well as change its position and content.
   const sliderControl = (isLeft) => (
-    <button
-      type="button"
-      onClick={isLeft ? previous : advance}
-      className={`${arrowStyle} ${isLeft ? "left-2" : "right-2"} ${
-        isLeft && index === 0 && "hidden"
-      } ${!isLeft && index === images.length - 1 && "hidden"}`}
-      // style={{ top: '40%' }}
-    >
-      <span role="img" aria-label={`Arrow ${isLeft ? "left" : "right"}`}>
-        {isLeft ? <AiOutlineLeft /> : <AiOutlineRight />}
-      </span>
-    </button>
+    <>
+      {images.length > 1 && (
+        <button
+          type="button"
+          onClick={isLeft ? previous : advance}
+          className={`${arrowStyle} ${isLeft ? "left-2" : "right-2"} ${
+            isLeft && index === 0 && "hidden"
+          } ${!isLeft && index === images.length - 1 && "hidden"}`}
+          // style={{ top: '40%' }}
+        >
+          <span role="img" aria-label={`Arrow ${isLeft ? "left" : "right"}`}>
+            {isLeft ? <AiOutlineLeft /> : <AiOutlineRight />}
+          </span>
+        </button>
+      )}
+    </>
   );
 
   if (loaded) {
@@ -117,9 +121,12 @@ const Gallery = ({ images, maxheight = 0 }) => {
         {/* <button className={index === 0 ? "opacity-0" : ""} onClick={(e) => previous(e)}>
           {"<"}
         </button> */}
-        <div className="absolute z-10 p-2 bg-black rounded-lg opacity-50 text-lightText top-2 right-2">
-          <h1>{index + 1 + "/" + images.length}</h1>
-        </div>
+        {images.length > 1 && (
+          <div className="absolute z-10 p-2 bg-black rounded-lg opacity-50 text-lightText top-2 right-2">
+            <h1>{index + 1 + "/" + images.length}</h1>
+          </div>
+        )}
+
         {/* <div className="block border-2 opacity-100 border-upvote">
           <Image
             className=""
@@ -139,7 +146,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
               return (
                 <div
                   key={i + image.url}
-                  className={`${i === index ? " opacity-100 block" : "hidden"}`}
+                  className={`${i === index ? " block " : " hidden "}`}
                 >
                   <Image
                     src={image.url}

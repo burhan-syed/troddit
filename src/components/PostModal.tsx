@@ -182,7 +182,7 @@ const PostModal = ({
       }
       const { post, comments } = await loadPost(permalink, sort);
       if (Object.keys(postData).length === 0) {
-        console.log("post", post);
+        //console.log("post", post);
         if (post?.id) {
           setPost(post);
           setLoadingPost(false);
@@ -543,12 +543,9 @@ const PostModal = ({
                           >
                             {apost?.title ?? ""}
                           </a>
-                          {apost?.link_flair_richtext?.length > 0 && (
                             <span className="ml-1 text-xs">
-                              {"  "}
                               <TitleFlair post={apost} />
                             </span>
-                          )}
                         </h1>
 
                         {/* Image/Video/Text Body */}
