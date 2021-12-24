@@ -98,12 +98,10 @@ const Row1 = ({
       <div className="flex flex-col flex-grow pr-2 mt-2 ml-2">
         {/* Title */}
         <div>
-          {post?.link_flair_richtext?.length > 0 && (
-            <div className="pb-1 text-xs">
-              <TitleFlair post={post} />
-              {"  "}
-            </div>
-          )}
+          <div className="pb-1 text-xs">
+            <TitleFlair post={post} />
+          </div>
+
           <h1 className={" text-base leading-none cursor-pointer select-auto"}>
             <a
               href={post?.permalink}

@@ -100,12 +100,9 @@ const Card1 = ({
                   >
                     {`${post?.title}` ?? ""}
                   </h1>
-                  {post?.link_flair_richtext?.length > 0 && (
                     <div className="pb-1 text-xs">
-                      {"  "}
                       <TitleFlair post={post} />
                     </div>
-                  )}
                 </a>
               </div>
             </>
@@ -196,12 +193,9 @@ const Card1 = ({
                         >
                           <h1 className="py-1 text-lg font-medium leading-none cursor-pointer">
                             {`${post?.title ?? ""}`}
-                            {post?.link_flair_richtext?.length > 0 && (
                               <span className="text-xs">
-                                {"  "}
                                 <TitleFlair post={post} />
                               </span>
-                            )}
                           </h1>
                         </a>
                         <div className="flex flex-row justify-between text-sm align-bottom select-none">

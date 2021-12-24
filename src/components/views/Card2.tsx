@@ -58,12 +58,9 @@ const Card1 = ({
                   }
                 >
                   {post?.title ?? ""}
-                  {post?.link_flair_richtext?.length > 0 && (
-                    <span className="text-xs">
-                      {"  "}
+                    <span className="ml-1 text-xs">
                       <TitleFlair post={post} />
                     </span>
-                  )}
                 </h1>
               </a>
 
