@@ -44,11 +44,21 @@ The redirect uri should match the REDDIT_REDIRECT variable.
 
 ## Docker
 
+### To Deploy the [Docker Image](https://hub.docker.com/r/bsyed/troddit)
+
+```sh
+docker pull bsyed/troddit
+docker run -d --name troddit -p 3000:3000 bsyed/troddit
+```
+
+### To Build the Image Yourself 
+
 By default, the Docker will expose port 3000, so change this within the
 Dockerfile if necessary. When ready, simply use the Dockerfile to
 build the image.
 
 ```sh
+git clone https://github.com/burhan-syed/troddit
 cd troddit
 docker build . -t troddit
 ```
