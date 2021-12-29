@@ -34,7 +34,7 @@ To use login functionality the following environment variables need to be define
 
 CLIENT_ID=\<ID of your Reddit app>\
 CLIENT_SECRET=\<Secret from your Reddit app>\
-REDDIT_REDIRECT=http://localhost:3000/api/auth/callback/reddit
+REDDIT_REDIRECT=http://localhost:3000/api/auth/callback/reddit\
 NEXTAUTH_SECRET=\<See [https://next-auth.js.org/configuration/options#secret](https://next-auth.js.org/configuration/options#secret)>\
 NEXTAUTH_URL=http://localhost:3000
 
