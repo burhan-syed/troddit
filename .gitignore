@@ -45,6 +45,3 @@ yarn-error.log*
 **/public/worker-*.js.map
 **/public/fallback-*.js
 
-#Docker
-.dockerignore
-Dockerfile
