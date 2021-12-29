@@ -1,34 +1,61 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Troddit 
+### _A web client for Reddit_
 
-## Getting Started
+Built using NextJS and Typescript. Styled with TailwindCSS. 
 
-First, run the development server:
+## Features
 
-```bash
+- Secure logins with Reddit to enable voting, commenting, following/unfollowing subreddits, viewing your followed subreddits, and access to your personal front page. 
+- 'Offline mode' to follow subreddits locally without login and generate a personal front page.
+- Search for subreddits with auto-complete. 
+- View posts in single column, custom multi-column with masonry layout, or a simple row mode. All with infinite-scrolling. 
+- Choose your card style: Original for full post text in card, Compact for titles and media (images and video) only, or Media to hide all text and card padding. 
+- Gallery view: Click on a post and navigate with on screen buttons or your arrow keys through the feed on desktop. Shows the post content as well as its comments from Reddit. Smart portrait mode to automatically arrange vertical photos and videos beside comments. 
+- Hover mouse over Reddit videos to play. Enable to Autoplay option to play videos automatically when they enter the viewport. Enabling the Audio option will also play sound on the video on mouse hover if it is available. 
+- Responsive desktop and mobile layouts.  
+- PWA to download to your computer or phone. 
+- Docker support
+
+
+## Developing
+
+Clone the repo and install all packages with npm or yarn. Then to run development server: 
+
+```sh
 npm run dev
 # or
-yarn dev
+yarn run dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### Environment Variables
+To use login functionality the following environment variables need to be defined in a .env.local file placed in the root directory: 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+CLIENT_ID=\<ID of your Reddit app>\
+CLIENT_SECRET=\<Secret from your Reddit app>\
+REDDIT_REDIRECT=http://localhost:3000/api/auth/callback/reddit
+NEXTAUTH_SECRET=\<See [https://next-auth.js.org/configuration/options#secret](https://next-auth.js.org/configuration/options#secret)>\
+NEXTAUTH_URL=http://localhost:3000
 
-## Learn More
+To create a Reddit app visit [https://old.reddit.com/prefs/apps/](https://old.reddit.com/prefs/apps/). 
+The redirect uri should match the REDDIT_REDIRECT variable. 
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+By default, the Docker will expose port 3000, so change this within the
+Dockerfile if necessary. When ready, simply use the Dockerfile to
+build the image.
 
-## Deploy on Vercel
+```sh
+cd troddit
+docker build . -t troddit
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This will create the troddit image and pull in the necessary dependencies. To run:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```sh
+docker run -p 3000:3000 troddit
+```
+
