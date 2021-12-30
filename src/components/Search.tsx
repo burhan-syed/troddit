@@ -155,7 +155,7 @@ const Search = ({ id }) => {
     if (loading) {
       return (
         <div>
-          <Link href={`r/${suggestion?.data?.display_name}`?? `${value}`}>
+          <Link href={`r/${suggestion?.data?.display_name?.replace('r/','')}`?? `${value.replace('r/','')}`}>
             <a>
               <div
                 // onClick={(e) =>}
@@ -248,7 +248,7 @@ const Search = ({ id }) => {
     }
     return (
       <div className="select-none ">
-        <Link href={`r/${suggestion?.data?.display_name}`}>
+        <Link href={`r/${suggestion?.data?.display_name.replace('/r','')}`}>
           <a>
             <div
               // onClick={(e) =>}

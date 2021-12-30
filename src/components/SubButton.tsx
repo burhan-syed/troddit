@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
@@ -43,6 +43,8 @@ const SubButton = ({ sub, miniMode = false }) => {
       !subbed && setSubbed(false);
       setloadAPI(false);
       //console.log("checked local subs");
+    } else if (loading) {
+      getSession(); 
     }
   }, [loading, session, myLocalSubs, sub])
 

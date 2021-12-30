@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import { useMainContext } from "./MainContext";
 import {
   getAllMySubs,
@@ -69,9 +69,10 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
-  const loadAllSubs = async (action = "", sub = "") => {
-    if (session) {
+  const loadAllSubs = async (loggedIn: boolean | any = false) => {
+    if (session || loggedIn) {
       try {
+       // console.log('loadallsubs')
         setloadedSubs(false);
         let data = await getAllMySubs();
         setMySubs(data);
@@ -81,8 +82,10 @@ export const MySubsProvider = ({ children }) => {
         console.log(err);
       }
     } else if (!session) {
+      //loadAllSubs(await getSession())
       // console.log("load all refresh");
       // loadLocalSubs();
+      //console.log('fail')
     }
   };
 
@@ -99,12 +102,12 @@ export const MySubsProvider = ({ children }) => {
   }, [mySubs, session, loadedSubs]);
 
   const subscribe = async (action: 'sub' | 'unsub', subname, loggedIn = false) => {
-    //console.log('subAPI', loggedIn, session)
+    //console.log('subAPI', action,subname,loggedIn);
     if (session || loggedIn) {
       let status = await subToSub(action, subname);
       //console.log('session:', status);
       if (status) {
-        loadAllSubs();
+        loadAllSubs(loggedIn);
         return true;
       }
     } else if ((!session && !loading) || !loggedIn) {

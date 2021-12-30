@@ -301,11 +301,12 @@ const PostModal = ({
     plausible("postChange");
   };
 
-  if (wait) {
-    return (
-      <div className="absolute top-0 w-screen h-16 bg-blue-700 animate-pulse"></div>
-    );
-  }
+  //removing, causes flash when opening posts
+  // if (wait) {
+  //   return (
+  //     <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
+  //   );
+  // }
 
   if (error) {
     return (
