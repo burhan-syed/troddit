@@ -8,7 +8,7 @@ import { AiOutlineHome } from "react-icons/ai";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import {
-  loadSubInfo
+  loadSubInfo, loadSubredditInfo
 } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
@@ -37,8 +37,9 @@ const DropdownPane = ({ hide }) => {
       if (session) {
         let subinfo = await loadSubInfo(sub);
         setSubInfo(subinfo);
-      } else if (!session) {
-        setSubInfo({ data: { name: sub, display_name: sub } });
+      } else if (!session && !loading) {
+        let subInfo = await ( loadSubredditInfo(sub))
+        setSubInfo({data: subInfo}  );
       }
     };
     if (router?.query?.slug?.[0]) {
@@ -58,7 +59,7 @@ const DropdownPane = ({ hide }) => {
       setLocation("home");
     }
     return () => {};
-  }, [router.query, session]);
+  }, [router.query, session, loading]);
 
   const handleClick = async () => {
     setShow((show) => !show);
@@ -93,7 +94,7 @@ const DropdownPane = ({ hide }) => {
               <BiRightTopArrowCircle className="w-6 h-6" />
             ) : location === "all" ? (
               <CgLivePhoto className="w-6 h-6" />
-            ) : session ? (
+            ) : subInfo ? (
               <div>
                 <DropdownItem
                   sub={subInfo}
@@ -108,8 +109,7 @@ const DropdownPane = ({ hide }) => {
           }
           {(location == "home" ||
             location == "popular" ||
-            location == "all" ||
-            !session) && (
+            location == "all") && (
             <h1 className="ml-2 capitalize truncate">{location}</h1>
           )}
         </div>
@@ -132,7 +132,7 @@ const DropdownPane = ({ hide }) => {
         <div className="grid grid-cols-1 overflow-y-auto overscroll-contain max-h-96 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800 ">
           {/* Quick Links */}
           <div className="flex flex-col py-2 font-light">
-            {router.pathname.includes("/r/") && subInfo && mySubs && (
+            {router.pathname.includes("/r/") && subInfo && mySubs && (location !== "home" && location !== "all" && location !== "popular") &&  (
               <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                 <DropdownSubCard
                   sub={subInfo}

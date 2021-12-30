@@ -217,7 +217,7 @@ const Feed = ({ query, isUser = false }) => {
           {isSubreddit && subsArray?.[0]?.toUpperCase() !== "ALL" && subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
             <SubredditBanner
               subreddits={
-                query?.slug?.[0]
+                subsArray
               }
             />
           )}

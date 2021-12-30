@@ -1,4 +1,5 @@
 import SubButton from "./SubButton";
+import SubInfoModal from "./SubInfoModal";
 
 import { useState, useEffect } from "react";
 import Image from "next/dist/client/image";
@@ -9,11 +10,10 @@ const SubredditBanner = ({ subreddits }) => {
   // const { mySubs, myLocalSubs, myMultis, subscribe } = useMySubs();
   const [session] = useSession();
   const [subreddit, setSubreddit] = useState("");
-  const [subs, setSubs] = useState([]);
-  const [localSubs, setLocalSubs] = useState([]);
+  const [subArray, setSubArray] = useState([]);
+
   const [loaded, setLoaded] = useState(false);
-  const [subbed, setSubbed] = useState(false);
-  const [subbedLoaded, setSubbedLoaded] = useState(false);
+  const [openDescription, setOpenDescription] = useState(0);
 
   const [banner, setBanner] = useState({});
   const [subInfo, setSubInfo] = useState({
@@ -56,7 +56,6 @@ const SubredditBanner = ({ subreddits }) => {
     banner_size: 0,
     mobile_banner_image: "",
   });
-
   useEffect(() => {
     const loadSubInfo = async (sub) => {
       const info = await loadSubredditInfo(sub);
@@ -64,79 +63,120 @@ const SubredditBanner = ({ subreddits }) => {
         setSubInfo(info);
         //console.log(info);
         setBanner({
-          "backgroundImage": `url("${info?.banner_background_image}")`,
-          "backgroundColor": info?.banner_background_color,
+          backgroundImage: `url("${info?.banner_background_image}")`,
+          backgroundColor: (info?.banner_background_color.length > 1 ? info.banner_background_color : info?.key_color),
         });
         setLoaded(true);
       }
     };
+    loadSubInfo(subreddit);
+  }, [subreddit]);
 
-    let sub = subreddits
-      .split(" ")
-      .join("+")
-      .split(",")
-      .join("+")
-      .split("%20")
-      .join("+")
-      .split("+")?.[0];
-    setSubreddit(sub);
-    loadSubInfo(sub);
+  useEffect(() => {
+    // let sub = subreddits
+    //   .split(" ")
+    //   .join("+")
+    //   .split(",")
+    //   .join("+")
+    //   .split("%20")
+    //   .join("+")
+    //   .split("+")?.[0];
+    setSubArray(subreddits);
+    setSubreddit(subreddits?.[0]);
   }, [subreddits]);
 
   return (
-    <div className="relative w-full h-full mb-2 -mt-2 border-b shadow-xl md:mb-8 lg:mb-10 dark:bg-trueGray-900 bg-lightPost border-lightBorder dark:border-darkBorder">
-      <div className={""}>
-        {/* {localSubs.includes(subreddit.toUpperCase()) ||
-          subs.includes(subreddit.toUpperCase()) ? (
-            <div>-</div>
-          ) : (
-            <div>+</div>
-          )} */}
-        <div
-          className={`w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder`}
-          style={banner}
-        ></div>
-        <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
-          <div className="flex flex-row items-center w-24 h-24 -mt-12 border-4 rounded-full border-lightBorder bg-darkBG">
-            <Image
-              src={
-                subInfo?.community_icon?.length > 1
-                  ? subInfo?.community_icon
-                  : subInfo?.icon_img?.length > 1
-                  ? subInfo?.icon_img
-                  : "https://via.placeholder.com/256"
-              }
-              alt=""
-              height={subInfo?.icon_size?.[0] ?? 256}
-              width={subInfo?.icon_size?.[1] ?? 256}
-              unoptimized={true}
-              objectFit="cover"
-              className="rounded-full"
-            />
-          </div>
-          <div className="flex justify-center w-full pt-2 pb-1 text-4xl md:justify-between">
-            {loaded ? (
-              <>
-                <h1>{subInfo?.display_name_prefixed}</h1>
-                <div className="hidden md:block">
-                  <SubButton sub={session ? subInfo.name : subreddit} />
-                </div>
-              </>
-            ) : (
-              <h1>r/</h1>
-            )}
-          </div>
-          <div className="p-1 text-gray-700 dark:text-gray-500">
-            {subInfo?.subscribers?.toLocaleString("en-US")} members
-          </div>
-          <div className="my-1 md:hidden">
-                  <SubButton sub={session ? subInfo.name : subreddit} />
-                </div>
-          <div className="p-1 pb-5 text-center md:text-left">
-            {loaded ? subInfo?.public_description : "            "}
+    <div className={"w-full h-full -mt-2 " + (subArray.length === 1 ? "mb-2  md:mb-8 lg:mb-10" : " space-y-2 mb-2 md:space-y-3 md:mb-3 ") }>
+      <div className="relative border-b shadow-xl dark:bg-trueGray-900 bg-lightPost border-lightBorder dark:border-darkBorder">
+        <SubInfoModal
+          toOpen={openDescription}
+          descriptionHTML={subInfo?.description_html}
+          displayName={subInfo?.display_name_prefixed}
+        />
+        <div className={""}>
+          <div
+            className={`w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder`}
+            style={banner}
+          ></div>
+          <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
+            <div className="flex flex-row items-center w-24 h-24 -mt-12 border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900" style={{backgroundColor: subInfo?.primary_color}}>
+              {subInfo?.community_icon?.length > 1 ||
+              subInfo?.icon_img?.length > 1 ||
+              subInfo?.header_img?.length > 1 ? (
+                <Image
+                  src={
+                    subInfo?.community_icon?.length > 1
+                      ? subInfo?.community_icon
+                      : subInfo?.icon_img?.length > 1
+                      ? subInfo?.icon_img
+                      : subInfo?.header_img?.length > 1
+                      ? subInfo?.header_img
+                      : "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_placeholder.svg/320px-Flag_placeholder.svg.png"
+                  }
+                  alt=""
+                  height={subInfo?.icon_size?.[0] ?? 256}
+                  width={subInfo?.icon_size?.[1] ?? 256}
+                  unoptimized={true}
+                  objectFit="cover"
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="rounded-full dark:bg-trueGray-900 bg-lightPost" style={{backgroundColor: subInfo?.primary_color}}></div>
+              )}
+            </div>
+            <div className="flex items-center justify-center w-full pt-2 pb-1 md:justify-between">
+              {loaded ? (
+                <>
+                  <h1 className="text-4xl">{subInfo?.display_name_prefixed}</h1>
+                  <div className="hidden md:block">
+                    <SubButton sub={session ? subInfo.name : subreddit} />
+                  </div>
+                </>
+              ) : (
+                <h1 className="text-4xl text-transparent">r/</h1>
+              )}
+            </div>
+            <div className="p-1 text-gray-700 dark:text-gray-500">
+              {subInfo?.subscribers?.toLocaleString("en-US")} members
+            </div>
+            <div className="my-1 md:hidden">
+              <SubButton sub={session ? subInfo.name : subreddit} />
+            </div>
+            <div className="p-1 pb-5 text-center md:text-left">
+              {loaded ? (
+                <p>{subInfo?.public_description}</p>
+              ) : (
+                <p className="py-2"></p>
+              )}
+              <div className="p-1"></div>
+              <button
+                className="px-2 py-1 text-sm border rounded-md dark:bg-darkBG border-lightBorder bg-lightPostHover dark:border-darkPostHover dark:border-2 hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+                onClick={() => setOpenDescription((s) => s + 1)}
+              >
+                Full Description
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      {subArray.length > 1 && (
+        <div
+          className={
+            (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
+            " flex  space-x-2 overflow-x-scroll text-sm capitalize scrollbar-none"
+          }
+        >
+          {subArray.map((s) => (
+            <div
+              onClick={() => setSubreddit(s)}
+              className="px-3 py-1 border rounded-full dark:bg-trueGray-900 border-lightBorder bg-lightPost hover:cursor-pointer dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+              key={s}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

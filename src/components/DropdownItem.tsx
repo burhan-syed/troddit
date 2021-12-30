@@ -10,17 +10,30 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const router = useRouter();
   const plausible = usePlausible();
   useEffect(() => {
+    //console.log('>>',sub);
     if (sub.data?.icon_url) {
       setThumbURL(sub.data.icon_url);
       setisMulti(true);
     } else {
-      if (sub.data?.icon_img && sub.data?.icon_img !== "") {
-        setThumbURL(sub.data.icon_img);
-      }
-      if (sub.data?.community_icon && sub.data?.community_icon !== "") {
-        setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
-      }
+      sub?.data?.community_icon?.length > 1
+        ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
+        : sub?.data?.icon_img?.length > 1
+        ? setThumbURL(sub?.data?.icon_img)
+        : sub?.data?.header_img?.length > 1 &&
+          setThumbURL(sub?.data?.header_img);
     }
+
+    // if (sub.data?.icon_url) {
+    //   setThumbURL(sub.data.icon_url);
+    //   setisMulti(true);
+    // } else {
+    //   if (sub.data?.icon_img && sub.data?.icon_img !== "") {
+    //     setThumbURL(sub.data.icon_img);
+    //   }
+    //   if (sub.data?.community_icon && sub.data?.community_icon !== "") {
+    //     setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
+    //   }
+    // }
     if (sub?.data) {
       setLoaded(true);
     }
@@ -48,7 +61,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const goTo = (e) => {
     isMulti ? goToMulti(e) : goToSub(e, sub.data.display_name);
   };
-  
+
   return (
     <div>
       <div

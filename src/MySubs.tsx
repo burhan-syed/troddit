@@ -75,7 +75,7 @@ export const MySubsProvider = ({ children }) => {
         setloadedSubs(false);
         let data = await getAllMySubs();
         setMySubs(data);
-        //console.log(data);
+        //console.log('loaded subs', data);
         setloadedSubs(true);
       } catch (err) {
         console.log(err);
@@ -98,21 +98,19 @@ export const MySubsProvider = ({ children }) => {
     };
   }, [mySubs, session, loadedSubs]);
 
-  const subscribe = async (action: 'sub' | 'unsub', subname) => {
-    //console.log(sub?.data?.name);
-  
-    if (session) {
+  const subscribe = async (action: 'sub' | 'unsub', subname, loggedIn = false) => {
+    //console.log('subAPI', loggedIn, session)
+    if (session || loggedIn) {
       let status = await subToSub(action, subname);
-      //console.log(status);
+      //console.log('session:', status);
       if (status) {
         loadAllSubs();
+        return true;
       }
-    } else {
+    } else if ((!session && !loading) || !loggedIn) {
       let status = context.subToSub(action, subname);
-      //console.log(status);
-      if (status) {
-        loadAllSubs();
-      }
+      //console.log('!session:', status);
+
     }
   };
 
