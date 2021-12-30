@@ -234,36 +234,6 @@ const Feed = ({ query, isUser = false }) => {
         </div>
       </div>
     </main>
-
-    // <section className="flex flex-col items-center flex-none w-screen pt-16">
-    //   <LoginModal />
-    //   {/* {`query: slug[0] ${query?.slug?.[0]}   slug[1] ${query?.slug?.[1]}   t: ${query?.t}`} */}
-    //   <div className="w-11/12 md:w-5/6">
-
-    //     <InfiniteScroll
-    //       dataLength={posts.length}
-    //       next={loadmore}
-    //       hasMore={after ? true : false}
-    //       loader={<div className="flex flex-row justify-center"><h1>Loading More..</h1></div>}
-    //       endMessage={
-    //         <div className="flex flex-row justify-center">
-    //           <b>You have reached the end after {posts?.length ?? 0} posts from {count+1} pages</b>
-    //         </div>
-    //       }
-    //     >
-    //       <Masonry
-    //         breakpointCols={breakpointColumnsObj}
-    //         className="my-masonry-grid"
-    //         columnClassName="my-masonry-grid_column"
-    //       >
-    //         {posts.map((post, i) => (
-    //           <Post key={`${post.data.id}_${i}`} post={post.data} />
-    //         ))}
-    //       </Masonry>
-    //     </InfiniteScroll>
-    //   </div>
-    //   <button className={"mt-2 " + (after ? "block" : "hidden")} name="load more" onClick={loadmore}>Load More</button>
-    // </section>
   );
 };
 

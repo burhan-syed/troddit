@@ -1,21 +1,14 @@
 import axios from "axios";
 import router, { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useMainContext } from "../MainContext";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
-import { CgArrowTopRightO } from "react-icons/cg";
-import { IoMdList } from "react-icons/io";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import {
-  getAllMySubs,
-  getMyMultis,
-  getMySubs,
-  loadSubInfo,
-  loadSubFlairs,
+  loadSubInfo
 } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
@@ -28,34 +21,14 @@ import { useSubsContext } from "../MySubs";
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
   const { mySubs, myLocalSubs, myMultis, subscribe, loadedSubs, loadedMultis, error } = subsContext;
-  // const [myDropdownSubs, setMySubs] = useState([]);
-  // const [myDropdownLocalSubs, setMyLocalSubs] = useState([]);
-  // const [myDropdownMultis, setMyMultis] = useState([]);
-  // useEffect(() => {
-  //   setMySubs(mySubs);
-  //   console.log(mySubs);
-  // }, [mySubs, loadedSubs]);
-  // useEffect(() => {
-  //   setMyLocalSubs(myLocalSubs);
-  // }, [myLocalSubs]);
-  // useEffect(() => {
-  //   setMyMultis(myMultis);
-  // }, [myMultis]);
 
 
-  const [count, setCount] = useState(0);
-  const [after, setAfter] = useState("");
-  const [clicked, setClicked] = useState(false);
   const [show, setShow] = useState(false);
 
   const router = useRouter();
   const [location, setLocation] = useState("home");
 
   const [session, loading] = useSession();
-  const context: any = useMainContext();
-
-  // const [loadedMultis, setloadedMultis] = useState(false);
-  // const [loadedSubs, setloadedSubs] = useState(false);
   const [subInfo, setSubInfo] = useState({});
 
   useEffect(() => {
@@ -88,86 +61,9 @@ const DropdownPane = ({ hide }) => {
   }, [router.query, session]);
 
   const handleClick = async () => {
-    // if (!clicked) {
-    //   if (session) {
-    //     loadAllFast();
-    //   } else if (!session) {
-    //     loadLocalSubs();
-    //     setloadedSubs(true);
-    //   }
-    //   setClicked(true);
-    // }
     setShow((show) => !show);
   };
 
- 
-
-  // const loadSubs = async () => {
-  //   try {
-  //     let data = await getMySubs(after, mySubs.length);
-  //     //console.log(data);
-  //     setAfter(data.after);
-  //     setMySubs((subs) => [...subs, ...data.children]);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  //   setClicked(true);
-  // };
-
-  // const loadMultis = async () => {
-  //   try {
-  //     let data = await getMyMultis();
-  //     setMyMultis(data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  // const loadAllSubs = async (action = "", sub = "") => {
-  //   if (session) {
-  //     try {
-  //       let data = await getAllMySubs();
-  //       setMySubs(data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   } else if (!session) {
-  //     // console.log("load all refresh");
-  //     // loadLocalSubs();
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   loadLocalSubs();
-  //   return () => {};
-  // }, [context.localSubs]);
-
-  // const loadLocalSubs = () => {
-  //   let localsubs = [];
-  //   context.localSubs.forEach((s) => {
-  //     let sub = { data: { name: s, display_name: s } };
-  //     localsubs.push(sub);
-  //   });
-  //   localsubs = localsubs.sort((a, b) =>
-  //     a?.data?.display_name?.localeCompare(b?.data?.display_name)
-  //   );
-  //   //console.log("local:", localsubs);
-  //   setMyLocalSubs(localsubs);
-  //   //setloadedSubs(true);
-  // };
-
-  // const loadAllFast = async () => {
-  //   try {
-  //     const multis = getMyMultis();
-  //     const subs = getAllMySubs();
-  //     setMyMultis(await multis);
-  //     setloadedMultis(true);
-  //     setMySubs(await subs);
-  //     setloadedSubs(true);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
 
 
