@@ -30,7 +30,7 @@ export const MainProvider = ({ children }) => {
     } else if (action == "unsub") {
       removeLocalSub(sub);
       return true;
-    }
+    } else return false;
   };
   const addLocalSub = (sub) => {
     if (!localSubs.includes(sub)) {

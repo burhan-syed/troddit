@@ -7,68 +7,71 @@ import { ImSpinner2 } from "react-icons/im";
 import { useMainContext } from "../MainContext";
 import { subToSub } from "../RedditAPI";
 import { useSession } from "next-auth/client";
-const DropdownSubCard = ({ sub, mySubs, refresh, subsLoaded }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [loadAPI, setloadAPI] = useState(true);
-  const [subbed, setSubbed] = useState(false);
-  const context: any = useMainContext();
-  const [session] = useSession();
+import SubButton from "./SubButton";
+const DropdownSubCard = ({ sub }) => {
+  //, mySubs, refresh, subsLoaded
+  // const [loaded, setLoaded] = useState(false);
+  // const [loadAPI, setloadAPI] = useState(true);
+  // const [subbed, setSubbed] = useState(false);
+  // const context: any = useMainContext();
+  // const [session] = useSession();
 
 
-  useEffect(() => {
-    //console.log("mySub", mySubs);
-    //console.log(sub);
-    setloadAPI(true);
+  // useEffect(() => {
+  //   //console.log("mySub", mySubs);
+  //   //console.log(sub);
+  //   setloadAPI(true);
 
-    if (subsLoaded){
-      const thissub = sub?.data?.name;
-      // if (mySubs?.length < 1) return;
-      mySubs.forEach((s) => {
-        if (s?.data?.name == thissub) {
-          setSubbed(true);
-          setLoaded(true);
-          setloadAPI(false);
-        }
-      });
-      setloadAPI(false);
-      setLoaded(true);
-    }
+  //   if (subsLoaded){
+  //     const thissub = sub?.data?.name;
+  //     // if (mySubs?.length < 1) return;
+  //     mySubs.forEach((s) => {
+  //       if (s?.data?.name == thissub) {
+  //         setSubbed(true);
+  //         setLoaded(true);
+  //         setloadAPI(false);
+  //       }
+  //     });
+  //     setloadAPI(false);
+  //     setLoaded(true);
+  //   }
     
 
-    return () => {
-      setSubbed(false);
-      setLoaded(false);
-      setloadAPI(true);
-    };
-  }, [sub, mySubs, subsLoaded]);
+  //   return () => {
+  //     setSubbed(false);
+  //     setLoaded(false);
+  //     setloadAPI(true);
+  //   };
+  // }, [sub, mySubs, subsLoaded]);
 
-  const subscribe = async (follow) => {
-    //console.log(sub?.data?.name);
-    setloadAPI(true);
-    let action = "";
-    if (follow) {
-      action = "sub";
-    } else {
-      action = "unsub";
-    }
-    if (session) {
-      let status = await subToSub(action, sub?.data?.name);
-      if (status) {
-        refresh();
-      }
-    } else {
-      let status = context.subToSub(action, sub?.data?.name);
-      if (status) {
-        refresh();
-      }
-    }
-  };
+  // const subscribe = async (follow) => {
+  //   //console.log(sub?.data?.name);
+  //   setloadAPI(true);
+  //   let action = "";
+  //   if (follow) {
+  //     action = "sub";
+  //   } else {
+  //     action = "unsub";
+  //   }
+  //   if (session) {
+  //     let status = await subToSub(action, sub?.data?.name);
+  //     if (status) {
+  //       refresh();
+  //     }
+  //   } else {
+  //     let status = context.subToSub(action, sub?.data?.name);
+  //     if (status) {
+  //       refresh();
+  //     }
+  //   }
+  // };
 
   return (
     <div className="flex flex-row items-center justify-between">
       <DropdownItem sub={sub} />
       {/* <div>{sub?.data?.subscribers}</div> */}
-      {loaded && (
+      <SubButton sub={sub?.data?.name} miniMode={true}/>
+      {/* {loaded && (
         <div className="relative">
           <div className="p-1 rounded cursor-pointer dark:hover:bg-darkBorder hover:bg-white group">
             {subbed && !loadAPI ? (
@@ -98,8 +101,8 @@ const DropdownSubCard = ({ sub, mySubs, refresh, subsLoaded }) => {
             )}
           </div>
           {/* <div className="absolute top-0 -right-10 group-hover:block">Follow</div> */}
-        </div>
-      )}
+        {/* </div>
+      )}  */}
     </div>
   );
 };

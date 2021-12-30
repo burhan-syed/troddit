@@ -14,6 +14,7 @@ import { useMainContext } from "../MainContext";
 import { getSession, useSession } from "next-auth/client";
 import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
+import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
 
@@ -33,6 +34,8 @@ const Feed = ({ query, isUser = false }) => {
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
   const [subreddits, setSubreddits] = useState("");
+  const [subsArray, setSubsArray] = useState([]);
+  const [isSubreddit, setIsSubreddit] = useState(false);
   const [loggedIn, setloggedIn] = useState(false);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
@@ -151,6 +154,7 @@ const Feed = ({ query, isUser = false }) => {
         .join("+")
         .split("%20")
         .join("+");
+        setSubsArray(subs.split('+'));
       data = await loadSubreddits(
         subs ?? "",
         query?.slug?.[1] ?? "hot",
@@ -158,6 +162,7 @@ const Feed = ({ query, isUser = false }) => {
       );
     }
     if (data?.children) {
+      setIsSubreddit(true);
       setAfter(data?.after);
       setPosts(data.children);
       setNumPosts((n) => n + data.children.length);
@@ -208,6 +213,16 @@ const Feed = ({ query, isUser = false }) => {
     <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen pt-16">
+        <div className="w-screen ">
+          {isSubreddit && subsArray?.[0]?.toUpperCase() !== "ALL" && subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
+            <SubredditBanner
+              subreddits={
+                query?.slug?.[0]
+              }
+            />
+          )}
+        </div>
+
         <div className={"w-full md:w-11/12"}>
           {/* + (context?.maximize ? " " : " md:w-5/6") */}
           <MyMasonic

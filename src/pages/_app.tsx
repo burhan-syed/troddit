@@ -2,6 +2,7 @@ import "../../styles/globals.css";
 import { Provider } from "next-auth/client";
 import { ThemeProvider } from "next-themes";
 import { MainProvider } from "../MainContext";
+import { MySubsProvider } from "../MySubs";
 import Script from "next/script";
 import { useRouter } from "next/router";
 // import * as gtag from "../../lib/gtag";
@@ -65,9 +66,11 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <ThemeProvider attribute="class" defaultTheme="light">
         <MainProvider>
-          <Provider session={pageProps.session}>
-            <Component {...pageProps} />
-          </Provider>
+          <MySubsProvider>
+            <Provider session={pageProps.session}>
+              <Component {...pageProps} />
+            </Provider>
+          </MySubsProvider>
         </MainProvider>
       </ThemeProvider>
     </>

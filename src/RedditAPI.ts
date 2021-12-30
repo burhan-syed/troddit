@@ -172,7 +172,7 @@ export const loadSubFlairs = async (subreddit) => {
     }
   }
 };
-
+//oauth request 
 export const loadSubInfo = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
@@ -191,6 +191,22 @@ export const loadSubInfo = async (subreddit) => {
     }
   }
   return false;
+};
+//search request no auth required
+export const loadSubredditInfo = async (query) => {
+  try {
+    const res = await (
+      await axios.get(`${REDDIT}/search/.json?q=${query}&type=sr`, {
+        params: {
+          raw_json: 1,
+        },
+      })
+    ).data;
+    return res?.data?.children?.[0]?.data;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 };
 
 export const subToSub = async (action, name) => {
@@ -401,6 +417,8 @@ export const searchSubreddits = async (query, over18 = false) => {
   return [];
 };
 
+
+
 const loadAll = async (func) => {
   let after = "";
   let done = false;
@@ -464,33 +482,30 @@ export const loadPost = async (permalink, sort = "top") => {
   if (token && ratelimit_remaining > 1) {
     try {
       //console.log(permalink.split('/'));
-      let res = await axios.get(
-        `https://oauth.reddit.com/${permalink}`,
-        {
-          headers: {
-            authorization: `bearer ${token}`,
-          },
-          params: {
-            raw_json: 1,
-            article: permalink.split('/')?.[4],
-            context: 4,
-            showedits: true,
-            showmedia: true,
-            showmore: true,
-            showtitle: true,
-            sort: sort,
-            theme: 'default',
-            threaded: true,
-            truncate: true
-          }
-        }
-      );
+      let res = await axios.get(`https://oauth.reddit.com/${permalink}`, {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+          raw_json: 1,
+          article: permalink.split("/")?.[4],
+          context: 4,
+          showedits: true,
+          showmedia: true,
+          showmore: true,
+          showtitle: true,
+          sort: sort,
+          theme: "default",
+          threaded: true,
+          truncate: true,
+        },
+      });
       let data = await res.data;
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(data);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
-        comments: data?.[1]?.data?.children
+        comments: data?.[1]?.data?.children,
       };
       //console.log(data);
       return post;
