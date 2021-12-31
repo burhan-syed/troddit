@@ -214,7 +214,7 @@ const Feed = ({ query, isUser = false }) => {
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen pt-16">
         <div className="w-screen ">
-          {isSubreddit && subsArray?.[0]?.toUpperCase() !== "ALL" && subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
+          {!isUser && isSubreddit && subsArray?.[0]?.toUpperCase() !== "ALL" && subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
             <SubredditBanner
               subreddits={
                 subsArray

@@ -103,7 +103,7 @@ const DropdownPane = ({ hide }) => {
                 />
               </div>
             ) : (
-              <div>{router.pathname.includes("/u/") ? "u/" : "r/"}</div>
+              <div>{router.pathname.includes("/u/") ? `u/${router?.query?.slug?.[0]}` : "r/"}</div>
             )
             //
           }
@@ -142,7 +142,7 @@ const DropdownPane = ({ hide }) => {
                   // subsLoaded={loadedSubs}
                 />
               </div>
-            )}
+            )} 
             <Link href="/" passHref>
               <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <AiOutlineHome className="w-6 h-6" />
