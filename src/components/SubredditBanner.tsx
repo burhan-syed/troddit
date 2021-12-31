@@ -3,8 +3,10 @@ import SubInfoModal from "./SubInfoModal";
 
 import { useState, useEffect } from "react";
 import Image from "next/dist/client/image";
+import Link from "next/dist/client/link";
 import { useSession } from "next-auth/client";
 import { loadSubredditInfo } from "../RedditAPI";
+import { BsBoxArrowInUpRight } from "react-icons/bs";
 
 const SubredditBanner = ({ subreddits }) => {
   // const { mySubs, myLocalSubs, myMultis, subscribe } = useMySubs();
@@ -64,7 +66,10 @@ const SubredditBanner = ({ subreddits }) => {
         //console.log(info);
         setBanner({
           backgroundImage: `url("${info?.banner_background_image}")`,
-          backgroundColor: (info?.banner_background_color.length > 1 ? info.banner_background_color : info?.key_color),
+          backgroundColor:
+            info?.banner_background_color.length > 1
+              ? info.banner_background_color
+              : info?.key_color,
         });
         setLoaded(true);
       }
@@ -86,7 +91,14 @@ const SubredditBanner = ({ subreddits }) => {
   }, [subreddits]);
 
   return (
-    <div className={"w-full h-full -mt-2 " + (subArray.length === 1 ? "mb-2  md:mb-8 lg:mb-10" : " space-y-2 mb-2 md:space-y-3 md:mb-3 ") }>
+    <div
+      className={
+        "w-full h-full -mt-2 " +
+        (subArray.length === 1
+          ? "mb-2  md:mb-8 lg:mb-10"
+          : " space-y-2 mb-2 md:space-y-3 md:mb-3 ")
+      }
+    >
       <div className="relative border-b shadow-xl dark:bg-trueGray-900 bg-lightPost border-lightBorder dark:border-darkBorder">
         <SubInfoModal
           toOpen={openDescription}
@@ -99,7 +111,10 @@ const SubredditBanner = ({ subreddits }) => {
             style={banner}
           ></div>
           <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
-            <div className="flex flex-row items-center w-24 h-24 -mt-12 border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900" style={{backgroundColor: subInfo?.primary_color}}>
+            <div
+              className="flex flex-row items-center w-24 h-24 -mt-12 border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900"
+              style={{ backgroundColor: subInfo?.primary_color }}
+            >
               {subInfo?.community_icon?.length > 1 ||
               subInfo?.icon_img?.length > 1 ||
               subInfo?.header_img?.length > 1 ? (
@@ -121,7 +136,10 @@ const SubredditBanner = ({ subreddits }) => {
                   className="rounded-full"
                 />
               ) : (
-                <div className="rounded-full dark:bg-trueGray-900 bg-lightPost" style={{backgroundColor: subInfo?.primary_color}}></div>
+                <div
+                  className="rounded-full dark:bg-trueGray-900 bg-lightPost"
+                  style={{ backgroundColor: subInfo?.primary_color }}
+                ></div>
               )}
             </div>
             <div className="flex items-center justify-center w-full pt-2 pb-1 md:justify-between">
@@ -169,10 +187,17 @@ const SubredditBanner = ({ subreddits }) => {
           {subArray.map((s) => (
             <div
               onClick={() => setSubreddit(s)}
-              className="px-3 py-1 border rounded-full dark:bg-trueGray-900 border-lightBorder bg-lightPost hover:cursor-pointer dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+              className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
               key={s}
             >
-              {s}
+              <h1>{s}</h1>
+              <Link  href={`${s}`}>
+                <a className="-mb-1">
+                  <button className="rounded hover:cursor-pointer hover:ring-1 ring-gray-300 dark:ring-gray-600 dark:hover:ring-2 bg-lightPost dark:bg-trueGray-900">
+                    <BsBoxArrowInUpRight className="w-4 h-4" />
+                  </button>
+                </a>
+              </Link>
             </div>
           ))}
         </div>
