@@ -7,13 +7,15 @@ import Link from "next/dist/client/link";
 import { useSession } from "next-auth/client";
 import { loadSubredditInfo } from "../RedditAPI";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
+import { useMainContext } from "../MainContext";
 
 const SubredditBanner = ({ subreddits }) => {
   // const { mySubs, myLocalSubs, myMultis, subscribe } = useMySubs();
   const [session] = useSession();
   const [subreddit, setSubreddit] = useState("");
   const [subArray, setSubArray] = useState([]);
-
+  const context:any = useMainContext();
+  const [hideNSFW, sethideNSFW] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [openDescription, setOpenDescription] = useState(0);
 
@@ -90,6 +92,12 @@ const SubredditBanner = ({ subreddits }) => {
     setSubreddit(subreddits?.[0]);
   }, [subreddits]);
 
+
+  useEffect(() => {
+    subInfo?.over18 && context.nsfw == "false" ? sethideNSFW(true) : sethideNSFW(false);
+  
+  }, [context.nsfw, subInfo.over18])
+
   return (
     <div
       className={
@@ -105,14 +113,14 @@ const SubredditBanner = ({ subreddits }) => {
           descriptionHTML={subInfo?.description_html}
           displayName={subInfo?.display_name_prefixed}
         />
-        <div className={""}>
+        <div className="">
           <div
-            className={`w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder`}
+            className={(hideNSFW &&  " blur-xl overflow-hidden") + ` w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder `}
             style={banner}
           ></div>
           <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
             <div
-              className="flex flex-row items-center w-24 h-24 -mt-12 border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900"
+              className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900"
               style={{ backgroundColor: subInfo?.primary_color }}
             >
               {subInfo?.community_icon?.length > 1 ||
@@ -133,7 +141,7 @@ const SubredditBanner = ({ subreddits }) => {
                   width={subInfo?.icon_size?.[1] ?? 256}
                   unoptimized={true}
                   objectFit="cover"
-                  className="rounded-full"
+                  className={"rounded-full " + (hideNSFW &&  " blur-xl ")}
                 />
               ) : (
                 <div
@@ -154,8 +162,9 @@ const SubredditBanner = ({ subreddits }) => {
                 <h1 className="text-4xl text-transparent">r/</h1>
               )}
             </div>
-            <div className="p-1 text-gray-700 dark:text-gray-500">
-              {subInfo?.subscribers?.toLocaleString("en-US")} members
+            <div className="flex p-1 space-x-2 text-gray-700 dark:text-gray-500">
+              <p>{subInfo?.subscribers?.toLocaleString("en-US")} members</p>
+              {subInfo?.over18 && <p className="text-red-400 text-color dark:text-red-700">NSFW</p>}
             </div>
             <div className="my-1 md:hidden">
               <SubButton sub={session ? subInfo.name : subreddit} />
