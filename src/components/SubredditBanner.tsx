@@ -14,7 +14,7 @@ const SubredditBanner = ({ subreddits }) => {
   const [session] = useSession();
   const [subreddit, setSubreddit] = useState("");
   const [subArray, setSubArray] = useState([]);
-  const context:any = useMainContext();
+  const context: any = useMainContext();
   const [hideNSFW, sethideNSFW] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [openDescription, setOpenDescription] = useState(0);
@@ -92,11 +92,11 @@ const SubredditBanner = ({ subreddits }) => {
     setSubreddit(subreddits?.[0]);
   }, [subreddits]);
 
-
   useEffect(() => {
-    subInfo?.over18 && context.nsfw == "false" ? sethideNSFW(true) : sethideNSFW(false);
-  
-  }, [context.nsfw, subInfo.over18])
+    subInfo?.over18 && context.nsfw == "false"
+      ? sethideNSFW(true)
+      : sethideNSFW(false);
+  }, [context.nsfw, subInfo.over18]);
 
   return (
     <div
@@ -115,7 +115,10 @@ const SubredditBanner = ({ subreddits }) => {
         />
         <div className="">
           <div
-            className={(hideNSFW &&  " blur-xl overflow-hidden") + ` w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder `}
+            className={
+              (hideNSFW && " blur-xl overflow-hidden") +
+              ` w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder `
+            }
             style={banner}
           ></div>
           <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
@@ -134,6 +137,8 @@ const SubredditBanner = ({ subreddits }) => {
                       ? subInfo?.icon_img
                       : subInfo?.header_img?.length > 1
                       ? subInfo?.header_img
+                        ? subInfo?.banner_img?.length > 1
+                        : subInfo.banner_img
                       : "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_placeholder.svg/320px-Flag_placeholder.svg.png"
                   }
                   alt=""
@@ -141,7 +146,7 @@ const SubredditBanner = ({ subreddits }) => {
                   width={subInfo?.icon_size?.[1] ?? 256}
                   unoptimized={true}
                   objectFit="cover"
-                  className={"rounded-full " + (hideNSFW &&  " blur-xl ")}
+                  className={"rounded-full " + (hideNSFW && " blur-xl ")}
                 />
               ) : (
                 <div
@@ -163,8 +168,19 @@ const SubredditBanner = ({ subreddits }) => {
               )}
             </div>
             <div className="flex p-1 space-x-2 text-gray-700 dark:text-gray-500">
-              <p>{subInfo?.subscribers?.toLocaleString("en-US")} members</p>
-              {subInfo?.over18 && <p className="text-red-400 text-color dark:text-red-700">NSFW</p>}
+              {loaded && (
+                <>
+                  <p>
+                    {subInfo?.subscribers?.toLocaleString("en-US")} members,{" "}
+                    {subInfo?.active_user_count?.toLocaleString("en-US")} here
+                  </p>
+                  {subInfo?.over18 && (
+                    <p className="text-red-400 text-color dark:text-red-700">
+                      NSFW
+                    </p>
+                  )}
+                </>
+              )}
             </div>
             <div className="my-1 md:hidden">
               <SubButton sub={session ? subInfo.name : subreddit} />
@@ -200,7 +216,7 @@ const SubredditBanner = ({ subreddits }) => {
               key={s}
             >
               <h1>{s}</h1>
-              <Link  href={`${s}`}>
+              <Link href={`${s}`}>
                 <a className="-mb-1">
                   <button className="rounded hover:cursor-pointer hover:ring-1 ring-gray-300 dark:ring-gray-600 dark:hover:ring-2 bg-lightPost dark:bg-trueGray-900">
                     <BsBoxArrowInUpRight className="w-4 h-4" />

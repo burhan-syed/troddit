@@ -197,17 +197,18 @@ export const loadSubredditInfo = async (query) => {
   if (query){
   try {
     const res = await (
-      await axios.get(`${REDDIT}/search/.json?q=${query}&type=sr&include_over_18=on`, {
+      await axios.get(`${REDDIT}/r/${query}/about.json`,{///search/.json?q=${query}&type=sr&include_over_18=on`, {
         params: {
           raw_json: 1,
         },
       })
     ).data;
-    //console.log(query, res?.data?.children?.[0]?.data);
-    for (let i = 0; i < res?.data?.children?.length - 1; i++){
-      if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
-    }
-    return [];
+    console.log(query, res);
+    // for (let i = 0; i < res?.data?.children?.length - 1; i++){
+    //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
+    // }
+
+    return res?.data;
   } catch (err) {
     console.log(err);
     return [];
