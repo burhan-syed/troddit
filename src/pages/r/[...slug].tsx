@@ -4,7 +4,22 @@ import Head from "next/head";
 import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import { useEffect, useState } from "react";
+import SubredditBanner from "../../components/SubredditBanner";
 const Sort = ({ query }) => {
+  const [subsArray, setSubsArray] = useState([]);
+  useEffect(() => {
+    setSubsArray(
+      query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%20")
+        .join("+")
+        .split("+")
+    );
+    return () => {};
+  }, [query]);
   return (
     <div className="overflow-x-hidden overflow-y-auto ">
       <Head>
@@ -14,6 +29,12 @@ const Sort = ({ query }) => {
       </Head>
       <main>
         <NavBar />
+        {subsArray?.[0]?.toUpperCase() !== "ALL" &&
+          subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
+            <div className="w-screen pt-16 ">
+              <SubredditBanner subreddits={subsArray} />
+            </div>
+          )}
         <Feed query={query} />
       </main>
     </div>

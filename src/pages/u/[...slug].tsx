@@ -33,7 +33,11 @@ const Sort = ({ query }) => {
       </Head>
       <main>
         <NavBar />
-        {loaded && <Feed query={feedQuery} isUser={isUser} />}
+        {loaded && 
+        <div className="mt-16">
+          <Feed query={feedQuery} isUser={isUser} />
+      </div>
+        }
       </main>
     </div>
   );

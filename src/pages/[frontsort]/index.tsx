@@ -20,7 +20,9 @@ const Subs = ({ query }) => {
 
       <main>
         <NavBar />
-        <Feed query={query} />
+        <div className="mt-16">
+          <Feed query={query} />
+        </div>
       </main>
     </div>
   );

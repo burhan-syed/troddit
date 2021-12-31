@@ -175,7 +175,7 @@ const Feed = ({ query, isUser = false }) => {
 
   if (loading) {
     return (
-      <div className="absolute w-screen h-16 bg-blue-700 animate-pulse"></div>
+      <div className="absolute top-0 w-screen h-16 bg-blue-700 animate-pulse"></div>
     );
   }
   if (fetchPost) {
@@ -212,16 +212,8 @@ const Feed = ({ query, isUser = false }) => {
   return (
     <main>
       <LoginModal />
-      <div className="flex flex-col items-center flex-none w-screen pt-16">
-        <div className="w-screen ">
-          {!isUser && isSubreddit && subsArray?.[0]?.toUpperCase() !== "ALL" && subsArray?.[0]?.toUpperCase() !== "POPULAR" && (
-            <SubredditBanner
-              subreddits={
-                subsArray
-              }
-            />
-          )}
-        </div>
+      <div className="flex flex-col items-center flex-none w-screen">
+        
 
         <div className={"w-full md:w-11/12"}>
           {/* + (context?.maximize ? " " : " md:w-5/6") */}

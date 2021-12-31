@@ -10,7 +10,7 @@ export const index = ({ query }) => {
   return (
     <div className="overflow-x-hidden ">
       <Head>
-        <title>troddit · a web client for Reddit </title>
+        <title>troddit · a web app for Reddit </title>
         <meta
           name="description"
           content="Browse Reddit better with Troddit. Grid views, single column mode, galleries, and a number of post styles. Login with Reddit to see your own subs, vote, and comment. Open source."
@@ -18,7 +18,9 @@ export const index = ({ query }) => {
       </Head>
       <main>
         <NavBar />
-        <Feed query={query} />
+        <div className="mt-16">
+          <Feed query={query} />
+        </div>
       </main>
     </div>
   );
