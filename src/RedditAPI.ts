@@ -194,19 +194,25 @@ export const loadSubInfo = async (subreddit) => {
 };
 //search request no auth required
 export const loadSubredditInfo = async (query) => {
+  if (query){
   try {
     const res = await (
-      await axios.get(`${REDDIT}/search/.json?q=${query}&type=sr`, {
+      await axios.get(`${REDDIT}/search/.json?q=${query}&type=sr&include_over_18=on`, {
         params: {
           raw_json: 1,
         },
       })
     ).data;
-    return res?.data?.children?.[0]?.data;
+    //console.log(query, res?.data?.children?.[0]?.data);
+    for (let i = 0; i < res?.data?.children?.length - 1; i++){
+      if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
+    }
+    return [];
   } catch (err) {
     console.log(err);
     return [];
   }
+} else return [];
 };
 
 export const subToSub = async (action, name) => {
