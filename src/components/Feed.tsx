@@ -204,7 +204,7 @@ const Feed = ({ query, isUser = false }) => {
           }
         </div>
         {subreddits !== "" && (
-          <div>{"Otherwise, this subreddit may not exist"}</div>
+          <div>{`Otherwise, this ${isUser ? "user" : "subreddit"} may not exist`}</div>
         )}
       </div>
     );

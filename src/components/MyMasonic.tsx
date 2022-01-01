@@ -192,7 +192,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
       //console.log("load more posts..", startIndex, stopIndex);
-      if (allowload) {
+      if (allowload && !error) {
         //preventing more calls prior to new page fetch
         lastload = "";
 

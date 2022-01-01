@@ -254,30 +254,48 @@ export const loadUserPosts = async (
   count: number = 0
 ) => {
   //console.log(subreddits, sort, range);
-  try {
-    const res = await (
-      await axios.get(`${REDDIT}/user/${username}/.json?sort=${sort}`, {
-        params: {
-          raw_json: 1,
-          t: range,
-          after: after,
-          count: count,
-        },
-      })
-    ).data;
-    //console.log(res);
-    const filtered_children = res.data.children.filter(
-      (child) => child?.kind === "t3"
-    );
-    return {
-      after: res.data.after,
-      before: res.data.before,
-      children: filtered_children,
-    };
-  } catch (err) {
-    //console.log(err);
-    return null;
+  let c = 0; 
+  let filtered_children = [];
+  let nextafter = after
+  while (c < 10 && filtered_children.length < 20 && !nextafter){
+    c = c+1;
+    try {
+      const res = await (
+        await axios.get(`${REDDIT}/user/${username}/.json?sort=${sort}`, {
+          params: {
+            raw_json: 1,
+            t: range,
+            after: after,
+            count: count,
+          },
+        })
+      ).data;
+      console.log(res, after);
+      filtered_children = [...filtered_children, ...res.data.children.filter(
+        (child) => child?.kind === "t3"
+      )]
+      if (filtered_children.length > 19) {
+        return {
+          after: res.data?.after,
+          before: res.data?.before,
+          children: filtered_children,
+        };
+      }
+       nextafter = res?.data?.after
+      
+    } catch (err) {
+      //console.log(err);
+      return null;
+    }
   }
+  if (filtered_children.length > 0){
+    return {
+      after: null,
+      children: filtered_children
+    }
+  }
+  return null;
+
 };
 
 export const getMySubs = async (after?, count?) => {
