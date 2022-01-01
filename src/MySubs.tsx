@@ -119,7 +119,7 @@ export const MySubsProvider = ({ children }) => {
   }, [context.localSubs]);
 
   useEffect(() => {
-    if (session) {
+    if (session && mySubs.length == 0) {
       loadAllFast();
     } else if (!session && !loading) {
       loadLocalSubs();
