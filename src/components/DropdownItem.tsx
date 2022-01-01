@@ -56,7 +56,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
         ? (suggestions = s.name)
         : (suggestions = suggestions + "+" + s.name);
     }
-    console.log(sub);
+    //console.log(sub);
     goToSub(e, suggestions);
   };
 
