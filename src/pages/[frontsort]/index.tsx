@@ -6,9 +6,6 @@ import Sort from "../../components/Sort";
 import Head from "next/head";
 
 const Subs = ({ query }) => {
-  const router = useRouter();
-  //console.log(query);
-  const { frontsort } = router.query;
 
   return (
     <div>

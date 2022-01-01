@@ -6,8 +6,10 @@ import {
   getMyMultis,
   getMySubs,
   loadSubInfo,
-  subToSub
+  loadSubredditInfo,
+  subToSub,
 } from "./RedditAPI";
+import { useRouter } from "next/dist/client/router";
 
 export const SubsContext: any = React.createContext({});
 export const useSubsContext = () => {
@@ -15,6 +17,8 @@ export const useSubsContext = () => {
 };
 
 export const MySubsProvider = ({ children }) => {
+  const router = useRouter();
+
   const context: any = useMainContext();
   const [mySubs, setMySubs] = useState([]);
   const [myLocalSubs, setMyLocalSubs] = useState([]);
@@ -23,10 +27,113 @@ export const MySubsProvider = ({ children }) => {
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
 
+  const [currLocation, setCurrLocation] = useState("");
+  const [currSubs, setCurrSubs] = useState([]);
+  const [currSubInfo, setCurrSubInfo] = useState({
+    submit_text_html: "",
+    display_name: "",
+    header_img: "",
+    title: "",
+    icon_size: [256, 256],
+    primary_color: "",
+    active_user_count: 0,
+    icon_img: "",
+    display_name_prefixed: "",
+    accounts_active: 0,
+    public_traffic: false,
+    subscribers: 0,
+    user_flair_richtext: [],
+    name: "",
+    quarantine: false,
+    hide_ads: false,
+    public_description: "",
+    community_icon: "",
+    banner_background_image: "",
+    submit_text: "",
+    description_html: "",
+    spoilers_enabled: true,
+    key_color: "",
+    created: 0,
+    wls: 6,
+    submission_type: "",
+    public_description_html: "",
+    banner_img: "",
+    banner_background_color: "",
+    id: "",
+    over18: false,
+    description: "",
+    lang: "",
+    whitelist_status: "",
+    url: "",
+    created_utc: 0,
+    banner_size: 0,
+    mobile_banner_image: "",
+  });
+
+
+  // useEffect(() => {
+  //   //console.log(router.query);
+  //   const load = async (sub) => {
+  //     if (session) {
+  //       let subinfo = await loadSubInfo(sub);
+  //       setSubInfo(subinfo);
+  //     } else if (!session && !loading) {
+  //       let subInfo = await ( loadSubredditInfo(sub))
+  //       setSubInfo({data: subInfo}  );
+  //     }
+  //   };
+  //   if (router?.query?.slug?.[0]) {
+  //     let loc = router?.query?.slug?.[0]
+  //       .split(" ")
+  //       .join("+")
+  //       .split("%20")
+  //       .join("+")
+  //       .split("+");
+  //     if (loc.length > 1) {
+  //       setLocation(loc[0].toString() + "..");
+  //     } else {
+  //       setLocation(loc[0].toString());
+  //     }
+  //     load(loc[0]);
+  //   } else {
+  //     setLocation("home");
+  //   }
+  //   return () => {};
+  // }, [router.query, session, loading]);
+
+  useEffect(() => {
+    console.log(router);
+    if (router?.pathname === '/r/[...slug]' && router?.query?.slug?.[0]) {
+      let loc = router?.query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split("%20")
+        .join("+")
+        .split("+");
+      setCurrSubs(loc);
+      let curr = loc[0].toString()?.toUpperCase();
+      if (loc.length > 1){
+        setCurrLocation(`${curr}...`);
+      } else {
+        setCurrLocation(curr);
+      }
+      if (curr.toUpperCase() !== 'ALL' || curr.toUpperCase() !== 'POPULAR'){
+        loadCurrSubInfo(curr);
+      }
+    } else if (router?.pathname === "/"){
+      setCurrLocation("HOME");
+    } else {
+      setCurrLocation("");
+    }
+    return () => {
+      
+    }
+  }, [router])
+
   useEffect(() => {
     loadLocalSubs();
     loadAllFast();
-  }, [])
+  }, []);
 
   useEffect(() => {
     loadLocalSubs();
@@ -41,6 +148,14 @@ export const MySubsProvider = ({ children }) => {
       setloadedSubs(true);
     }
   }, [session, loading]);
+
+  const loadCurrSubInfo = async (sub) => {
+    const info = await loadSubredditInfo(sub);
+    if (info?.name) {
+      setCurrSubInfo(info);
+      return info;
+    }
+  };
 
   const loadLocalSubs = () => {
     let localsubs = [];
@@ -72,7 +187,7 @@ export const MySubsProvider = ({ children }) => {
   const loadAllSubs = async (loggedIn: boolean | any = false) => {
     if (session || loggedIn) {
       try {
-       // console.log('loadallsubs')
+        // console.log('loadallsubs')
         setloadedSubs(false);
         let data = await getAllMySubs();
         setMySubs(data);
@@ -101,7 +216,11 @@ export const MySubsProvider = ({ children }) => {
     };
   }, [mySubs, session, loadedSubs]);
 
-  const subscribe = async (action: 'sub' | 'unsub', subname, loggedIn = false) => {
+  const subscribe = async (
+    action: "sub" | "unsub",
+    subname,
+    loggedIn = false
+  ) => {
     //console.log('subAPI', action,subname,loggedIn);
     if (session || loggedIn) {
       let status = await subToSub(action, subname);
@@ -113,7 +232,6 @@ export const MySubsProvider = ({ children }) => {
     } else if ((!session && !loading) || !loggedIn) {
       let status = context.subToSub(action, subname);
       //console.log('!session:', status);
-
     }
   };
 
@@ -129,13 +247,16 @@ export const MySubsProvider = ({ children }) => {
   return (
     <SubsContext.Provider
       value={{
-     myLocalSubs,
-    mySubs,
-    myMultis,
-    loadedSubs,
-    loadedMultis,
-    subscribe,
-    error
+        myLocalSubs,
+        mySubs,
+        myMultis,
+        loadedSubs,
+        loadedMultis,
+        subscribe,
+        error,
+        loadCurrSubInfo,
+        currSubInfo,
+        currLocation
       }}
     >
       {children}

@@ -18,9 +18,9 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       sub?.data?.community_icon?.length > 1
         ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
         : sub?.data?.icon_img?.length > 1
-        ? setThumbURL(sub?.data?.icon_img)
-        : sub?.data?.header_img?.length > 1 &&
-          setThumbURL(sub?.data?.header_img);
+        ? setThumbURL(sub?.data?.icon_img) : setThumbURL("");
+        // : sub?.data?.header_img?.length > 1 &&
+        //   setThumbURL(sub?.data?.header_img);
     }
 
     // if (sub.data?.icon_url) {
@@ -34,6 +34,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
     //     setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
     //   }
     // }
+    //console.log(thumbURL);
     if (sub?.data) {
       setLoaded(true);
     }
@@ -70,7 +71,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       >
         {/* Image */}
         <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-          {thumbURL ? (
+          {thumbURL?.includes('https://') ? (
             <Image
               src={thumbURL}
               alt="sub"

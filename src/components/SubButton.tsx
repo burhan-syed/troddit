@@ -63,8 +63,8 @@ const SubButton = ({ sub, miniMode = false }) => {
       <div className="relative select-none">
         <div
           className={
-            (!miniMode &&
-              "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder") +
+            (!miniMode ?
+              "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder " : " ") +
             " rounded-md cursor-pointer dark:hover:bg-darkBorder hover:bg-lightHighlight group"
           }
         >
@@ -96,12 +96,12 @@ const SubButton = ({ sub, miniMode = false }) => {
               {miniMode ? <AiOutlinePlus /> : <span>Join</span>}
             </div>
           ) : loadAPI ? (
-            <div className={!miniMode && "p-2"}>
+            <div className={!miniMode ? "p-2" : ""}>
               <ImSpinner2 className="animate-spin" />
               {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
             </div>
           ) : (
-            <div className={!miniMode && "p-2"}>
+            <div className={!miniMode ? "p-2" : ""}>
               <ImSpinner2 className="animate-spin" />
               {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
             </div>

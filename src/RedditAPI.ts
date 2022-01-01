@@ -203,7 +203,7 @@ export const loadSubredditInfo = async (query) => {
         },
       })
     ).data;
-    console.log(query, res);
+    //console.log(query, res);
     // for (let i = 0; i < res?.data?.children?.length - 1; i++){
     //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
     // }

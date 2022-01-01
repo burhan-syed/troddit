@@ -7,9 +7,7 @@ import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
-import {
-  loadSubInfo, loadSubredditInfo
-} from "../RedditAPI";
+import { loadSubInfo, loadSubredditInfo } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
@@ -20,53 +18,28 @@ import { useSubsContext } from "../MySubs";
 
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
-  const { mySubs, myLocalSubs, myMultis, subscribe, loadedSubs, loadedMultis, error } = subsContext;
-
+  const {
+    mySubs,
+    myLocalSubs,
+    myMultis,
+    loadedSubs,
+    loadedMultis,
+    error,
+    currSubInfo,
+    currLocation,
+  } = subsContext;
 
   const [show, setShow] = useState(false);
 
   const router = useRouter();
-  const [location, setLocation] = useState("home");
+  //const [location, setLocation] = useState("home");
 
   const [session, loading] = useSession();
-  const [subInfo, setSubInfo] = useState({});
-
-  useEffect(() => {
-    //console.log(router.query);
-    const load = async (sub) => {
-      if (session) {
-        let subinfo = await loadSubInfo(sub);
-        setSubInfo(subinfo);
-      } else if (!session && !loading) {
-        let subInfo = await ( loadSubredditInfo(sub))
-        setSubInfo({data: subInfo}  );
-      }
-    };
-    if (router?.query?.slug?.[0]) {
-      let loc = router?.query?.slug?.[0]
-        .split(" ")
-        .join("+")
-        .split("%20")
-        .join("+")
-        .split("+");
-      if (loc.length > 1) {
-        setLocation(loc[0].toString() + "..");
-      } else {
-        setLocation(loc[0].toString());
-      }
-      load(loc[0]);
-    } else {
-      setLocation("home");
-    }
-    return () => {};
-  }, [router.query, session, loading]);
+ // const [subInfo, setSubInfo] = useState({});
 
   const handleClick = async () => {
     setShow((show) => !show);
   };
-
-
-
 
   return (
     <div className="flex flex-col items-center w-full h-full select-none">
@@ -88,29 +61,33 @@ const DropdownPane = ({ hide }) => {
       >
         <div className="flex flex-row items-center">
           {
-            location === "home" ? (
+            currLocation === "HOME" ? (
               <AiOutlineHome className="w-6 h-6" />
-            ) : location === "popular" ? (
+            ) : currLocation=== "POPULAR" ? (
               <BiRightTopArrowCircle className="w-6 h-6" />
-            ) : location === "all" ? (
+            ) : currLocation === "ALL" ? (
               <CgLivePhoto className="w-6 h-6" />
-            ) : subInfo ? (
+            ) : currSubInfo ? (
               <div>
                 <DropdownItem
-                  sub={subInfo}
+                  sub={{data: currSubInfo}}
                   isUser={router.pathname.includes("/u/")}
                   preventNav={true}
                 />
               </div>
             ) : (
-              <div>{router.pathname.includes("/u/") ? `u/${router?.query?.slug?.[0]}` : "r/"}</div>
+              <div>
+                {router.pathname.includes("/u/")
+                  ? `u/${router?.query?.slug?.[0]}`
+                  : "r/"}
+              </div>
             )
             //
           }
-          {(location == "home" ||
-            location == "popular" ||
-            location == "all") && (
-            <h1 className="ml-2 capitalize truncate">{location}</h1>
+          {(currLocation == "HOME" ||
+            currLocation == "POPULAR" ||
+            currLocation == "ALL") && (
+            <h1 className="ml-2 capitalize truncate">{currLocation.toLowerCase()}</h1>
           )}
         </div>
         <BsChevronDown
@@ -132,17 +109,22 @@ const DropdownPane = ({ hide }) => {
         <div className="grid grid-cols-1 overflow-y-auto overscroll-contain max-h-96 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800 ">
           {/* Quick Links */}
           <div className="flex flex-col py-2 font-light">
-            {router.pathname.includes("/r/") && subInfo && mySubs && (location !== "home" && location !== "all" && location !== "popular") &&  (
-              <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
-                <DropdownSubCard
-                  sub={subInfo}
-                  // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
-                  // // refresh={loadAllSubs}
-                  // refresh={undefined}
-                  // subsLoaded={loadedSubs}
-                />
-              </div>
-            )} 
+            {router.pathname.includes("/r/") &&
+              currSubInfo &&
+              mySubs &&
+              currLocation !== "HOME" &&
+              currLocation !== "ALL" &&
+              currLocation !== "POPULAR" && (
+                <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                  <DropdownSubCard
+                    sub={{data: currSubInfo}}
+                    // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
+                    // // refresh={loadAllSubs}
+                    // refresh={undefined}
+                    // subsLoaded={loadedSubs}
+                  />
+                </div>
+              )}
             <Link href="/" passHref>
               <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
                 <AiOutlineHome className="w-6 h-6" />
