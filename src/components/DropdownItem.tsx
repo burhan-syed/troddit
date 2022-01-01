@@ -11,9 +11,9 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const plausible = usePlausible();
   useEffect(() => {
     //console.log('>>',sub);
+    sub?.data?.subreddits?.length > 0 ? setisMulti(true) : setisMulti(false);
     if (sub.data?.icon_url) {
       setThumbURL(sub.data.icon_url);
-      setisMulti(true);
     } else {
       sub?.data?.community_icon?.length > 1
         ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
@@ -45,7 +45,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const goToSub = (e, suggestion) => {
     e.preventDefault();
     plausible("goToSub");
-    router.push(`/r/${suggestion}`);
+    router.push(`/r/${suggestion}${isMulti ? `?m=${sub?.data?.name}` : ""}`);
   };
 
   const goToMulti = (e) => {
@@ -56,6 +56,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
         ? (suggestions = s.name)
         : (suggestions = suggestions + "+" + s.name);
     }
+    console.log(sub);
     goToSub(e, suggestions);
   };
 

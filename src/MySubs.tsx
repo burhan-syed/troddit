@@ -26,84 +26,63 @@ export const MySubsProvider = ({ children }) => {
   const [session, loading] = useSession();
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
-
+  const [currLocationPic, setcurrLocationPic] = useState("");
   const [currLocation, setCurrLocation] = useState("");
   const [currSubs, setCurrSubs] = useState([]);
-  const [currSubInfo, setCurrSubInfo] = useState({
-    submit_text_html: "",
-    display_name: "",
-    header_img: "",
-    title: "",
-    icon_size: [256, 256],
-    primary_color: "",
-    active_user_count: 0,
-    icon_img: "",
-    display_name_prefixed: "",
-    accounts_active: 0,
-    public_traffic: false,
-    subscribers: 0,
-    user_flair_richtext: [],
-    name: "",
-    quarantine: false,
-    hide_ads: false,
-    public_description: "",
-    community_icon: "",
-    banner_background_image: "",
-    submit_text: "",
-    description_html: "",
-    spoilers_enabled: true,
-    key_color: "",
-    created: 0,
-    wls: 6,
-    submission_type: "",
-    public_description_html: "",
-    banner_img: "",
-    banner_background_color: "",
-    id: "",
-    over18: false,
-    description: "",
-    lang: "",
-    whitelist_status: "",
-    url: "",
-    created_utc: 0,
-    banner_size: 0,
-    mobile_banner_image: "",
-  });
+  const [currSubInfo, setCurrSubInfo] = useState({});
+  //   {
+  //   submit_text_html: "",
+  //   display_name: "",
+  //   header_img: "",
+  //   title: "",
+  //   icon_size: [256, 256],
+  //   primary_color: "",
+  //   active_user_count: 0,
+  //   icon_img: "",
+  //   display_name_prefixed: "",
+  //   accounts_active: 0,
+  //   public_traffic: false,
+  //   subscribers: 0,
+  //   user_flair_richtext: [],
+  //   name: "",
+  //   quarantine: false,
+  //   hide_ads: false,
+  //   public_description: "",
+  //   community_icon: "",
+  //   banner_background_image: "",
+  //   submit_text: "",
+  //   description_html: "",
+  //   spoilers_enabled: true,
+  //   key_color: "",
+  //   created: 0,
+  //   wls: 6,
+  //   submission_type: "",
+  //   public_description_html: "",
+  //   banner_img: "",
+  //   banner_background_color: "",
+  //   id: "",
+  //   over18: false,
+  //   description: "",
+  //   lang: "",
+  //   whitelist_status: "",
+  //   url: "",
+  //   created_utc: 0,
+  //   banner_size: 0,
+  //   mobile_banner_image: "",
+  // });
 
-
-  // useEffect(() => {
-  //   //console.log(router.query);
-  //   const load = async (sub) => {
-  //     if (session) {
-  //       let subinfo = await loadSubInfo(sub);
-  //       setSubInfo(subinfo);
-  //     } else if (!session && !loading) {
-  //       let subInfo = await ( loadSubredditInfo(sub))
-  //       setSubInfo({data: subInfo}  );
-  //     }
-  //   };
-  //   if (router?.query?.slug?.[0]) {
-  //     let loc = router?.query?.slug?.[0]
-  //       .split(" ")
-  //       .join("+")
-  //       .split("%20")
-  //       .join("+")
-  //       .split("+");
-  //     if (loc.length > 1) {
-  //       setLocation(loc[0].toString() + "..");
-  //     } else {
-  //       setLocation(loc[0].toString());
-  //     }
-  //     load(loc[0]);
-  //   } else {
-  //     setLocation("home");
-  //   }
-  //   return () => {};
-  // }, [router.query, session, loading]);
+  const [multi, setMulti] = useState("");
+  const [localMultis, setLocalMultis] = useState([]);
+  
+  useEffect(() => {
+    router?.query?.m
+      ? setMulti(router?.query?.m?.toString())
+      : setMulti("");
+  }, [router?.query]);
 
   useEffect(() => {
-    console.log(router);
-    if (router?.pathname === '/r/[...slug]' && router?.query?.slug?.[0]) {
+    //console.log(router);
+    if (router?.pathname === "/r/[...slug]" && router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0]
         .split(" ")
         .join("+")
@@ -112,23 +91,22 @@ export const MySubsProvider = ({ children }) => {
         .split("+");
       setCurrSubs(loc);
       let curr = loc[0].toString()?.toUpperCase();
-      if (loc.length > 1){
-        setCurrLocation(`${curr}...`);
+      if (router?.query?.m) {
+        setCurrLocation(router?.query?.m?.[0]?.toString());
       } else {
         setCurrLocation(curr);
       }
-      if (curr.toUpperCase() !== 'ALL' || curr.toUpperCase() !== 'POPULAR'){
+      if (curr.toUpperCase() !== "ALL" || curr.toUpperCase() !== "POPULAR") {
         loadCurrSubInfo(curr);
       }
-    } else if (router?.pathname === "/"){
+    } else if (router?.pathname === "/" || !router?.pathname.includes('/u')) {
       setCurrLocation("HOME");
     } else {
       setCurrLocation("");
+      setCurrSubInfo({});
     }
-    return () => {
-      
-    }
-  }, [router])
+    return () => {};
+  }, [router]);
 
   useEffect(() => {
     loadLocalSubs();
@@ -207,6 +185,7 @@ export const MySubsProvider = ({ children }) => {
   const [error, seterror] = useState(false);
   useEffect(() => {
     if (session && loadedSubs && mySubs.length < 1) {
+      loadAllFast();
       seterror(true);
     } else {
       seterror(false);
@@ -256,7 +235,8 @@ export const MySubsProvider = ({ children }) => {
         error,
         loadCurrSubInfo,
         currSubInfo,
-        currLocation
+        currLocation,
+        multi
       }}
     >
       {children}

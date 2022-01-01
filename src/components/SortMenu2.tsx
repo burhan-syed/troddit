@@ -40,7 +40,7 @@ const SortMenu2 = ({ hide = false }) => {
 
       if (router.query?.slug?.[0] ?? false) {
         router.push(
-          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}`
+          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${router?.query?.m?.length > 0 ? `?m=${encodeURI(router?.query?.m?.toString())}` : ""}`
         );
       } else {
         router.push(`/${s}`);
@@ -56,24 +56,26 @@ const SortMenu2 = ({ hide = false }) => {
       router.push(
         `/${isUser ? "u" : "r"}/${
           router.query?.slug?.[0] ?? "hot"
-        }/top/?t=${encodeURI(r)}`
+        }/top/?t=${encodeURI(r)}${router?.query?.m?.length > 0 ? `&m=${encodeURI(router?.query?.m?.toString())}` : ""}`
       );
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",
         query: {
           //frontsort: router.query.frontsort,
-          t: encodeURI(r),
+          t: encodeURI(r)
         },
       });
     } else {
-      router.push({
-        pathname: "/top",
-        query: {
-          //sort: router.query?.slug?.[1] ?? "",
-          t: encodeURI(r),
-        },
-      });
+      router.push(`/r/${router.query?.slug?.[0]}/top/?t=${encodeURI(r)}${(router?.query?.m?.length>0 ? `&m=${encodeURI(router?.query?.m?.toString())}` : "")}`)
+      // router.push({
+      //   pathname: "/top",
+      //   query: {
+      //     //sort: router.query?.slug?.[1] ?? "",
+      //     t: encodeURI(r),
+      //     m: router?.query?.m
+      //   },
+      // });
     }
   };
 
