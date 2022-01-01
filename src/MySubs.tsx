@@ -185,7 +185,7 @@ export const MySubsProvider = ({ children }) => {
   const [error, seterror] = useState(false);
   useEffect(() => {
     if (session && loadedSubs && mySubs.length < 1) {
-      loadAllFast();
+      //loadAllFast();
       seterror(true);
     } else {
       seterror(false);

@@ -44,7 +44,7 @@ const SubButton = ({ sub, miniMode = false }) => {
       setloadAPI(false);
       //console.log("checked local subs");
     } else if (loading) {
-      getSession(); 
+      //getSession(); causing loop? 
     }
   }, [loading, session, myLocalSubs, sub])
 
