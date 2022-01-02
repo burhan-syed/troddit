@@ -20,6 +20,7 @@ const SubredditBanner = ({ subreddits }) => {
   const [session] = useSession();
   const [subreddit, setSubreddit] = useState("");
   const [multiSub, setMultiSub] = useState("");
+  const [currMulti, setCurrMulti] = useState("");
   const [subArray, setSubArray] = useState([]);
   const [keepInMultiArray, setKeepInMultiArray] = useState(false);
   const context: any = useMainContext();
@@ -83,27 +84,27 @@ const SubredditBanner = ({ subreddits }) => {
     }
   }, [currSubInfo, subreddit]);
 
-  useEffect(() => {
-    const loadSubInfo = async (sub) => {
-      const info = await loadCurrSubInfo(sub);
-      if (info?.name) {
-        //setcurrSubInfo(info);
-        //console.log(info);
-        setBanner({
-          backgroundImage: `url("${info?.banner_background_image}")`,
-          backgroundColor:
-            info?.banner_background_color.length > 1
-              ? info.banner_background_color
-              : info?.key_color,
-        });
-        setLoaded(true);
-      }
-    };
+  // useEffect(() => {
+  //   const loadSubInfo = async (sub) => {
+  //     const info = await loadCurrSubInfo(sub);
+  //     if (info?.name) {
+  //       //setcurrSubInfo(info);
+  //       //console.log(info);
+  //       setBanner({
+  //         backgroundImage: `url("${info?.banner_background_image}")`,
+  //         backgroundColor:
+  //           info?.banner_background_color.length > 1
+  //             ? info.banner_background_color
+  //             : info?.key_color,
+  //       });
+  //       setLoaded(true);
+  //     }
+  //   };
 
-    if (multiSub.toUpperCase() !== currSubInfo?.display_name?.toUpperCase()) {
-      loadSubInfo(multiSub);
-    }
-  }, [multiSub]);
+  //   if (multiSub.toUpperCase() !== currSubInfo?.display_name?.toUpperCase()) {
+  //     loadSubInfo(multiSub);
+  //   }
+  // }, [multiSub]);
 
   useEffect(() => {
     if (currSubInfo?.icon_url) {
@@ -119,8 +120,16 @@ const SubredditBanner = ({ subreddits }) => {
     }
   }, [currSubInfo]);
 
+  //entry point
   useEffect(() => {
-    setSubArray(subreddits);
+    if (
+      !keepInMultiArray ||
+      subreddits?.length > 1 ||
+      subreddits?.[0].toUpperCase() !== multiSub.toUpperCase()
+    ) {
+      setSubArray(subreddits);
+      setKeepInMultiArray(false);
+    }
     setSubreddit(subreddits?.[0]);
   }, [subreddits]);
 
@@ -130,13 +139,33 @@ const SubredditBanner = ({ subreddits }) => {
       : sethideNSFW(false);
   }, [context.nsfw, currSubInfo.over18]);
 
+  useEffect(() => {
+    if (multi) {
+      setCurrMulti(multi);
+    }
+  }, [multi]);
+
+  const goToMulti = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`);
+  };
+
+  const goToMultiSub = (e, s) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMultiSub(s);
+    setKeepInMultiArray(true);
+    router.push(s);
+  };
+
   return (
     <div
       className={
         "w-full h-full -mt-2 " +
         (subArray.length === 1 && multi === ""
           ? "mb-2  md:mb-8 lg:mb-10"
-          : " space-y-2 mb-2 md:space-y-3 md:mb-3 ")
+          : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
       }
     >
       <div className="relative border-b shadow-xl dark:bg-trueGray-900 bg-lightPost border-lightBorder dark:border-darkBorder">
@@ -194,11 +223,11 @@ const SubredditBanner = ({ subreddits }) => {
                   </h1>
                   <div className="items-center justify-end hidden space-x-0.5 md:flex">
                     <SubButton sub={session ? currSubInfo.name : subreddit} />
-                    <SubOptButton
+                    {/* <SubOptButton
                       subInfo={currSubInfo}
                       multiInfo={multi}
                       subArray={subArray}
-                    />
+                    /> */}
                   </div>
                 </>
               ) : (
@@ -243,35 +272,40 @@ const SubredditBanner = ({ subreddits }) => {
         </div>
       </div>
 
-      {(multi || subArray.length > 1) && (
+      {(multi || subArray.length > 1 || currMulti) && (
+        <div className="">
         <div
           className={
             (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
-            " flex items-center justify-start text-sm "
+            " flex items-center justify-start text-sm space-x-2"
           }
         >
+          <div onClick={e => goToMulti(e)} className="flex-none">
+            <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
+              <div className="items-center px-3 py-1 text-center border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                {`${currMulti ? `${currMulti}` : "Multi"} (${
+                  subArray?.length
+                })`}
+              </div>
+            </a>
+          </div>
           <div className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
             {subArray.map((s) => (
               <div
-                onClick={() => {
-                  setMultiSub(s);
+                onClick={(e) => {
+                  goToMultiSub(e, s);
                 }}
-                className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
                 key={s}
               >
-                <h1>{s}</h1>
-                <div onClick={() => setKeepInMultiArray(true)}>
-                  <Link href={`${s}`}>
-                    <a className="-mb-1">
-                      <button className="rounded hover:cursor-pointer hover:ring-1 ring-gray-300 dark:ring-gray-600 dark:hover:ring-2 bg-lightPost dark:bg-trueGray-900">
-                        <BsBoxArrowInUpRight className="w-4 h-4" />
-                      </button>
-                    </a>
-                  </Link>
-                </div>
+                <a href={`${s}`}>
+                  <div className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                    <h1>{s}</h1>
+                  </div>
+                </a>
               </div>
             ))}
           </div>
+        </div>
         </div>
       )}
     </div>
