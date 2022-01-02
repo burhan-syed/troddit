@@ -128,6 +128,7 @@ const SubredditBanner = ({ subreddits }) => {
       subreddits?.[0].toUpperCase() !== multiSub.toUpperCase()
     ) {
       setSubArray(subreddits);
+      setCurrMulti(multi);
       setKeepInMultiArray(false);
     }
     setSubreddit(subreddits?.[0]);
