@@ -30,11 +30,11 @@ const Sort = ({ query }) => {
       <main>
         <NavBar />
         {subsArray?.[0]?.toUpperCase() !== "ALL" &&
-          subsArray?.[0]?.toUpperCase() !== "POPULAR" && subsArray?.length > 0 && (
+          subsArray?.[0]?.toUpperCase() !== "POPULAR" && subsArray?.length > 0 ? (
             <div className="w-screen pt-16 ">
               <SubredditBanner subreddits={subsArray} />
             </div>
-          )}
+          ) : <div className="pt-16"></div>}
         <Feed query={query} />
       </main>
     </div>

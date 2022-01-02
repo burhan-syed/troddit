@@ -71,7 +71,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
         onClick={(e) => !preventNav && goTo(e)}
       >
         {/* Image */}
-        <div className="flex flex-row items-center w-6 h-6 ml-1 ">
+        <div className="flex flex-row items-center flex-none w-6 h-6 ml-1 ">
           {thumbURL?.includes('https://') ? (
             <Image
               src={thumbURL}
@@ -100,8 +100,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
           )}
         </div>
         {/* Text */}
-        <h1 className="ml-2">
-          {" "}
+        <h1 className="ml-2 truncate">
           {sub.data?.display_name_prefixed ?? sub.data?.display_name}
           {isUser && router?.query?.slug?.[0].toString()}
         </h1>

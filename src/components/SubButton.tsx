@@ -54,12 +54,14 @@ const SubButton = ({ sub, miniMode = false }) => {
       setloadAPI(true);
       //console.log("attempting", session?.user?.name, action, sub2sub);
       let s = await subscribe(action, sub2sub, session);
+      console.log(s);
+      s && setSubbed(p => !p)
+      setloadAPI(false);
      
     }
   };
 
   return (
-    <div>
       <div className="relative select-none">
         <div
           className={
@@ -108,7 +110,6 @@ const SubButton = ({ sub, miniMode = false }) => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 

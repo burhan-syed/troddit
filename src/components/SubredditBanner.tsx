@@ -11,6 +11,7 @@ import { useMainContext } from "../MainContext";
 import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
 import SubMultiButton from "./SubMultiButton";
+import SubOptButton from "./SubOptButton";
 
 const SubredditBanner = ({ subreddits }) => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const SubredditBanner = ({ subreddits }) => {
   const [subreddit, setSubreddit] = useState("");
   const [multiSub, setMultiSub] = useState("");
   const [subArray, setSubArray] = useState([]);
+  const [keepInMultiArray, setKeepInMultiArray] = useState(false);
   const context: any = useMainContext();
   const [hideNSFW, sethideNSFW] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -132,7 +134,7 @@ const SubredditBanner = ({ subreddits }) => {
     <div
       className={
         "w-full h-full -mt-2 " +
-        (subArray.length === 1  && multi === ""
+        (subArray.length === 1 && multi === ""
           ? "mb-2  md:mb-8 lg:mb-10"
           : " space-y-2 mb-2 md:space-y-3 md:mb-3 ")
       }
@@ -184,15 +186,19 @@ const SubredditBanner = ({ subreddits }) => {
                 ></div>
               )}
             </div>
-            <div className="flex items-center justify-center w-full pt-2 pb-1 md:justify-between">
+            <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
               {loaded ? (
                 <>
                   <h1 className="text-4xl">
                     {currSubInfo?.display_name_prefixed}
                   </h1>
-                  <div className="hidden space-x-2 md:flex">
+                  <div className="items-center justify-end hidden space-x-0.5 md:flex">
                     <SubButton sub={session ? currSubInfo.name : subreddit} />
-                    {/* <SubMultiButton subreddits={subArray}/> */}
+                    <SubOptButton
+                      subInfo={currSubInfo}
+                      multiInfo={multi}
+                      subArray={subArray}
+                    />
                   </div>
                 </>
               ) : (
@@ -237,28 +243,32 @@ const SubredditBanner = ({ subreddits }) => {
         </div>
       </div>
 
-      {(multi || subArray.length > 1)  && (
+      {(multi || subArray.length > 1) && (
         <div
           className={
-            (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") + " flex items-center justify-start text-sm "
+            (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
+            " flex items-center justify-start text-sm "
           }
         >
-         
           <div className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
             {subArray.map((s) => (
               <div
-                onClick={() => setMultiSub(s)}
+                onClick={() => {
+                  setMultiSub(s);
+                }}
                 className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
                 key={s}
               >
                 <h1>{s}</h1>
-                <Link href={`${s}`}>
-                  <a className="-mb-1">
-                    <button className="rounded hover:cursor-pointer hover:ring-1 ring-gray-300 dark:ring-gray-600 dark:hover:ring-2 bg-lightPost dark:bg-trueGray-900">
-                      <BsBoxArrowInUpRight className="w-4 h-4" />
-                    </button>
-                  </a>
-                </Link>
+                <div onClick={() => setKeepInMultiArray(true)}>
+                  <Link href={`${s}`}>
+                    <a className="-mb-1">
+                      <button className="rounded hover:cursor-pointer hover:ring-1 ring-gray-300 dark:ring-gray-600 dark:hover:ring-2 bg-lightPost dark:bg-trueGray-900">
+                        <BsBoxArrowInUpRight className="w-4 h-4" />
+                      </button>
+                    </a>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
