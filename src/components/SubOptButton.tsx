@@ -81,7 +81,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
     setopenMulti((n) => n + 1);
   };
   const tryAddToMulti = (multi) => {
-    console.log(session?.user?.name, multi, subInfo?.display_name);
+    //console.log(session?.user?.name, multi, subInfo?.display_name);
     if (!session && !loading) {
       addToLocalMulti(multi, subInfo?.display_name);
     } else if (session) {
@@ -93,7 +93,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
     }
   };
   const removeFromMulti = () => {
-    console.log(session);
+    //console.log(session);
 
     if (session) {
       removeFromRedditMulti(
@@ -110,7 +110,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
     setDeleteCheck((s) => !s);
   };
   const deleteMulti = () => {
-    console.log(session);
+    //console.log(session);
 
     if (session) {
       deleteRedditMulti(currMulti, session.user.name);
@@ -127,7 +127,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
         mode={"create"}
       />
 
-      <Menu as="div" className="relative z-30 select-none">
+      <Menu as="div" className="relative z-10 select-none">
         {({ open }) => (
           <>
             <div className="flex items-center justify-center w-6">

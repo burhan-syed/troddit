@@ -433,7 +433,7 @@ export const getUserMultiSubs = async(user:string, multi:string) => {
 
 export const getMyMultis = async () => {
   const token = await (await getToken())?.accessToken;
-  console.log(token);
+  //console.log(token);
   if (token && ratelimit_remaining > 1) {
     try {
       let res = await axios.get("https://oauth.reddit.com/api/multi/mine", {
@@ -449,6 +449,8 @@ export const getMyMultis = async () => {
     } catch (err) {
       console.log(err);
     }
+  } else {
+    //console.log(ratelimit_remaining, 'huh');
   }
 };
 
@@ -473,7 +475,7 @@ export const addToMulti = async (
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return res; 
     } catch (err) {
       console.log("err", err);
@@ -498,7 +500,7 @@ export const deleteFromMulti = async (
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return res; 
     } catch (err) {
       console.log("err", err);
@@ -541,7 +543,7 @@ export const createMulti = async (
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(res);
       return res;
     } catch (err) {
@@ -562,7 +564,7 @@ export const deleteMulti = async(multiname, username) => {
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       //console.log(res);
       return res;
     } catch (err) {

@@ -210,34 +210,34 @@ export const MySubsProvider = ({ children }) => {
       if (res?.ok) {
         loadAllMultis();
       }
-      console.log("res", res);
+      //console.log("res", res);
       return res;
     } else {
       return false;
     }
   };
   const addToRedditMulti = async (multi, username, subname) => {
-    console.log("addtomulti");
+    //console.log("addtomulti");
     let res = await addToMulti(multi, username, subname);
-    console.log(res);
+    //console.log(res);
     if (res?.ok) {
       loadAllMultis();
     }
   };
   const removeFromRedditMulti = async (multi, username, subname) => {
-    console.log("removefrommulti");
+    //console.log("removefrommulti");
 
     let res = await deleteFromMulti(multi, username, subname);
-    console.log(res);
+    //console.log(res);
     if (res?.ok) {
       loadAllMultis();
     }
   };
   const deleteRedditMulti = async (multi, username) => {
-    console.log("deletefrommulti");
+    //console.log("deletefrommulti");
 
     let res = await deleteMulti(multi, username);
-    console.log(res);
+    //console.log(res);
     if (res?.ok) {
       loadAllMultis();
     }
@@ -331,10 +331,9 @@ export const MySubsProvider = ({ children }) => {
 
   const loadAllMultis = async () => {
     try {
-      console.log("load multis");
-      //setloadedMultis(false);
+      //console.log("load multis");
       const multis = await getMyMultis();
-      console.log(multis);
+      //console.log(multis);
       if (multis) {
         setMyMultis(multis);
         setloadedMultis(true);
