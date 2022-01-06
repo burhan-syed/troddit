@@ -1,17 +1,18 @@
 # Troddit 
 ### _A web client for Reddit_
 
-Built using NextJS and Typescript. Styled with TailwindCSS. 
+Built with NextJS and Typescript. Styled with TailwindCSS. 
 
 ## Features
 
-- Secure logins with Reddit to enable voting, commenting, following/unfollowing subreddits, viewing your followed subreddits, and access to your personal front page. 
-- 'Offline mode' to follow subreddits locally without login and generate a personal front page.
+- Secure logins with Reddit to enable voting, commenting, managing your subreddits and multireddits (aka feeds), and access to your personal front page. 
+- 'Offline mode' to follow subreddits and manage multis locally without login. Autogenerates a personal front page. 
+  - Visit your [subreddits multi](https://www.reddit.com/subreddits), replace 'reddit' with 'troddit' in the URL, then use the 'Join All' option to quickly follow all subs locally. 
 - Search for subreddits with auto-complete. 
-- View posts in single column, custom multi-column with masonry layout, or a simple row mode. All with infinite-scrolling. 
-- Choose your card style: Original for full post text in card, Compact for titles and media (images and video) only, or Media to hide all text and card padding. 
-- Gallery view: Click on a post and navigate with on screen buttons or your arrow keys through the feed on desktop. Shows the post content as well as its comments from Reddit. Smart portrait mode to automatically arrange vertical photos and videos beside comments. 
-- Hover mouse over Reddit videos to play. Enable to Autoplay option to play videos automatically when they enter the viewport. Enabling the Audio option will also play sound on the video on mouse hover if it is available. 
+- View posts in single column, custom multi-column with a grid-masonry layout, or a simple row mode. All with infinite-scrolling. 
+- Choose your card style: Original for full post text in card, Compact to exclude post text, or Media to hide all text and card padding. 
+- Gallery view: Click on a post and navigate through the feed with on screen buttons or your arrow keys. Shows the post content as well as its comments from Reddit. Smart portrait mode to automatically arrange vertical photos and videos side by side with comments. 
+- Hover mouse over Reddit videos to play. Enable to Autoplay option to play videos automatically when entering the viewport. Enable the Audio option to play sound on hover as well.
 - Responsive desktop and mobile layouts.  
 - PWA to download to your computer or phone. 
 - Docker support
@@ -27,6 +28,8 @@ npm run dev
 yarn run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+To contribute create a branch and submit a PR!
 
 
 ### Environment Variables
@@ -49,6 +52,12 @@ The redirect uri should match the REDDIT_REDIRECT variable.
 ```sh
 docker pull bsyed/troddit
 docker run -d --name troddit -p 3000:3000 bsyed/troddit
+```
+
+Alternatively for arm64: 
+
+```sh
+docker pull bsyed/troddit:arm64
 ```
 
 ### To Build the Image Yourself 
