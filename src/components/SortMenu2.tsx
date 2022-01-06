@@ -17,16 +17,26 @@ const SortMenu2 = ({ hide = false }) => {
   const [sort, setSort] = useState<any>("hot");
   const [range, setRange] = useState("");
   const [isUser, setIsUser] = useState(false);
+  const [isUserMulti, setIsUserMulti] = useState(false);
   const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (router.pathname.includes("/u/")) setIsUser(true);
-    if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
-    if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
-    if (router?.query?.t ?? false) {
-      //console.log(router.query.t);
-      setRange(router.query.t.toString());
+    if (router.pathname.includes("/u/")) {
+      if (router.query?.slug?.[1] === "m") {
+        setIsUserMulti(true);
+        router.query?.slug?.[3] && setSort(router.query.slug[3]);
+      } else {
+        setIsUser(true);
+      }
+    } else {
+      if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
+      if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
+      if (router?.query?.t ?? false) {
+        //console.log(router.query.t);
+        setRange(router.query.t.toString());
+      }
     }
+
     return () => {
       setSort("hot");
     };
@@ -37,10 +47,16 @@ const SortMenu2 = ({ hide = false }) => {
     setSort(s);
     if (s !== "top") {
       //console.log(`r/${router?.query ?? "popular"}/${s}`);
-
-      if (router.query?.slug?.[0] ?? false) {
+      if (isUserMulti){
+        router.push(`/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`)
+      }
+      else if (router.query?.slug?.[0] ?? false) {
         router.push(
-          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${router?.query?.m?.length > 0 ? `?m=${encodeURI(router?.query?.m?.toString())}` : ""}`
+          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${
+            router?.query?.m?.length > 0
+              ? `?m=${encodeURI(router?.query?.m?.toString())}`
+              : ""
+          }`
         );
       } else {
         router.push(`/${s}`);
@@ -52,22 +68,35 @@ const SortMenu2 = ({ hide = false }) => {
     e.preventDefault();
     //console.log(router.query);
     setRange(r);
-    if (router.query?.slug?.[0] ?? false) {
+    if (isUserMulti){
+      router.push(`/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`)
+    }
+    else if (router.query?.slug?.[0] ?? false) {
       router.push(
         `/${isUser ? "u" : "r"}/${
           router.query?.slug?.[0] ?? "hot"
-        }/top/?t=${encodeURI(r)}${router?.query?.m?.length > 0 ? `&m=${encodeURI(router?.query?.m?.toString())}` : ""}`
+        }/top/?t=${encodeURI(r)}${
+          router?.query?.m?.length > 0
+            ? `&m=${encodeURI(router?.query?.m?.toString())}`
+            : ""
+        }`
       );
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",
         query: {
           //frontsort: router.query.frontsort,
-          t: encodeURI(r)
+          t: encodeURI(r),
         },
       });
     } else {
-      router.push(`/r/${router.query?.slug?.[0]}/top/?t=${encodeURI(r)}${(router?.query?.m?.length>0 ? `&m=${encodeURI(router?.query?.m?.toString())}` : "")}`)
+      router.push(
+        `/r/${router.query?.slug?.[0]}/top/?t=${encodeURI(r)}${
+          router?.query?.m?.length > 0
+            ? `&m=${encodeURI(router?.query?.m?.toString())}`
+            : ""
+        }`
+      );
       // router.push({
       //   pathname: "/top",
       //   query: {

@@ -2,6 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { getSession, useSession } from "next-auth/client";
 import { useMainContext } from "./MainContext";
 import {
+  addToMulti,
+  createMulti,
+  deleteFromMulti,
+  deleteMulti,
   getAllMySubs,
   getMyMultis,
   getMySubs,
@@ -72,12 +76,175 @@ export const MySubsProvider = ({ children }) => {
   // });
 
   const [multi, setMulti] = useState("");
-  const [localMultis, setLocalMultis] = useState([]);
-  
+  const defaultMultis = [
+    {
+      data: {
+        name: "Nature",
+        display_name: "Nature",
+        subreddits: [
+          { name: "EarthPorn" },
+          { name: "WaterPorn" },
+          { name: "SkyPorn" },
+          { name: "DesertPorn" },
+          { name: "GeologyPorn" },
+          { name: "SpacePorn" },
+        ],
+      },
+    },
+    {
+      data: {
+        name: "Aesthetic",
+        display_name: "Aesthetic",
+        subreddits: [
+          { name: "DesignPorn" },
+          { name: "StreetArtPorn" },
+          { name: "FractalPorn" },
+          { name: "ExposurePorn" },
+          { name: "Generative" },
+          {name: "Art"}
+        ],
+      },
+    },
+  ];
+  const [myLocalMultis, setMyLocalMultis] = useState<any[]>(defaultMultis);
+
   useEffect(() => {
-    router?.query?.m
-      ? setMulti(router?.query?.m?.toString())
-      : setMulti("");
+    if (myLocalMultis.length > 0) {
+      localStorage.setItem("localMultis", JSON.stringify(myLocalMultis));
+    }
+  }, [myLocalMultis]);
+  useEffect(() => {
+    const local_localMultis = localStorage.getItem("localMultis");
+    local_localMultis?.length > 0 && setMyLocalMultis(JSON.parse(local_localMultis));
+  }, []);
+  const createLocalMulti = (multi: string, subreddits?: string[]) => {
+    let found = false;
+    myLocalMultis.forEach((m) => {
+      if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) found = true;
+    });
+    if (!found) {
+      setMyLocalMultis((m) => [
+        ...m,
+        {
+          data: {
+            name: multi,
+            display_name: multi,
+            subreddits: subreddits.map((s) => {
+              return { name: s };
+            }),
+          },
+        },
+      ]);
+      return true;
+    }
+    return false;
+  };
+  const deleteLocalMulti = (multi) => {
+    let afterdelete = myLocalMultis.filter(
+      (m) => m?.data?.name?.toUpperCase() !== multi.toUpperCase()
+    );
+    setMyLocalMultis(afterdelete);
+
+    //update localstroage if no more multis
+    if (afterdelete.length === 0) {
+      localStorage.setItem("localMultis", JSON.stringify(afterdelete));
+    }
+  };
+  const addToLocalMulti = (multi, sub) => {
+    let localMultisCopy = myLocalMultis;
+    let found = false;
+    localMultisCopy.forEach((m, i) => {
+      if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) {
+        m?.data?.subreddits?.forEach((s, j) => {
+          if (s?.name?.toUpperCase() === sub.toUpperCase()) found = true;
+        });
+        if (!found) {
+          localMultisCopy[i].data.subreddits = [
+            ...localMultisCopy[i].data.subreddits,
+            { name: sub },
+          ];
+        }
+      }
+    });
+    //console.log(localMultisCopy);
+    setMyLocalMultis(localMultisCopy);
+  };
+  const removeFromLocalMulti = (multi, sub) => {
+    let localMultisCopy = myLocalMultis;
+    let multi_index = -1;
+    localMultisCopy.forEach((m, i) => {
+      //console.log(m?.data?.name?.toUpperCase());
+      if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) {
+        multi_index = i;
+        let subreddits = m.data?.subreddits?.filter(
+          (s) => s?.name?.toUpperCase() !== sub.toUpperCase()
+        );
+        //console.log(multi_index, subreddits);
+        localMultisCopy[multi_index].data.subreddits = subreddits;
+      }
+    });
+    if (multi_index > -1) {
+      //console.log(localMultisCopy);
+      //handle no more subs in multi
+      if (localMultisCopy[multi_index].data.subreddits?.length === 0) {
+        deleteLocalMulti(localMultisCopy[multi_index].data.name);
+      } else {
+        setMyLocalMultis(localMultisCopy);
+      }
+    }
+  };
+
+  const createRedditMulti = async (
+    multiname: string,
+    subreddits: string[],
+    username: string
+  ) => {
+    let found = false;
+    myMultis.forEach((m) => {
+      //console.log(m?.data?.name);
+      if (m?.data?.name?.toUpperCase() === multiname.toUpperCase())
+        found = true;
+    });
+    if (!found) {
+      let res = await createMulti(multiname, username, subreddits);
+      if (res?.ok) {
+        loadAllMultis();
+      }
+      console.log("res", res);
+      return res;
+    } else {
+      return false;
+    }
+  };
+  const addToRedditMulti = async (multi, username, subname) => {
+    console.log("addtomulti");
+    let res = await addToMulti(multi, username, subname);
+    console.log(res);
+    if (res?.ok) {
+      loadAllMultis();
+    }
+  };
+  const removeFromRedditMulti = async (multi, username, subname) => {
+    console.log("removefrommulti");
+
+    let res = await deleteFromMulti(multi, username, subname);
+    console.log(res);
+    if (res?.ok) {
+      loadAllMultis();
+    }
+  };
+  const deleteRedditMulti = async (multi, username) => {
+    console.log("deletefrommulti");
+
+    let res = await deleteMulti(multi, username);
+    console.log(res);
+    if (res?.ok) {
+      loadAllMultis();
+    }
+  };
+
+  useEffect(() => {
+    router?.query?.m ? setMulti(router?.query?.m?.toString()) : setMulti("");
   }, [router?.query]);
 
   useEffect(() => {
@@ -99,7 +266,7 @@ export const MySubsProvider = ({ children }) => {
       if (curr.toUpperCase() !== "ALL" || curr.toUpperCase() !== "POPULAR") {
         loadCurrSubInfo(curr);
       }
-    } else if (router?.pathname === "/" || !router?.pathname.includes('/u')) {
+    } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
     } else {
       setCurrLocation("");
@@ -162,10 +329,25 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
+  const loadAllMultis = async () => {
+    try {
+      console.log("load multis");
+      //setloadedMultis(false);
+      const multis = await getMyMultis();
+      console.log(multis);
+      if (multis) {
+        setMyMultis(multis);
+        setloadedMultis(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const loadAllSubs = async (loggedIn: boolean | any = false) => {
     if (session || loggedIn) {
       try {
-        // console.log('loadallsubs')
+        //console.log('loadallsubs')
         setloadedSubs(false);
         let data = await getAllMySubs();
         setMySubs(data);
@@ -176,7 +358,7 @@ export const MySubsProvider = ({ children }) => {
       }
     } else if (!session) {
       //loadAllSubs(await getSession())
-      // console.log("load all refresh");
+      //console.log("load all refresh");
       // loadLocalSubs();
       //console.log('fail')
     }
@@ -214,6 +396,12 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
+  const subscribeAll = async (subs: string[]) => {
+    subs.forEach((s) => {
+      context.subToSub("sub", s);
+    });
+  };
+
   // return {
   //   myLocalSubs,
   //   mySubs,
@@ -229,14 +417,24 @@ export const MySubsProvider = ({ children }) => {
         myLocalSubs,
         mySubs,
         myMultis,
+        myLocalMultis,
+        createLocalMulti,
+        deleteLocalMulti,
+        addToLocalMulti,
+        removeFromLocalMulti,
+        createRedditMulti,
+        addToRedditMulti,
+        removeFromRedditMulti,
+        deleteRedditMulti,
         loadedSubs,
         loadedMultis,
         subscribe,
+        subscribeAll,
         error,
         loadCurrSubInfo,
         currSubInfo,
         currLocation,
-        multi
+        multi,
       }}
     >
       {children}

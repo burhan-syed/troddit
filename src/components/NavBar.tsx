@@ -48,7 +48,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   }, [scrollDirection, allowHide, scrollY]);
 
   const forceShow = () => {
-    console.log("forceshow");
+    //console.log("forceshow");
     if (hidden) {
       setHidden(false);
     }

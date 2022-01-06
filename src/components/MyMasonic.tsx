@@ -18,7 +18,7 @@ import {
   useScrollToIndex,
   useInfiniteLoader,
 } from "masonic";
-import { loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
+import { getUserMultiPosts, loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
 import Post from "./Post";
 // import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
@@ -52,7 +52,7 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
+const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -247,12 +247,22 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false }) => {
         //items.length
       );
     } else if (isUser) {
-      data = await loadUserPosts(
-        query?.slug?.[0] ?? "",
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? "",
-        loadafter
-      );
+      if (isMulti) {
+        data = await getUserMultiPosts(
+          query?.slug?.[0],
+          query?.slug?.[2],
+          query?.slug?.[3],
+          query?.t,
+          loadafter
+        );
+      } else {
+        data = await loadUserPosts(
+          query?.slug?.[0] ?? "",
+          query?.slug?.[1] ?? "hot",
+          query?.t ?? "",
+          loadafter
+        );
+      }
     } else {
       let subs = query?.slug?.[0]
         .split(" ")

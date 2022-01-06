@@ -54,7 +54,7 @@ const SubButton = ({ sub, miniMode = false }) => {
       setloadAPI(true);
       //console.log("attempting", session?.user?.name, action, sub2sub);
       let s = await subscribe(action, sub2sub, session);
-      console.log(s);
+      //console.log(s);
       s && setSubbed(p => !p)
       setloadAPI(false);
      

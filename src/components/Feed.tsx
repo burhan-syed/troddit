@@ -7,6 +7,7 @@ import {
   loadSubreddits,
   loadUserPosts,
   loadSubInfo,
+  getUserMultiPosts,
 } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -18,7 +19,7 @@ import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
 
-const Feed = ({ query, isUser = false }) => {
+const Feed = ({ query, isUser = false, isMulti = false }) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -140,11 +141,16 @@ const Feed = ({ query, isUser = false }) => {
       setFetchPost(true);
       setLoading(false);
     } else if (isUser) {
-      data = await loadUserPosts(
-        query?.slug?.[0] ?? "",
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? ""
-      );
+      if (isMulti) {
+        data = await getUserMultiPosts(query?.slug?.[0], query?.slug?.[2],query?.slug?.[3],query?.t  )
+      } else {
+        data = await loadUserPosts(
+          query?.slug?.[0] ?? "",
+          query?.slug?.[1] ?? "hot",
+          query?.t ?? ""
+        );
+      }
+      
     } else {
       //console.log(query?.slug?.[0]);
       let subs = query?.slug?.[0]
@@ -154,7 +160,7 @@ const Feed = ({ query, isUser = false }) => {
         .join("+")
         .split("%20")
         .join("+");
-        setSubsArray(subs.split('+'));
+      setSubsArray(subs.split("+"));
       data = await loadSubreddits(
         subs ?? "",
         query?.slug?.[1] ?? "hot",
@@ -204,7 +210,9 @@ const Feed = ({ query, isUser = false }) => {
           }
         </div>
         {subreddits !== "" && (
-          <div>{`Otherwise, this ${isUser ? "user" : "subreddit"} may not exist`}</div>
+          <div>{`Otherwise, this ${
+            isUser ? "user" : "subreddit"
+          } may not exist`}</div>
         )}
       </div>
     );
@@ -213,8 +221,6 @@ const Feed = ({ query, isUser = false }) => {
     <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen">
-        
-
         <div className={"w-full md:w-11/12"}>
           {/* + (context?.maximize ? " " : " md:w-5/6") */}
           <MyMasonic
@@ -222,6 +228,7 @@ const Feed = ({ query, isUser = false }) => {
             initItems={posts}
             initAfter={after}
             isUser={isUser}
+            isMulti={isMulti}
           />
         </div>
       </div>

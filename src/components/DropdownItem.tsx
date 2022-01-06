@@ -2,8 +2,11 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 import { usePlausible } from "next-plausible";
+import { loadSubredditInfo } from "../RedditAPI";
+import { useSession } from "next-auth/client";
 
 const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
+  const [session, loading] = useSession();
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
@@ -11,30 +14,31 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const plausible = usePlausible();
   useEffect(() => {
     //console.log('>>',sub);
-    sub?.data?.subreddits?.length > 0 ? setisMulti(true) : setisMulti(false);
-    if (sub.data?.icon_url) {
-      setThumbURL(sub.data.icon_url);
-    } else {
-      sub?.data?.community_icon?.length > 1
-        ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
-        : sub?.data?.icon_img?.length > 1
-        ? setThumbURL(sub?.data?.icon_img) : setThumbURL("");
-        // : sub?.data?.header_img?.length > 1 &&
-        //   setThumbURL(sub?.data?.header_img);
+    sub?.data?.subreddits ? setisMulti(true) : setisMulti(false);
+    const findThumbnail = (sub) =>{
+      if (sub?.data?.icon_url) {
+        setThumbURL(sub.data.icon_url);
+      } else {
+        sub?.data?.community_icon?.length > 1
+          ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
+          : sub?.data?.icon_img?.length > 1
+          ? setThumbURL(sub?.data?.icon_img) : setThumbURL("");
+          // : sub?.data?.header_img?.length > 1 &&
+          //   setThumbURL(sub?.data?.header_img);
+      }
     }
 
-    // if (sub.data?.icon_url) {
-    //   setThumbURL(sub.data.icon_url);
-    //   setisMulti(true);
-    // } else {
-    //   if (sub.data?.icon_img && sub.data?.icon_img !== "") {
-    //     setThumbURL(sub.data.icon_img);
-    //   }
-    //   if (sub.data?.community_icon && sub.data?.community_icon !== "") {
-    //     setThumbURL(sub.data.community_icon.replaceAll("amp;", ""));
-    //   }
-    // }
-    //console.log(thumbURL);
+    const findSubInfo = async (sub) => {
+      
+      let subinfo = await loadSubredditInfo(sub?.data?.display_name);
+      findThumbnail({data:subinfo})
+    }
+    if(sub?.kind == "t5"){
+      findThumbnail(sub);
+    } else if (sub?.data?.display_name && !(sub?.data?.subreddits?.length > 0)){
+      //findSubInfo(sub);
+      //causing alot of extra api calls, not doing this for now
+    }
     if (sub?.data) {
       setLoaded(true);
     }
@@ -49,15 +53,21 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   };
 
   const goToMulti = (e) => {
-    let suggestions = "";
-    plausible("goToMulti");
-    for (let s of sub.data.subreddits) {
-      suggestions.length === 0
-        ? (suggestions = s.name)
-        : (suggestions = suggestions + "+" + s.name);
-    }
+    
     //console.log(sub);
-    goToSub(e, suggestions);
+    if(sub.data.subreddits.length <  1){
+      router.push(`www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`, `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`)
+    } else {
+      let suggestions = "";
+      plausible("goToMulti");
+      for (let s of sub.data.subreddits) {
+        suggestions.length === 0
+          ? (suggestions = s.name)
+          : (suggestions = suggestions + "+" + s.name);
+      }
+      goToSub(e, suggestions);
+
+    }
   };
 
   const goTo = (e) => {

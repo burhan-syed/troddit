@@ -29,46 +29,7 @@ const SubredditBanner = ({ subreddits }) => {
   const [openDescription, setOpenDescription] = useState(0);
   const [thumbURL, setThumbURL] = useState("");
   const [banner, setBanner] = useState({});
-  // const [currSubInfo, setcurrSubInfo] = useState({
-  //   submit_text_html: "",
-  //   display_name: "",
-  //   header_img: "",
-  //   title: "",
-  //   icon_size: [256, 256],
-  //   primary_color: "",
-  //   active_user_count: 0,
-  //   icon_img: "",
-  //   display_name_prefixed: "",
-  //   accounts_active: 0,
-  //   public_traffic: false,
-  //   subscribers: 0,
-  //   user_flair_richtext: [],
-  //   name: "",
-  //   quarantine: false,
-  //   hide_ads: false,
-  //   public_description: "",
-  //   community_icon: "",
-  //   banner_background_image: "",
-  //   submit_text: "",
-  //   description_html: "",
-  //   spoilers_enabled: true,
-  //   key_color: "",
-  //   created: 0,
-  //   wls: 6,
-  //   submission_type: "",
-  //   public_description_html: "",
-  //   banner_img: "",
-  //   banner_background_color: "",
-  //   id: "",
-  //   over18: false,
-  //   description: "",
-  //   lang: "",
-  //   whitelist_status: "",
-  //   url: "",
-  //   created_utc: 0,
-  //   banner_size: 0,
-  //   mobile_banner_image: "",
-  // });
+
   useEffect(() => {
     //loadcurrSubInfo(subreddit);
     if (subreddit.toUpperCase() === currSubInfo?.display_name?.toUpperCase()) {
@@ -83,28 +44,6 @@ const SubredditBanner = ({ subreddits }) => {
       setLoaded(true);
     }
   }, [currSubInfo, subreddit]);
-
-  // useEffect(() => {
-  //   const loadSubInfo = async (sub) => {
-  //     const info = await loadCurrSubInfo(sub);
-  //     if (info?.name) {
-  //       //setcurrSubInfo(info);
-  //       //console.log(info);
-  //       setBanner({
-  //         backgroundImage: `url("${info?.banner_background_image}")`,
-  //         backgroundColor:
-  //           info?.banner_background_color.length > 1
-  //             ? info.banner_background_color
-  //             : info?.key_color,
-  //       });
-  //       setLoaded(true);
-  //     }
-  //   };
-
-  //   if (multiSub.toUpperCase() !== currSubInfo?.display_name?.toUpperCase()) {
-  //     loadSubInfo(multiSub);
-  //   }
-  // }, [multiSub]);
 
   useEffect(() => {
     if (currSubInfo?.icon_url) {
@@ -157,7 +96,12 @@ const SubredditBanner = ({ subreddits }) => {
     e.stopPropagation();
     setMultiSub(s);
     setKeepInMultiArray(true);
-    router.push(s);
+    //console.log(router);
+    if (router.route === "/r/[...slug]") {
+      router.push(s);
+    } else {
+      router.push(`/r/${s}`, `/r/${s}`);
+    }
   };
 
   return (
@@ -190,18 +134,7 @@ const SubredditBanner = ({ subreddits }) => {
             >
               {thumbURL?.includes("https") ? (
                 <Image
-                  src={
-                    // currSubInfo?.community_icon?.length > 1
-                    //   ? currSubInfo?.community_icon
-                    //   : currSubInfo?.icon_img?.length > 1
-                    //   ? currSubInfo?.icon_img
-                    //   : currSubInfo?.header_img?.length > 1
-                    //   ? currSubInfo?.header_img
-                    //     ? currSubInfo?.banner_img?.length > 1
-                    //     : currSubInfo.banner_img
-                    //   : "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_placeholder.svg/320px-Flag_placeholder.svg.png"
-                    thumbURL
-                  }
+                  src={thumbURL}
                   alt=""
                   height={currSubInfo?.icon_size?.[0] ?? 256}
                   width={currSubInfo?.icon_size?.[1] ?? 256}
@@ -219,16 +152,21 @@ const SubredditBanner = ({ subreddits }) => {
             <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
               {loaded ? (
                 <>
-                  <h1 className="text-4xl">
+                  <h1 className="flex items-start text-4xl">
                     {currSubInfo?.display_name_prefixed}
+                    <a href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`} target={"_blank"} rel="noreferrer" className="mt-2 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight">
+                      <span className="">
+                        <BsBoxArrowInUpRight className="w-4 h-4" />
+                      </span>
+                    </a>
                   </h1>
                   <div className="items-center justify-end hidden space-x-0.5 md:flex">
                     <SubButton sub={session ? currSubInfo.name : subreddit} />
-                    {/* <SubOptButton
+                    <SubOptButton
                       subInfo={currSubInfo}
-                      multiInfo={multi}
+                      currMulti={currMulti}
                       subArray={subArray}
-                    /> */}
+                    />
                   </div>
                 </>
               ) : (
@@ -251,9 +189,13 @@ const SubredditBanner = ({ subreddits }) => {
                 </>
               )}
             </div>
-            <div className="my-1 space-y-1 md:hidden">
+            <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
               <SubButton sub={session ? currSubInfo.name : subreddit} />
-              {/* <SubMultiButton subreddits={subArray}/> */}
+              <SubOptButton
+                      subInfo={currSubInfo}
+                      currMulti={currMulti}
+                      subArray={subArray}
+                    />
             </div>
             <div className="p-1 pb-5 text-center md:text-left">
               {loaded ? (
@@ -275,38 +217,42 @@ const SubredditBanner = ({ subreddits }) => {
 
       {(multi || subArray.length > 1 || currMulti) && (
         <div className="">
-        <div
-          className={
-            (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
-            " flex items-center justify-start text-sm space-x-2"
-          }
-        >
-          <div onClick={e => goToMulti(e)} className="flex-none">
-            <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
-              <div className="items-center px-3 py-1 text-center border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                {`${currMulti ? `${currMulti}` : "Multi"} (${
-                  subArray?.length
-                })`}
-              </div>
-            </a>
-          </div>
-          <div className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
-            {subArray.map((s) => (
-              <div
-                onClick={(e) => {
-                  goToMultiSub(e, s);
-                }}
-                key={s}
+          <div
+            className={
+              (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
+              " flex items-center justify-start text-sm space-x-2"
+            }
+          >
+            <div onClick={(e) => goToMulti(e)} className="flex-none">
+              <a
+                href={`${subArray.join("+")}${
+                  currMulti ? `?m=${currMulti}` : ""
+                }`}
               >
-                <a href={`${s}`}>
-                  <div className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                    <h1>{s}</h1>
-                  </div>
-                </a>
-              </div>
-            ))}
+                <div className="items-center px-3 py-1 text-center border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                  {`${currMulti ? `${currMulti}` : "Multi"} (${
+                    subArray?.length
+                  })`}
+                </div>
+              </a>
+            </div>
+            <div className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
+              {subArray.map((s) => (
+                <div
+                  onClick={(e) => {
+                    goToMultiSub(e, s);
+                  }}
+                  key={s}
+                >
+                  <a href={`${s}`}>
+                    <div className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                      <h1>{s}</h1>
+                    </div>
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
         </div>
       )}
     </div>

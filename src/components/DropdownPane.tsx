@@ -7,7 +7,6 @@ import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
-import { loadSubInfo, loadSubredditInfo } from "../RedditAPI";
 
 // import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
@@ -21,6 +20,7 @@ const DropdownPane = ({ hide }) => {
   const {
     mySubs,
     myLocalSubs,
+    myLocalMultis,
     myMultis,
     loadedSubs,
     loadedMultis,
@@ -147,6 +147,25 @@ const DropdownPane = ({ hide }) => {
 
           {!session && (
             <>
+            {myLocalMultis?.length > 0 && (
+              <>
+              <div className="pl-2 text-xs tracking-widest">local multis</div>
+              <div className="py-2">
+                    {myLocalMultis
+                      ? myLocalMultis.map((multi, i) => {
+                          return (
+                            <div
+                              className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                              key={i}
+                            >
+                              <DropdownItem sub={multi} />
+                            </div>
+                          );
+                        })
+                      : ""}
+                  </div>
+              </>
+            )}
               {myLocalSubs?.length > 0 ? (
                 <>
                   <div className="pl-2 text-xs tracking-widest">local subs</div>

@@ -153,6 +153,34 @@ export const loadSubreddits = async (
   }
 };
 
+export const getUserMultiPosts = async (
+  user: string,
+  multiname: string,
+  sort = "hot",
+  range?: string,
+  after?: string
+) => {
+  try {
+    const res = await (
+      await axios.get(`${REDDIT}/user/${user}/m/${multiname}/${sort}/.json?`, {
+        params: {
+          raw_json: 1,
+          sort: sort,
+          t: range,
+          after: after,
+        },
+      })
+    ).data;
+    return {
+      after: res.data.after,
+      before: res.data.before,
+      children: res.data.children,
+    };
+  } catch (err) {
+    return null;
+  }
+};
+
 export const loadSubFlairs = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
@@ -172,7 +200,7 @@ export const loadSubFlairs = async (subreddit) => {
     }
   }
 };
-//oauth request 
+//oauth request
 export const loadSubInfo = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
@@ -194,26 +222,27 @@ export const loadSubInfo = async (subreddit) => {
 };
 //search request no auth required
 export const loadSubredditInfo = async (query) => {
-  if (query){
-  try {
-    const res = await (
-      await axios.get(`${REDDIT}/r/${query}/about.json`,{///search/.json?q=${query}&type=sr&include_over_18=on`, {
-        params: {
-          raw_json: 1,
-        },
-      })
-    ).data;
-    //console.log(query, res);
-    // for (let i = 0; i < res?.data?.children?.length - 1; i++){
-    //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
-    // }
+  if (query) {
+    try {
+      const res = await (
+        await axios.get(`${REDDIT}/r/${query}/about.json`, {
+          ///search/.json?q=${query}&type=sr&include_over_18=on`, {
+          params: {
+            raw_json: 1,
+          },
+        })
+      ).data;
+      //console.log(query, res);
+      // for (let i = 0; i < res?.data?.children?.length - 1; i++){
+      //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
+      // }
 
-    return res?.data;
-  } catch (err) {
-    console.log(err);
-    return [];
-  }
-} else return [];
+      return res?.data;
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  } else return [];
 };
 
 export const subToSub = async (action, name) => {
@@ -254,11 +283,11 @@ export const loadUserPosts = async (
   count: number = 0
 ) => {
   //console.log(subreddits, sort, range);
-  let c = 0; 
+  let c = 0;
   let filtered_children = [];
-  let nextafter = after
-  while (c < 10 && filtered_children.length < 20 && !nextafter){
-    c = c+1;
+  let nextafter = after;
+  while (c < 10 && filtered_children.length < 20 && !nextafter) {
+    c = c + 1;
     try {
       const res = await (
         await axios.get(`${REDDIT}/user/${username}/.json?sort=${sort}`, {
@@ -270,10 +299,11 @@ export const loadUserPosts = async (
           },
         })
       ).data;
-      console.log(res, after);
-      filtered_children = [...filtered_children, ...res.data.children.filter(
-        (child) => child?.kind === "t3"
-      )]
+      //console.log(res, after);
+      filtered_children = [
+        ...filtered_children,
+        ...res.data.children.filter((child) => child?.kind === "t3"),
+      ];
       if (filtered_children.length > 19) {
         return {
           after: res.data?.after,
@@ -281,21 +311,19 @@ export const loadUserPosts = async (
           children: filtered_children,
         };
       }
-       nextafter = res?.data?.after
-      
+      nextafter = res?.data?.after;
     } catch (err) {
       //console.log(err);
       return null;
     }
   }
-  if (filtered_children.length > 0){
+  if (filtered_children.length > 0) {
     return {
       after: null,
-      children: filtered_children
-    }
+      children: filtered_children,
+    };
   }
   return null;
-
 };
 
 export const getMySubs = async (after?, count?) => {
@@ -377,25 +405,171 @@ export const getAllMySubs = async () => {
   return alldata;
 };
 
-export const getMyMultis = async () => {
+export const getUserMultiSubs = async(user:string, multi:string) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
-      let res = await axios.get("https://oauth.reddit.com//api/multi/mine", {
+      const res = await axios.get(
+        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}`,
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      const data = await res.data;
+      let subs = [];
+      data?.data?.subreddits?.forEach(s => {
+        subs.push(s?.name);
+      });
+      //console.log(subs);
+      return subs;
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+}
+
+export const getMyMultis = async () => {
+  const token = await (await getToken())?.accessToken;
+  console.log(token);
+  if (token && ratelimit_remaining > 1) {
+    try {
+      let res = await axios.get("https://oauth.reddit.com/api/multi/mine", {
         headers: {
           authorization: `bearer ${token}`,
         },
         params: {},
       });
-      //console.log(data);
+      //console.log(res);
       let data = await res.data;
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return data;
     } catch (err) {
-      //console.log(err);
+      console.log(err);
     }
   }
 };
+
+export const addToMulti = async (
+  multi: string,
+  user: string,
+  srname: string
+) => {
+  //console.log(multi, user, srname);
+  const token = await (await getToken())?.accessToken;
+  //console.log(
+  //   `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`
+  // );
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      return res; 
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+};
+export const deleteFromMulti = async (
+  multi: string,
+  user: string,
+  srname: string
+) => {
+  //console.log(multi, user, srname);
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      return res; 
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+};
+export const createMulti = async (
+  display_name: string,
+  user: string,
+  srnames: string[],
+  visibility = "private",
+  description_md?: string,
+  key_color?: string
+) => {
+  // {
+  //   "description_md": raw markdown text,
+  //   "display_name": a string no longer than 50 characters,
+  //   "icon_img": one of (`png`, `jpg`, `jpeg`),
+  //   "key_color": a 6-digit rgb hex color, e.g. `#AABBCC`,
+  //   "subreddits": [
+  //     {
+  //       "name": subreddit name,
+  //     },
+  //     ...
+  //   ],
+  //   "visibility": one of (`private`, `public`, `hidden`),
+  // }
+  const subreddits = srnames.map(s => {return `{"name": "${s}"}`});
+  const json = `{"description":"","display_name":"${display_name}","icon_img":"https://www.redditstatic.com/custom_feeds/custom_feed_default_4.png", "subreddits": [${subreddits}], "visibility":"${visibility}"}`;
+  //console.log(json);
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/api/multi/user/${user}/m/${display_name}/?model=${json}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //console.log(res);
+      return res;
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+};
+export const deleteMulti = async(multiname, username) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/api/multi/user/${username}/m/${multiname}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      //console.log(res);
+      return res;
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+}
 
 export const searchSubreddits = async (query, over18 = false) => {
   const token = await (await getToken())?.accessToken;
@@ -442,8 +616,6 @@ export const searchSubreddits = async (query, over18 = false) => {
   return [];
 };
 
-
-
 const loadAll = async (func) => {
   let after = "";
   let done = false;
@@ -453,7 +625,7 @@ const loadAll = async (func) => {
 
 export const loadComments = async (permalink, sort = "top") => {
   try {
-    console.log(permalink);
+    //console.log(permalink);
     const res = await (
       await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
         params: {
@@ -670,7 +842,7 @@ export const getMyVotes = async () => {
         }
       );
       let data = await res.data;
-      console.log(data);
+      //console.log(data);
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       if (data?.data?.children ?? false) {
         return { after: data.data.after, children: data.data.children };
