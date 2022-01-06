@@ -13,6 +13,7 @@ import router, { useRouter } from "next/router";
 import SubMultiButton from "./SubMultiButton";
 import SubOptButton from "./SubOptButton";
 import { AiOutlinePlus } from "react-icons/ai";
+import { join } from "path";
 
 const SubredditBanner = ({ subreddits }) => {
   const router = useRouter();
@@ -124,7 +125,6 @@ const SubredditBanner = ({ subreddits }) => {
 
   const removeSub =(s) => {
     if (router.route === "/r/[...slug]") {
-      setKeepInMultiArray(false);
       let curr:string = router.query.slug[0];
       let currsubs = curr.split('+');
       let filtered = currsubs.filter(c => c.toUpperCase() !== s.toUpperCase());
@@ -134,7 +134,7 @@ const SubredditBanner = ({ subreddits }) => {
       if(filtered.length > 1){
         router.push(`/r/${filtered.join('+')}`);
       } else if(filteredSubAry.length > 0){
-        router.push(`/r/${filteredSubAry[0]}`)
+        router.push(`/r/${filteredSubAry.join('+')}`)
       } else {
         router.push("/");
       }
@@ -292,7 +292,7 @@ const SubredditBanner = ({ subreddits }) => {
 
                       <h1 className="">{s}</h1>
                       <button onClick={e => {e.stopPropagation(); e.preventDefault(); removeSub(s)}} className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1">
-                        <AiOutlinePlus className="flex-none w-3 h-3 rotate-45 " />
+                        <AiOutlinePlus className="flex-none w-4 h-4 rotate-45 " />
                       </button>
                     </div>
                   </a>
