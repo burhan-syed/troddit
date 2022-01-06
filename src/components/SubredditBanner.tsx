@@ -12,6 +12,7 @@ import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
 import SubMultiButton from "./SubMultiButton";
 import SubOptButton from "./SubOptButton";
+import { AiOutlinePlus } from "react-icons/ai";
 
 const SubredditBanner = ({ subreddits }) => {
   const router = useRouter();
@@ -104,6 +105,25 @@ const SubredditBanner = ({ subreddits }) => {
     }
   };
 
+  const removeSub =(s) => {
+    if (router.route === "/r/[...slug]") {
+      setKeepInMultiArray(false);
+      let curr:string = router.query.slug[0];
+      let currsubs = curr.split('+');
+      let filtered = currsubs.filter(c => c.toUpperCase() !== s.toUpperCase());
+      let filteredSubAry = subArray.filter(c => c.toUpperCase() !== s.toUpperCase());
+      setSubArray(c => c.filter(sub => sub.toUpperCase() !== s.toUpperCase()));
+      //console.log(currsubs);
+      if(filtered.length > 1){
+        router.push(`/r/${filtered.join('+')}`);
+      } else if(filteredSubAry.length > 0){
+        router.push(`/r/${filteredSubAry[0]}`)
+      } else {
+        router.push("/");
+      }
+    } 
+  }
+
   return (
     <div
       className={
@@ -154,7 +174,12 @@ const SubredditBanner = ({ subreddits }) => {
                 <>
                   <h1 className="flex items-start text-4xl">
                     {currSubInfo?.display_name_prefixed}
-                    <a href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`} target={"_blank"} rel="noreferrer" className="mt-2 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight">
+                    <a
+                      href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`}
+                      target={"_blank"}
+                      rel="noreferrer"
+                      className="mt-2 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+                    >
                       <span className="">
                         <BsBoxArrowInUpRight className="w-4 h-4" />
                       </span>
@@ -192,10 +217,10 @@ const SubredditBanner = ({ subreddits }) => {
             <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
               <SubButton sub={session ? currSubInfo.name : subreddit} />
               <SubOptButton
-                      subInfo={currSubInfo}
-                      currMulti={currMulti}
-                      subArray={subArray}
-                    />
+                subInfo={currSubInfo}
+                currMulti={currMulti}
+                subArray={subArray}
+              />
             </div>
             <div className="p-1 pb-5 text-center md:text-left">
               {loaded ? (
@@ -245,8 +270,13 @@ const SubredditBanner = ({ subreddits }) => {
                   key={s}
                 >
                   <a href={`${s}`}>
-                    <div className="flex items-center px-3 py-1 space-x-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                      <h1>{s}</h1>
+                    <div className="flex items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                      
+
+                      <h1 className="">{s}</h1>
+                      <button onClick={e => {e.stopPropagation(); e.preventDefault(); removeSub(s)}} className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1">
+                        <AiOutlinePlus className="flex-none w-3 h-3 rotate-45 " />
+                      </button>
                     </div>
                   </a>
                 </div>

@@ -176,7 +176,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
                         >
                           <div onClick={() => setopenMulti((s) => s + 1)}>
                             <div
-                              className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                              className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight hover:cursor-pointer"
                               onClick={multiCreate}
                             >
                               <h1 className="pl-2">Create New</h1>
