@@ -1,7 +1,7 @@
 import SubButton from "./SubButton";
 import SubInfoModal from "./SubInfoModal";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { useSession } from "next-auth/client";
@@ -30,6 +30,23 @@ const SubredditBanner = ({ subreddits }) => {
   const [openDescription, setOpenDescription] = useState(0);
   const [thumbURL, setThumbURL] = useState("");
   const [banner, setBanner] = useState({});
+
+  const pillsRef:any = useRef();
+  useEffect(() => {
+    const el = pillsRef.current;
+    if (el) {
+      const onWheel = e => {
+        if (e.deltaY == 0) return;
+        e.preventDefault();
+        el.scrollTo({
+          left: el.scrollLeft + e.deltaY,
+          // behavior: "smooth"
+        });
+      };
+      el.addEventListener("wheel", onWheel);
+      return () => el.removeEventListener("wheel", onWheel);
+    }
+  }, []);
 
   useEffect(() => {
     //loadcurrSubInfo(subreddit);
@@ -261,7 +278,7 @@ const SubredditBanner = ({ subreddits }) => {
                 </div>
               </a>
             </div>
-            <div className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
+            <div ref={pillsRef} className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
               {subArray.map((s) => (
                 <div
                   onClick={(e) => {
