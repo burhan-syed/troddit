@@ -286,7 +286,7 @@ export const loadUserPosts = async (
   let c = 0;
   let filtered_children = [];
   let nextafter = after;
-  while (c < 10 && filtered_children.length < 20 && !nextafter) {
+  while (c < 50 && filtered_children.length < 20 && (nextafter || c===0)) {
     c = c + 1;
     try {
       const res = await (
@@ -294,7 +294,7 @@ export const loadUserPosts = async (
           params: {
             raw_json: 1,
             t: range,
-            after: after,
+            after: nextafter,
             count: count,
           },
         })
@@ -304,6 +304,7 @@ export const loadUserPosts = async (
         ...filtered_children,
         ...res.data.children.filter((child) => child?.kind === "t3"),
       ];
+      //console.log(c, nextafter, filtered_children.length, res?.data?.after)
       if (filtered_children.length > 19) {
         return {
           after: res.data?.after,
