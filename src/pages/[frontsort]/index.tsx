@@ -6,7 +6,6 @@ import Sort from "../../components/Sort";
 import Head from "next/head";
 
 const Subs = ({ query }) => {
-
   return (
     <div>
       <Head>
@@ -25,12 +24,8 @@ const Subs = ({ query }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  return {
-    props: {
-      query: context?.query,
-    },
-  };
-}
+Subs.getInitialProps = ({ query }) => {
+  return { query };
+};
 
 export default Subs;

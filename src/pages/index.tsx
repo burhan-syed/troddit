@@ -26,21 +26,7 @@ export const index = ({ session, query }) => {
     </div>
   );
 };
-// index.getInitialProps = ({ query }) => {
-//   if (Object.keys(query).length === 0) {
-//     query = {
-//       frontsort: "hot",
-//     };
-//   }
-//   return { query };
-// };
-
+index.getInitialProps = ({ query }) => {
+  return { query };
+};
 export default index;
-
-export async function getServerSideProps(context) {
-  return {
-    props: {
-      query: context?.query,
-    },
-  };
-}

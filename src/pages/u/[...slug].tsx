@@ -16,7 +16,12 @@ const Sort = ({ query }) => {
     const getSubsArray = async () => {
       let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
       // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
-      subs?.length > 0 && router.push(`/r/${subs.join('+')}${query?.slug?.[3] && `/${query?.slug?.[3]}`}${query?.t && `?t=${query?.t}`}`);
+      subs?.length > 0 &&
+        router.push(
+          `/r/${subs.join("+")}${query?.slug?.[3] && `/${query?.slug?.[3]}`}${
+            query?.t && `?t=${query?.t}`
+          }`
+        );
       //?m=${query.slug[2]}
       setLoaded(true);
     };
@@ -52,7 +57,7 @@ const Sort = ({ query }) => {
       <main>
         <NavBar />
         {loaded && (
-          <div >
+          <div>
             {subsArray?.length > 0 ? (
               <div className="w-screen pt-16 ">
                 <SubredditBanner subreddits={subsArray} />
@@ -68,12 +73,8 @@ const Sort = ({ query }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  return {
-    props: {
-      query: context?.query,
-    },
-  };
-}
+Sort.getInitialProps = ({ query }) => {
+  return { query };
+};
 
 export default Sort;
