@@ -21,6 +21,7 @@ export const MainProvider = ({ children }) => {
   const [cardStyle, setCardStyle] = useState("default");
   const [posts, setPosts] = useState([]);
   const [postNum, setPostNum] = useState(0);
+  const [token, setToken] = useState();
 
   const [localSubs, setLocalSubs] = useState([]);
   const subToSub = async (action, sub) => {
@@ -142,6 +143,8 @@ export const MainProvider = ({ children }) => {
         setPostNum,
         localSubs,
         subToSub,
+        token,
+        setToken
       }}
     >
       {children}

@@ -21,6 +21,7 @@ const getToken = async () => {
       return {
         accessToken: tokendata.data.accessToken,
         refreshToken: tokendata.data.refreshToken,
+        expires: tokendata.data.expires
         // username: tokendata.data.username,
       };
     } catch (err) {
@@ -32,19 +33,27 @@ const getToken = async () => {
 };
 
 export const loadFront = async (
+  loggedIn = false,
+  token?,
   sort: string = "best",
   range?: string,
   after?: string,
   count?: number,
   localSubs?: []
 ) => {
-  let token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+  //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
+  let accessToken = token?.accessToken; 
+  let returnToken = token;
+  if (loggedIn && (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)){
+    returnToken = await getToken();
+     accessToken = await returnToken?.accessToken;
+  } 
+  if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
       const res1 = await axios.get(`https://oauth.reddit.com/${sort}`, {
         headers: {
-          authorization: `bearer ${token}`,
+          authorization: `bearer ${accessToken}`,
         },
         params: {
           raw_json: 1,
@@ -60,13 +69,14 @@ export const loadFront = async (
         after: res.data.after,
         before: res.data.before,
         children: res.data.children,
+        token: returnToken
       };
     } catch (err) {
       //console.log(err);
     }
   } else {
     if (localSubs?.length > 0) {
-      return loadSubreddits(localSubs.join("+"), sort, range, after, count);
+      return loadSubreddits(loggedIn, token, localSubs.join("+"), sort, range, after, count);
     } else {
       try {
         //console.log("NO LOGIN");
@@ -85,6 +95,7 @@ export const loadFront = async (
           after: res.data.after,
           before: res.data.before,
           children: res.data.children,
+          token: token
         };
       } catch (err) {
         //console.log(err);
@@ -94,22 +105,29 @@ export const loadFront = async (
 };
 
 export const loadSubreddits = async (
+  loggedIn=false,
+  token,
   subreddits: string,
   sort: string,
   range: string,
   after: string = "",
   count: number = 0
 ) => {
-  //console.log(subreddits, sort, range);
-  let token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+  let accessToken = token?.accessToken; 
+  let returnToken = token;
+  if (loggedIn && (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)){
+    returnToken = await getToken();
+     accessToken = await returnToken?.accessToken;
+  } 
+
+  if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
       const res1 = await axios.get(
         `https://oauth.reddit.com/r/${subreddits}/${sort}`,
         {
           headers: {
-            authorization: `bearer ${token}`,
+            authorization: `bearer ${accessToken}`,
           },
           params: {
             raw_json: 1,

@@ -52,7 +52,7 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false }) => {
+const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false, session = {} }) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -236,9 +236,11 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false 
   const loadmore = async (loadafter = after) => {
     setCount((c) => c + 1);
     //console.log("loadmore after:", loadafter);
-    let data = { after: "", children: [] };
+    let data:any = { after: "", children: [], token: null };
     if (!subreddits) {
       data = await loadFront(
+        session ? true : false,
+        context?.token,
         query?.frontsort ?? "best",
         query?.t ?? "",
         loadafter,
@@ -273,6 +275,8 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false 
         .join("+");
 
       data = await loadSubreddits(
+        session ? true : false,
+        context?.token,
         subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? "",
@@ -293,6 +297,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false 
         prevAfter.current = data?.after;
         plausible("infinitescroll");
         //console.log('update prevAfter ', prevAfter.current);
+        data?.token && context.setToken(data?.token);
         setAfter(data?.after);
         return { data: { posts: data?.children, after: data?.after } };
       } else {

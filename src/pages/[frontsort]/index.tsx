@@ -25,8 +25,12 @@ const Subs = ({ query }) => {
   );
 };
 
-Subs.getInitialProps = ({ query }) => {
-  return { query };
-};
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      query: context?.query,
+    },
+  };
+}
 
 export default Subs;

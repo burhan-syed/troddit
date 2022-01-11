@@ -37,18 +37,12 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
   const [subreddits, setSubreddits] = useState("");
   const [subsArray, setSubsArray] = useState([]);
   const [isSubreddit, setIsSubreddit] = useState(false);
-  const [loggedIn, setloggedIn] = useState(false);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
-  useEffect(() => {
-    session ? setloggedIn(true) : setloggedIn(false);
-    return () => {
-      setloggedIn(false);
-    };
-  }, [session]);
 
   useEffect(() => {
+    //console.log("query:", query);
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       setLoading(false);
@@ -73,9 +67,14 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
       //fetchSubs();
+    } else {
+      setSort(query?.frontsort ?? "best");
+      setRange(query?.t ?? "");
+
+      !sessloading && fetchFront();
     }
     return () => {};
-  }, [query]);
+  }, [query, sessloading]);
 
   useEffect(() => {
     if (query?.slug?.[1] === "comments") {
@@ -92,13 +91,17 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       ) {
         setSort(query?.frontsort ?? "best");
         setRange(query?.t ?? "");
-        fetchFront();
+        !sessloading && fetchFront();
       }
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.slug?.[1] ?? "best");
       setRange(query?.t ?? "");
-      fetchSubs();
+      !sessloading && fetchSubs();
+    } else {
+      setSort(query?.frontsort ?? "best");
+      setRange(query?.t ?? "");
+      //fetchFront();
     }
     return () => {
       setPosts([]);
@@ -108,11 +111,12 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setError(false);
       setLoading(true);
     };
-  }, [subreddits, sort, range]);
+  }, [subreddits, sort, range, sessloading]);
 
   const fetchFront = async () => {
-    //console.log(query);
-    let data = await loadFront(
+    let data: any = await loadFront(
+      session ? true : false,
+      context?.token,
       query?.frontsort ?? "hot",
       query?.t ?? "",
       "",
@@ -120,8 +124,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       context?.localSubs
     );
     if (data?.children) {
-      //console.log("DATA", data);
-
+      context.setToken(data?.token);
       setLoading(false);
 
       setNumPosts((n) => n + data.children.length);
@@ -142,7 +145,12 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setLoading(false);
     } else if (isUser) {
       if (isMulti) {
-        data = await getUserMultiPosts(query?.slug?.[0], query?.slug?.[2],query?.slug?.[3],query?.t  )
+        data = await getUserMultiPosts(
+          query?.slug?.[0],
+          query?.slug?.[2],
+          query?.slug?.[3],
+          query?.t
+        );
       } else {
         data = await loadUserPosts(
           query?.slug?.[0] ?? "",
@@ -150,9 +158,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
           query?.t ?? ""
         );
       }
-      
     } else {
-      //console.log(query?.slug?.[0]);
       let subs = query?.slug?.[0]
         .split(" ")
         .join("+")
@@ -161,7 +167,10 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
         .split("%20")
         .join("+");
       setSubsArray(subs.split("+"));
+      //console.log(subs);
       data = await loadSubreddits(
+        session ? true : false,
+        context?.token,
         subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? ""
@@ -169,6 +178,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
     }
     if (data?.children) {
       setIsSubreddit(true);
+      data?.token && context.setToken(data?.token);
       setAfter(data?.after);
       setPosts(data.children);
       setNumPosts((n) => n + data.children.length);
@@ -229,6 +239,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
             initAfter={after}
             isUser={isUser}
             isMulti={isMulti}
+            session={session}
           />
         </div>
       </div>

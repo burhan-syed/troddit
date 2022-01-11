@@ -5,8 +5,9 @@ import Head from "next/head";
 import Feed from "../components/Feed";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
+import { getSession } from "next-auth/client";
 
-export const index = ({ query }) => {
+export const index = ({ session, query }) => {
   return (
     <div className="overflow-x-hidden ">
       <Head>
@@ -25,13 +26,21 @@ export const index = ({ query }) => {
     </div>
   );
 };
-index.getInitialProps = ({ query }) => {
-  if (Object.keys(query).length === 0) {
-    query = {
-      frontsort: "hot",
-    };
-  }
-  return { query };
-};
+// index.getInitialProps = ({ query }) => {
+//   if (Object.keys(query).length === 0) {
+//     query = {
+//       frontsort: "hot",
+//     };
+//   }
+//   return { query };
+// };
 
 export default index;
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      query: context?.query,
+    },
+  };
+}

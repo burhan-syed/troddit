@@ -7,13 +7,14 @@ export default async (req, res) => {
   //const body = JSON.parse(req.body);
   //const session = await getSession({ req });
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
+ //console.log(token);
   try {
     return res.status(200).json({
       status: "Ok",
       data: {
         accessToken: token.reddit.accessToken,
         refreshToken: token.reddit.refreshToken,
+        expires: token.expires,
         //username: token.reddit.username,
       },
     });
