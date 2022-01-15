@@ -60,7 +60,6 @@ const Media = ({
   const [loaded, setLoaded] = useState(false);
   const [toLoad, setToLoad] = useState(false);
 
-
   const onLoaded = () => {
     setMediaLoaded(true);
   };
@@ -87,8 +86,6 @@ const Media = ({
       if (!post.subreddit) return false;
       return true;
     };
-
-  
 
     const initialize = async () => {
       let a, b, c;
@@ -147,11 +144,25 @@ const Media = ({
     };
 
     const findVideo = async () => {
-      // console.log("find vid", post?.title);
+      let optimize = "1080";
+      let url = "";
+      if (!postMode) {
+        if (context?.columns === 3) {
+          optimize = "480";
+        } else if (context?.columns === 2) {
+          optimize = "1080";
+        } else if (context?.columns > 3) {
+          optimize = "360";
+        }
+      }
       if (post.preview) {
         if (post.preview.reddit_video_preview) {
+          url = post.preview.reddit_video_preview.fallback_url;
+          if (url.includes("DASH_1080") && !postMode) {
+            url = url.replace("DASH_1080", `DASH_${optimize}`);
+          }
           setVideoInfo({
-            url: post.preview.reddit_video_preview.fallback_url,
+            url: url,
             height: post.preview.reddit_video_preview.height,
             width: post.preview.reddit_video_preview.width,
           });
@@ -178,8 +189,12 @@ const Media = ({
       }
       if (post.media) {
         if (post.media.reddit_video) {
+          url = post.media.reddit_video.fallback_url;
+          if (url.includes("DASH_1080") && !postMode) {
+            url = url.replace("DASH_1080", `DASH_${optimize}`);
+          }
           setVideoInfo({
-            url: post.media.reddit_video.fallback_url,
+            url: url,
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
           });
@@ -273,7 +288,7 @@ const Media = ({
 
             //choose smallest image possible
             let done = false;
-            let width = windowWidth;// screen.width;
+            let width = windowWidth; // screen.width;
             if (!imgFull) {
               width = width / (context?.columns ?? 1);
             }
@@ -391,8 +406,6 @@ const Media = ({
   //   };
   // }, [imageInfo, videoInfo]);
 
- 
-
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<number>();
@@ -453,8 +466,16 @@ const Media = ({
               style={
                 imgFull && isYTVid
                   ? ytVidHeight
-                  : imgFull || context?.columnOverride == 1 || windowHeight > windowWidth
-                  ? { height: `${(windowHeight < windowWidth ? Math.floor(windowHeight * 0.75) : Math.floor(windowHeight * 0.4))}px` }
+                  : imgFull ||
+                    context?.columnOverride == 1 ||
+                    windowHeight > windowWidth
+                  ? {
+                      height: `${
+                        windowHeight < windowWidth
+                          ? Math.floor(windowHeight * 0.75)
+                          : Math.floor(windowHeight * 0.4)
+                      }px`,
+                    }
                   : {}
               }
             >
