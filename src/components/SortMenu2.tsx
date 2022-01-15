@@ -20,6 +20,11 @@ const SortMenu2 = ({ hide = false }) => {
   const [isUserMulti, setIsUserMulti] = useState(false);
   const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    router?.query?.t ? setRange(router.query.t.toString()) : setRange("");
+  }, [router.query]);
+
   useEffect(() => {
     if (router.pathname.includes("/u/")) {
       if (router.query?.slug?.[1] === "m") {
@@ -47,10 +52,11 @@ const SortMenu2 = ({ hide = false }) => {
     setSort(s);
     if (s !== "top") {
       //console.log(`r/${router?.query ?? "popular"}/${s}`);
-      if (isUserMulti){
-        router.push(`/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`)
-      }
-      else if (router.query?.slug?.[0] ?? false) {
+      if (isUserMulti) {
+        router.push(
+          `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`
+        );
+      } else if (router.query?.slug?.[0] ?? false) {
         router.push(
           `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${
             router?.query?.m?.length > 0
@@ -66,12 +72,20 @@ const SortMenu2 = ({ hide = false }) => {
 
   const updateRange = (e, r) => {
     e.preventDefault();
-    //console.log(router.query);
+    console.log(router);
     setRange(r);
-    if (isUserMulti){
-      router.push(`/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`)
-    }
-    else if (router.query?.slug?.[0] ?? false) {
+    if (router.route === "/") {
+      router.push({
+        pathname: "/top",
+        query: {
+          t: encodeURI(r),
+        },
+      });
+    } else if (isUserMulti) {
+      router.push(
+        `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`
+      );
+    } else if (router.query?.slug?.[0] ?? false) {
       router.push(
         `/${isUser ? "u" : "r"}/${
           router.query?.slug?.[0] ?? "hot"
