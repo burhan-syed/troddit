@@ -71,7 +71,8 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
 
-      !sessloading && fetchFront();
+      //causing client side errors
+      //!sessloading && fetchFront();
     }
     return () => {};
   }, [query, sessloading]);
@@ -101,7 +102,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
     } else {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
-      //fetchFront();
+      fetchFront();
     }
     return () => {
       setPosts([]);
