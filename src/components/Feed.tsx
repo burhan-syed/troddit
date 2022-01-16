@@ -102,7 +102,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
     } else {
       setSort(query?.frontsort ?? "best");
       setRange(query?.t ?? "");
-      fetchFront();
+      !sessloading && fetchFront();
     }
     return () => {
       setPosts([]);
