@@ -14,49 +14,63 @@ const calculateScore = (x: number) => {
   }
 };
 
-const Vote = ({ name, likes, score, size = 6, hideScore = false }) => {
+const Vote = ({
+  name,
+  likes,
+  score,
+  size = 6,
+  hideScore = false,
+  postindex = undefined,
+}) => {
   const [session] = useSession();
   const context: any = useMainContext();
 
-  const [vote, setVote] = useState<undefined | number>();
-  const [liked, setLiked] = useState();
+  const [liked, setLiked] = useState<boolean>();
   const [voteScore, setVoteScore] = useState("");
 
   const castVote = async (e, v) => {
     e.stopPropagation();
     if (session) {
-      v === vote ? (v = 0) : undefined;
-      let res = await postVote(v, name);
-      res ? setVote(v) : undefined;
+      let postv;
+      if (v === liked) {
+        postv = 0;
+      } else if (v) {
+        postv = 1;
+      } else if (v === false) {
+        postv = -1;
+      }
+      setLiked(postv === 1 ? true : postv === -1 ? false : undefined);
+      setVoteScore(calculateScore(score + postv));
+      let res = await postVote(postv, name);
+      if (res) {
+        context.updateLikes(
+          postindex,
+          postv === 1 ? true : postv === -1 ? false : null
+        );
+      } else {
+        setLiked(undefined);
+        setVoteScore(calculateScore(score));
+      }
     } else {
       context.setLoginModal(true);
     }
   };
   useEffect(() => {
+    //postindex > -1 && console.log(postindex, score, likes);
     setLiked(likes);
-    if (vote === 1 || vote === 0 || vote === -1) {
-      setVote(vote);
-    } else if (likes) {
-      setVote(1);
-    } else if (likes === false) {
-      setVote(-1);
-    } else {
-      setVote(0);
-    }
-    setVoteScore(calculateScore(score + vote));
+    setVoteScore(calculateScore(score));
 
-    return () => {};
-  }, [score, vote, likes]);
+    return () => {
+      //setLiked(undefined);
+    };
+  }, [score, likes]);
 
   return (
     <>
       <BiUpvote
-        onClick={(e) => castVote(e, 1)}
+        onClick={(e) => castVote(e, true)}
         className={
-          ((vote === 1 || liked) &&
-            vote !== 0 &&
-            vote !== -1 &&
-            " text-upvote ") +
+          (liked && " text-upvote ") +
           ` flex-none cursor-pointer w-${size} h-${size} hover:text-upvote hover:scale-110`
         }
       />
@@ -64,9 +78,9 @@ const Vote = ({ name, likes, score, size = 6, hideScore = false }) => {
         <>
           <p
             className={
-              ((vote === 1 || liked) && vote !== 0 && vote !== -1
+              (liked
                 ? " text-upvote "
-                : (vote === -1 || likes === false) && vote !== 1 && vote !== 0
+                : liked === false
                 ? "text-downvote "
                 : " ") + " text-sm"
             }
@@ -77,12 +91,9 @@ const Vote = ({ name, likes, score, size = 6, hideScore = false }) => {
       )}
 
       <BiDownvote
-        onClick={(e) => castVote(e, -1)}
+        onClick={(e) => castVote(e, false)}
         className={
-          ((vote === -1 || liked === false) &&
-            vote !== 1 &&
-            vote !== 0 &&
-            " text-downvote ") +
+          (liked === false && " text-downvote ") +
           ` flex-none cursor-pointer w-${size} h-${size} hover:text-downvote hover:scale-110`
         }
       />

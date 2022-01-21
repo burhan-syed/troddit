@@ -14,6 +14,7 @@ const Card1 = ({
   vote,
   castVote,
   forceMute,
+  postNum,
 }) => {
   const context: any = useMainContext();
   return (
@@ -58,9 +59,9 @@ const Card1 = ({
                   }
                 >
                   {post?.title ?? ""}
-                    <span className="ml-1 text-xs">
-                      <TitleFlair post={post} />
-                    </span>
+                  <span className="ml-1 text-xs">
+                    <TitleFlair post={post} />
+                  </span>
                 </h1>
               </a>
 
@@ -122,6 +123,7 @@ const Card1 = ({
                     score={post?.score}
                     likes={post?.likes}
                     size={5}
+                    postindex={postNum}
                   />
                 </div>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>

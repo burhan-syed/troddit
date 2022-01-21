@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from "react";
 import Link from "next/dist/client/link";
 import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
@@ -15,19 +15,18 @@ const Card1 = ({
   vote,
   castVote,
   forceMute,
+  postNum,
 }) => {
   const context: any = useMainContext();
-  const [allowIFrame, setallowIFrame] = useState(false)
+  const [allowIFrame, setallowIFrame] = useState(false);
   useEffect(() => {
     if (context?.columnOverride === 1) {
       setallowIFrame(true);
     } else {
       setallowIFrame(false);
     }
-    return () => {
-      
-    }
-  }, [context?.columnOverride])
+    return () => {};
+  }, [context?.columnOverride]);
   return (
     <div>
       <div
@@ -100,9 +99,9 @@ const Card1 = ({
                   >
                     {`${post?.title}` ?? ""}
                   </h1>
-                    <div className="pb-1 text-xs">
-                      <TitleFlair post={post} />
-                    </div>
+                  <div className="pb-1 text-xs">
+                    <TitleFlair post={post} />
+                  </div>
                 </a>
               </div>
             </>
@@ -119,10 +118,7 @@ const Card1 = ({
                 >
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                     <div className={hideNSFW && " blur-3xl"}>
-                      <Media
-                        post={post}
-                        allowIFrame={allowIFrame}
-                      />
+                      <Media post={post} allowIFrame={allowIFrame} />
                     </div>
                   </a>
                   {hideNSFW && (
@@ -193,9 +189,9 @@ const Card1 = ({
                         >
                           <h1 className="py-1 text-lg font-medium leading-none cursor-pointer">
                             {`${post?.title ?? ""}`}
-                              <span className="text-xs">
-                                <TitleFlair post={post} />
-                              </span>
+                            <span className="text-xs">
+                              <TitleFlair post={post} />
+                            </span>
                           </h1>
                         </a>
                         <div className="flex flex-row justify-between text-sm align-bottom select-none">
@@ -217,7 +213,7 @@ const Card1 = ({
                     </div>
                   )}
                 </div>
-              ) }
+              )}
             </div>
           ) : (
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
@@ -259,6 +255,7 @@ const Card1 = ({
                   score={post?.score}
                   likes={post?.likes}
                   size={5}
+                  postindex={postNum}
                 />
               </div>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>

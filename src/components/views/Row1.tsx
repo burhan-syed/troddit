@@ -24,6 +24,7 @@ const Row1 = ({
   vote,
   castVote,
   forceMute,
+  postNum,
 }) => {
   const [expand, setexpand] = useState(false);
 
@@ -42,6 +43,7 @@ const Row1 = ({
               likes={post?.likes}
               score={post?.score ?? 0}
               name={post?.name}
+              postindex={postNum}
             />
           </div>
         </div>

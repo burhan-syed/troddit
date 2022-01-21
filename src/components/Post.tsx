@@ -135,7 +135,7 @@ const Post = ({ post, postNum = 0 }) => {
   }, [post, vote]);
 
   return (
-    <div >
+    <div>
       {select && (
         <PostModal
           permalink={post?.permalink}
@@ -159,6 +159,7 @@ const Post = ({ post, postNum = 0 }) => {
             vote={vote}
             castVote={castVote}
             forceMute={forceMute}
+            postNum={postNum}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
@@ -169,6 +170,7 @@ const Post = ({ post, postNum = 0 }) => {
             vote={vote}
             castVote={castVote}
             forceMute={forceMute}
+            postNum={postNum}
           />
         ) : (
           <Card1
@@ -179,6 +181,7 @@ const Post = ({ post, postNum = 0 }) => {
             vote={vote}
             castVote={castVote}
             forceMute={forceMute}
+            postNum={postNum}
           />
         )}
       </div>

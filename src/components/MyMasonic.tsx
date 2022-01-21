@@ -18,7 +18,12 @@ import {
   useScrollToIndex,
   useInfiniteLoader,
 } from "masonic";
-import { getUserMultiPosts, loadFront, loadSubreddits, loadUserPosts } from "../RedditAPI";
+import {
+  getUserMultiPosts,
+  loadFront,
+  loadSubreddits,
+  loadUserPosts,
+} from "../RedditAPI";
 import Post from "./Post";
 // import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
@@ -52,7 +57,14 @@ interface ColumnContext {
   setColumns: Function;
 }
 
-const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false, session = {} }) => {
+const MyMasonic = ({
+  query,
+  initItems,
+  initAfter,
+  isUser = false,
+  isMulti = false,
+  session = {},
+}) => {
   const context: any = useMainContext();
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -236,7 +248,7 @@ const MyMasonic = ({ query, initItems, initAfter, isUser = false, isMulti=false,
   const loadmore = async (loadafter = after) => {
     setCount((c) => c + 1);
     //console.log("loadmore after:", loadafter);
-    let data:any = { after: "", children: [], token: null };
+    let data: any = { after: "", children: [], token: null };
     if (!subreddits) {
       data = await loadFront(
         session ? true : false,

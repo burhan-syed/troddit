@@ -22,6 +22,13 @@ export const MainProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
+  const updateLikes = (i, like) => {
+    let p = posts;
+    if (p?.[i]?.data) {
+      p[i].data.likes = like;
+    }
+    setPosts(p);
+  };
 
   const [localSubs, setLocalSubs] = useState([]);
   const subToSub = async (action, sub) => {
@@ -144,7 +151,8 @@ export const MainProvider = ({ children }) => {
         localSubs,
         subToSub,
         token,
-        setToken
+        setToken,
+        updateLikes,
       }}
     >
       {children}

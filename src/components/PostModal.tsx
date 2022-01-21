@@ -427,6 +427,7 @@ const PostModal = ({
                               name={apost?.name}
                               score={apost?.score}
                               size={7}
+                              postindex={context.postNum}
                             />
                           </div>
                           <div></div>
@@ -481,6 +482,7 @@ const PostModal = ({
                           name={apost?.name}
                           score={apost?.score}
                           size={7}
+                          postindex={context.postNum}
                         />
                       </div>
                       {/* Main Media Column */}
