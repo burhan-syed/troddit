@@ -245,10 +245,11 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    //console.log(currSubs);
     router?.query?.m
       ? setMulti(router?.query?.m?.toString())
       : currSubs?.length > 1
-      ? setMulti(`Multi (${currSubs.length})`)
+      ? setMulti(`Multi`)
       : setMulti("");
   }, [router?.query, currSubs]);
 
@@ -261,7 +262,15 @@ export const MySubsProvider = ({ children }) => {
         .split("%20")
         .join("+")
         .split("+");
-      setCurrSubs(loc);
+      setCurrSubs(
+        loc.sort((a, b) => {
+          let aUpper = a.toUpperCase();
+          let bUpper = b.toUpperCase();
+          if (aUpper < bUpper) return -1;
+          if (aUpper > bUpper) return 1;
+          return 0;
+        })
+      );
       let curr = loc[0].toString()?.toUpperCase();
       if (router?.query?.m) {
         setCurrLocation(router?.query?.m?.[0]?.toString());
@@ -450,6 +459,7 @@ export const MySubsProvider = ({ children }) => {
         loadCurrSubInfo,
         currSubInfo,
         currLocation,
+        currSubs,
         multi,
         tryLoadAll,
       }}

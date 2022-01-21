@@ -40,8 +40,8 @@ const SubredditBanner = ({ subreddits }) => {
         if (e.deltaY == 0) return;
         e.preventDefault();
         el.scrollTo({
-          left: el.scrollLeft + e.deltaY,
-          // behavior: "smooth"
+          left: el.scrollLeft + e.deltaY * 2,
+          behavior: "smooth",
         });
       };
       el.addEventListener("wheel", onWheel);
@@ -80,16 +80,23 @@ const SubredditBanner = ({ subreddits }) => {
 
   //entry point
   useEffect(() => {
+    let s = subreddits.sort((a, b) => {
+      let aUpper = a.toUpperCase();
+      let bUpper = b.toUpperCase();
+      if (aUpper < bUpper) return -1;
+      if (aUpper > bUpper) return 1;
+      return 0;
+    });
+    setSubreddit(s?.[0]);
     if (
       !keepInMultiArray ||
       subreddits?.length > 1 ||
       subreddits?.[0].toUpperCase() !== multiSub.toUpperCase()
     ) {
-      setSubArray(subreddits);
+      setSubArray(s);
       setCurrMulti(multi);
       setKeepInMultiArray(false);
     }
-    setSubreddit(subreddits?.[0]);
   }, [subreddits]);
 
   useEffect(() => {
@@ -101,6 +108,8 @@ const SubredditBanner = ({ subreddits }) => {
   useEffect(() => {
     if (multi) {
       setCurrMulti(multi);
+    } else {
+      setCurrMulti("");
     }
   }, [multi]);
 
@@ -277,8 +286,10 @@ const SubredditBanner = ({ subreddits }) => {
                   currMulti ? `?m=${currMulti}` : ""
                 }`}
               >
-                <div className="items-center px-3 py-1 text-center border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                  {`${currMulti ? `${currMulti}` : "Multi"}`}
+                <div className="items-center px-4 py-1.5 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                  {`${currMulti ? `${currMulti}` : "Multi"} (${
+                    subArray.length
+                  })`}
                 </div>
               </a>
             </div>
