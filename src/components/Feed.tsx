@@ -40,7 +40,6 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
-
   useEffect(() => {
     //console.log("query:", query);
     if (query?.slug?.[1] === "comments") {
@@ -207,6 +206,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
           }
           returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
           setSelect={setFetchPost}
+          direct={true}
         />
       </div>
     );
