@@ -101,7 +101,7 @@ export const MySubsProvider = ({ children }) => {
           { name: "FractalPorn" },
           { name: "ExposurePorn" },
           { name: "Generative" },
-          {name: "Art"}
+          { name: "Art" },
         ],
       },
     },
@@ -115,7 +115,8 @@ export const MySubsProvider = ({ children }) => {
   }, [myLocalMultis]);
   useEffect(() => {
     const local_localMultis = localStorage.getItem("localMultis");
-    local_localMultis?.length > 0 && setMyLocalMultis(JSON.parse(local_localMultis));
+    local_localMultis?.length > 0 &&
+      setMyLocalMultis(JSON.parse(local_localMultis));
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
     let found = false;
@@ -275,10 +276,22 @@ export const MySubsProvider = ({ children }) => {
     return () => {};
   }, [router]);
 
+  //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
     loadLocalSubs();
-    loadAllFast();
   }, []);
+  useEffect(() => {
+    if (
+      router?.pathname === "/r/[...slug]" &&
+      router?.query?.slug?.[1] !== "comments" &&
+      !loadedSubs
+    ) {
+      loadAllFast();
+    }
+  }, [router, loadedSubs]);
+  const tryLoadAll = () => {
+    !loadedSubs && loadAllFast();
+  };
 
   useEffect(() => {
     loadLocalSubs();
@@ -434,6 +447,7 @@ export const MySubsProvider = ({ children }) => {
         currSubInfo,
         currLocation,
         multi,
+        tryLoadAll,
       }}
     >
       {children}

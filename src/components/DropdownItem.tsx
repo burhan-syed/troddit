@@ -15,27 +15,31 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   useEffect(() => {
     //console.log('>>',sub);
     sub?.data?.subreddits ? setisMulti(true) : setisMulti(false);
-    const findThumbnail = (sub) =>{
+    const findThumbnail = (sub) => {
       if (sub?.data?.icon_url) {
         setThumbURL(sub.data.icon_url);
       } else {
         sub?.data?.community_icon?.length > 1
           ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
           : sub?.data?.icon_img?.length > 1
-          ? setThumbURL(sub?.data?.icon_img) : setThumbURL("");
-          // : sub?.data?.header_img?.length > 1 &&
-          //   setThumbURL(sub?.data?.header_img);
+          ? setThumbURL(sub?.data?.icon_img)
+          : setThumbURL("");
+        // : sub?.data?.header_img?.length > 1 &&
+        //   setThumbURL(sub?.data?.header_img);
       }
-    }
+    };
 
     const findSubInfo = async (sub) => {
-      
       let subinfo = await loadSubredditInfo(sub?.data?.display_name);
-      findThumbnail({data:subinfo})
-    }
-    if(sub?.kind == "t5"){
+      findThumbnail({ data: subinfo });
+    };
+    if (sub?.kind == "t5") {
       findThumbnail(sub);
-    } else if (sub?.data?.display_name && !(sub?.data?.subreddits?.length > 0)){
+    } else if (
+      sub?.data?.display_name &&
+      !(sub?.data?.subreddits?.length > 0)
+    ) {
+      console.log(sub?.data?.display_name);
       //findSubInfo(sub);
       //causing alot of extra api calls, not doing this for now
     }
@@ -53,10 +57,12 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   };
 
   const goToMulti = (e) => {
-    
     //console.log(sub);
-    if(sub.data.subreddits.length <  1){
-      router.push(`www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`, `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`)
+    if (sub.data.subreddits.length < 1) {
+      router.push(
+        `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`,
+        `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`
+      );
     } else {
       let suggestions = "";
       plausible("goToMulti");
@@ -66,7 +72,6 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
           : (suggestions = suggestions + "+" + s.name);
       }
       goToSub(e, suggestions);
-
     }
   };
 
@@ -82,7 +87,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       >
         {/* Image */}
         <div className="flex flex-row items-center flex-none w-6 h-6 ml-1 ">
-          {thumbURL?.includes('https://') ? (
+          {thumbURL?.includes("https://") ? (
             <Image
               src={thumbURL}
               alt="sub"

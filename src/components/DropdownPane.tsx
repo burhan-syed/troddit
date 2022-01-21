@@ -27,6 +27,7 @@ const DropdownPane = ({ hide }) => {
     error,
     currSubInfo,
     currLocation,
+    tryLoadAll,
   } = subsContext;
 
   const [show, setShow] = useState(false);
@@ -35,9 +36,10 @@ const DropdownPane = ({ hide }) => {
   //const [location, setLocation] = useState("home");
 
   const [session, loading] = useSession();
- // const [subInfo, setSubInfo] = useState({});
+  // const [subInfo, setSubInfo] = useState({});
 
   const handleClick = async () => {
+    !show && tryLoadAll();
     setShow((show) => !show);
   };
 
@@ -63,14 +65,14 @@ const DropdownPane = ({ hide }) => {
           {
             currLocation === "HOME" ? (
               <AiOutlineHome className="w-6 h-6" />
-            ) : currLocation=== "POPULAR" ? (
+            ) : currLocation === "POPULAR" ? (
               <BiRightTopArrowCircle className="w-6 h-6" />
             ) : currLocation === "ALL" ? (
               <CgLivePhoto className="w-6 h-6" />
             ) : currSubInfo ? (
               <div>
                 <DropdownItem
-                  sub={{data: currSubInfo}}
+                  sub={{ kind: "t5", data: currSubInfo }}
                   isUser={router.pathname.includes("/u/")}
                   preventNav={true}
                 />
@@ -87,7 +89,9 @@ const DropdownPane = ({ hide }) => {
           {(currLocation == "HOME" ||
             currLocation == "POPULAR" ||
             currLocation == "ALL") && (
-            <h1 className="ml-2 capitalize truncate">{currLocation.toLowerCase()}</h1>
+            <h1 className="ml-2 capitalize truncate">
+              {currLocation.toLowerCase()}
+            </h1>
           )}
         </div>
         <BsChevronDown
@@ -117,7 +121,7 @@ const DropdownPane = ({ hide }) => {
               currLocation !== "POPULAR" && (
                 <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                   <DropdownSubCard
-                    sub={{data: currSubInfo}}
+                    sub={{ kind: "t5", data: currSubInfo }}
                     // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                     // // refresh={loadAllSubs}
                     // refresh={undefined}
@@ -147,10 +151,12 @@ const DropdownPane = ({ hide }) => {
 
           {!session && (
             <>
-            {myLocalMultis?.length > 0 && (
-              <>
-              <div className="pl-2 text-xs tracking-widest">local multis</div>
-              <div className="py-2">
+              {myLocalMultis?.length > 0 && (
+                <>
+                  <div className="pl-2 text-xs tracking-widest">
+                    local multis
+                  </div>
+                  <div className="py-2">
                     {myLocalMultis
                       ? myLocalMultis.map((multi, i) => {
                           return (
@@ -164,8 +170,8 @@ const DropdownPane = ({ hide }) => {
                         })
                       : ""}
                   </div>
-              </>
-            )}
+                </>
+              )}
               {myLocalSubs?.length > 0 ? (
                 <>
                   <div className="pl-2 text-xs tracking-widest">local subs</div>
