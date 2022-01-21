@@ -245,8 +245,12 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    router?.query?.m ? setMulti(router?.query?.m?.toString()) : setMulti("");
-  }, [router?.query]);
+    router?.query?.m
+      ? setMulti(router?.query?.m?.toString())
+      : currSubs?.length > 1
+      ? setMulti(`Multi (${currSubs.length})`)
+      : setMulti("");
+  }, [router?.query, currSubs]);
 
   useEffect(() => {
     //console.log(router);

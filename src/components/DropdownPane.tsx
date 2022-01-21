@@ -22,6 +22,7 @@ const DropdownPane = ({ hide }) => {
     myLocalSubs,
     myLocalMultis,
     myMultis,
+    multi,
     loadedSubs,
     loadedMultis,
     error,
@@ -69,6 +70,18 @@ const DropdownPane = ({ hide }) => {
               <BiRightTopArrowCircle className="w-6 h-6" />
             ) : currLocation === "ALL" ? (
               <CgLivePhoto className="w-6 h-6" />
+            ) : multi ? (
+              <div>
+                <DropdownItem
+                  sub={{
+                    data: {
+                      display_name: multi,
+                      subreddits: ["", ""],
+                    },
+                  }}
+                  preventNav={true}
+                />
+              </div>
             ) : currSubInfo ? (
               <div>
                 <DropdownItem
@@ -116,6 +129,7 @@ const DropdownPane = ({ hide }) => {
             {router.pathname.includes("/r/") &&
               currSubInfo &&
               mySubs &&
+              !multi &&
               currLocation !== "HOME" &&
               currLocation !== "ALL" &&
               currLocation !== "POPULAR" && (

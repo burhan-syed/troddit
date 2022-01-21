@@ -32,11 +32,11 @@ const SubredditBanner = ({ subreddits }) => {
   const [thumbURL, setThumbURL] = useState("");
   const [banner, setBanner] = useState({});
 
-  const pillsRef:any = useRef();
+  const pillsRef: any = useRef();
   useEffect(() => {
     const el = pillsRef.current;
     if (el) {
-      const onWheel = e => {
+      const onWheel = (e) => {
         if (e.deltaY == 0) return;
         e.preventDefault();
         el.scrollTo({
@@ -123,23 +123,29 @@ const SubredditBanner = ({ subreddits }) => {
     }
   };
 
-  const removeSub =(s) => {
+  const removeSub = (s) => {
     if (router.route === "/r/[...slug]") {
-      let curr:string = router.query.slug[0];
-      let currsubs = curr.split('+');
-      let filtered = currsubs.filter(c => c.toUpperCase() !== s.toUpperCase());
-      let filteredSubAry = subArray.filter(c => c.toUpperCase() !== s.toUpperCase());
-      setSubArray(c => c.filter(sub => sub.toUpperCase() !== s.toUpperCase()));
+      let curr: string = router.query.slug[0];
+      let currsubs = curr.split("+");
+      let filtered = currsubs.filter(
+        (c) => c.toUpperCase() !== s.toUpperCase()
+      );
+      let filteredSubAry = subArray.filter(
+        (c) => c.toUpperCase() !== s.toUpperCase()
+      );
+      setSubArray((c) =>
+        c.filter((sub) => sub.toUpperCase() !== s.toUpperCase())
+      );
       //console.log(currsubs);
-      if(filtered.length > 1){
-        router.push(`/r/${filtered.join('+')}`);
-      } else if(filteredSubAry.length > 0){
-        router.push(`/r/${filteredSubAry.join('+')}`)
+      if (filtered.length > 1) {
+        router.push(`/r/${filtered.join("+")}`);
+      } else if (filteredSubAry.length > 0) {
+        router.push(`/r/${filteredSubAry.join("+")}`);
       } else {
         router.push("/");
       }
-    } 
-  }
+    }
+  };
 
   return (
     <div
@@ -272,13 +278,14 @@ const SubredditBanner = ({ subreddits }) => {
                 }`}
               >
                 <div className="items-center px-3 py-1 text-center border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                  {`${currMulti ? `${currMulti}` : "Multi"} (${
-                    subArray?.length
-                  })`}
+                  {`${currMulti ? `${currMulti}` : "Multi"}`}
                 </div>
               </a>
             </div>
-            <div ref={pillsRef} className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none">
+            <div
+              ref={pillsRef}
+              className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none"
+            >
               {subArray.map((s) => (
                 <div
                   onClick={(e) => {
@@ -288,10 +295,15 @@ const SubredditBanner = ({ subreddits }) => {
                 >
                   <a href={`${s}`}>
                     <div className="flex items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
-                      
-
                       <h1 className="">{s}</h1>
-                      <button onClick={e => {e.stopPropagation(); e.preventDefault(); removeSub(s)}} className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          removeSub(s);
+                        }}
+                        className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1"
+                      >
                         <AiOutlinePlus className="flex-none w-4 h-4 rotate-45 " />
                       </button>
                     </div>

@@ -39,10 +39,11 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       sub?.data?.display_name &&
       !(sub?.data?.subreddits?.length > 0)
     ) {
-      console.log(sub?.data?.display_name);
+      setThumbURL("");
+      //console.log(sub?.data?.display_name);
       //findSubInfo(sub);
       //causing alot of extra api calls, not doing this for now
-    }
+    } else setThumbURL("");
     if (sub?.data) {
       setLoaded(true);
     }
