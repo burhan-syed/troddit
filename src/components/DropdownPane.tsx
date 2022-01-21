@@ -144,22 +144,28 @@ const DropdownPane = ({ hide }) => {
                 </div>
               )}
             <Link href="/" passHref>
-              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
-                <AiOutlineHome className="w-6 h-6" />
-                <h1 className="">Home</h1>
-              </div>
+              <a>
+                <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
+                  <AiOutlineHome className="w-6 h-6" />
+                  <h1 className="">Home</h1>
+                </div>
+              </a>
             </Link>
             <Link href="/r/popular" passHref>
-              <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
-                <BiRightTopArrowCircle className="w-6 h-6" />
-                <h1>Popular</h1>
-              </div>
+              <a>
+                <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
+                  <BiRightTopArrowCircle className="w-6 h-6" />
+                  <h1>Popular</h1>
+                </div>
+              </a>
             </Link>
             <Link href="/r/all" passHref>
-              <div className="flex flex-row items-center  py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
-                <CgLivePhoto className="w-6 h-6" />
-                <h1>All</h1>
-              </div>
+              <a>
+                <div className="flex flex-row items-center  py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
+                  <CgLivePhoto className="w-6 h-6" />
+                  <h1>All</h1>
+                </div>
+              </a>
             </Link>
           </div>
 

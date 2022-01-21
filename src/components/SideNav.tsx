@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 
 const SideNav = ({ visible, toggle }) => {
   const [session, loading] = useSession();
+  const [vis, setVis] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const handleTouchStart = (e) => {
@@ -28,10 +29,12 @@ const SideNav = ({ visible, toggle }) => {
   //prevent scrolling on main body when open
   useEffect(() => {
     if (visible) {
+      setVis(true);
       const width = document.body.clientWidth;
       document.body.style.overflow = "hidden";
       document.body.style.width = `${width}px`;
     } else {
+      setVis(false);
       document.body.style.overflow = "visible";
       document.body.style.width = `auto`;
     }
@@ -81,7 +84,7 @@ const SideNav = ({ visible, toggle }) => {
               </div>
 
               <div className="h-1/2">
-                <SideDropDown />
+                <SideDropDown visible={vis} />
               </div>
               <div className="flex-none px-2 h-14">
                 <Search id={"Subreddit search side nav"} />
@@ -90,7 +93,10 @@ const SideNav = ({ visible, toggle }) => {
           </nav>
           <div
             className="w-1/6 bg-gray-800 opacity-30"
-            onClick={() => toggle()}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggle();
+            }}
           ></div>
         </div>
       </div>
