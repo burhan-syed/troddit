@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePlausible } from "next-plausible";
 import { loadSubredditInfo } from "../RedditAPI";
 import { useSession } from "next-auth/client";
+import Link from "next/link";
 
 const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const [session, loading] = useSession();
@@ -65,62 +66,85 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
         `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`
       );
     } else {
-      let suggestions = "";
+      let suggestions = combineMulti(sub.data.subreddits);
       plausible("goToMulti");
-      for (let s of sub.data.subreddits) {
-        suggestions.length === 0
-          ? (suggestions = s.name)
-          : (suggestions = suggestions + "+" + s.name);
-      }
+      // for (let s of sub.data.subreddits) {
+      //   suggestions.length === 0
+      //     ? (suggestions = s.name)
+      //     : (suggestions = suggestions + "+" + s.name);
+      // }
       goToSub(e, suggestions);
     }
+  };
+  const combineMulti = (subs) => {
+    let suggestions = "";
+    for (let s of subs) {
+      suggestions?.length === 0
+        ? (suggestions = s.name)
+        : (suggestions = suggestions + "+" + s.name);
+    }
+    return suggestions;
   };
 
   const goTo = (e) => {
     isMulti ? goToMulti(e) : goToSub(e, sub.data.display_name);
   };
 
+  const Line = (
+    <div
+      className="flex flex-row items-center text-sm text-center cursor-pointer"
+      onClick={(e) => !preventNav && goTo(e)}
+    >
+      {/* Image */}
+      <div className="flex flex-row items-center flex-none w-6 h-6 ml-1 ">
+        {thumbURL?.includes("https://") ? (
+          <Image
+            src={thumbURL}
+            alt="sub"
+            height={sub.data?.icon_size?.[0] ?? 256}
+            width={sub.data?.icon_size?.[1] ?? 256}
+            unoptimized={true}
+            objectFit="cover"
+            className={
+              (isMulti ? "rounded" : "rounded-full") + " flex-none border "
+            }
+          />
+        ) : (
+          loaded && (
+            <div
+              className={
+                (isMulti ? "rounded bg-red-400" : "rounded-full bg-blue-700") +
+                " w-6 h-6 text-center text-lightText"
+              }
+            >
+              {isUser ? "u/" : isMulti ? "m" : "r/"}
+            </div>
+          )
+        )}
+      </div>
+      {/* Text */}
+      <h1 className="ml-2 truncate">
+        {sub.data?.display_name_prefixed ?? sub.data?.display_name}
+        {isUser && router?.query?.slug?.[0].toString()}
+      </h1>
+    </div>
+  );
+
   return (
     <div>
-      <div
-        className="flex flex-row items-center text-sm text-center cursor-pointer"
-        onClick={(e) => !preventNav && goTo(e)}
-      >
-        {/* Image */}
-        <div className="flex flex-row items-center flex-none w-6 h-6 ml-1 ">
-          {thumbURL?.includes("https://") ? (
-            <Image
-              src={thumbURL}
-              alt="sub"
-              height={sub.data?.icon_size?.[0] ?? 256}
-              width={sub.data?.icon_size?.[1] ?? 256}
-              unoptimized={true}
-              objectFit="cover"
-              className={
-                (isMulti ? "rounded" : "rounded-full") + " flex-none border "
-              }
-            />
-          ) : (
-            loaded && (
-              <div
-                className={
-                  (isMulti
-                    ? "rounded bg-red-400"
-                    : "rounded-full bg-blue-700") +
-                  " w-6 h-6 text-center text-lightText"
-                }
-              >
-                {isUser ? "u/" : isMulti ? "m" : "r/"}
-              </div>
-            )
-          )}
-        </div>
-        {/* Text */}
-        <h1 className="ml-2 truncate">
-          {sub.data?.display_name_prefixed ?? sub.data?.display_name}
-          {isUser && router?.query?.slug?.[0].toString()}
-        </h1>
-      </div>
+      {isMulti ? (
+        <>{Line}</>
+      ) : (
+        <Link href={`/r/${sub?.data?.display_name}`}>
+          <a
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            {Line}
+          </a>
+        </Link>
+      )}
     </div>
   );
 };

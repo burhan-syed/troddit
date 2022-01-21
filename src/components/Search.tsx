@@ -251,61 +251,72 @@ const Search = ({ id }) => {
       <div className="select-none ">
         {/* <Link href={`r/${suggestion?.data?.display_name.replace('/r','')}`}>
           <a> */}
-        <div
-          // onClick={(e) =>}
-          className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-        >
-          <div className="ml-2">
-            {suggestion?.data?.icon_image?.length > 1 ||
-            suggestion?.data?.icon_img?.length > 1 ||
-            suggestion?.data?.community_icon?.length > 1 ? (
-              <div className="relative w-6 h-6 rounded-full">
-                <Image
-                  src={
-                    suggestion?.data?.community_icon?.length > 1
-                      ? suggestion?.data?.community_icon.replaceAll("amp;", "")
-                      : suggestion?.data?.icon_img?.length > 1
-                      ? suggestion?.data?.icon_img.replaceAll("amp;", "")
-                      : suggestion?.data?.icon_image?.length > 1
-                      ? suggestion?.data?.icon_image.replaceAll("amp;", "")
-                      : "https://styles.redditmedia.com/t5_38jf0/styles/communityIcon_9o27r8mvttb51.png?width=256&s=58e6c9e7f7b36126893dbecb474d234de0ab7f5c"
-                  }
-                  alt="r"
-                  layout="fill"
-                  className="rounded-full"
-                  unoptimized={true}
-                ></Image>
-              </div>
-            ) : (
-              <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
-                r/
-              </div>
-            )}
-            {/* <p>1:{suggestion?.data?.icon_image?.length}</p>
+        <Link href={`/r/${suggestion?.data?.display_name}`}>
+          <a
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <div
+              // onClick={(e) =>}
+              className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+            >
+              <div className="ml-2">
+                {suggestion?.data?.icon_image?.length > 1 ||
+                suggestion?.data?.icon_img?.length > 1 ||
+                suggestion?.data?.community_icon?.length > 1 ? (
+                  <div className="relative w-6 h-6 rounded-full">
+                    <Image
+                      src={
+                        suggestion?.data?.community_icon?.length > 1
+                          ? suggestion?.data?.community_icon.replaceAll(
+                              "amp;",
+                              ""
+                            )
+                          : suggestion?.data?.icon_img?.length > 1
+                          ? suggestion?.data?.icon_img.replaceAll("amp;", "")
+                          : suggestion?.data?.icon_image?.length > 1
+                          ? suggestion?.data?.icon_image.replaceAll("amp;", "")
+                          : "https://styles.redditmedia.com/t5_38jf0/styles/communityIcon_9o27r8mvttb51.png?width=256&s=58e6c9e7f7b36126893dbecb474d234de0ab7f5c"
+                      }
+                      alt="r"
+                      layout="fill"
+                      className="rounded-full"
+                      unoptimized={true}
+                    ></Image>
+                  </div>
+                ) : (
+                  <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                    r/
+                  </div>
+                )}
+                {/* <p>1:{suggestion?.data?.icon_image?.length}</p>
                 <p>2:{suggestion?.data?.icon_img?.length}</p>
                 <p>3:{suggestion?.data?.community_icon?.length}</p> */}
-          </div>
-          <div className="flex flex-col ml-4">
-            <div>{suggestion?.data?.display_name_prefixed}</div>
-            <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
-              {suggestion?.data?.subscribers
-                ? suggestion.data.subscribers.toLocaleString("en-US") +
-                  " followers "
-                : "?? followers "}
-              {suggestion?.data?.over18 && (
-                <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                  nsfw
-                </span>
-              )}
+              </div>
+              <div className="flex flex-col ml-4">
+                <div>{suggestion?.data?.display_name_prefixed}</div>
+                <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                  {suggestion?.data?.subscribers
+                    ? suggestion.data.subscribers.toLocaleString("en-US") +
+                      " followers "
+                    : "?? followers "}
+                  {suggestion?.data?.over18 && (
+                    <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                      nsfw
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div
+                className="p-2 ml-auto border rounded-md dark:text-lightText dark:hover:ring-2 hover:bg-white dark:hover:bg-darkBorderHighlight hover:ring-1"
+                onClick={(e) => addSub(e, suggestion?.data?.display_name)}
+              >
+                <AiOutlinePlus className="" />
+              </div>
             </div>
-          </div>
-          <div
-            className="p-2 ml-auto border rounded-md dark:text-lightText dark:hover:ring-2 hover:bg-white dark:hover:bg-darkBorderHighlight hover:ring-1"
-            onClick={(e) => addSub(e, suggestion?.data?.display_name)}
-          >
-            <AiOutlinePlus className="" />
-          </div>
-        </div>
+          </a>
+        </Link>
         {/* </a>
         </Link> */}
 

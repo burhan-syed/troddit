@@ -85,11 +85,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
     if (!session && !loading) {
       addToLocalMulti(multi, subInfo?.display_name);
     } else if (session) {
-      addToRedditMulti(
-        multi,
-        session?.user?.name,
-        subInfo?.display_name
-      );
+      addToRedditMulti(multi, session?.user?.name, subInfo?.display_name);
     }
   };
   const removeFromMulti = () => {
@@ -216,7 +212,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
                                   >
                                     {/* {multi.data.display_name.toUpperCase() !==
                                       currMulti.toUpperCase() && ( */}
-                                      {true && (
+                                    {true && (
                                       <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                                         <DropdownItem
                                           sub={multi}
@@ -244,7 +240,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
                           onClick={removeFromMulti}
                         >
                           <div className="flex flex-row justify-end text-right cursor-pointer select-none">
-                            {`Remove from ${currMulti}`}
+                            {`Remove from m/${currMulti}`}
                           </div>
                         </div>
                       )}

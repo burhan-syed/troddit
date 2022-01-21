@@ -17,8 +17,11 @@ import { useSession } from "next-auth/client";
 import { useScroll } from "../hooks/useScroll";
 
 import { usePlausible } from "next-plausible";
+import { useMainContext } from "../MainContext";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
+  const context: any = useMainContext();
+  const { setForceRefresh } = context;
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
   const session = useSession();
@@ -69,6 +72,10 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [router]);
 
+  const homeClick = () => {
+    router?.route === "/" && setForceRefresh((p) => p + 1);
+  };
+
   return (
     <>
       <header
@@ -88,9 +95,14 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           />
           <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
             <Link href="/" passHref>
-              <h1 className="ml-2 text-2xl align-middle cursor-pointer select-none">
-                {"troddit"}
-              </h1>
+              <a>
+                <h1
+                  className="ml-2 text-2xl align-middle cursor-pointer select-none"
+                  onClick={homeClick}
+                >
+                  {"troddit"}
+                </h1>
+              </a>
             </Link>
 
             <div

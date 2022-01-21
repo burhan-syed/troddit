@@ -22,6 +22,7 @@ export const MainProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
+  const [forceRefresh, setForceRefresh] = useState(0);
   const updateLikes = (i, like) => {
     let p = posts;
     if (p?.[i]?.data) {
@@ -153,6 +154,8 @@ export const MainProvider = ({ children }) => {
         token,
         setToken,
         updateLikes,
+        forceRefresh,
+        setForceRefresh,
       }}
     >
       {children}

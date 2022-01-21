@@ -181,8 +181,11 @@ const SubredditBanner = ({ subreddits }) => {
           ></div>
           <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
             <div
-              className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full border-lightBorder bg-lightPost dark:bg-trueGray-900"
+              className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full cursor-pointer border-lightBorder bg-lightPost dark:bg-trueGray-900"
               style={{ backgroundColor: currSubInfo?.primary_color }}
+              onClick={() => {
+                context.setForceRefresh((p) => p + 1);
+              }}
             >
               {thumbURL?.includes("https") ? (
                 <Image

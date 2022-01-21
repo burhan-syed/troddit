@@ -111,7 +111,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setError(false);
       setLoading(true);
     };
-  }, [subreddits, sort, range, sessloading]);
+  }, [subreddits, sort, range, sessloading, context.forceRefresh]);
 
   const fetchFront = async () => {
     let data: any = await loadFront(
