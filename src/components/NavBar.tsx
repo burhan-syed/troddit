@@ -59,16 +59,18 @@ const NavBar = ({ toggleSideNav = 0 }) => {
 
   useEffect(() => {
     //console.log("NAVBAR", router.query);
-    setHidden(false);
+    hidden && setHidden(false);
 
     if (
       router.query?.slug?.[1] === "comments" ||
       router.pathname.includes("/about")
     ) {
       setallowHide(false);
+    } else {
+      setallowHide(true);
     }
     return () => {
-      setallowHide(true);
+      //setallowHide(true);
     };
   }, [router]);
 

@@ -21,7 +21,7 @@ const getToken = async () => {
       return {
         accessToken: tokendata.data.accessToken,
         refreshToken: tokendata.data.refreshToken,
-        expires: tokendata.data.expires
+        expires: tokendata.data.expires,
         // username: tokendata.data.username,
       };
     } catch (err) {
@@ -42,12 +42,15 @@ export const loadFront = async (
   localSubs?: []
 ) => {
   //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
-  let accessToken = token?.accessToken; 
+  let accessToken = token?.accessToken;
   let returnToken = token;
-  if (loggedIn && (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)){
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
     returnToken = await getToken();
-     accessToken = await returnToken?.accessToken;
-  } 
+    accessToken = await returnToken?.accessToken;
+  }
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
@@ -69,14 +72,22 @@ export const loadFront = async (
         after: res.data.after,
         before: res.data.before,
         children: res.data.children,
-        token: returnToken
+        token: returnToken,
       };
     } catch (err) {
       //console.log(err);
     }
   } else {
     if (localSubs?.length > 0) {
-      return loadSubreddits(loggedIn, token, localSubs.join("+"), sort, range, after, count);
+      return loadSubreddits(
+        loggedIn,
+        token,
+        localSubs.join("+"),
+        sort,
+        range,
+        after,
+        count
+      );
     } else {
       try {
         //console.log("NO LOGIN");
@@ -95,7 +106,7 @@ export const loadFront = async (
           after: res.data.after,
           before: res.data.before,
           children: res.data.children,
-          token: token
+          token: token,
         };
       } catch (err) {
         //console.log(err);
@@ -105,7 +116,7 @@ export const loadFront = async (
 };
 
 export const loadSubreddits = async (
-  loggedIn=false,
+  loggedIn = false,
   token,
   subreddits: string,
   sort: string,
@@ -113,12 +124,15 @@ export const loadSubreddits = async (
   after: string = "",
   count: number = 0
 ) => {
-  let accessToken = token?.accessToken; 
+  let accessToken = token?.accessToken;
   let returnToken = token;
-  if (loggedIn && (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)){
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
     returnToken = await getToken();
-     accessToken = await returnToken?.accessToken;
-  } 
+    accessToken = await returnToken?.accessToken;
+  }
 
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
@@ -216,6 +230,38 @@ export const loadSubFlairs = async (subreddit) => {
       console.log(err);
       return false;
     }
+  }
+};
+export const loadSubFlairPosts = async (
+  subreddit,
+  flair: string,
+  sort = "new",
+  range = ""
+) => {
+  let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
+  //
+  try {
+    const res = await axios.get(
+      `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}`,
+      {
+        params: {
+          raw_json: 1,
+          // q: f,
+          // sort: sort,
+          // t: range,
+          // restrict_sr: "on",
+          // include_over_18: "on",
+        },
+      }
+    );
+    let data = await res.data;
+    return {
+      after: data?.data?.after,
+      before: data?.data?.before,
+      children: data?.data?.children,
+    };
+  } catch (err) {
+    console.log(err);
   }
 };
 //oauth request

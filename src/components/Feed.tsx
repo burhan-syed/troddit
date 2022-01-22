@@ -8,6 +8,7 @@ import {
   loadUserPosts,
   loadSubInfo,
   getUserMultiPosts,
+  loadSubFlairPosts,
 } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -19,9 +20,15 @@ import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
 
-const Feed = ({ query, isUser = false, isMulti = false }) => {
+const Feed = ({
+  query,
+  isUser = false,
+  isMulti = false,
+  isSubFlair = false,
+}) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
+  const [nothingHere, setNothingHere] = useState(false);
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
   const context: any = useMainContext();
@@ -110,6 +117,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setFetchPost(false);
       setError(false);
       setLoading(true);
+      setNothingHere(false);
     };
   }, [subreddits, sort, range, sessloading, context.forceRefresh]);
 
@@ -158,6 +166,13 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
           query?.t ?? ""
         );
       }
+    } else if (isSubFlair) {
+      data = await loadSubFlairPosts(
+        query.slug[0],
+        query?.q,
+        query?.sort,
+        query?.t
+      );
     } else {
       let subs = query?.slug?.[0]
         .split(" ")
@@ -183,11 +198,20 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
       setPosts(data.children);
       setNumPosts((n) => n + data.children.length);
       setLoading(false);
+      data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
     } else {
       setLoading(false);
       setError(true);
     }
   };
+
+  if (nothingHere) {
+    return (
+      <div className="text-center">
+        {"there doesn't seem to be anything here"}
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -241,6 +265,7 @@ const Feed = ({ query, isUser = false, isMulti = false }) => {
             isUser={isUser}
             isMulti={isMulti}
             session={session}
+            isSubFlair={isSubFlair}
           />
         </div>
       </div>

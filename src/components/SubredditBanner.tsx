@@ -180,35 +180,43 @@ const SubredditBanner = ({ subreddits }) => {
             style={banner}
           ></div>
           <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
-            <div
-              className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full cursor-pointer border-lightBorder bg-lightPost dark:bg-trueGray-900"
-              style={{ backgroundColor: currSubInfo?.primary_color }}
-              onClick={() => {
-                context.setForceRefresh((p) => p + 1);
-              }}
-            >
-              {thumbURL?.includes("https") ? (
-                <Image
-                  src={thumbURL}
-                  alt=""
-                  height={currSubInfo?.icon_size?.[0] ?? 256}
-                  width={currSubInfo?.icon_size?.[1] ?? 256}
-                  unoptimized={true}
-                  objectFit="cover"
-                  className={"rounded-full " + (hideNSFW && " blur-xl ")}
-                />
-              ) : (
+            <Link href={currSubInfo?.display_name ?? "/"}>
+              <a>
                 <div
-                  className="rounded-full dark:bg-trueGray-900 bg-lightPost"
+                  className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full cursor-pointer border-lightBorder bg-lightPost dark:bg-trueGray-900"
                   style={{ backgroundColor: currSubInfo?.primary_color }}
-                ></div>
-              )}
-            </div>
+                  onClick={() => {
+                    context.setForceRefresh((p) => p + 1);
+                  }}
+                >
+                  {thumbURL?.includes("https") ? (
+                    <Image
+                      src={thumbURL}
+                      alt=""
+                      height={currSubInfo?.icon_size?.[0] ?? 256}
+                      width={currSubInfo?.icon_size?.[1] ?? 256}
+                      unoptimized={true}
+                      objectFit="cover"
+                      className={"rounded-full " + (hideNSFW && " blur-xl ")}
+                    />
+                  ) : (
+                    <div
+                      className="rounded-full dark:bg-trueGray-900 bg-lightPost"
+                      style={{ backgroundColor: currSubInfo?.primary_color }}
+                    ></div>
+                  )}
+                </div>
+              </a>
+            </Link>
             <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
               {loaded ? (
                 <>
                   <h1 className="flex items-start text-4xl">
-                    {currSubInfo?.display_name_prefixed}
+                    <Link href={currSubInfo?.display_name ?? "/"}>
+                      <a onClick={() => context.setForceRefresh((p) => p + 1)}>
+                        {currSubInfo?.display_name_prefixed}
+                      </a>
+                    </Link>
                     <a
                       href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`}
                       target={"_blank"}

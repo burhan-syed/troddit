@@ -38,7 +38,12 @@ const Sort = ({ query }) => {
         ) : (
           <div className="pt-16"></div>
         )}
-        <Feed query={query} />
+        <Feed
+          query={query}
+          isSubFlair={
+            query?.slug?.[1] === "search" && query?.q?.includes("flair")
+          }
+        />
       </main>
     </div>
   );

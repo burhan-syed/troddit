@@ -50,20 +50,21 @@ const Card1 = ({
           {/* <p>{post?.url ?? "ERR"}</p> */}
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1
-                  className={
-                    (post?.distinguished == "moderator" &&
-                      " text-green-500 dark:text-green-700") +
-                    "  text-lg font-semibold  leading-none cursor-pointer"
-                  }
-                >
+              <h1
+                className={
+                  (post?.distinguished == "moderator" &&
+                    " text-green-500 dark:text-green-700") +
+                  "  text-lg font-semibold  leading-none cursor-pointer"
+                }
+              >
+                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                   {post?.title ?? ""}
-                  <span className="ml-1 text-xs">
-                    <TitleFlair post={post} />
-                  </span>
-                </h1>
-              </a>
+                </a>
+
+                <span className="ml-1 text-xs">
+                  <TitleFlair post={post} />
+                </span>
+              </h1>
 
               <div className="flex flex-row py-1 pb-1 text-xs truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>

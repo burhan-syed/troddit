@@ -99,25 +99,26 @@ const Card1 = ({
                   >
                     {`${post?.title}` ?? ""}
                   </h1>
-                  <div className="pb-1 text-xs">
-                    <TitleFlair post={post} />
-                  </div>
                 </a>
+                <div className="pb-1 text-xs">
+                  <TitleFlair post={post} />
+                </div>
               </div>
             </>
           )}
 
           {/* Media Only */}
           {context.mediaOnly ? (
-            <div className={!context.mediaOnly && "pt-1 pb-1.5"}>
+            <div className={!context.mediaOnly ? "pt-1 pb-1.5" : undefined}>
               {hasMedia && (
                 <div
                   className={
-                    "relative group " + (hideNSFW && " overflow-hidden")
+                    "relative group " +
+                    (hideNSFW ? " overflow-hidden" : undefined)
                   }
                 >
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                    <div className={hideNSFW && " blur-3xl"}>
+                    <div className={hideNSFW ? " blur-3xl" : undefined}>
                       <Media post={post} allowIFrame={allowIFrame} />
                     </div>
                   </a>
@@ -189,11 +190,11 @@ const Card1 = ({
                         >
                           <h1 className="py-1 text-lg font-medium leading-none cursor-pointer">
                             {`${post?.title ?? ""}`}
-                            <span className="text-xs">
-                              <TitleFlair post={post} />
-                            </span>
                           </h1>
                         </a>
+                        <span className="text-xs">
+                          <TitleFlair post={post} />
+                        </span>
                         <div className="flex flex-row justify-between text-sm align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
                             <p className="">{score + " points"}</p>
@@ -219,12 +220,16 @@ const Card1 = ({
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
               <div
                 className={
-                  (!context.mediaOnly && "pt-1 pb-1.5 ") +
-                  (hideNSFW && "relative overflow-hidden")
+                  (!context.mediaOnly ? "pt-1 pb-1.5 " : undefined) +
+                  (hideNSFW ? "relative overflow-hidden" : undefined)
                 }
               >
                 {/* {!hideNSFW ? ( */}
-                <div className={"relative group " + (hideNSFW && " blur-3xl")}>
+                <div
+                  className={
+                    "relative group " + (hideNSFW ? " blur-3xl" : undefined)
+                  }
+                >
                   <Media
                     post={post}
                     forceMute={forceMute}

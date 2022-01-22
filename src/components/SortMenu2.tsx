@@ -18,6 +18,7 @@ const SortMenu2 = ({ hide = false }) => {
   const [range, setRange] = useState("");
   const [isUser, setIsUser] = useState(false);
   const [isUserMulti, setIsUserMulti] = useState(false);
+  const [isSubFlair, setIsSubFlair] = useState(false);
   const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
 
@@ -26,14 +27,23 @@ const SortMenu2 = ({ hide = false }) => {
   }, [router.query]);
 
   useEffect(() => {
-    if (router.pathname.includes("/u/")) {
+    if (router.pathname.includes("/r/") && router.query?.q?.includes("flair")) {
+      setIsSubFlair(true);
+      setSort(router.query?.sort);
+      setRange(router.query?.t?.toString());
+    } else if (router.pathname.includes("/u/")) {
+      setIsSubFlair(false);
       if (router.query?.slug?.[1] === "m") {
         setIsUserMulti(true);
         router.query?.slug?.[3] && setSort(router.query.slug[3]);
       } else {
+        setIsUserMulti(false);
         setIsUser(true);
       }
     } else {
+      setIsSubFlair(false);
+      setIsUserMulti(false);
+      setIsUser(false);
       if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
       if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
       if (router?.query?.t ?? false) {
@@ -52,6 +62,16 @@ const SortMenu2 = ({ hide = false }) => {
     setSort(s);
     if (s !== "top") {
       //console.log(`r/${router?.query ?? "popular"}/${s}`);
+      // searching with this route requires a range for all sort types..
+      // if (isSubFlair) {
+      //   router.push(
+      //     `/r/${
+      //       router?.query?.slug?.[0]
+      //     }/search?sort=${s}&q=${encodeURIComponent(
+      //       router?.query?.q?.toString()
+      //     )}`
+      //   );
+      // } else
       if (isUserMulti) {
         router.push(
           `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`
@@ -70,7 +90,7 @@ const SortMenu2 = ({ hide = false }) => {
     }
   };
 
-  const updateRange = (e, r) => {
+  const updateRange = (e, r, s = "top") => {
     e.preventDefault();
     console.log(router);
     setRange(r);
@@ -81,6 +101,14 @@ const SortMenu2 = ({ hide = false }) => {
           t: encodeURI(r),
         },
       });
+    } else if (isSubFlair) {
+      router.push(
+        `/r/${
+          router?.query?.slug?.[0]
+        }/search?sort=${s}&t=${r}&q=${encodeURIComponent(
+          router?.query?.q?.toString()
+        )}`
+      );
     } else if (isUserMulti) {
       router.push(
         `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`
@@ -177,7 +205,7 @@ const SortMenu2 = ({ hide = false }) => {
               ) : (
                 ""
               )}
-              {sort === "rising" ? (
+              {sort === "rising" || sort === "relevance" ? (
                 <div className="flex flex-row items-baseline justify-between">
                   <IoMdTrendingUp className="flex-none w-6 h-6 mr-1" />
                 </div>
@@ -204,7 +232,7 @@ const SortMenu2 = ({ hide = false }) => {
             >
               <div className="py-1">
                 {/* Best */}
-                {!isUser && (
+                {!isUser && !isSubFlair && (
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -219,30 +247,40 @@ const SortMenu2 = ({ hide = false }) => {
                       >
                         <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                           <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
-                          <span> Best </span>
+                          <span
+                            className={sort === "best" ? " font-bold " : ""}
+                          >
+                            Best
+                          </span>
                         </div>
                       </div>
                     )}
                   </Menu.Item>
                 )}
                 {/* Hot */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onTouchStart={(e) => setTopTouch(false)}
-                      onClick={(e) => updateSort(e, "hot")}
-                      className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                        "block px-4 py-1 text-sm"
-                      )}
-                    >
-                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
-                        <AiOutlineFire className="flex-none w-5 h-5" />{" "}
-                        <span> Hot </span>
+                {!isSubFlair && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onTouchStart={(e) => setTopTouch(false)}
+                        onClick={(e) => updateSort(e, "hot")}
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                          <AiOutlineFire className="flex-none w-5 h-5" />
+                          <span className={sort === "hot" ? " font-bold " : ""}>
+                            Hot
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                    )}
+                  </Menu.Item>
+                )}
                 {/* Top */}
                 <Menu.Item>
                   {({ active }) => (
@@ -260,14 +298,20 @@ const SortMenu2 = ({ hide = false }) => {
                         )}
                       >
                         <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
-                          <RiBarChart2Line className="flex-none w-5 h-5" />{" "}
-                          <span> Top </span>{" "}
+                          <RiBarChart2Line className="flex-none w-5 h-5" />
+                          <span className={sort === "top" ? " font-bold " : ""}>
+                            Top
+                          </span>
                         </div>
                       </div>
                       <ul
                         className={
                           (active || topTouch ? "block " : "hidden ") +
-                          (!isUser ? "top-24 " : "top-12 ") +
+                          (isUser
+                            ? "top-12 "
+                            : isSubFlair
+                            ? "top-0 "
+                            : "top-24 ") +
                           "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                         }
                       >
@@ -275,7 +319,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "hour" ? `font-bold` : "") +
+                                (range === "hour" && sort === "top"
+                                  ? `font-bold`
+                                  : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -289,7 +335,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "today" ? `font-bold` : "") +
+                                (range === "today" && sort === "top"
+                                  ? `font-bold`
+                                  : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -303,7 +351,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "week" ? `font-bold` : "") +
+                                (range === "week" && sort === "top"
+                                  ? `font-bold`
+                                  : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -317,7 +367,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "month" ? `font-bold` : "") +
+                                (range === "month" && sort === "top"
+                                  ? `font-bold`
+                                  : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -331,7 +383,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "year" ? `font-bold` : "") +
+                                (range === "year" && sort === "top"
+                                  ? `font-bold`
+                                  : "") +
                                 " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -345,7 +399,9 @@ const SortMenu2 = ({ hide = false }) => {
                           {({ active }) => (
                             <div
                               className={
-                                (range === "all" ? `font-bold ` : "") +
+                                (range === "all" && sort === "top"
+                                  ? `font-bold `
+                                  : "") +
                                 " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                               }
                               onTouchStart={(e) => setTopTouch(false)}
@@ -362,23 +418,286 @@ const SortMenu2 = ({ hide = false }) => {
                 {/* New */}
                 <Menu.Item>
                   {({ active }) => (
-                    <div
-                      onTouchStart={(e) => setTopTouch(false)}
-                      onClick={(e) => updateSort(e, "new")}
-                      className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                        "block px-4 py-1 text-sm"
-                      )}
-                    >
-                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
-                        <BsCircle className="flex-none w-5 h-5" />{" "}
-                        <span> New </span>
+                    <div className="group">
+                      <div
+                        onTouchStart={(e) => setTopTouch(false)}
+                        onClick={(e) =>
+                          isSubFlair
+                            ? updateRange(e, "all", "new")
+                            : updateSort(e, "new")
+                        }
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                          <BsCircle className="flex-none w-5 h-5" />{" "}
+                          <span className={sort === "new" ? " font-bold " : ""}>
+                            New
+                          </span>
+                        </div>
                       </div>
+                      {isSubFlair && (
+                        <ul
+                          className={
+                            (active || topTouch ? "block " : "hidden ") +
+                            (isSubFlair && "top-12 ") +
+                            "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                          }
+                        >
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "hour" && sort === "new"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "hour", "new")}
+                              >
+                                Now
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "today" && sort === "new"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "today", "new")}
+                              >
+                                Today
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "week" && sort === "new"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "week", "new")}
+                              >
+                                Week
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "month" && sort === "new"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "month", "new")}
+                              >
+                                Month
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "year" && sort === "new"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "year", "new")}
+                              >
+                                Year
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className={
+                                  (range === "all" && sort === "new"
+                                    ? `font-bold `
+                                    : "") +
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onTouchStart={(e) => setTopTouch(false)}
+                                onClick={(e) => updateRange(e, "all", "new")}
+                              >
+                                All
+                              </div>
+                            )}
+                          </Menu.Item>
+                        </ul>
+                      )}
                     </div>
                   )}
                 </Menu.Item>
+                {isSubFlair && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div className="group">
+                        <div
+                          onTouchStart={(e) => setTopTouch(false)}
+                          onClick={(e) => updateRange(e, "all", "relevance")}
+                          className={classNames(
+                            active
+                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              : "",
+                            "block px-4 py-1 text-sm"
+                          )}
+                        >
+                          <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                            <IoMdTrendingUp className="flex-none w-5 h-5" />
+                            <span
+                              className={
+                                sort === "relevance" ? " font-bold " : ""
+                              }
+                            >
+                              Relevance
+                            </span>
+                          </div>
+                        </div>
+                        {isSubFlair && (
+                          <ul
+                            className={
+                              (active || topTouch ? "block " : "hidden ") +
+                              (isSubFlair && "top-24 ") +
+                              "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                            }
+                          >
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "hour" && sort === "relevance"
+                                      ? `font-bold`
+                                      : "") +
+                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "hour", "relevance")
+                                  }
+                                >
+                                  Now
+                                </div>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "today" && sort === "relevance"
+                                      ? `font-bold`
+                                      : "") +
+                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "today", "relevance")
+                                  }
+                                >
+                                  Today
+                                </div>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "week" && sort === "relevance"
+                                      ? `font-bold`
+                                      : "") +
+                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "week", "relevance")
+                                  }
+                                >
+                                  Week
+                                </div>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "month" && sort === "relevance"
+                                      ? `font-bold`
+                                      : "") +
+                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "month", "relevance")
+                                  }
+                                >
+                                  Month
+                                </div>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "year" && sort === "relevance"
+                                      ? `font-bold`
+                                      : "") +
+                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "year", "relevance")
+                                  }
+                                >
+                                  Year
+                                </div>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  className={
+                                    (range === "all" && sort === "relevance"
+                                      ? `font-bold `
+                                      : "") +
+                                    " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  }
+                                  onTouchStart={(e) => setTopTouch(false)}
+                                  onClick={(e) =>
+                                    updateRange(e, "all", "relevance")
+                                  }
+                                >
+                                  All
+                                </div>
+                              )}
+                            </Menu.Item>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </Menu.Item>
+                )}
                 {/* Rising */}
-                {!isUser && (
+                {!isUser && !isSubFlair && (
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -393,7 +712,11 @@ const SortMenu2 = ({ hide = false }) => {
                       >
                         <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
                           <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
-                          <span> Rising </span>
+                          <span
+                            className={sort === "rising" ? " font-bold " : ""}
+                          >
+                            Rising
+                          </span>
                         </div>
                       </div>
                     )}

@@ -21,6 +21,7 @@ import {
 import {
   getUserMultiPosts,
   loadFront,
+  loadSubFlairPosts,
   loadSubreddits,
   loadUserPosts,
 } from "../RedditAPI";
@@ -63,6 +64,7 @@ const MyMasonic = ({
   initAfter,
   isUser = false,
   isMulti = false,
+  isSubFlair = false,
   session = {},
 }) => {
   const context: any = useMainContext();
@@ -277,6 +279,13 @@ const MyMasonic = ({
           loadafter
         );
       }
+    } else if (isSubFlair) {
+      data = await loadSubFlairPosts(
+        query.slug[0],
+        query?.q,
+        query?.sort,
+        query?.t
+      );
     } else {
       let subs = query?.slug?.[0]
         .split(" ")
@@ -384,7 +393,7 @@ const MyMasonic = ({
             //height={windowHeight}
             // Forwards the ref to the masonry container element
 
-            columnGutter={cols == 1 ? 5 : 10}
+            columnGutter={cols == 1 ? 5 : cols < 4 ? 10 : 5}
             //columnWidth={(windowWidth*5/6 - 8*2) / 3}
             columnCount={cols}
             items={items}
