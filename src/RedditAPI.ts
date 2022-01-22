@@ -236,13 +236,14 @@ export const loadSubFlairPosts = async (
   subreddit,
   flair: string,
   sort = "new",
-  range = ""
+  range = "",
+  after = ""
 ) => {
   let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
   //
   try {
     const res = await axios.get(
-      `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}`,
+      `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`,
       {
         params: {
           raw_json: 1,

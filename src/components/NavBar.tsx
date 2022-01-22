@@ -38,29 +38,30 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [toggleSideNav]);
   useEffect(() => {
-    if (allowHide) {
+    if (allowHide && !context?.loading) {
       //console.log(scrollDirection, scrollY);
       if (scrollDirection === "down") {
         setHidden(false);
-      } else if (scrollY > 300) {
+      } else if (scrollY > 300 && scrollDirection === "up" && !hidden) {
         setHidden(true);
-      } else {
+      } else if (scrollY <= 300) {
         setHidden(false);
       }
+    } else {
+      hidden && setHidden(false);
     }
   }, [scrollDirection, allowHide, scrollY]);
 
   const forceShow = () => {
-    //console.log("forceshow");
     if (hidden) {
+      console.log("forceshow");
+
       setHidden(false);
     }
   };
 
   useEffect(() => {
-    //console.log("NAVBAR", router.query);
-    hidden && setHidden(false);
-
+    forceShow();
     if (
       router.query?.slug?.[1] === "comments" ||
       router.pathname.includes("/about")

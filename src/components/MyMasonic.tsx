@@ -284,7 +284,8 @@ const MyMasonic = ({
         query.slug[0],
         query?.q,
         query?.sort,
-        query?.t
+        query?.t,
+        loadafter
       );
     } else {
       let subs = query?.slug?.[0]

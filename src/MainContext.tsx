@@ -10,6 +10,7 @@ export const useMainContext = () => {
 
 export const MainProvider = ({ children }) => {
   const [nsfw, setNSFW] = useState("false");
+  const [loading, setLoading] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
   const [columns, setColumns] = useState(3);
@@ -156,6 +157,8 @@ export const MainProvider = ({ children }) => {
         updateLikes,
         forceRefresh,
         setForceRefresh,
+        loading,
+        setLoading,
       }}
     >
       {children}

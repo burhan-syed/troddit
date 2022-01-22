@@ -47,11 +47,16 @@ const Feed = ({
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
 
+  const updateLoading = (b) => {
+    setLoading(b);
+    context.setLoading(b);
+  };
+
   useEffect(() => {
     //console.log("query:", query);
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
-      setLoading(false);
+      updateLoading(false);
     } else if (query.frontsort) {
       if (
         query?.frontsort == "" ||
@@ -65,7 +70,7 @@ const Feed = ({
         setRange(query?.t ?? "");
       } else {
         setFetchPost(true);
-        setLoading(false);
+        updateLoading(false);
       }
       //fetchFront();
     } else if (query.slug) {
@@ -86,7 +91,7 @@ const Feed = ({
   useEffect(() => {
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
-      setLoading(false);
+      updateLoading(false);
     } else if (query.frontsort) {
       if (
         query?.frontsort == "" ||
@@ -116,8 +121,7 @@ const Feed = ({
       setNumPosts(0);
       setFetchPost(false);
       setError(false);
-      setLoading(true);
-      setNothingHere(false);
+      updateLoading(true);
     };
   }, [subreddits, sort, range, sessloading, context.forceRefresh]);
 
@@ -133,14 +137,14 @@ const Feed = ({
     );
     if (data?.children) {
       context.setToken(data?.token);
-      setLoading(false);
+      updateLoading(false);
 
       setNumPosts((n) => n + data.children.length);
       setAfter(data?.after);
       setPosts(data.children);
       return data.children;
     } else {
-      setLoading(false);
+      updateLoading(false);
       setError(true);
     }
   };
@@ -150,7 +154,7 @@ const Feed = ({
     let data: any;
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
-      setLoading(false);
+      updateLoading(false);
     } else if (isUser) {
       if (isMulti) {
         data = await getUserMultiPosts(
@@ -197,10 +201,10 @@ const Feed = ({
       setAfter(data?.after);
       setPosts(data.children);
       setNumPosts((n) => n + data.children.length);
-      setLoading(false);
+      updateLoading(false);
       data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
     } else {
-      setLoading(false);
+      updateLoading(false);
       setError(true);
     }
   };
