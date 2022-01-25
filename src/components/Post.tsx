@@ -12,7 +12,7 @@ import { useRouter } from "next/dist/client/router";
 import Media from "./Media";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/client";
-import { secondsToTime } from "../../lib/utils";
+import { findMediaInfo, secondsToTime } from "../../lib/utils";
 import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
 import Row1 from "./views/Row1";
@@ -21,6 +21,9 @@ import { usePlausible } from "next-plausible";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
+  const [loaded, setLoaded] = useState(false);
+  const [filtered, setFiltered] = useState(false);
+  const [postM, setPostM] = useState();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [score, setScore] = useState("");
   const [select, setSelect] = useState(false);
@@ -28,13 +31,18 @@ const Post = ({ post, postNum = 0 }) => {
   const router = useRouter();
   const [session, loading] = useSession();
   const [hasMedia, setHasMedia] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(false);
   //console.log(post);
   const plausible = usePlausible();
 
   useEffect(() => {
+    const getPostMedia = async() => {
+      let m = await findMediaInfo(post);
+      setPostM({...post, mediaInfo: m});
+      setLoaded(true);
+    }
+    getPostMedia();
     return () => {
-      setIsPortrait(false);
+     
     };
   }, [post]);
 
@@ -134,14 +142,15 @@ const Post = ({ post, postNum = 0 }) => {
     return () => {};
   }, [post, vote]);
 
-  return (
+  if (filtered || !loaded) return <></>
+  if (loaded) return (
     <div>
       {select && (
         <PostModal
           permalink={post?.permalink}
           setSelect={setSelect}
           returnRoute={returnRoute}
-          postData={post}
+          postData={postM}
           postNum={postNum}
         />
       )}
@@ -152,7 +161,7 @@ const Post = ({ post, postNum = 0 }) => {
         {/* <h1>{postNum}</h1> */}
         {context?.cardStyle === "row1" ? (
           <Row1
-            post={post}
+            post={postM}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}
@@ -163,7 +172,7 @@ const Post = ({ post, postNum = 0 }) => {
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
-            post={post}
+            post={postM}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}
@@ -174,7 +183,7 @@ const Post = ({ post, postNum = 0 }) => {
           />
         ) : (
           <Card1
-            post={post}
+            post={postM}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}

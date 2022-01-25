@@ -136,13 +136,8 @@ const Feed = ({
       context?.localSubs
     );
     if (data?.children) {
-      context.setToken(data?.token);
-      updateLoading(false);
-
-      setNumPosts((n) => n + data.children.length);
-      setAfter(data?.after);
-      setPosts(data.children);
-      return data.children;
+      await manageData(data);
+      
     } else {
       updateLoading(false);
       setError(true);
@@ -197,17 +192,26 @@ const Feed = ({
     }
     if (data?.children) {
       setIsSubreddit(true);
-      data?.token && context.setToken(data?.token);
-      setAfter(data?.after);
-      setPosts(data.children);
-      setNumPosts((n) => n + data.children.length);
-      updateLoading(false);
-      data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
+      await manageData(data);
     } else {
       updateLoading(false);
       setError(true);
     }
   };
+
+  const manageData = async(data) => {
+    data?.token && context.setToken(data?.token);
+    setAfter(data?.after);
+    // data.children.forEach(async(c) => {
+    //   let d = await findMediaInfo(c.data);
+    //   c.data.mediaInfo = d;
+    //   //console.log(c.data.mediaInfo);
+    // })
+    setPosts(data.children);
+    setNumPosts((n) => n + data.children.length);
+    updateLoading(false);
+    data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
+  }
 
   if (nothingHere) {
     return (

@@ -30,6 +30,7 @@ import Post from "./Post";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
 import { usePlausible } from "next-plausible";
+import { findMediaInfo } from "../../lib/utils";
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -321,6 +322,11 @@ const MyMasonic = ({
         //console.log('update prevAfter ', prevAfter.current);
         data?.token && context.setToken(data?.token);
         setAfter(data?.after);
+        // data.children.forEach(async(c) => {
+        //   let d = await findMediaInfo(c.data);
+        //   c.data.mediaInfo = d;
+        //   //console.log(c.data);
+        // })
         return { data: { posts: data?.children, after: data?.after } };
       } else {
         //console.log('reject');

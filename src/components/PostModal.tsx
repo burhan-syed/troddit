@@ -33,7 +33,6 @@ const PostModal = ({
   permalink,
   postData = {},
   postNum = 0,
-  portrait = false,
   direct = false,
 }) => {
   const router = useRouter();
@@ -91,20 +90,25 @@ const PostModal = ({
 
   useEffect(() => {
     const checkPortrait = async () => {
-      let check = await findMediaInfo(apost);
-      //console.log("check", check);
-      check && setUsePortrait(true);
+      if (apost?.mediaInfo?.isPortrait === true || apost?.mediaInfo?.isPortrait === false) {
+        setUsePortrait(apost?.mediaInfo?.isPortrait);
+      } else {
+        let check = await findMediaInfo(apost);
+        check?.isPortrait && setUsePortrait(true);
+      }
+
       setWait(false);
     };
     if (apost?.id) {
       //console.log(windowWidth, windowHeight);
       if (windowWidth > 1300) {
-        if (portrait) {
-          setUsePortrait(true);
-          setWait(false);
-        } else {
-          checkPortrait();
-        }
+        // if (portrait) {
+        //   setUsePortrait(true);
+        //   setWait(false);
+        // } else {
+        //   checkPortrait();
+        // }
+        checkPortrait();
       } else {
         setUsePortrait(false);
         setWait(false);
@@ -185,6 +189,8 @@ const PostModal = ({
       if (Object.keys(postData).length === 0) {
         //console.log("post", post);
         if (post?.id) {
+          let d = await findMediaInfo(post);
+          post.mediaInfo = d;
           setPost(post);
           setLoadingPost(false);
         } else {

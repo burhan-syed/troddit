@@ -54,7 +54,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
 
   const forceShow = () => {
     if (hidden) {
-      console.log("forceshow");
+      //console.log("forceshow");
 
       setHidden(false);
     }

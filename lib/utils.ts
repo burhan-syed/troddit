@@ -1,3 +1,4 @@
+const TWITCH_PARENT = "www.troddit.com";
 export const secondsToTime = (
   seconds,
   verbiage = [
@@ -24,34 +25,75 @@ export const secondsToTime = (
 };
 
 export const findMediaInfo = async (post) => {
-  let videoInfo = { url: "", height: 0, width: 0 };
-  let imageInfo = { url: "", height: 0, width: 0 };
-  let gallery = [];
-  let isPortrait = false;
+  let videoInfo;// = { url: "", height: 0, width: 0 };
+  let imageInfo;// = [{ url: "", height: 0, width: 0 }];
+  let iFrameHTML;
+  let gallery;// = [];
+  let isPortrait = undefined;
   let isImage = false;
+  let isGallery = false; 
   let isVideo = false;
-  const checkIfPortrait = async (post) => {
+  let isLink = false;
+  let isSelf = false; //self text post
+  let isTweet = false;
+  let isIframe = false;
+  
+  let dimensions = [-1,-1]; //x,y pixels
+
+
+  const loadInfo = async(post) => {
     let a = await findVideo(post);
-    //console.log(a);
     if (a) {
-      if (videoInfo.height > videoInfo.width) {
-        //setIsPortrait(true);
-        return true;
-      }
-    }
-    let b = await findImage(post);
-    //console.log(b);
-    if (b) {
-      if (imageInfo.height > imageInfo.width) {
-        //setIsPortrait(true);
-        return true;
-      } else if (gallery?.[0]?.height > gallery?.[0]?.width) {
-        return true;
-      }
+      isVideo = true;
+      dimensions[0] = videoInfo.width;
+      dimensions[1] = videoInfo.height;
     } else {
-      return false;
+      let b = await findImage(post);
+      if (b) {
+        isImage = true; 
+        if (gallery?.[0]?.height > 0){
+          //just setting dimensions to first gallery image for now
+          dimensions[0] = gallery[0].width; 
+          dimensions[1] = gallery[0].height;
+        } else if (imageInfo) {
+          //last item would be highest resolution
+          dimensions[0] = imageInfo[imageInfo.length-1].width;
+          dimensions[1] = imageInfo[imageInfo.length-1].height;
+        }
+        
+      }
     }
-  };
+
+    let i = await findIframe(post);
+    if (i) {isIframe = true;}
+    if (post?.selftext_html) {isSelf = true;}
+    if (post?.permalink) {isLink = true;}
+
+    //portrait check
+    if (dimensions[0] > 0){
+      if (dimensions[1] >= dimensions[0]){
+        isPortrait = true;
+      } else if (dimensions[1] < dimensions[0]) {
+        isPortrait = false;
+      }
+    }
+   
+    return {
+      videoInfo,
+      imageInfo,
+      iFrameHTML,
+      gallery,
+      isPortrait,
+      isImage,
+      isGallery,
+      isVideo,
+      isTweet,
+      isIframe,
+      isLink,
+      isSelf
+    }
+  }
+
 
   const checkURL = (url) => {
     const placeholder =
@@ -61,29 +103,7 @@ export const findMediaInfo = async (post) => {
     return url;
   };
 
-  const loadImg = async (purl) => {
-    //let img =  Image()
-    let img = document.createElement("img");
-    imageInfo = {
-      url: checkURL(purl),
-      height: 1080,
-      width: 1080,
-    };
-    isImage = true;
-    img.onload = function (event) {
-      // console.log("natural:", img.naturalWidth, img.naturalHeight);
-      // console.log("width,height:", img.width, img.height);
-      // console.log("offsetW,offsetH:", img.offsetWidth, img.offsetHeight);
-      imageInfo = {
-        url: checkURL(purl),
-        height: img.naturalHeight,
-        width: img.naturalWidth,
-      };
-      isImage = true;
-    };
-    img.src = purl;
-    //document.body.appendChild(img);
-  };
+  
 
   const findVideo = async (post) => {
     // console.log("find vid", post?.title);
@@ -95,11 +115,12 @@ export const findMediaInfo = async (post) => {
           width: post.preview.reddit_video_preview.width,
         };
 
-        imageInfo = {
+        imageInfo = [{
           url: checkURL(post?.thumbnail),
           height: post.preview.reddit_video_preview.height,
           width: post.preview.reddit_video_preview.width,
-        };
+        }];
+        isVideo = true; 
         return true;
         //setLoaded(true);
       }
@@ -111,11 +132,12 @@ export const findMediaInfo = async (post) => {
           height: post.media.reddit_video.height,
           width: post.media.reddit_video.width,
         };
-        imageInfo = {
+        imageInfo = [{
           url: checkURL(post?.thumbnail),
           height: post.media.reddit_video.height,
           width: post.media.reddit_video.width,
-        };
+        }];
+        isVideo = true;
         return true;
       }
     }
@@ -123,7 +145,12 @@ export const findMediaInfo = async (post) => {
   };
 
   const findImage = async (post) => {
+    if (post.url.includes("twitter.com")){
+      isTweet = true; 
+      return true; 
+    }
     if (post.media_metadata) {
+      gallery = [];
       for (let i in post.media_metadata) {
         let image = post.media_metadata[i];
         if (image.p) {
@@ -138,26 +165,30 @@ export const findMediaInfo = async (post) => {
           }
         }
       }
-      //setGalleryInfo(gallery);
-      //setIsGallery(true);
+      isGallery = true;
       isImage = true;
       return true;
     } else if (post.preview) {
       //images
       if (post.preview.images[0]) {
         if (post.preview.images[0].resolutions.length > 0) {
-          let num = post.preview.images[0].resolutions.length - 1;
-
-          let imgheight = post.preview?.images[0]?.resolutions[num].height;
-          let imgwidth = post.preview?.images[0]?.resolutions[num].width;
-
-          imageInfo = {
-            url: checkURL(
-              post.preview?.images[0]?.resolutions[num].url.replace("amp;", "")
-            ),
-            height: imgheight,
-            width: imgwidth,
-          };
+          imageInfo = [];
+          for (let i in post.preview.images[0].resolutions){
+            imageInfo.push({
+              url: checkURL(
+                post.preview?.images[0]?.resolutions[i].url.replace("amp;", "")
+              ),
+              height: post.preview?.images[0]?.resolutions[i].height,
+              width: post.preview?.images[0]?.resolutions[i].width,
+            })
+          }
+          if (post.preview.images[0].source){
+            imageInfo.push({
+              url: checkURL(post.preview.images[0].source.url.replace("amp;","")),
+              height: post.preview.images[0].source?.height,
+              width: post.preview.images[0].source?.width
+            })
+          }
           isImage = true;
           return true;
         }
@@ -169,14 +200,58 @@ export const findMediaInfo = async (post) => {
         purl.includes(".png") ||
         purl.includes(".gif")
       ) {
-        await loadImg(purl);
+        let info = await loadImg(purl);
+        imageInfo=info;
         isImage = true;
         return true;
       }
     }
     return false;
   };
+  const loadImg = async (purl) => {
+    let dim:any = await addImageProcess(purl);
+    
+    return [{
+      url: checkURL(purl),
+      height: dim?.naturalHeight ?? 1080,
+      width: dim?.naturalWidth ?? 1080
+    }];
+  };
+  const addImageProcess = (src) => {
+    return new Promise((resolve, reject) => {
+      let img = document.createElement("img");
+      img.onload = () => resolve({naturalHeight: img.naturalHeight, naturalWidth: img.naturalWidth})
+      img.onerror = reject
+      img.src = src
+    })
+  }
+  const stringToHTML = function (str) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(str, "text/html");
+    return doc.body.firstElementChild;
+  };
 
-  //isPortrait = await checkIfPortrait(post);
-  return checkIfPortrait(post);
+  const findIframe = async(post) => {
+    if (post?.media_embed?.content) {
+      if (post.media_embed.content.includes("iframe")) {
+        let html: Element = stringToHTML(post.media_embed.content);
+        html.setAttribute("height", "100%");
+        html.setAttribute("width", "100%");
+        let htmlsrc = html.getAttribute("src");
+        if (htmlsrc.includes("clips.twitch.tv")) {
+          html.setAttribute(
+            "src",
+            `https://clips.twitch.tv/embed?clip=${
+              post?.url.split("/")?.[3]
+            }&parent=${TWITCH_PARENT}`
+          );
+        }
+        iFrameHTML = html;
+        return true;
+      }
+    }
+    return false; 
+  }
+
+  return loadInfo(post);
 };

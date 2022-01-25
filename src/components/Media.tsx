@@ -96,6 +96,7 @@ const Media = ({
       if (context.columnOverride == 1 || allowIFrame) {
         c = await findIframe();
       }
+      //console.log(a,b,c)
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
     };
 
@@ -155,66 +156,35 @@ const Media = ({
           optimize = "360";
         }
       }
-      if (post.preview) {
-        if (post.preview.reddit_video_preview) {
-          url = post.preview.reddit_video_preview.fallback_url;
-          if (url.includes("DASH_1080") && !postMode) {
-            url = url.replace("DASH_1080", `DASH_${optimize}`);
-          }
-          setVideoInfo({
-            url: url,
-            height: post.preview.reddit_video_preview.height,
-            width: post.preview.reddit_video_preview.width,
-          });
-          if (
-            post.preview.reddit_video_preview.fallback_url.includes("v.redd.it")
-          ) {
-            findAudio(post.preview.reddit_video_preview.fallback_url);
-          }
-
-          setPlaceholderInfo({
-            url: checkURL(post?.thumbnail),
-            height: post.preview.reddit_video_preview.height,
-            width: post.preview.reddit_video_preview.width,
-          });
-          setImageInfo({
-            url: checkURL(post?.thumbnail),
-            height: post.preview.reddit_video_preview.height,
-            width: post.preview.reddit_video_preview.width,
-          });
-          setIsMP4(true);
-          setIsImage(false);
-          return true;
+      
+      if (post?.mediaInfo?.videoInfo) {
+        url = post.mediaInfo.videoInfo.url;
+        if (url.includes("DASH_1080") && !postMode) {
+          url = url.replace("DASH_1080", `DASH_${optimize}`);
         }
-      }
-      if (post.media) {
-        if (post.media.reddit_video) {
-          url = post.media.reddit_video.fallback_url;
-          if (url.includes("DASH_1080") && !postMode) {
-            url = url.replace("DASH_1080", `DASH_${optimize}`);
-          }
-          setVideoInfo({
-            url: url,
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-          });
-          if (post.media.reddit_video.fallback_url.includes("v.redd.it")) {
-            findAudio(post.media.reddit_video.fallback_url);
-          }
-          setPlaceholderInfo({
-            url: checkURL(post.thumbnail),
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-          });
-          setImageInfo({
+        setVideoInfo({
+          url: url,
+          height: post.mediaInfo.videoInfo.height,
+          width: post.mediaInfo.videoInfo.width,
+        });
+        setPlaceholderInfo({
+          url: checkURL(post?.thumbnail),
+          height: post.mediaInfo.videoInfo.height,
+          width: post.mediaInfo.videoInfo.width
+        })
+        setImageInfo({
+          
             url: checkURL(post?.thumbnail),
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-          });
-          setIsMP4(true);
-          setIsImage(false);
-          return true;
+            height: post.mediaInfo.videoInfo.height,
+            width: post.mediaInfo.videoInfo.width
+          
+        })
+        if (url.includes('v.redd.it')){
+          findAudio(post.mediaInfo.videoInfo.url);
         }
+        setIsMP4(true);
+        setIsImage(false);
+        return true;
       }
       return false;
     };
@@ -227,31 +197,17 @@ const Media = ({
 
     const findIframe = async () => {
       //console.log("find iframe", post?.title);
-      if (post?.media_embed?.content) {
-        if (post.media_embed.content.includes("iframe")) {
-          let html: Element = stringToHTML(post.media_embed.content);
-          html.setAttribute("height", "100%");
-          html.setAttribute("width", "100%");
-          let htmlsrc = html.getAttribute("src");
-          if (htmlsrc.includes("clips.twitch.tv")) {
-            html.setAttribute(
-              "src",
-              `https://clips.twitch.tv/embed?clip=${
-                post?.url.split("/")?.[3]
-              }&parent=${TWITCH_PARENT}`
-            );
-          }
-          if (htmlsrc.includes("youtube.com")) {
-            setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
-            setisYTVid(true);
-          }
-          setIFrame(html);
+      if (post?.mediaInfo?.iFrameHTML){
+        //   if (htmlsrc.includes("youtube.com")) {
+        //     setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
+        //     setisYTVid(true);
+        //   }
+          setIFrame(post.mediaInfo.iFrameHTML);
           (context.columnOverride === 1 || allowIFrame) && setIsIFrame(true);
           return true;
         } else {
+          return false;
         }
-      }
-      return false;
     };
 
     const findImage = async () => {
@@ -260,31 +216,13 @@ const Media = ({
         return true;
       }
 
-      if (post.media_metadata) {
-        let gallery = [];
-        for (let i in post.media_metadata) {
-          let image = post.media_metadata[i];
-          if (image.p) {
-            if (image.p.length > 0) {
-              let num = image.p.length - 1;
-              //console.log(num);
-              gallery.push({
-                url: checkURL(image.p[num].u.replace("amp;", "")),
-                height: image.p[num].y,
-                width: image.p[num].x,
-              });
-            }
-          }
-        }
-        setGalleryInfo(gallery);
+      if (post?.mediaInfo?.gallery){
+        setGalleryInfo(post.mediaInfo.gallery)
         setIsGallery(true);
-        //setLoaded(true);
         return true;
-      } else if (post.preview) {
-        //images
-        if (post.preview.images[0]) {
-          if (post.preview.images[0].resolutions.length > 0) {
-            let num = post.preview.images[0].resolutions.length - 1;
+      }
+      else if (post?.mediaInfo?.imageInfo){
+          let num = post.mediaInfo.imageInfo.length - 1;
 
             //choose smallest image possible
             let done = false;
@@ -292,24 +230,20 @@ const Media = ({
             if (!imgFull) {
               width = width / (context?.columns ?? 1);
             }
-            post.preview.images[0].resolutions.forEach((res, i) => {
-              //console.log(width,res,i);
+            post.mediaInfo.imageInfo.forEach((res, i) => {
               if (!done) {
                 if (res.width > width) {
                   num = i;
-                  //console.log("DONE",num);
                   done = true;
                 }
               }
             });
-            let imgheight = post.preview?.images[0]?.resolutions[num].height;
-            let imgwidth = post.preview?.images[0]?.resolutions[num].width;
-
-            //if (imgheight = 0 || !imgheight) imgheight = 100;
-            //if (imgwidth = 0 || !imgwidth) imgwidth = 100;
+            let imgheight = post.mediaInfo.imageInfo[num].height;
+            let imgwidth = post.mediaInfo.imageInfo[num].width;
+            //console.log('img',post.mediaInfo)
             setImageInfo({
               url: checkURL(
-                post.preview?.images[0]?.resolutions[num].url.replace(
+                post.mediaInfo.imageInfo[num].url.replace(
                   "amp;",
                   ""
                 )
@@ -324,44 +258,9 @@ const Media = ({
             });
             setIsImage(true);
             return true;
-          }
-        }
-      } else if (post.url) {
-        let purl: string = post.url;
-        if (
-          purl.includes(".jpg") ||
-          purl.includes(".png") ||
-          purl.includes(".gif")
-        ) {
-          await loadImg(purl);
-          return true;
-        }
+        // }
       }
       return false;
-    };
-
-    const loadImg = async (purl) => {
-      //let img =  Image()
-      let img = document.createElement("img");
-      setImageInfo({
-        url: checkURL(purl),
-        height: 1080,
-        width: 1080,
-      });
-      setIsImage(true);
-      img.onload = function (event) {
-        // console.log("natural:", img.naturalWidth, img.naturalHeight);
-        // console.log("width,height:", img.width, img.height);
-        // console.log("offsetW,offsetH:", img.offsetWidth, img.offsetHeight);
-        setImageInfo({
-          url: checkURL(purl),
-          height: img.naturalHeight,
-          width: img.naturalWidth,
-        });
-        setIsImage(true);
-      };
-      img.src = purl;
-      //document.body.appendChild(img);
     };
 
     if (shouldLoad()) {
@@ -386,25 +285,6 @@ const Media = ({
     };
   }, [post, allowIFrame, context?.columnOverride]);
 
-  // useEffect(() => {
-  //   const checkIfPortrait = () => {
-  //     //console.log('media', imageInfo,videoInfo);
-  //     if (imageInfo.height > imageInfo.width) {
-  //       setIsPortrait(true);
-  //       return true;
-  //     }
-  //     if (videoInfo.height > videoInfo.width) {
-  //       setIsPortrait(true);
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   };
-  //   checkIfPortrait();
-  //   return () => {
-  //     setIsPortrait(false);
-  //   };
-  // }, [imageInfo, videoInfo]);
 
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
