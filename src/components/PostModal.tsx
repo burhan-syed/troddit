@@ -189,8 +189,8 @@ const PostModal = ({
       if (Object.keys(postData).length === 0) {
         //console.log("post", post);
         if (post?.id) {
-          let d = await findMediaInfo(post);
-          post.mediaInfo = d;
+          //let d = await findMediaInfo(post);
+          //post.mediaInfo = d;
           setPost(post);
           setLoadingPost(false);
         } else {

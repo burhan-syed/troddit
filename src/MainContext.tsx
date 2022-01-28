@@ -24,6 +24,41 @@ export const MainProvider = ({ children }) => {
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
   const [forceRefresh, setForceRefresh] = useState(0);
+ 
+  //filters in the inverse sense, true = allowed
+  const [imgFilter, setImgFilter] = useState(true)
+  const [vidFilter, setVidFilter] = useState(true)
+  const [galFilter, setGalFilter] = useState(true)
+  const [selfFilter, setSelfFilter] = useState(true)
+  const [linkFilter, setLinkFilter] = useState(true);
+ // const [filterCount, setFilterCount] = useState(0);
+
+  const toggleFilter = (filter) => {
+    switch (filter){
+      case 'images':
+        setImgFilter(i => !i);
+        break;
+      case 'videos':
+        setVidFilter(v => !v);
+        break;
+      case 'galleries':
+        setGalFilter(g => !g);
+        break;
+      case 'self':
+        setSelfFilter(s => !s);
+        break;
+      case 'links':
+        setLinkFilter(l => !l);
+        break;
+    }
+  };
+
+  useEffect(() => {
+    //setFilterCount(0);
+    setForceRefresh(i =>  i +1);
+
+  }, [imgFilter, vidFilter, galFilter, selfFilter, linkFilter])
+
   const updateLikes = (i, like) => {
     let p = posts;
     if (p?.[i]?.data) {
@@ -96,7 +131,24 @@ export const MainProvider = ({ children }) => {
     saved_cardStyle && setCardStyle(saved_cardStyle);
     const local_localSubs = localStorage.getItem("localSubs");
     local_localSubs && setLocalSubs(JSON.parse(local_localSubs));
+
+    const saved_imgFilter = localStorage.getItem("imgFilter");
+    saved_imgFilter?.includes("false") ? setImgFilter(false) : setImgFilter(true);
+    const saved_vidFilter = localStorage.getItem("vidFilter");
+    saved_vidFilter?.includes("false") ? setVidFilter(false) : setVidFilter(true);
+    const saved_linkFilter = localStorage.getItem("linkFilter");
+    saved_linkFilter?.includes("false") ? setLinkFilter(false) : setLinkFilter(true);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("imgFilter", JSON.stringify(imgFilter));
+  }, [imgFilter])
+  useEffect(() => {
+    localStorage.setItem("vidFilter", JSON.stringify(vidFilter));
+  }, [vidFilter])
+  useEffect(() => {
+    localStorage.setItem("linkFilter", JSON.stringify(linkFilter));
+  }, [linkFilter])
 
   useEffect(() => {
     localStorage.setItem("localSubs", JSON.stringify(localSubs));
@@ -159,6 +211,14 @@ export const MainProvider = ({ children }) => {
         setForceRefresh,
         loading,
         setLoading,
+        toggleFilter,
+        imgFilter,
+        vidFilter,
+        galFilter,
+        linkFilter,
+        selfFilter,
+        //filterCount,
+        //setFilterCount
       }}
     >
       {children}

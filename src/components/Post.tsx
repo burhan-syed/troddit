@@ -21,9 +21,6 @@ import { usePlausible } from "next-plausible";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
-  const [loaded, setLoaded] = useState(false);
-  const [filtered, setFiltered] = useState(false);
-  const [postM, setPostM] = useState();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [score, setScore] = useState("");
   const [select, setSelect] = useState(false);
@@ -31,20 +28,8 @@ const Post = ({ post, postNum = 0 }) => {
   const router = useRouter();
   const [session, loading] = useSession();
   const [hasMedia, setHasMedia] = useState(false);
-  //console.log(post);
   const plausible = usePlausible();
-
-  useEffect(() => {
-    const getPostMedia = async() => {
-      let m = await findMediaInfo(post);
-      setPostM({...post, mediaInfo: m});
-      setLoaded(true);
-    }
-    getPostMedia();
-    return () => {
-     
-    };
-  }, [post]);
+  const [margin, setMargin] = useState("m-1");
 
   useEffect(() => {
     context.nsfw === "false" && post.over_18
@@ -55,6 +40,17 @@ const Post = ({ post, postNum = 0 }) => {
       setHideNSFW(false);
     };
   }, [context, post]);
+
+  useEffect(() => {
+    //console.log(context.columns, context.cardStyle);
+    context.cardStyle === "row1"
+      ? setMargin("m-0.5")
+      : context.columns === 1
+      ? setMargin("m-1")
+      : context.columns > 4
+      ? setMargin("m-0.5")
+      : setMargin("m-1");
+  }, [context.columns, context.cardStyle]);
 
   const [lastRoute, setLastRoute] = useState("");
   const [returnRoute, setReturnRoute] = useState("");
@@ -105,12 +101,16 @@ const Post = ({ post, postNum = 0 }) => {
   const findMedia = () => {
     if (post?.preview?.reddit_video_preview) {
       setHasMedia(true);
+      return true;
     } else if (post?.media?.reddit_video) {
       setHasMedia(true);
+      return true;
     } else if (post?.media_metadata) {
       setHasMedia(true);
+      return true;
     } else if (post?.preview?.images?.[0]) {
       setHasMedia(true);
+      return true;
     } else if (post?.url) {
       if (
         post.url.includes(".jpg") ||
@@ -118,9 +118,11 @@ const Post = ({ post, postNum = 0 }) => {
         post.url.includes(".gif")
       ) {
         setHasMedia(true);
+        return true;
       }
     } else {
       setHasMedia(false);
+      return false;
     }
   };
 
@@ -142,15 +144,14 @@ const Post = ({ post, postNum = 0 }) => {
     return () => {};
   }, [post, vote]);
 
-  if (filtered || !loaded) return <></>
-  if (loaded) return (
-    <div>
+  return (
+    <div className={margin}>
       {select && (
         <PostModal
           permalink={post?.permalink}
           setSelect={setSelect}
           returnRoute={returnRoute}
-          postData={postM}
+          postData={post}
           postNum={postNum}
         />
       )}
@@ -161,7 +162,7 @@ const Post = ({ post, postNum = 0 }) => {
         {/* <h1>{postNum}</h1> */}
         {context?.cardStyle === "row1" ? (
           <Row1
-            post={postM}
+            post={post}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}
@@ -172,7 +173,7 @@ const Post = ({ post, postNum = 0 }) => {
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
-            post={postM}
+            post={post}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}
@@ -183,7 +184,7 @@ const Post = ({ post, postNum = 0 }) => {
           />
         ) : (
           <Card1
-            post={postM}
+            post={post}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
             score={score}

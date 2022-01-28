@@ -18,6 +18,7 @@ import { useScroll } from "../hooks/useScroll";
 
 import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
+import FilterMenu from "./FilterMenu";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
@@ -115,13 +116,19 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               <DropdownPane hide={hidden} />
             </div>
 
-            <div className="hidden w-full h-full py-2 md:block">
+            <div className="hidden w-full h-full max-w-6xl py-2 md:block">
               <Search id={"subreddit search main"} />
             </div>
           </div>
           <div className="flex flex-row items-center justify-end h-full py-2 ml-2 space-x-1 justify-self-end">
             <div className="w-20 h-full">
               <SortMenu2 hide={hidden} />
+            </div>
+            <div
+              className="flex flex-row items-center w-10 h-full mr-2 "
+              onClick={() => plausible("filters")}
+            >
+              <FilterMenu hide={hidden} />
             </div>
             <div
               className={
@@ -133,6 +140,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             >
               <Login />
             </div>
+            
             <div
               className="flex flex-row items-center w-10 h-full mr-2 "
               onClick={() => plausible("options")}

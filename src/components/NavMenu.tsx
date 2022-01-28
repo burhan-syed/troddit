@@ -9,6 +9,7 @@ import ToggleMaximize from "./ToggleMaximize";
 import { useMainContext } from "../MainContext";
 import ToggleMediaOnly from "./ToggleMediaOnly";
 import ToggleAudioOnHover from "./ToggleAudioOnHover";
+import Login from "./Login";
 
 
 function classNames(...classes) {
@@ -28,7 +29,7 @@ const NavMenu = ({ hide = false }) => {
           name="Options"
           className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none"
         >
-          <BsThreeDotsVertical />
+          <BsThreeDotsVertical className="flex-none w-5 h-5" />
         </Menu.Button>
       </div>
 
@@ -388,6 +389,18 @@ const NavMenu = ({ hide = false }) => {
                 </div>
               )}
             </Menu.Item>
+            {/* <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <Login/>
+                </div>
+              )}
+            </Menu.Item> */}
 
             <Menu.Item>
               {({ active }) => (

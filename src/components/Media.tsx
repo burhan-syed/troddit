@@ -10,6 +10,7 @@ import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
 import { useWindowSize } from "@react-hook/window-size";
+import { findMediaInfo } from "../../lib/utils";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
@@ -88,6 +89,10 @@ const Media = ({
     };
 
     const initialize = async () => {
+      if (!post.mediaInfo){
+        let m = await findMediaInfo(post);
+        post['mediaInfo'] = m; 
+      }
       let a, b, c;
       b = await findVideo();
       if (!b) {

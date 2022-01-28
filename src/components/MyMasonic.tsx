@@ -66,15 +66,19 @@ const MyMasonic = ({
   isUser = false,
   isMulti = false,
   isSubFlair = false,
+  filterNum = 0,
   session = {},
 }) => {
   const context: any = useMainContext();
+  let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
+  const [filterCount, setFilterCount] = useState(0);
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
   const [subreddits, setSubreddits] = useState("");
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
   const [cols, setCols] = useState(3);
   const [items, setItems] = useState([]);
@@ -84,9 +88,14 @@ const MyMasonic = ({
   const [range, setRange] = useState("");
   const plausible = usePlausible();
   const prevAfter = useRef(null);
+  const prevAfters = useRef({});
+  const currAfter = useRef(null);
+  const block = useRef(null);
 
   useEffect(() => {
-    prevAfter.current = initAfter;
+    prevAfter.current = ""; //initAfter;
+    currAfter.current = initAfter;
+    block.current = false;
     allowload = true;
     loadonce = 0;
     if (query.frontsort) {
@@ -99,10 +108,12 @@ const MyMasonic = ({
       setRange(query?.t ?? "");
     }
     lastload = initAfter;
+    setFilterCount(filterNum);
     setAfter(initAfter);
     setNumPosts(initItems.length);
     context.setPosts(initItems);
     setItems(initItems);
+    initItems.length < 1 && loadMoreItems(0, 10);
     setLoading(false);
 
     return () => {
@@ -159,6 +170,8 @@ const MyMasonic = ({
     // };
 
     //console.log(windowWidth);
+    //console.log(context.columns, context.columnOverride, context.cardStyle);
+
     if (context.cardStyle == "row1") {
       setItemHeightEstimate(80);
       setCols(1);
@@ -204,21 +217,34 @@ const MyMasonic = ({
     }
   );
 
+  const loadMoreItems = async (startIndex, stopIndex) => {
+    console.log("try..", block.current, currAfter.current);
+    if (
+      allowload &&
+      !error &&
+      !block.current &&
+      prevAfters.current[currAfter.current] !== 1
+    ) {
+      //preventing more calls prior to new page fetch
+      prevAfters.current[currAfter.current] = 1;
+      block.current = true;
+
+      lastload = "";
+      setLoadingMore(true);
+      const nextItems = await getPostsPromise(startIndex, stopIndex);
+      //console.log("nextitems", nextItems, after);
+      setLoadingMore(false);
+      setItems((current) => {
+        //console.log("after", after);
+        context.setPosts([...current, ...nextItems]);
+        return [...current, ...nextItems];
+      });
+    }
+  };
+
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
-      //console.log("load more posts..", startIndex, stopIndex);
-      if (allowload && !error) {
-        //preventing more calls prior to new page fetch
-        lastload = "";
-
-        const nextItems = await getPostsPromise(startIndex, stopIndex);
-        //console.log("nextitems", nextItems, after);
-        setItems((current) => {
-          //console.log("after", after);
-          context.setPosts([...current, ...nextItems]);
-          return [...current, ...nextItems];
-        });
-      }
+      return await loadMoreItems(startIndex, stopIndex);
     },
     {
       isItemLoaded: (index, items) => {
@@ -249,8 +275,7 @@ const MyMasonic = ({
   }, [context.postNum]);
 
   const loadmore = async (loadafter = after) => {
-    setCount((c) => c + 1);
-    //console.log("loadmore after:", loadafter);
+    console.log("loadmore after:", loadafter);
     let data: any = { after: "", children: [], token: null };
     if (!subreddits) {
       data = await loadFront(
@@ -315,21 +340,27 @@ const MyMasonic = ({
     // });
 
     if (data?.after) {
-      //console.log("next ", data?.after, "used ", after, " prevafter ", prevAfter.current)
-      if (after === prevAfter.current) {
-        prevAfter.current = data?.after;
+      console.log("new", data?.after, "used: ", loadafter);
+      if (true) {
+        //after === prevAfter.current
+        prevAfters.current[loadafter] = 1;
         plausible("infinitescroll");
-        //console.log('update prevAfter ', prevAfter.current);
         data?.token && context.setToken(data?.token);
+        setCount((c) => c + 1);
+        currAfter.current = data?.after;
         setAfter(data?.after);
-        // data.children.forEach(async(c) => {
-        //   let d = await findMediaInfo(c.data);
-        //   c.data.mediaInfo = d;
-        //   //console.log(c.data);
-        // })
+        if (
+          !imgFilter ||
+          !vidFilter ||
+          !selfFilter ||
+          !galFilter ||
+          !linkFilter
+        ) {
+          data.children = await filterChildren(data.children);
+        }
         return { data: { posts: data?.children, after: data?.after } };
       } else {
-        //console.log('reject');
+        console.log("reject");
         return { data: { posts: [], after: "NONE" } };
       }
     } else {
@@ -340,7 +371,7 @@ const MyMasonic = ({
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    //console.log('getpost call');
+    console.log("getpost call");
 
     allowload = false;
     let caughtup = false;
@@ -350,7 +381,8 @@ const MyMasonic = ({
     //let fastafter = after;
     while (payload.length < end - start && !caughtup) {
       //console.log("loop", after);
-      let data = await (await loadmore(after)).data;
+      //let data = await (await loadmore(after)).data;
+      let data = await (await loadmore(currAfter.current)).data;
       if (data?.after === "NONE") {
         //ignore
       } else {
@@ -358,17 +390,64 @@ const MyMasonic = ({
           setEnd(true);
           caughtup = true;
           allowload = false;
+          console.log("early return");
           return payload;
         }
         //fastafter = data?.after;
         //lastload = fastafter;
+        //console.log(data.posts);
         payload = [...payload, ...data.posts];
       }
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
-
+    block.current = false;
     return payload;
+  };
+  const filterChildren = async (data: Array<any>) => {
+    async function filter(arr, callback) {
+      const fail = Symbol();
+      return (
+        await Promise.all(
+          arr.map(async (item) => ((await callback(item)) ? item : fail))
+        )
+      ).filter((i) => i !== fail);
+    }
+
+    const filterCheck = async (d) => {
+      let mediaInfo = await findMediaInfo(d, true);
+      //console.log(d.title,mediaInfo,d)
+      if (!vidFilter && mediaInfo.isVideo) {
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          setFilterCount((n) => n + 1);
+          return false;
+        }
+      } else if (!imgFilter && mediaInfo.isImage) {
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          setFilterCount((n) => n + 1);
+          return false;
+        }
+      } else if (!linkFilter && mediaInfo.isLink) {
+        setFilterCount((n) => n + 1);
+        return false;
+      } else if (!selfFilter && mediaInfo.isSelf) {
+        setFilterCount((n) => n + 1);
+        return false;
+      } else if (!galFilter && mediaInfo.isGallery) {
+        setFilterCount((n) => n + 1);
+
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    let f = await filter(data, async (d) => {
+      let r = await filterCheck(d.data);
+      //console.log(d, r);
+      return r;
+    });
+    return f;
   };
 
   const getFakePosts = async (start = 0, end = 32) => {
@@ -400,16 +479,25 @@ const MyMasonic = ({
             //height={windowHeight}
             // Forwards the ref to the masonry container element
 
-            columnGutter={cols == 1 ? 5 : cols < 4 ? 10 : 5}
+            columnGutter={0} //cols == 1 ? 5 : cols < 4 ? 10 : 5}
             //columnWidth={(windowWidth*5/6 - 8*2) / 3}
             columnCount={cols}
             items={items}
-            itemHeightEstimate={itemheightestimate}
+            itemHeightEstimate={0} //itemheightestimate was making scrollbar jumpy
             overscanBy={2}
             render={PostCard}
             className=""
             ssrWidth={500}
           />
+          {!end && loadingMore && (
+            <h1 className="text-center">Loading page {count + 1}...</h1>
+          )}
+          {filterCount > 0 && (
+            <div className="fixed bottom-0 left-0 flex-col text-xs select-none">
+              <h1>{count + 1} pages</h1>
+              <h1>{filterCount} filtered</h1>
+            </div>
+          )}
         </>
       )}
 

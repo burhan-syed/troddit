@@ -19,6 +19,7 @@ import LoginModal from "./LoginModal";
 import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
+import { findMediaInfo } from "../../lib/utils";
 
 const Feed = ({
   query,
@@ -32,6 +33,8 @@ const Feed = ({
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
   const context: any = useMainContext();
+  let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
+  const [filterCount, setFilterCount] = useState(0);
   // const breakpointColumnsObj = {
   //   default: 4,
   //   2560: 3,
@@ -89,6 +92,7 @@ const Feed = ({
   }, [query, sessloading]);
 
   useEffect(() => {
+    setFilterCount(0);
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       updateLoading(false);
@@ -119,6 +123,7 @@ const Feed = ({
       setPosts([]);
       setAfter("");
       setNumPosts(0);
+      setFilterCount(0);
       setFetchPost(false);
       setError(false);
       updateLoading(true);
@@ -137,7 +142,6 @@ const Feed = ({
     );
     if (data?.children) {
       await manageData(data);
-      
     } else {
       updateLoading(false);
       setError(true);
@@ -199,19 +203,65 @@ const Feed = ({
     }
   };
 
-  const manageData = async(data) => {
+  const manageData = async (data) => {
     data?.token && context.setToken(data?.token);
     setAfter(data?.after);
-    // data.children.forEach(async(c) => {
-    //   let d = await findMediaInfo(c.data);
-    //   c.data.mediaInfo = d;
-    //   //console.log(c.data.mediaInfo);
-    // })
+    data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
+    if (!imgFilter || !vidFilter || !selfFilter || !galFilter || !linkFilter) {
+      data.children = await filterChildren(data.children);
+    }
     setPosts(data.children);
     setNumPosts((n) => n + data.children.length);
     updateLoading(false);
-    data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
-  }
+  };
+
+  const filterChildren = async (data: Array<any>) => {
+
+    async function filter(arr, callback) {
+      const fail = Symbol();
+      return (
+        await Promise.all(
+          arr.map(async (item) => ((await callback(item)) ? item : fail))
+        )
+      ).filter((i) => i !== fail);
+    }
+
+    const filterCheck = async (d) => {
+      let mediaInfo = await findMediaInfo(d, true);
+      //console.log(d.title,mediaInfo,d)
+
+      if (!vidFilter && mediaInfo.isVideo) {
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          setFilterCount((n) => n + 1);
+          return false;
+        }
+      } else if (!imgFilter && mediaInfo.isImage) {
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          setFilterCount((n) => n + 1);
+          return false;
+        }
+      } else if (!linkFilter && mediaInfo.isLink) {
+        setFilterCount((n) => n + 1);
+        return false;
+      } else if (!selfFilter && mediaInfo.isSelf) {
+        setFilterCount((n) => n + 1);
+        return false;
+      } else if (!galFilter && mediaInfo.isGallery) {
+        setFilterCount((n) => n + 1);
+
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    let f = await filter(data, async (d) => {
+      let r = await filterCheck(d.data);
+      //console.log(d, r);
+      return r;
+    });
+    return f;
+  };
 
   if (nothingHere) {
     return (
@@ -274,9 +324,11 @@ const Feed = ({
             isMulti={isMulti}
             session={session}
             isSubFlair={isSubFlair}
+            filterNum={filterCount}
           />
         </div>
       </div>
+      
     </main>
   );
 };
