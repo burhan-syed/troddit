@@ -68,6 +68,7 @@ const MyMasonic = ({
   isSubFlair = false,
   filterNum = 0,
   session = {},
+  page
 }) => {
   const context: any = useMainContext();
   let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
@@ -478,7 +479,7 @@ const MyMasonic = ({
             // The height of the virtualization window
             //height={windowHeight}
             // Forwards the ref to the masonry container element
-
+            key={page}
             columnGutter={0} //cols == 1 ? 5 : cols < 4 ? 10 : 5}
             //columnWidth={(windowWidth*5/6 - 8*2) / 3}
             columnCount={cols}

@@ -55,7 +55,7 @@ export const MainProvider = ({ children }) => {
 
   useEffect(() => {
     //setFilterCount(0);
-    setForceRefresh(i =>  i +1);
+    //setForceRefresh(i =>  i +1);
 
   }, [imgFilter, vidFilter, galFilter, selfFilter, linkFilter])
 

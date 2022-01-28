@@ -20,6 +20,7 @@ import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
 import { findMediaInfo } from "../../lib/utils";
+import { ErrorBoundary } from "react-error-boundary";
 
 const Feed = ({
   query,
@@ -72,6 +73,7 @@ const Feed = ({
         setSort(query?.frontsort ?? "best");
         setRange(query?.t ?? "");
       } else {
+        //fetching from post from direct url
         setFetchPost(true);
         updateLoading(false);
       }
@@ -128,7 +130,18 @@ const Feed = ({
       setError(false);
       updateLoading(true);
     };
-  }, [subreddits, sort, range, sessloading, context.forceRefresh]);
+  }, [
+    subreddits,
+    sort,
+    range,
+    sessloading,
+    context.forceRefresh,
+    imgFilter,
+    vidFilter,
+    galFilter,
+    selfFilter,
+    linkFilter,
+  ]);
 
   const fetchFront = async () => {
     let data: any = await loadFront(
@@ -153,7 +166,6 @@ const Feed = ({
     let data: any;
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
-      updateLoading(false);
     } else if (isUser) {
       if (isMulti) {
         data = await getUserMultiPosts(
@@ -198,8 +210,8 @@ const Feed = ({
       setIsSubreddit(true);
       await manageData(data);
     } else {
-      updateLoading(false);
       setError(true);
+      updateLoading(false);
     }
   };
 
@@ -216,7 +228,6 @@ const Feed = ({
   };
 
   const filterChildren = async (data: Array<any>) => {
-
     async function filter(arr, callback) {
       const fail = Symbol();
       return (
@@ -262,6 +273,8 @@ const Feed = ({
     });
     return f;
   };
+
+  //const [errored, setErrored] = useState(false);
 
   if (nothingHere) {
     return (
@@ -316,21 +329,36 @@ const Feed = ({
       <div className="flex flex-col items-center flex-none w-screen">
         <div className={"w-full md:w-11/12"}>
           {/* + (context?.maximize ? " " : " md:w-5/6") */}
-          <MyMasonic
-            query={query}
-            initItems={posts}
-            initAfter={after}
-            isUser={isUser}
-            isMulti={isMulti}
-            session={session}
-            isSubFlair={isSubFlair}
-            filterNum={filterCount}
-          />
+          {!loading && (
+            <ErrorBoundary         FallbackComponent={ErrorFallback}
+            onReset={() => context.setForceRefresh(i => i+1)}
+            >
+            <MyMasonic
+            page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
+              query={query}
+              initItems={posts}
+              initAfter={after}
+              isUser={isUser}
+              isMulti={isMulti}
+              session={session}
+              isSubFlair={isSubFlair}
+              filterNum={filterCount}
+            />
+            </ErrorBoundary>
+          )}
         </div>
       </div>
-      
     </main>
   );
 };
+
+function ErrorFallback({error, resetErrorBoundary}) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen mb-auto" role="alert">
+      <p className="text-center">Something went wrong</p>
+      <button className="p-2 mb-2 border border-blue-700 rounded-lg hover:bg-lightHighlight dark:hover:bg-darkHighlight" onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  )
+}
 
 export default Feed;
