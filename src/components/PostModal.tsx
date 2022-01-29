@@ -314,6 +314,16 @@ const PostModal = ({
     plausible("postChange");
   };
 
+  const portraitDivRef = useRef(null);
+  const [pHeight, setpHeight] = useState();
+  const [pWidth, setpWidth] = useState();
+  useEffect(() => {
+    if (!wait && usePortrait) {
+      setpHeight(portraitDivRef?.current?.clientHeight);
+      setpWidth(portraitDivRef?.current?.clientWidth);
+    }
+  }, [wait, usePortrait]);
+
   if (wait && direct) {
     return (
       <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
@@ -356,19 +366,25 @@ const PostModal = ({
           <div className="flex flex-row justify-center h-full">
             {/* Portrait Media */}
             {usePortrait && (
-              <div className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
-                <div className={"flex-grow " + (!imgFull && " my-auto")}>
-                  <div className={"block relative   "}>
-                    <MediaWrapper
-                      hideNSFW={hideNSFW}
-                      post={apost}
-                      forceMute={false}
-                      allowIFrame={true}
-                      imgFull={imgFull}
-                      postMode={true}
-                    />
+              <div
+                ref={portraitDivRef}
+                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
+              >
+                {pHeight && pWidth && (
+                  <div className={"flex-grow " + (!imgFull && " my-auto")}>
+                    <div className={"block relative   "}>
+                      <MediaWrapper
+                        hideNSFW={hideNSFW}
+                        post={apost}
+                        forceMute={false}
+                        allowIFrame={true}
+                        imgFull={imgFull}
+                        postMode={true}
+                        containerDims={[pWidth, pHeight]}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 

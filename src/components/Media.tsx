@@ -36,6 +36,7 @@ const Media = ({
   forceMute = 0,
   portraitMode = false,
   postMode = false,
+  containerDims = undefined,
 }) => {
   const context: any = useMainContext();
   const [windowWidth, windowHeight] = useWindowSize();
@@ -89,9 +90,9 @@ const Media = ({
     };
 
     const initialize = async () => {
-      if (!post.mediaInfo){
+      if (!post.mediaInfo) {
         let m = await findMediaInfo(post);
-        post['mediaInfo'] = m; 
+        post["mediaInfo"] = m;
       }
       let a, b, c;
       b = await findVideo();
@@ -161,7 +162,7 @@ const Media = ({
           optimize = "360";
         }
       }
-      
+
       if (post?.mediaInfo?.videoInfo) {
         url = post.mediaInfo.videoInfo.url;
         if (url.includes("DASH_1080") && !postMode) {
@@ -175,16 +176,14 @@ const Media = ({
         setPlaceholderInfo({
           url: checkURL(post?.thumbnail),
           height: post.mediaInfo.videoInfo.height,
-          width: post.mediaInfo.videoInfo.width
-        })
+          width: post.mediaInfo.videoInfo.width,
+        });
         setImageInfo({
-          
-            url: checkURL(post?.thumbnail),
-            height: post.mediaInfo.videoInfo.height,
-            width: post.mediaInfo.videoInfo.width
-          
-        })
-        if (url.includes('v.redd.it')){
+          url: checkURL(post?.thumbnail),
+          height: post.mediaInfo.videoInfo.height,
+          width: post.mediaInfo.videoInfo.width,
+        });
+        if (url.includes("v.redd.it")) {
           findAudio(post.mediaInfo.videoInfo.url);
         }
         setIsMP4(true);
@@ -202,17 +201,17 @@ const Media = ({
 
     const findIframe = async () => {
       //console.log("find iframe", post?.title);
-      if (post?.mediaInfo?.iFrameHTML){
+      if (post?.mediaInfo?.iFrameHTML) {
         //   if (htmlsrc.includes("youtube.com")) {
         //     setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
         //     setisYTVid(true);
         //   }
-          setIFrame(post.mediaInfo.iFrameHTML);
-          (context.columnOverride === 1 || allowIFrame) && setIsIFrame(true);
-          return true;
-        } else {
-          return false;
-        }
+        setIFrame(post.mediaInfo.iFrameHTML);
+        (context.columnOverride === 1 || allowIFrame) && setIsIFrame(true);
+        return true;
+      } else {
+        return false;
+      }
     };
 
     const findImage = async () => {
@@ -221,48 +220,42 @@ const Media = ({
         return true;
       }
 
-      if (post?.mediaInfo?.gallery){
-        setGalleryInfo(post.mediaInfo.gallery)
+      if (post?.mediaInfo?.gallery) {
+        setGalleryInfo(post.mediaInfo.gallery);
         setIsGallery(true);
         return true;
-      }
-      else if (post?.mediaInfo?.imageInfo){
-          let num = post.mediaInfo.imageInfo.length - 1;
+      } else if (post?.mediaInfo?.imageInfo) {
+        let num = post.mediaInfo.imageInfo.length - 1;
 
-            //choose smallest image possible
-            let done = false;
-            let width = windowWidth; // screen.width;
-            if (!imgFull) {
-              width = width / (context?.columns ?? 1);
+        //choose smallest image possible
+        let done = false;
+        let width = windowWidth; // screen.width;
+        if (!imgFull) {
+          width = width / (context?.columns ?? 1);
+        }
+        post.mediaInfo.imageInfo.forEach((res, i) => {
+          if (!done) {
+            if (res.width > width) {
+              num = i;
+              done = true;
             }
-            post.mediaInfo.imageInfo.forEach((res, i) => {
-              if (!done) {
-                if (res.width > width) {
-                  num = i;
-                  done = true;
-                }
-              }
-            });
-            let imgheight = post.mediaInfo.imageInfo[num].height;
-            let imgwidth = post.mediaInfo.imageInfo[num].width;
-            //console.log('img',post.mediaInfo)
-            setImageInfo({
-              url: checkURL(
-                post.mediaInfo.imageInfo[num].url.replace(
-                  "amp;",
-                  ""
-                )
-              ),
-              height: imgheight,
-              width: imgwidth,
-            });
-            setPlaceholderInfo({
-              url: checkURL(post.thumbnail),
-              height: post.thumbnail_height,
-              width: post.thumbnail_width,
-            });
-            setIsImage(true);
-            return true;
+          }
+        });
+        let imgheight = post.mediaInfo.imageInfo[num].height;
+        let imgwidth = post.mediaInfo.imageInfo[num].width;
+        //console.log('img',post.mediaInfo)
+        setImageInfo({
+          url: checkURL(post.mediaInfo.imageInfo[num].url.replace("amp;", "")),
+          height: imgheight,
+          width: imgwidth,
+        });
+        setPlaceholderInfo({
+          url: checkURL(post.thumbnail),
+          height: post.thumbnail_height,
+          width: post.thumbnail_width,
+        });
+        setIsImage(true);
+        return true;
         // }
       }
       return false;
@@ -290,19 +283,27 @@ const Media = ({
     };
   }, [post, allowIFrame, context?.columnOverride]);
 
-
   const [imgheight, setheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<number>();
   useEffect(() => {
     let cropamount = 0.77;
-    if (portraitMode) cropamount = 0.93;
+    // if (portraitMode) {
+    //   cropamount = containerDims?.[1]
+    //     ? containerDims?.[1] / windowHeight
+    //     : 0.93;
+    // }
+
     setheight({
       height: `${imageInfo.height}px`,
-      maxHeight: `${Math.floor(
-        windowHeight *
-          (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-      )}px`,
+      maxHeight: `${
+        containerDims?.[1]
+          ? containerDims?.[1]
+          : Math.floor(
+              windowHeight *
+                (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
+            )
+      }px`,
     });
     setmaxheight({
       maxHeight: `${Math.floor(
@@ -321,7 +322,14 @@ const Media = ({
       setmaxheight({});
       setmaxheightnum(0);
     };
-  }, [imageInfo, context?.columnOverride, imgFull, portraitMode, windowHeight]);
+  }, [
+    imageInfo,
+    context?.columnOverride,
+    imgFull,
+    portraitMode,
+    windowHeight,
+    containerDims,
+  ]);
 
   return (
     <div className="block select-none">
@@ -450,27 +458,27 @@ const Media = ({
               <div
                 className="flex flex-col items-center flex-none "
                 style={
-                  imgFull || (context?.columnOverride == 1 && !postMode)
-                    ? maxheight
-                    : {}
+                  //imgFull ||
+                  context?.columnOverride == 1 && !postMode ? maxheight : {}
                 }
               >
-                <LazyLoad
+                {/* <LazyLoad
                   height={videoInfo.height}
                   once={true}
                   offset={2000}
                   unmountIfInvisible={false}
-                >
-                  <VideoHandler
-                    placeholder={placeholderInfo}
-                    videoInfo={videoInfo}
-                    maxHeight={maxheight}
-                    maxHeightNum={maxheightnum}
-                    imgFull={imgFull}
-                    audio={videoAudio}
-                    postMode={postMode}
-                  />
-                </LazyLoad>
+                > */}
+                <VideoHandler
+                  placeholder={placeholderInfo}
+                  videoInfo={videoInfo}
+                  maxHeight={maxheight}
+                  maxHeightNum={maxheightnum}
+                  imgFull={imgFull}
+                  audio={videoAudio}
+                  postMode={postMode}
+                  containerDims={containerDims}
+                />
+                {/* </LazyLoad> */}
               </div>
             ) : (
               ""

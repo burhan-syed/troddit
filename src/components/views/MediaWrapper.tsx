@@ -9,6 +9,7 @@ const MediaWrapper = ({
   allowIFrame,
   imgFull,
   postMode,
+  containerDims = undefined,
 }) => {
   const [hidden, setHidden] = useState(true);
   const [hideText, setHideText] = useState("");
@@ -44,6 +45,7 @@ const MediaWrapper = ({
           allowIFrame={allowIFrame}
           imgFull={imgFull}
           postMode={postMode}
+          containerDims={containerDims}
         />
       </div>
       {hideNSFW && hidden && (

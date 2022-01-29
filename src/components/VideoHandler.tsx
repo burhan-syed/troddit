@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
+import { useWindowHeight } from "@react-hook/window-size";
 
 const VideoHandler = ({
   placeholder,
@@ -11,6 +12,7 @@ const VideoHandler = ({
   imgFull = false,
   postMode = false,
   audio,
+  containerDims = undefined,
 }) => {
   const context: any = useMainContext();
   const video: any = useRef();
@@ -42,9 +44,27 @@ const VideoHandler = ({
 
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
-
   useEffect(() => {
-    if (imgFull || (context.columnOverride == 1 && !postMode)) {
+    if (postMode && containerDims) {
+      console.log(containerDims);
+      let ry = containerDims?.[1] / videoInfo?.height;
+      let rx = containerDims?.[0] / videoInfo?.width;
+      if (Math.abs(ry - rx) < 0.05) {
+        //if minimal cropping just fill the area
+        setVidHeight(Math.floor(containerDims?.[1]));
+        setVidWidth(Math.floor(containerDims?.[0]));
+      } else if (ry <= rx) {
+        setVidHeight(containerDims?.[1]);
+        setVidWidth(
+          Math.floor(videoInfo.width * (containerDims?.[1] / videoInfo?.height))
+        );
+      } else {
+        setVidWidth(containerDims?.[0]);
+        setVidHeight(
+          Math.floor(videoInfo.height * (containerDims?.[0] / videoInfo?.width))
+        );
+      }
+    } else if (imgFull || (context.columnOverride == 1 && !postMode)) {
       if (videoInfo?.height && maxHeightNum) {
         let r = maxHeightNum / videoInfo.height;
         setVidHeight(Math.floor(videoInfo.height * r));
@@ -56,7 +76,14 @@ const VideoHandler = ({
       setVidHeight(videoInfo.height);
       setVidWidth(videoInfo.width);
     };
-  }, [imgFull, maxHeightNum, videoInfo, context.columnOverride, postMode]);
+  }, [
+    imgFull,
+    maxHeightNum,
+    videoInfo,
+    context.columnOverride,
+    postMode,
+    containerDims,
+  ]);
 
   useEffect(() => {
     setheight({
