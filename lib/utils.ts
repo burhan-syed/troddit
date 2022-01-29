@@ -146,6 +146,24 @@ export const findMediaInfo = async (post, quick = false) => {
         return true;
         //setLoaded(true);
       }
+      //gifs are stored as mp4s here, also with resolutions but just using source for now
+      else if (post?.preview?.images?.[0]?.variants?.mp4) {
+        videoInfo = {
+          url: checkURL(post?.preview?.images?.[0]?.variants?.mp4?.source?.url),
+          height: post?.preview?.images?.[0]?.variants?.mp4?.source?.height,
+          width: post?.preview?.images?.[0]?.variants?.mp4?.source?.width,
+        };
+
+        imageInfo = [
+          {
+            url: checkURL(post?.preview?.images?.[0]?.source?.url),
+            height: post?.preview?.images?.[0]?.source?.height,
+            width: post?.preview?.images?.[0]?.source?.width,
+          },
+        ];
+        isVideo = true;
+        return true;
+      }
     }
     if (post.media) {
       if (post.media.reddit_video) {
@@ -224,7 +242,7 @@ export const findMediaInfo = async (post, quick = false) => {
       if (
         purl.includes(".jpg") ||
         purl.includes(".png") ||
-        purl.includes(".gif")
+        purl.includes(".gif") //gifs should be handled in findVideo with mp4 format
       ) {
         if (!quick) {
           let info = await loadImg(purl);
