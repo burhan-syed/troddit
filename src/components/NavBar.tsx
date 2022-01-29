@@ -89,7 +89,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-        <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-trueGray-900">
+        <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-darkBG">
           <CgMenu
             className="w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
@@ -140,7 +140,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             >
               <Login />
             </div>
-            
+
             <div
               className="flex flex-row items-center w-10 h-full mr-2 "
               onClick={() => plausible("options")}

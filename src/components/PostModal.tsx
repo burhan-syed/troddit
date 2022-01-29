@@ -781,7 +781,7 @@ const PostModal = ({
                             "h-80 w-1  md:w-4 flex-none  cursor-pointer group animate-pulse"
                           }
                         >
-                          <div className="flex-none w-1 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+                          <div className="flex-none w-0.5 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
                         </div>
                         {/* Comment Body */}
                         <div

@@ -16,7 +16,7 @@ module.exports = {
         lightHighlight: "#F3F4F6",
         lightBorder: "#D4D4D8",
         lightBorderHighlight: "#71717A",
-        darkBG: "#171717",
+        darkBG: "#1A1A1B", //"#171717",
         darkPostHover: "#262626",
         darkBorder: "#3F3F46",
         darkBorderHighlight: "#71717A",

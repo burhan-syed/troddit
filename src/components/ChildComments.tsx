@@ -158,10 +158,10 @@ const ChildComments = ({
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
-          ? "bg-white dark:bg-[#121212] darkBG border-r "
+          ? "bg-white dark:bg-[#161616]  border-r "
           : depth % 2 === 0
-          ? " bg-white dark:bg-[#121212] darkBG"
-          : "bg-lightHighlight dark:bg-darkBG black") +
+          ? " bg-white dark:bg-[#161616]"
+          : "bg-lightHighlight  dark:bg-darkBG ") +
         (hide ? " hidden " : "") +
         " border-t border-l border-b border-lightBorder dark:border-darkBorder rounded-md"
       }
@@ -173,7 +173,6 @@ const ChildComments = ({
           setHideChildren((h) => !h);
         }}
       >
-        {/* Left column */}
         {/* Left Ribbon */}
         <div
           onClick={(e) => {
@@ -181,21 +180,12 @@ const ChildComments = ({
             setHideChildren((h) => !h);
           }}
           className={
-            "min-h-full w-1 md:w-2  lg:w-4 flex-none  cursor-pointer group"
+            "min-h-full w-1  flex-none  cursor-pointer group" +
+            (portraitMode ? " w-2.5 " : " md:w-2  lg:w-4")
           }
         >
-          <div className="flex-none w-0.5 md:w-1 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+          <div className="flex-none w-0.5  min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
         </div>
-        {/* Vote Buttons */}
-        <div
-          className={
-            " flex-col items-center justify-start flex-none lg:pr-2 md:pr-0.5 pt-4 hidden " +
-            (hideChildren || portraitMode ? " hidden " : " md:flex ")
-          }
-        >
-          {/* <Vote name={comment?.data?.name} likes={comment?.data?.likes} score={comment?.data?.score} hideScore={true}/> */}
-        </div>
-
         {/* Comment Body */}
         <div
           className={
@@ -220,7 +210,9 @@ const ChildComments = ({
                   e.stopPropagation();
                 }}
               >
-                <h1 className="">{comment?.data?.author ?? ""}</h1>
+                <h1 className="hover:underline">
+                  {comment?.data?.author ?? ""}
+                </h1>
               </a>
             </Link>
             {(comment?.data?.author == op || comment?.data?.is_submitter) && (
@@ -316,7 +308,9 @@ const ChildComments = ({
                 </div>
                 <button
                   className={
-                    hideChildren || comment?.myreply ? "hidden" : "block"
+                    hideChildren || comment?.myreply
+                      ? "hidden"
+                      : "block hover:underline"
                   }
                   onClick={(e) => {
                     e.preventDefault();
