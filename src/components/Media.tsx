@@ -201,11 +201,15 @@ const Media = ({
 
     const findIframe = async () => {
       //console.log("find iframe", post?.title);
+      //console.log(post?.mediaInfo?.iFrameHTML.src);
       if (post?.mediaInfo?.iFrameHTML) {
-        //   if (htmlsrc.includes("youtube.com")) {
-        //     setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
-        //     setisYTVid(true);
-        //   }
+        if (
+          post?.mediaInfo?.iFrameHTML.src.includes("youtube.com")
+          // || post?.mediaInfo?.iFrameHTML.src.includes("twitch.tv/embed")
+        ) {
+          setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
+          setisYTVid(true);
+        }
         setIFrame(post.mediaInfo.iFrameHTML);
         (context.columnOverride === 1 || allowIFrame) && setIsIFrame(true);
         return true;
@@ -382,9 +386,9 @@ const Media = ({
             <div
               className="relative"
               style={
-                imgFull && isYTVid
+                postMode && isYTVid
                   ? ytVidHeight
-                  : imgFull ||
+                  : true ||
                     context?.columnOverride == 1 ||
                     windowHeight > windowWidth
                   ? {

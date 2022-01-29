@@ -239,7 +239,9 @@ const VideoHandler = ({
         (postMode && " flex items-center justify-center  ")
       }
       // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
-      style={postMode ? { height: `${vidHeight}px` } : {}}
+      style={
+        postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
+      }
     >
       {videoLoaded ? (
         ""
