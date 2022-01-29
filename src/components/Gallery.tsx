@@ -47,6 +47,12 @@ const Gallery = ({ images, maxheight = 0 }) => {
               height: Math.floor(img.height * ratio),
               width: Math.floor(img.width * ratio),
             });
+          } else {
+            newimages.push({
+              url: img.url,
+              height: img.height,
+              width: img.width,
+            });
           }
           if (images[i].height > tallest) {
             tallest = images[i].height;
@@ -65,6 +71,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
     }
     setLoaded(true);
     return () => {
+      setIndex(0);
       setLoaded(false);
     };
   }, [images, maxheight]);
