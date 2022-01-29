@@ -283,7 +283,7 @@ const Media = ({
     };
   }, [post, allowIFrame, context?.columnOverride]);
 
-  const [imgheight, setheight] = useState({});
+  const [imgheight, setimgheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
   const [maxheightnum, setmaxheightnum] = useState<number>();
   useEffect(() => {
@@ -293,32 +293,57 @@ const Media = ({
     //     ? containerDims?.[1] / windowHeight
     //     : 0.93;
     // }
-
-    setheight({
-      height: `${imageInfo.height}px`,
-      maxHeight: `${
-        containerDims?.[1]
-          ? containerDims?.[1]
-          : Math.floor(
-              windowHeight *
-                (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-            )
-      }px`,
-    });
+    let imgheight = imageInfo.height;
+    if (
+      context?.columnOverride == 1 &&
+      !imgFull &&
+      imgheight > Math.floor(windowHeight * 0.75)
+    ) {
+      imgheight = windowHeight * 0.75;
+    }
+    post?.mediaInfo?.isPortrait
+      ? setimgheight({
+          height: `${imgheight}px`,
+          maxHeight: `${
+            containerDims?.[1]
+              ? containerDims?.[1]
+              : Math.floor(
+                  windowHeight *
+                    (context?.columnOverride == 1 && !imgFull
+                      ? 0.75
+                      : cropamount)
+                )
+          }px`,
+        })
+      : setimgheight({
+          //height: `${imgheight}px`,
+          maxHeight: `${
+            containerDims?.[1]
+              ? containerDims?.[1]
+              : Math.floor(
+                  windowHeight *
+                    (context?.columnOverride == 1 && !imgFull
+                      ? 0.75
+                      : cropamount)
+                )
+          }px`,
+        });
     setmaxheight({
       maxHeight: `${Math.floor(
         windowHeight *
           (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
       )}px`,
     });
-    setmaxheightnum(
-      Math.floor(
-        windowHeight *
-          (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-      )
-    );
+    containerDims?.[1]
+      ? setmaxheightnum(containerDims?.[1])
+      : setmaxheightnum(
+          Math.floor(
+            windowHeight *
+              (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
+          )
+        );
     return () => {
-      setheight({});
+      setimgheight({});
       setmaxheight({});
       setmaxheightnum(0);
     };
@@ -384,11 +409,11 @@ const Media = ({
           {isGallery ? (
             <div
               className="flex flex-col items-center"
-              style={
-                imgFull || (context?.columnOverride == 1 && !postMode)
-                  ? maxheight
-                  : {}
-              }
+              // style={
+              //   imgFull || (context?.columnOverride == 1 && !postMode)
+              //     ? maxheight
+              //     : {}
+              // }
             >
               <Gallery
                 images={galleryInfo}
@@ -426,10 +451,12 @@ const Media = ({
                 width={imageInfo.width}
                 alt=""
                 layout={
-                  imgFull ||
-                  (context?.columnOverride == 1 && !postMode) ||
+                  (imgFull && !(context?.cardStyle === "row1")) ||
+                  (context?.columnOverride == 1 &&
+                    !postMode &&
+                    post?.mediaInfo?.isPortrait) ||
                   imageInfo.url === "spoiler"
-                    ? "fill"
+                    ? "fill" //"fill" //fitting image to above container
                     : "responsive"
                 }
                 onLoadingComplete={onLoaded}

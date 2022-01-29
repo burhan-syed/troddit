@@ -96,9 +96,11 @@ const PostModal = ({
         apost?.mediaInfo?.isPortrait === false
       ) {
         setUsePortrait(apost?.mediaInfo?.isPortrait);
+        setimgFull(apost?.mediaInfo?.isPortrait);
       } else {
         let check = await findMediaInfo(apost);
-        check?.isPortrait && setUsePortrait(true);
+        setPost({ ...apost, mediaInfo: check });
+        check?.isPortrait ? setUsePortrait(true) : setimgFull(false);
       }
 
       setWait(false);
@@ -623,45 +625,48 @@ const PostModal = ({
                                 </button>
                               </>
                             )}
-
-                            <button
-                              onClick={(e) => setimgFull((p) => !p)}
-                              className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
-                            >
-                              {imgFull ? (
-                                <>
-                                  <h1
-                                    className={
-                                      "hidden " + (!usePortrait && " md:block ")
-                                    }
-                                  >
-                                    Size
-                                  </h1>
-                                  <BiExpand
-                                    className={
-                                      "flex-none w-6 h-6 " +
-                                      (!usePortrait && " md:pl-2")
-                                    }
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <h1
-                                    className={
-                                      "hidden " + (!usePortrait && " md:block ")
-                                    }
-                                  >
-                                    Size
-                                  </h1>
-                                  <BiCollapse
-                                    className={
-                                      "flex-none w-6 h-6 " +
-                                      (!usePortrait && " md:pl-2")
-                                    }
-                                  />
-                                </>
-                              )}
-                            </button>
+                            {apost?.mediaInfo?.isPortrait && (
+                              <button
+                                onClick={(e) => setimgFull((p) => !p)}
+                                className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                              >
+                                {imgFull ? (
+                                  <>
+                                    <h1
+                                      className={
+                                        "hidden " +
+                                        (!usePortrait && " md:block ")
+                                      }
+                                    >
+                                      Size
+                                    </h1>
+                                    <BiExpand
+                                      className={
+                                        "flex-none w-6 h-6 " +
+                                        (!usePortrait && " md:pl-2")
+                                      }
+                                    />
+                                  </>
+                                ) : (
+                                  <>
+                                    <h1
+                                      className={
+                                        "hidden " +
+                                        (!usePortrait && " md:block ")
+                                      }
+                                    >
+                                      Size
+                                    </h1>
+                                    <BiCollapse
+                                      className={
+                                        "flex-none w-6 h-6 " +
+                                        (!usePortrait && " md:pl-2")
+                                      }
+                                    />
+                                  </>
+                                )}
+                              </button>
+                            )}
                           </div>
                           <div className="flex flex-row items-center justify-end space-x-1">
                             <div>
