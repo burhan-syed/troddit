@@ -26,6 +26,7 @@ import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
+import MediaWrapper from "./views/MediaWrapper";
 
 const PostModal = ({
   setSelect,
@@ -90,7 +91,10 @@ const PostModal = ({
 
   useEffect(() => {
     const checkPortrait = async () => {
-      if (apost?.mediaInfo?.isPortrait === true || apost?.mediaInfo?.isPortrait === false) {
+      if (
+        apost?.mediaInfo?.isPortrait === true ||
+        apost?.mediaInfo?.isPortrait === false
+      ) {
         setUsePortrait(apost?.mediaInfo?.isPortrait);
       } else {
         let check = await findMediaInfo(apost);
@@ -155,6 +159,8 @@ const PostModal = ({
   const [hideNSFW, setHideNSFW] = useState(false);
   useEffect(() => {
     context.nsfw === "false" && apost?.over_18
+      ? setHideNSFW(true)
+      : apost?.spoiler
       ? setHideNSFW(true)
       : setHideNSFW(false);
     return () => {
@@ -352,25 +358,15 @@ const PostModal = ({
             {usePortrait && (
               <div className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
                 <div className={"flex-grow " + (!imgFull && " my-auto")}>
-                  <div
-                    className={
-                      "block relative   " + (hideNSFW && " overflow-hidden")
-                    }
-                  >
-                    <div className={(hideNSFW && "blur-3xl ") + " block "}>
-                      <Media
-                        post={apost}
-                        allowIFrame={true}
-                        imgFull={imgFull}
-                        portraitMode={true}
-                        postMode={true}
-                      />
-                    </div>
-                    {hideNSFW && (
-                      <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
-                        hidden
-                      </div>
-                    )}
+                  <div className={"block relative   "}>
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={apost}
+                      forceMute={false}
+                      allowIFrame={true}
+                      imgFull={imgFull}
+                      postMode={true}
+                    />
                   </div>
                 </div>
               </div>
@@ -532,6 +528,14 @@ const PostModal = ({
                               </span>
                             </div>
                           )}
+                          {apost?.spoiler && (
+                            <div className="flex flex-row pl-1 space-x-1">
+                              <p>•</p>
+                              <span className="text-red-400 text-color dark:text-red-700">
+                                SPOILER
+                              </span>
+                            </div>
+                          )}
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${apost?.domain})`}</p>
                           </div>
@@ -560,25 +564,15 @@ const PostModal = ({
                         {/* Image/Video/Text Body */}
                         {!usePortrait && (
                           <>
-                            <div
-                              className={
-                                "block relative md:ml-4" +
-                                (hideNSFW && " overflow-hidden")
-                              }
-                            >
-                              <div className={hideNSFW && "blur-3xl"}>
-                                <Media
-                                  post={apost}
-                                  allowIFrame={true}
-                                  imgFull={imgFull}
-                                  postMode={true}
-                                />
-                              </div>
-                              {hideNSFW && (
-                                <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
-                                  hidden
-                                </div>
-                              )}
+                            <div className={"block relative md:ml-4"}>
+                              <MediaWrapper
+                                hideNSFW={hideNSFW}
+                                post={apost}
+                                forceMute={false}
+                                allowIFrame={true}
+                                imgFull={imgFull}
+                                postMode={true}
+                              />
                             </div>
                           </>
                         )}

@@ -35,6 +35,7 @@ const Post = ({ post, postNum = 0 }) => {
     context.nsfw === "false" && post.over_18
       ? setHideNSFW(true)
       : setHideNSFW(false);
+    post.spoiler && setHideNSFW(true);
     findMedia();
     return () => {
       setHideNSFW(false);

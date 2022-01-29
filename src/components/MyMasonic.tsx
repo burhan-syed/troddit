@@ -68,7 +68,7 @@ const MyMasonic = ({
   isSubFlair = false,
   filterNum = 0,
   session = {},
-  page
+  page,
 }) => {
   const context: any = useMainContext();
   let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
@@ -219,7 +219,7 @@ const MyMasonic = ({
   );
 
   const loadMoreItems = async (startIndex, stopIndex) => {
-    console.log("try..", block.current, currAfter.current);
+    //console.log("try..", block.current, currAfter.current);
     if (
       allowload &&
       !error &&
@@ -276,7 +276,7 @@ const MyMasonic = ({
   }, [context.postNum]);
 
   const loadmore = async (loadafter = after) => {
-    console.log("loadmore after:", loadafter);
+    //console.log("loadmore after:", loadafter);
     let data: any = { after: "", children: [], token: null };
     if (!subreddits) {
       data = await loadFront(
@@ -341,7 +341,7 @@ const MyMasonic = ({
     // });
 
     if (data?.after) {
-      console.log("new", data?.after, "used: ", loadafter);
+      //console.log("new", data?.after, "used: ", loadafter);
       if (true) {
         //after === prevAfter.current
         prevAfters.current[loadafter] = 1;
@@ -361,7 +361,7 @@ const MyMasonic = ({
         }
         return { data: { posts: data?.children, after: data?.after } };
       } else {
-        console.log("reject");
+        //console.log("reject");
         return { data: { posts: [], after: "NONE" } };
       }
     } else {
@@ -372,7 +372,7 @@ const MyMasonic = ({
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    console.log("getpost call");
+    //console.log("getpost call");
 
     allowload = false;
     let caughtup = false;
@@ -391,7 +391,7 @@ const MyMasonic = ({
           setEnd(true);
           caughtup = true;
           allowload = false;
-          console.log("early return");
+          //console.log("early return");
           return payload;
         }
         //fastafter = data?.after;

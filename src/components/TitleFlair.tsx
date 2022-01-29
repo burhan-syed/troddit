@@ -29,7 +29,7 @@ const TitleFlair = ({ post }) => {
         <Link
           href={`/r/${
             post?.subreddit
-          }/search?sort=new&t=all&q=flair%3A${encodeURIComponent(
+          }/search?sort=new&t=year&q=flair%3A${encodeURIComponent(
             post?.link_flair_text
           )}`}
         >

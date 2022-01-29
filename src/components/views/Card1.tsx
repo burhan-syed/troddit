@@ -5,6 +5,7 @@ import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
+import MediaWrapper from "./MediaWrapper";
 
 //og card
 const Card1 = ({
@@ -84,6 +85,14 @@ const Card1 = ({
                     </span>
                   </div>
                 )}
+                {post?.spoiler && (
+                  <div className="flex flex-row pl-1 space-x-1">
+                    <p>•</p>
+                    <span className="text-red-400 text-color dark:text-red-700">
+                      SPOILER
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-row ml-auto">
                   <p className="ml-1">{`(${post.domain})`}</p>
                 </div>
@@ -111,22 +120,15 @@ const Card1 = ({
           {context.mediaOnly ? (
             <div className={!context.mediaOnly ? "pt-1 pb-1.5" : undefined}>
               {hasMedia && (
-                <div
-                  className={
-                    "relative group " +
-                    (hideNSFW ? " overflow-hidden" : undefined)
-                  }
-                >
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                    <div className={hideNSFW ? " blur-3xl" : undefined}>
-                      <Media post={post} allowIFrame={allowIFrame} />
-                    </div>
-                  </a>
-                  {hideNSFW && (
-                    <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
-                      hidden
-                    </div>
-                  )}
+                <div className={"relative group "}>
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    allowIFrame={allowIFrame}
+                    postMode={false}
+                    imgFull={false}
+                  />
                   {context.mediaOnly && (
                     <div className="">
                       <a
@@ -180,6 +182,14 @@ const Card1 = ({
                               </span>
                             </div>
                           )}
+                          {post?.spoiler && (
+                            <div className="flex flex-row pl-1 space-x-1">
+                              <p>•</p>
+                              <span className="text-red-400 text-color dark:text-red-700">
+                                SPOILER
+                              </span>
+                            </div>
+                          )}
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${post.domain})`}</p>
                           </div>
@@ -218,39 +228,18 @@ const Card1 = ({
             </div>
           ) : (
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <div
-                className={
-                  (!context.mediaOnly ? "pt-1 pb-1.5 " : undefined) +
-                  (hideNSFW ? "relative overflow-hidden" : undefined)
-                }
-              >
-                {/* {!hideNSFW ? ( */}
-                <div
-                  className={
-                    "relative group " + (hideNSFW ? " blur-3xl" : undefined)
-                  }
-                >
-                  <Media
-                    post={post}
-                    forceMute={forceMute}
-                    allowIFrame={allowIFrame}
-                  />
-                </div>
-                {hideNSFW && (
-                  <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
-                    hidden
-                  </div>
-                )}
-                {/* ) : (
-                  <div className="flex flex-row justify-center text-red-400 text-color dark:text-red-700">
-                    NSFW
-                  </div>
-                )} */}
+              <div className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}>
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  forceMute={forceMute}
+                  allowIFrame={allowIFrame}
+                  postMode={false}
+                  imgFull={false}
+                />
               </div>
             </a>
           )}
-
-          {/* <p>{post?.url ?? "ERR"}</p> */}
 
           {(!context.mediaOnly || !hasMedia) && (
             <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">

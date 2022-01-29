@@ -245,14 +245,20 @@ const SubredditBanner = ({ subreddits }) => {
               {loaded && (
                 <>
                   <p>
-                    {currSubInfo?.subscribers?.toLocaleString("en-US")} members,{" "}
-                    {currSubInfo?.active_user_count?.toLocaleString("en-US")}{" "}
+                    {currSubInfo?.subscribers?.toLocaleString("en-US")} members
+                    <span className="px-2">•</span>
+                    {currSubInfo?.active_user_count?.toLocaleString(
+                      "en-US"
+                    )}{" "}
                     here
                   </p>
                   {currSubInfo?.over18 && (
-                    <p className="text-red-400 text-color dark:text-red-700">
-                      NSFW
-                    </p>
+                    <>
+                      <span>•</span>
+                      <p className="text-red-400 text-color dark:text-red-700">
+                        NSFW
+                      </p>
+                    </>
                   )}
                 </>
               )}

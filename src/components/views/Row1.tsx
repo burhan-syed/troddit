@@ -16,6 +16,7 @@ import {
 } from "react-icons/ai";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
+import MediaWrapper from "./MediaWrapper";
 const Row1 = ({
   post,
   hasMedia,
@@ -159,6 +160,14 @@ const Row1 = ({
               </span>
             </div>
           )}
+          {post?.spoiler && (
+            <div className="flex flex-row pl-1 space-x-1">
+              <p>•</p>
+              <span className="text-red-400 text-color dark:text-red-700">
+                SPOILER
+              </span>
+            </div>
+          )}
           <span className="ml-4 text-xs font-xs">{`(${post.domain})`}</span>
         </div>
         {/* Links */}
@@ -224,15 +233,23 @@ const Row1 = ({
             }
           >
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <div className={hideNSFW && "blur-3xl"}>
+              {/* <div className={hideNSFW && "blur-3xl"}>
                 <Media post={post} imgFull={true} allowIFrame={expand} />
-              </div>
+              </div> */}
+              <MediaWrapper
+                hideNSFW={hideNSFW}
+                post={post}
+                forceMute={forceMute}
+                allowIFrame={expand}
+                postMode={false}
+                imgFull={true}
+              />
             </a>
-            {hideNSFW && (
+            {/* {hideNSFW && (
               <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                 hidden
               </div>
-            )}
+            )} */}
           </div>
         )}
       </div>

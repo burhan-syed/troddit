@@ -4,6 +4,7 @@ import Media from "../Media";
 import { secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
+import MediaWrapper from "./MediaWrapper";
 
 //og card
 const Card1 = ({
@@ -21,33 +22,21 @@ const Card1 = ({
     <div>
       <div
         className={
-          // (!context.mediaOnly || !hasMedia || hideNSFW
-          //   ? "px-3 pt-3 pb-2 "
-          //   : "  ") +
-          // (!context.mediaOnly && " rounded-md ") +
           (context?.columnOverride == 1 && "") +
           " text-sm bg-lightPost group hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-trueGray-900 dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">
-          <div className={""}>
-            <div
-              className={"relative group" + (hideNSFW && " overflow-hidden")}
-            >
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <div className={hideNSFW && " blur-3xl"}>
-                  <Media post={post} />
-                </div>
-              </a>
-              {hideNSFW && (
-                <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
-                  hidden
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* <p>{post?.url ?? "ERR"}</p> */}
+          <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+            <MediaWrapper
+              hideNSFW={hideNSFW}
+              post={post}
+              forceMute={forceMute}
+              allowIFrame={false}
+              postMode={false}
+              imgFull={false}
+            />
+          </a>
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
               <h1
@@ -108,6 +97,14 @@ const Card1 = ({
                     <p>•</p>
                     <span className="text-red-400 text-color dark:text-red-700">
                       NSFW
+                    </span>
+                  </div>
+                )}
+                {post?.spoiler && (
+                  <div className="flex flex-row pl-1 space-x-1">
+                    <p>•</p>
+                    <span className="text-red-400 text-color dark:text-red-700">
+                      SPOILER
                     </span>
                   </div>
                 )}
