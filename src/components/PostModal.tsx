@@ -494,7 +494,7 @@ const PostModal = ({
                     {/* Flex container */}
                     <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                       {/* Upvote column */}
-                      <div className="flex-col items-center self-start justify-start hidden h-full pt-1.5 md:px-2 md:flex ">
+                      <div className="flex-col items-center w-12 self-start justify-start hidden h-full pt-1.5 md:px-2 md:flex ">
                         <Vote
                           likes={apost?.likes}
                           name={apost?.name}
@@ -506,7 +506,7 @@ const PostModal = ({
                       {/* Main Media Column */}
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
-                        <div className="flex flex-row flex-none pt-1.5 text-sm md:pl-3">
+                        <div className="flex flex-row flex-wrap pt-1.5 text-sm md:pl-3">
                           <Link href={`/u/${apost?.author}`}>
                             <a
                               onClick={(e) => {
@@ -556,13 +556,13 @@ const PostModal = ({
                             <p className="ml-1">{`(${apost?.domain})`}</p>
                           </div>
                         </div>
-                        <h1 className="flex items-center justify-start py-2 md:pl-3">
+                        <h1 className="py-2 md:pl-3">
                           <a
                             className={
                               (apost?.distinguished == "moderator" ||
                                 (apost?.stickied &&
                                   " text-green-500 dark:text-green-700")) +
-                              " text-xl font-semibold"
+                              " text-xl font-semibold mr-2"
                             }
                             href={`https://www.reddit.com${
                               apost?.permalink ?? ""
@@ -572,7 +572,7 @@ const PostModal = ({
                           >
                             {apost?.title ?? ""}
                           </a>
-                          <span className="ml-1 text-xs">
+                          <span className="text-sm ">
                             <TitleFlair post={apost} />
                           </span>
                         </h1>

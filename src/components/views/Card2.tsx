@@ -46,16 +46,20 @@ const Card1 = ({
                   "  text-lg font-semibold  leading-none cursor-pointer"
                 }
               >
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <a
+                  href={post?.permalink}
+                  onClick={(e) => e.preventDefault()}
+                  className="mr-2"
+                >
                   {post?.title ?? ""}
                 </a>
 
-                <span className="ml-1 text-xs">
+                <span className="text-sm">
                   <TitleFlair post={post} />
                 </span>
               </h1>
 
-              <div className="flex flex-row py-1 pb-1 text-xs truncate text-gray">
+              <div className="flex flex-row flex-wrap py-1 pb-1 text-xs truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"

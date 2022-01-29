@@ -39,8 +39,8 @@ const Card1 = ({
       >
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
-            <>
-              <div className="flex flex-row py-1 text-xs truncate select-auto text-gray">
+            <div>
+              <div className="flex flex-row flex-wrap py-1 text-xs truncate select-auto text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -98,25 +98,30 @@ const Card1 = ({
                 </div>
               </div>
               <div className="py-2">
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                  <h1
-                    className={
-                      (post?.distinguished == "moderator" &&
-                        " text-green-500 dark:text-green-700") +
-                      " items-center text-lg font-semibold  leading-none cursor-pointer pb-2"
-                    }
+                <h1
+                  className={
+                    (post?.distinguished == "moderator" &&
+                      " text-green-500 dark:text-green-700") +
+                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2"
+                  }
+                >
+                  <a
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                    className="mr-2"
                   >
                     {`${post?.title}` ?? ""}
-                    <span className="ml-2 text-sm">
-                      <TitleFlair post={post} />
-                    </span>
-                  </h1>
-                </a>
+                  </a>
+                  <span className="text-sm ">
+                    <TitleFlair post={post} />
+                  </span>
+                </h1>
+
                 {/* <div className="pb-1 text-xs">
                   
                 </div> */}
               </div>
-            </>
+            </div>
           )}
 
           {/* Media Only */}

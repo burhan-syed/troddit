@@ -46,7 +46,7 @@ const VideoHandler = ({
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
     if (postMode && containerDims) {
-      console.log(containerDims);
+      //console.log(containerDims);
       let ry = containerDims?.[1] / videoInfo?.height;
       let rx = containerDims?.[0] / videoInfo?.width;
       if (Math.abs(ry - rx) < 0.05) {
