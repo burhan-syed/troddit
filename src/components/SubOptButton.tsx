@@ -166,7 +166,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
                         </div>
                         <div
                           className={
-                            "absolute top-[-2px] left-[-160px] w-40 max-h-96 overflow-y-scroll  bg-white border-2 rounded-md py-1 shadow-lg dark:bg-darkBG ring-1 ring-black ring-opacity-5 focus:outline-none dark:border dark:border-lightBorder " +
+                            "absolute top-[-2px] left-[-160px] w-40 max-h-96 overflow-y-scroll  bg-white border-2 rounded-md py-1 shadow-lg dark:bg-darkBG ring-1 ring-black ring-opacity-5 focus:outline-none dark:border dark:border-lightBorder scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800" +
                             (active ? "  " : " hidden ")
                           }
                         >

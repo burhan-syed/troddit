@@ -8,10 +8,7 @@ import { useSubsContext } from "../MySubs";
 const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
-  const {
-    createLocalMulti,
-    createRedditMulti
-  } = subsContext;
+  const { createLocalMulti, createRedditMulti } = subsContext;
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
@@ -22,7 +19,6 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
   useEffect(() => {
     setSubsForMulti(subreddits);
   }, [subreddits]);
-
 
   useEffect(() => {
     toOpen > 0 && setOpen(true);
@@ -47,34 +43,38 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
     }
   };
 
-  const createMultiButton = async() => {
-    if(input.length === 0){
+  const createMultiButton = async () => {
+    if (input.length === 0) {
       setErr("Enter Multi Name");
     } else if (input.length > 50) {
-      setErr("Max Name Length is 50 Characters")
+      setErr("Max Name Length is 50 Characters");
     } else {
       setErr("");
-      if(subsForMulti.length > 0){
-        if (session){
+      if (subsForMulti.length > 0) {
+        if (session) {
           setWaiting(true);
-          let res = await createRedditMulti(input,subsForMulti,session.user.name);
+          let res = await createRedditMulti(
+            input,
+            subsForMulti,
+            session.user.name
+          );
           if (!res) setErr("Multi Already Exists");
-          else{
+          else {
             setWaiting(false);
             setOpen(false);
           }
         } else {
           setWaiting(true);
-          let res = await createLocalMulti(input,subsForMulti);
+          let res = await createLocalMulti(input, subsForMulti);
           if (res) setOpen(false);
-          else{
+          else {
             setWaiting(false);
             setErr("Multi Already Exists");
           }
         }
       }
     }
-  }
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -138,14 +138,15 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
                             key={s}
                             className={
                               "flex items-center justify-between " +
-                              (i === subreddits.length - 1 && subreddits.length > 5 &&
+                              (i === subreddits.length - 1 &&
+                                subreddits.length > 5 &&
                                 " min-w-full")
                             }
                           >
                             <div
                               className={
                                 "flex items-center px-3 py-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 cursor-pointer dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-                                (subsForMulti.includes(s) ? " ring-1 " : " ")
+                                (subsForMulti.includes(s) ? " ring-2 " : " ")
                               }
                               onClick={() => toggleSubSelect(s)}
                             >
@@ -163,7 +164,13 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
                         ))}
                       </div>
 
-                      <form className="w-full " onSubmit={e => {e.preventDefault(); createMultiButton();}}>
+                      <form
+                        className="w-full "
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          createMultiButton();
+                        }}
+                      >
                         <div className="flex items-center py-2 border-b border-teal-500">
                           <input
                             className="w-full px-2 py-1 mr-3 leading-tight bg-transparent border-none appearance-none focus:outline-none"
@@ -175,7 +182,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
                           />
                           <button
                             onClick={createMultiButton}
-                            className="flex-shrink-0 px-2 py-1 text-sm border rounded-lg hover:ring-1"
+                            className="flex-shrink-0 px-2 py-1 text-sm border rounded-lg hover:ring-2"
                             type="button"
                           >
                             {`Create`}
@@ -184,9 +191,15 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
                       </form>
                       <div className="flex items-center justify-between text-xs">
                         {subsForMulti.length === 0 ? (
-                          <h1 className="italic text-red-500">{"Select 1 Sub Minimum"}</h1>
-                        ) : subsForMulti.length > 1 && (
-                          <h1>{`Creating multi with ${subsForMulti.length} sub${subsForMulti.length > 1 ? "s" : ""}`}</h1>
+                          <h1 className="italic text-red-500">
+                            {"Select 1 Sub Minimum"}
+                          </h1>
+                        ) : subsForMulti.length > 1 ? (
+                          <h1>{`Creating multi with ${subsForMulti.length} sub${
+                            subsForMulti.length > 1 ? "s" : ""
+                          }`}</h1>
+                        ) : (
+                          <h1 className="text-transparent select-none ">a</h1>
                         )}
                         {err && <h1 className="italic text-red-500">{err}</h1>}
                       </div>

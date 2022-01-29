@@ -343,7 +343,21 @@ const Search = ({ id }) => {
     e.stopPropagation();
     if (router.route === "/r/[...slug]") {
       let curr = router?.query?.slug?.[0];
-      router.push(`${sub}+${curr}`);
+      let alreadyadded = false;
+      curr
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%2b")
+        .join("+")
+        .split("%2B")
+        .join("+")
+        .split("+")
+        .forEach((s) => {
+          if (s.toUpperCase() === sub.toUpperCase()) alreadyadded = true;
+        });
+      !alreadyadded && router.push(`${sub}+${curr}`);
     } else {
       goToSub(e, sub);
     }

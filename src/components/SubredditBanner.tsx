@@ -116,6 +116,7 @@ const SubredditBanner = ({ subreddits }) => {
   const goToMulti = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setMultiSub("");
     router.push(`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`);
   };
 
@@ -211,7 +212,7 @@ const SubredditBanner = ({ subreddits }) => {
             <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
               {loaded ? (
                 <>
-                  <h1 className="flex items-start text-4xl">
+                  <h1 className="flex items-end text-4xl">
                     <Link href={currSubInfo?.display_name ?? "/"}>
                       <a onClick={() => context.setForceRefresh((p) => p + 1)}>
                         {currSubInfo?.display_name_prefixed}
@@ -221,13 +222,19 @@ const SubredditBanner = ({ subreddits }) => {
                       href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`}
                       target={"_blank"}
                       rel="noreferrer"
-                      className="mt-2 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+                      className="mb-4 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
                     >
                       <span className="">
                         <BsBoxArrowInUpRight className="w-4 h-4" />
                       </span>
                     </a>
+                    {subArray.length > 1 && multiSub === "" && (
+                      <span className="ml-1 text-xl">{`and ${
+                        subArray.length - 1
+                      } more`}</span>
+                    )}
                   </h1>
+
                   <div className="items-center justify-end hidden space-x-0.5 md:flex">
                     <SubButton sub={session ? currSubInfo.name : subreddit} />
                     <SubOptButton
@@ -303,7 +310,12 @@ const SubredditBanner = ({ subreddits }) => {
                   currMulti ? `?m=${currMulti}` : ""
                 }`}
               >
-                <div className="items-center px-4 py-1.5 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                <div
+                  className={
+                    "items-center px-4 py-1.5 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
+                    (multiSub === "" && "  ring-2")
+                  }
+                >
                   {`${currMulti ? `${currMulti}` : "Multi"} (${
                     subArray.length
                   })`}
@@ -312,7 +324,7 @@ const SubredditBanner = ({ subreddits }) => {
             </div>
             <div
               ref={pillsRef}
-              className="flex space-x-2 overflow-x-scroll capitalize scrollbar-none"
+              className="flex p-1 space-x-2 overflow-x-scroll capitalize scrollbar-none"
             >
               {subArray.map((s) => (
                 <div
@@ -322,7 +334,13 @@ const SubredditBanner = ({ subreddits }) => {
                   key={s}
                 >
                   <a href={`${s}`}>
-                    <div className="flex items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover">
+                    <div
+                      className={
+                        "flex items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
+                        (s.toUpperCase() === multiSub.toUpperCase() &&
+                          "  ring-2")
+                      }
+                    >
                       <h1 className="">{s}</h1>
                       <button
                         onClick={(e) => {
