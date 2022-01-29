@@ -130,18 +130,7 @@ const Feed = ({
       setError(false);
       updateLoading(true);
     };
-  }, [
-    subreddits,
-    sort,
-    range,
-    sessloading,
-    context.forceRefresh,
-    imgFilter,
-    vidFilter,
-    galFilter,
-    selfFilter,
-    linkFilter,
-  ]);
+  }, [subreddits, sort, range, sessloading, context.forceRefresh]);
 
   const fetchFront = async () => {
     let data: any = await loadFront(
@@ -330,20 +319,21 @@ const Feed = ({
         <div className={"w-full md:w-11/12"}>
           {/* + (context?.maximize ? " " : " md:w-5/6") */}
           {!loading && (
-            <ErrorBoundary         FallbackComponent={ErrorFallback}
-            onReset={() => context.setForceRefresh(i => i+1)}
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onReset={() => context.setForceRefresh((i) => i + 1)}
             >
-            <MyMasonic
-            page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
-              query={query}
-              initItems={posts}
-              initAfter={after}
-              isUser={isUser}
-              isMulti={isMulti}
-              session={session}
-              isSubFlair={isSubFlair}
-              filterNum={filterCount}
-            />
+              <MyMasonic
+                //page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
+                query={query}
+                initItems={posts}
+                initAfter={after}
+                isUser={isUser}
+                isMulti={isMulti}
+                session={session}
+                isSubFlair={isSubFlair}
+                filterNum={filterCount}
+              />
             </ErrorBoundary>
           )}
         </div>
@@ -352,13 +342,21 @@ const Feed = ({
   );
 };
 
-function ErrorFallback({error, resetErrorBoundary}) {
+function ErrorFallback({ error, resetErrorBoundary }) {
   return (
-    <div className="flex flex-col items-center justify-center h-screen mb-auto" role="alert">
+    <div
+      className="flex flex-col items-center justify-center h-screen mb-auto"
+      role="alert"
+    >
       <p className="text-center">Something went wrong</p>
-      <button className="p-2 mb-2 border border-blue-700 rounded-lg hover:bg-lightHighlight dark:hover:bg-darkHighlight" onClick={resetErrorBoundary}>Try again</button>
+      <button
+        className="p-2 mb-2 border border-blue-700 rounded-lg hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+        onClick={resetErrorBoundary}
+      >
+        Try again
+      </button>
     </div>
-  )
+  );
 }
 
 export default Feed;

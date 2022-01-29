@@ -89,17 +89,19 @@ const PostModal = ({
     }
   };
 
+  const [mediaInfo, setMediaInfo] = useState<any>();
   useEffect(() => {
     const checkPortrait = async () => {
       if (
         apost?.mediaInfo?.isPortrait === true ||
         apost?.mediaInfo?.isPortrait === false
       ) {
+        setMediaInfo(mediaInfo);
         setUsePortrait(apost?.mediaInfo?.isPortrait);
         setimgFull(apost?.mediaInfo?.isPortrait);
       } else {
         let check = await findMediaInfo(apost);
-        setPost({ ...apost, mediaInfo: check });
+        setMediaInfo(check);
         check?.isPortrait ? setUsePortrait(true) : setimgFull(false);
       }
 
@@ -625,7 +627,7 @@ const PostModal = ({
                                 </button>
                               </>
                             )}
-                            {apost?.mediaInfo?.isPortrait && (
+                            {mediaInfo?.isPortrait && (
                               <button
                                 onClick={(e) => setimgFull((p) => !p)}
                                 className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "

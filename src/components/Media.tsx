@@ -298,29 +298,23 @@ const Media = ({
     //     : 0.93;
     // }
     let imgheight = imageInfo.height;
-    if (
-      context?.columnOverride == 1 &&
-      !imgFull &&
-      imgheight > Math.floor(windowHeight * 0.75)
-    ) {
-      imgheight = windowHeight * 0.75;
-    }
+    // if (
+    //   context?.columnOverride == 1 &&
+    //   !imgFull &&
+    //   imgheight > Math.floor(windowHeight * 0.75)
+    // ) {
+    //   imgheight = windowHeight * 0.75;
+    // }
     post?.mediaInfo?.isPortrait
       ? setimgheight({
           height: `${imgheight}px`,
-          maxHeight: `${
-            containerDims?.[1]
-              ? containerDims?.[1]
-              : Math.floor(
-                  windowHeight *
-                    (context?.columnOverride == 1 && !imgFull
-                      ? 0.75
-                      : cropamount)
-                )
-          }px`,
+          maxHeight: `${Math.floor(
+            windowHeight *
+              (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
+          )}px`,
         })
       : setimgheight({
-          //height: `${imgheight}px`,
+          height: `${imgheight}px`,
           maxHeight: `${
             containerDims?.[1]
               ? containerDims?.[1]
@@ -456,9 +450,7 @@ const Media = ({
                 alt=""
                 layout={
                   (imgFull && !(context?.cardStyle === "row1")) ||
-                  (context?.columnOverride == 1 &&
-                    !postMode &&
-                    post?.mediaInfo?.isPortrait) ||
+                  (context?.columnOverride == 1 && !postMode) || // && post?.mediaInfo?.isPortrait
                   imageInfo.url === "spoiler"
                     ? "fill" //"fill" //fitting image to above container
                     : "responsive"
