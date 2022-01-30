@@ -305,7 +305,7 @@ const Media = ({
     // ) {
     //   imgheight = windowHeight * 0.75;
     // }
-    post?.mediaInfo?.isPortrait
+    !post?.mediaInfo?.isPortrait
       ? setimgheight({
           height: `${imgheight}px`,
           maxHeight: `${Math.floor(
@@ -320,7 +320,9 @@ const Media = ({
               ? containerDims?.[1]
               : Math.floor(
                   windowHeight *
-                    (context?.columnOverride == 1 && !imgFull
+                    (postMode
+                      ? 0.5
+                      : context?.columnOverride == 1 && !imgFull
                       ? 0.75
                       : cropamount)
                 )
@@ -432,7 +434,7 @@ const Media = ({
             <div
               className={"relative block "}
               style={
-                imgFull || (context?.columnOverride == 1 && !postMode)
+                imgFull || (context?.columnOverride == 1 && !postMode) 
                   ? imgheight
                   : {}
               }

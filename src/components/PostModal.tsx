@@ -96,7 +96,7 @@ const PostModal = ({
         apost?.mediaInfo?.isPortrait === true ||
         apost?.mediaInfo?.isPortrait === false
       ) {
-        setMediaInfo(mediaInfo);
+        setMediaInfo(apost.mediaInfo);
         setUsePortrait(apost?.mediaInfo?.isPortrait);
         setimgFull(apost?.mediaInfo?.isPortrait);
       } else {
