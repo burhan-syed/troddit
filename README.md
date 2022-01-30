@@ -3,12 +3,15 @@
 
 Built with NextJS and Typescript. Styled with TailwindCSS. 
 
+Live at [troddit.com](https://www.troddit.com)
+
 ## Features
 
 - Secure logins with Reddit to enable voting, commenting, managing your subreddits and multireddits (aka feeds), and access to your personal front page. 
 - 'Offline mode' to follow subreddits and manage multis locally without login. Autogenerates a personal front page. 
   - Visit your [subreddits multi](https://www.reddit.com/subreddits), replace 'reddit' with 'troddit' in the URL, then use the 'Join All' option to quickly follow all subs locally. 
 - Search for subreddits with auto-complete. 
+- Filter posts by type (Images, Video/GIFs, Links, Self)  
 - View posts in single column, custom multi-column with a grid-masonry layout, or a simple row mode. All with infinite-scrolling. 
 - Choose your card style: Original for full post text in card, Compact to exclude post text, or Media to hide all text and card padding. 
 - Gallery view: Click on a post and navigate through the feed with on screen buttons or your arrow keys. Shows the post content as well as its comments from Reddit. Smart portrait mode to automatically arrange vertical photos and videos side by side with comments. 
