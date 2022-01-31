@@ -6,7 +6,7 @@ import { useSession } from "next-auth/client";
 import ToggleFilters from "./ToggleFilters";
 import { useMainContext } from "../MainContext";
 
-const filters = ["images", "videos", "self", "links"];
+const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
 const FilterModal = ({ toOpen }) => {
   const context: any = useMainContext();
@@ -68,16 +68,26 @@ const FilterModal = ({ toOpen }) => {
                 >
                   <RiArrowGoBackLine className="w-8 h-8 " />
                 </div>
-                <div className="mt-2 sm:flex sm:items-start ">
+                <div className="flex-col mt-2 ">
+                  {/* //sm:flex sm:items-start "> */}
                   <div className="min-w-full py-1 ">
                     {filters.map((f, i) => (
                       <div key={i}>
-                        <div className={"block px-4 py-2 text-sm "}>
+                        <div className={"block px-4  text-sm "}>
                           <ToggleFilters filter={f} />
                         </div>
                       </div>
                     ))}
                   </div>
+                  {/* <h1 className="pl-6 text-xs">Advanced</h1> */}
+                  {/* <div className="">
+                    <div className={"block px-4  text-sm "}>
+                      <ToggleFilters filter={"portrait"} />
+                    </div>
+                    <div className={"block px-4  text-sm "}>
+                      <ToggleFilters filter={"landscape"} />
+                    </div>
+                  </div> */}
                 </div>
                 <button
                   className="flex items-center justify-center px-4 py-1.5 ml-auto mr-4 text-center border-2 dark:border dark:border-lightBorder hover:bg-lightHighlight rounded-md cursor-pointer dark:hover:bg-darkBorder "

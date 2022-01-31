@@ -92,7 +92,7 @@ const SortMenu2 = ({ hide = false }) => {
 
   const updateRange = (e, r, s = "top") => {
     e.preventDefault();
-    console.log(router);
+    //console.log(router);
     setRange(r);
     if (router.route === "/") {
       router.push({

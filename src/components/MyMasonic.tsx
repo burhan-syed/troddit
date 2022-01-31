@@ -31,6 +31,7 @@ import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
 import { usePlausible } from "next-plausible";
 import { findMediaInfo } from "../../lib/utils";
+import { useRouter } from "next/router";
 
 const randInt = (min = 200, max = 500) =>
   Math.floor(Math.random() * (max - min)) + min;
@@ -70,8 +71,17 @@ const MyMasonic = ({
   session = {},
   //page,
 }) => {
+  const router = useRouter();
   const context: any = useMainContext();
-  let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
+  let {
+    imgFilter,
+    vidFilter,
+    selfFilter,
+    galFilter,
+    linkFilter,
+    imgPortraitFilter,
+    imgLandscapeFilter,
+  } = context;
   const [filterCount, setFilterCount] = useState(0);
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
@@ -94,6 +104,7 @@ const MyMasonic = ({
   const block = useRef(null);
 
   useEffect(() => {
+    //console.log(router);
     prevAfter.current = ""; //initAfter;
     currAfter.current = initAfter;
     block.current = false;
@@ -115,6 +126,7 @@ const MyMasonic = ({
     context.setPosts(initItems);
     setItems(initItems);
     initItems.length < 1 && loadMoreItems(0, 10);
+
     setLoading(false);
 
     return () => {
@@ -278,7 +290,14 @@ const MyMasonic = ({
   const loadmore = async (loadafter = after) => {
     //console.log("loadmore after:", loadafter);
     let data: any = { after: "", children: [], token: null };
-    if (!subreddits) {
+    if (
+      router?.route === "/" ||
+      router?.asPath === "/best" ||
+      router?.asPath === "/top" ||
+      router?.asPath === "/hot" ||
+      router?.asPath === "/new" ||
+      router?.asPath === "/rising"
+    ) {
       data = await loadFront(
         session ? true : false,
         context?.token,
@@ -289,7 +308,7 @@ const MyMasonic = ({
         context?.localSubs
         //items.length
       );
-    } else if (isUser) {
+    } else if (isUser || router?.pathname === "/u/[...slug]") {
       if (isMulti) {
         data = await getUserMultiPosts(
           query?.slug?.[0],
@@ -416,8 +435,28 @@ const MyMasonic = ({
     }
 
     const filterCheck = async (d) => {
-      let mediaInfo = await findMediaInfo(d, true);
-      //console.log(d.title,mediaInfo,d)
+      let quick = true;
+      //need to get all resolution data if filtering out orientations
+      if (!imgPortraitFilter || !imgLandscapeFilter) quick = false;
+      let mediaInfo = await findMediaInfo(d, quick);
+      //orientation check
+      if (!imgPortraitFilter || !imgLandscapeFilter) {
+        //only check on videos or images (galleries a subset of images)
+        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
+          //hide portrait if they are portrait, square is considered portrait
+          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
+            setFilterCount((n) => n + 1);
+
+            return false;
+          }
+          //hide landscape if not portrait (are landscape)
+          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
+            setFilterCount((n) => n + 1);
+
+            return false;
+          }
+        }
+      }
       if (!vidFilter && mediaInfo.isVideo) {
         if (!(selfFilter && mediaInfo.isSelf)) {
           setFilterCount((n) => n + 1);
@@ -505,7 +544,8 @@ const MyMasonic = ({
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
-            Loaded {numposts} posts on {count + 1} pages.{" "}
+            Loaded {numposts} post{numposts > 1 ? "s" : ""} on {count + 1} page
+            {count + 1 > 1 ? "s" : ""}.{" "}
           </h1>
         </div>
       )}

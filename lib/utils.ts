@@ -124,6 +124,7 @@ export const findMediaInfo = async (post, quick = false) => {
       isIframe,
       isLink,
       isSelf,
+      dimensions,
     };
   };
 

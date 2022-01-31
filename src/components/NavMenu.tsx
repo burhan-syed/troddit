@@ -11,14 +11,13 @@ import ToggleMediaOnly from "./ToggleMediaOnly";
 import ToggleAudioOnHover from "./ToggleAudioOnHover";
 import Login from "./Login";
 
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const NavMenu = ({ hide = false }) => {
   const context: any = useMainContext();
- 
+
   return (
     <Menu
       as="div"
@@ -214,7 +213,6 @@ const NavMenu = ({ hide = false }) => {
                     e.preventDefault();
                     context.setCardStyle("default");
                   }}
-                  
                 >
                   <div
                     className={classNames(

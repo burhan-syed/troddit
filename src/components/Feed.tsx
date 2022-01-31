@@ -34,7 +34,15 @@ const Feed = ({
   const [error, setError] = useState(false);
   const [fetchPost, setFetchPost] = useState(false);
   const context: any = useMainContext();
-  let { imgFilter, vidFilter, selfFilter, galFilter, linkFilter } = context;
+  let {
+    imgFilter,
+    vidFilter,
+    selfFilter,
+    galFilter,
+    linkFilter,
+    imgPortraitFilter,
+    imgLandscapeFilter,
+  } = context;
   const [filterCount, setFilterCount] = useState(0);
   // const breakpointColumnsObj = {
   //   default: 4,
@@ -227,15 +235,40 @@ const Feed = ({
     }
 
     const filterCheck = async (d) => {
-      let mediaInfo = await findMediaInfo(d, true);
-      //console.log(d.title,mediaInfo,d)
+      let quick = true;
+      //need to get all resolution data if filtering out orientations
+      if (!imgPortraitFilter || !imgLandscapeFilter) {
+        quick = false;
+      }
+      let mediaInfo = await findMediaInfo(d, quick);
+      //orientation check
+      if (!imgPortraitFilter || !imgLandscapeFilter) {
+        //only check on videos or images (galleries consider images)
+        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
+          //hide portrait if they are portrait, square is considered portrait
+
+          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
+            setFilterCount((n) => n + 1);
+
+            return false;
+          }
+          //hide landscape if not portrait (are landscape)
+          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
+            setFilterCount((n) => n + 1);
+
+            return false;
+          }
+        }
+      }
 
       if (!vidFilter && mediaInfo.isVideo) {
+        //if video is not in self post, filter out
         if (!(selfFilter && mediaInfo.isSelf)) {
           setFilterCount((n) => n + 1);
           return false;
         }
       } else if (!imgFilter && mediaInfo.isImage) {
+        //if image is not in self post, filter out
         if (!(selfFilter && mediaInfo.isSelf)) {
           setFilterCount((n) => n + 1);
           return false;
@@ -243,7 +276,9 @@ const Feed = ({
       } else if (!linkFilter && mediaInfo.isLink) {
         setFilterCount((n) => n + 1);
         return false;
-      } else if (!selfFilter && mediaInfo.isSelf) {
+      }
+      //if self post, filter out
+      else if (!selfFilter && mediaInfo.isSelf) {
         setFilterCount((n) => n + 1);
         return false;
       } else if (!galFilter && mediaInfo.isGallery) {
@@ -318,7 +353,12 @@ const Feed = ({
       <div className="flex flex-col items-center flex-none w-screen">
         <div
           className={
-            "w-full md:w-11/12" +
+            "w-full " +
+            (context.columnOverride === 1 &&
+            context.cardStyle !== "row1" &&
+            !context.maximize
+              ? " md:w-11/12 " // max-w-2xl issues when switching between column counts, requires rerender of component, revisit later
+              : " md:w-11/12 ") +
             (context.cardStyle === "row1"
               ? " bg-lightPost dark:bg-[#212121] "
               : " ")
@@ -352,7 +392,7 @@ const Feed = ({
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen mb-auto"
+      className="flex flex-col items-center justify-center mb-auto"
       role="alert"
     >
       <p className="text-center">Something went wrong</p>
