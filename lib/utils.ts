@@ -24,6 +24,16 @@ export const secondsToTime = (
   return `${t}${verbiage[5]}`;
 };
 
+export const numToString = (x: number, max = 10000) => {
+  if (x < max) {
+    return x.toString();
+  } else {
+    let y = Math.floor(x / 1000);
+    let z = (x / 1000).toFixed(1);
+    return z.toString() + "k";
+  }
+};
+
 export const findMediaInfo = async (post, quick = false) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];

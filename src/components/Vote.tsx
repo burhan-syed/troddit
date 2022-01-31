@@ -5,7 +5,7 @@ import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
 
 const calculateScore = (x: number) => {
-  if (x < 10000) {
+  if (x < 1000) {
     return x.toString();
   } else {
     let y = Math.floor(x / 1000);

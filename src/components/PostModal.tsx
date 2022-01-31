@@ -27,6 +27,7 @@ import { useKeyPress } from "../hooks/KeyPress";
 import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
 import MediaWrapper from "./views/MediaWrapper";
+import Awardings from "./Awardings";
 
 const PostModal = ({
   setSelect,
@@ -510,6 +511,14 @@ const PostModal = ({
                       {/* Main Media Column */}
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
+                        {apost?.all_awardings?.length > 0 && (
+                          <div className="flex flex-row flex-wrap items-center justify-start truncate md:pl-3">
+                            <Awardings
+                              all_awardings={apost?.all_awardings}
+                              truncate={false}
+                            />
+                          </div>
+                        )}
                         <div className="flex flex-row flex-wrap pt-1.5 text-sm md:pl-3">
                           <Link href={`/u/${apost?.author}`}>
                             <a
@@ -560,7 +569,7 @@ const PostModal = ({
                             <p className="ml-1">{`(${apost?.domain})`}</p>
                           </div>
                         </div>
-                        <h1 className="py-2 md:pl-3">
+                        <h1 className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
                           <a
                             className={
                               (apost?.distinguished == "moderator" ||

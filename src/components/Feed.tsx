@@ -316,7 +316,14 @@ const Feed = ({
     <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen">
-        <div className={"w-full md:w-11/12"}>
+        <div
+          className={
+            "w-full md:w-11/12" +
+            (context.cardStyle === "row1"
+              ? " bg-lightPost dark:bg-[#212121] "
+              : " ")
+          }
+        >
           {/* + (context?.maximize ? " " : " md:w-5/6") */}
           {!loading && (
             <ErrorBoundary

@@ -5,6 +5,7 @@ import { secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
+import Awardings from "../Awardings";
 
 //og card
 const Card1 = ({
@@ -59,7 +60,7 @@ const Card1 = ({
                 </span>
               </h1>
 
-              <div className="flex flex-row flex-wrap py-1 pb-1 text-xs truncate text-gray">
+              <div className="flex flex-row flex-wrap items-center py-1 pb-1 text-xs truncate text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -110,6 +111,12 @@ const Card1 = ({
                     <span className="text-red-400 text-color dark:text-red-700">
                       SPOILER
                     </span>
+                  </div>
+                )}
+                {post?.all_awardings?.length > 0 && (
+                  <div className="flex flex-row flex-wrap items-center justify-start pl-1 truncate">
+                    <p>•</p>
+                    <Awardings all_awardings={post?.all_awardings} />
                   </div>
                 )}
 

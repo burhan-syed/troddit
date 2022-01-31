@@ -8,6 +8,7 @@ import { secondsToTime } from "../../lib/utils";
 import Link from "next/dist/client/link";
 import Vote from "./Vote";
 import { ImSpinner2 } from "react-icons/im";
+import Awardings from "./Awardings";
 
 const ChildComments = ({
   comment,
@@ -202,7 +203,7 @@ const ChildComments = ({
           }}
         >
           {/* Author and comment data*/}
-          <div className="flex flex-row justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
+          <div className="flex flex-row flex-wrap items-center justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
             <Link href={`/u/${comment?.data?.author}`}>
               <a
@@ -264,6 +265,12 @@ const ChildComments = ({
                 "yr",
               ])}
             </p>
+            {comment?.data?.all_awardings?.length > 0 && (
+              <div className="flex flex-row flex-wrap items-center justify-start pl-1 space-x-1 truncate">
+                <p>•</p>
+                <Awardings all_awardings={comment?.data?.all_awardings} />
+              </div>
+            )}
           </div>
 
           {/* Main Comment Body */}

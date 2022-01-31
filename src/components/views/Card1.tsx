@@ -6,6 +6,7 @@ import { secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
+import Awardings from "../Awardings";
 
 //og card
 const Card1 = ({
@@ -40,7 +41,7 @@ const Card1 = ({
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row flex-wrap py-1 text-xs truncate select-auto text-gray">
+              <div className="flex flex-row flex-wrap items-center py-1 text-xs truncate select-auto text-gray">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
                     className="mr-1"
@@ -66,7 +67,6 @@ const Card1 = ({
                   </a>
                 </Link>
                 <p>•</p>
-
                 <p className="ml-1 font-">
                   {secondsToTime(post?.created_utc, [
                     "s ago",
@@ -93,6 +93,13 @@ const Card1 = ({
                     </span>
                   </div>
                 )}
+                {post?.all_awardings?.length > 0 && (
+                  <div className="flex flex-row flex-wrap items-center justify-start pl-1 truncate">
+                    <p>•</p>
+                    <Awardings all_awardings={post?.all_awardings} />
+                  </div>
+                )}
+
                 <div className="flex flex-row ml-auto">
                   <p className="ml-1">{`(${post.domain})`}</p>
                 </div>
@@ -102,7 +109,7 @@ const Card1 = ({
                   className={
                     (post?.distinguished == "moderator" &&
                       " text-green-500 dark:text-green-700") +
-                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2"
+                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap"
                   }
                 >
                   <a
@@ -145,7 +152,7 @@ const Card1 = ({
                         onClick={(e) => e.preventDefault()}
                       ></a>
                       <div className="top-0 hidden w-full p-2 text-lightText group-hover:absolute group-hover:block ">
-                        <div className="flex flex-row text-xs font-light truncate text-gray">
+                        <div className="flex flex-row items-center text-xs font-light truncate text-gray">
                           <Link href={`/r/${post?.subreddit}`}>
                             <a
                               className="mr-1"
@@ -198,6 +205,12 @@ const Card1 = ({
                               </span>
                             </div>
                           )}
+                          {post?.all_awardings?.length > 0 && (
+                            <div className="flex flex-row flex-wrap items-center justify-start pl-1 truncate">
+                              <p>•</p>
+                              <Awardings all_awardings={post?.all_awardings} />
+                            </div>
+                          )}
                           <div className="flex flex-row ml-auto">
                             <p className="ml-1">{`(${post.domain})`}</p>
                           </div>
@@ -205,14 +218,14 @@ const Card1 = ({
                         <a
                           href={post?.permalink}
                           onClick={(e) => e.preventDefault()}
+                          className="py-1 mr-2 text-lg font-medium leading-none cursor-pointer"
                         >
-                          <h1 className="py-1 text-lg font-medium leading-none cursor-pointer">
-                            {`${post?.title ?? ""}`}
-                          </h1>
+                          {`${post?.title ?? ""}`}
                         </a>
                         <span className="text-xs">
                           <TitleFlair post={post} />
                         </span>
+
                         <div className="flex flex-row justify-between text-sm align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
                             <p className="">{score + " points"}</p>

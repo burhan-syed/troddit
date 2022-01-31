@@ -45,7 +45,7 @@ const Post = ({ post, postNum = 0 }) => {
   useEffect(() => {
     //console.log(context.columns, context.cardStyle);
     context.cardStyle === "row1"
-      ? setMargin("m-0.5")
+      ? setMargin("m-0")
       : context.columns === 1
       ? setMargin("m-1")
       : context.columns > 4
