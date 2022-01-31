@@ -2,7 +2,7 @@ import { useMainContext } from "../../MainContext";
 import { useState, useEffect } from "react";
 import Link from "next/dist/client/link";
 import Media from "../Media";
-import { secondsToTime } from "../../../lib/utils";
+import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
@@ -107,15 +107,16 @@ const Card1 = ({
               <div className="py-2">
                 <h1
                   className={
-                    (post?.distinguished == "moderator" &&
-                      " text-green-500 dark:text-green-700") +
-                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap"
+                    (post?.distinguished == "moderator" ||
+                      (post?.stickied &&
+                        " text-green-500 dark:text-green-700")) +
+                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap gap-2"
                   }
                 >
                   <a
                     href={post?.permalink}
                     onClick={(e) => e.preventDefault()}
-                    className="mr-2"
+                    className="group-hover:underline"
                   >
                     {`${post?.title}` ?? ""}
                   </a>
@@ -215,27 +216,36 @@ const Card1 = ({
                             <p className="ml-1">{`(${post.domain})`}</p>
                           </div>
                         </div>
-                        <a
-                          href={post?.permalink}
-                          onClick={(e) => e.preventDefault()}
-                          className="py-1 mr-2 text-lg font-medium leading-none cursor-pointer"
-                        >
-                          {`${post?.title ?? ""}`}
-                        </a>
-                        <span className="text-xs">
-                          <TitleFlair post={post} />
-                        </span>
+                        <h1 className="flex flex-row flex-wrap items-center gap-1 pb-1">
+                          <a
+                            href={post?.permalink}
+                            onClick={(e) => e.preventDefault()}
+                            className={
+                              "py-1 text-lg font-medium leading-none cursor-pointer hover:underline" +
+                              (post?.distinguished == "moderator" ||
+                                (post?.stickied &&
+                                  " text-green-500 dark:text-green-700"))
+                            }
+                          >
+                            {`${post?.title ?? ""}`}
+                          </a>
+                          <span className="text-xs">
+                            <TitleFlair post={post} />
+                          </span>
+                        </h1>
 
-                        <div className="flex flex-row justify-between text-sm align-bottom select-none">
+                        <div className="flex flex-row justify-between text-xs font-semibold align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
-                            <p className="">{score + " points"}</p>
+                            <p className="">
+                              {numToString(score, 1000) + " points"}
+                            </p>
                           </div>
                           <a
                             href={post?.permalink}
                             onClick={(e) => e.preventDefault()}
                           >
                             <h1 className="cursor-pointer hover:underline ">
-                              {`${post.num_comments} ${
+                              {`${numToString(post.num_comments, 1000)} ${
                                 post.num_comments === 1 ? "comment" : "comments"
                               }`}
                             </h1>

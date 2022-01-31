@@ -42,15 +42,15 @@ const Card1 = ({
             <div className="p-1 px-2 pt-1.5 select-auto">
               <h1
                 className={
-                  (post?.distinguished == "moderator" &&
-                    " text-green-500 dark:text-green-700") +
-                  "  text-lg font-semibold  leading-none cursor-pointer"
+                  (post?.distinguished == "moderator " ||
+                    (post?.stickied && " text-green-500 dark:text-green-700")) +
+                  "  text-lg font-semibold  leading-none cursor-pointer gap-2 flex flex-row flex-wrap "
                 }
               >
                 <a
                   href={post?.permalink}
                   onClick={(e) => e.preventDefault()}
-                  className="mr-2"
+                  className="group-hover:underline"
                 >
                   {post?.title ?? ""}
                 </a>

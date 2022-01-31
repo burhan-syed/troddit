@@ -104,22 +104,24 @@ const Row1 = ({
         <div>
           <h1
             className={
-              " text-base leading-none cursor-pointer select-auto flex flex-row items-center space-x-2 flex-wrap"
+              " text-base leading-none cursor-pointer select-auto flex flex-row items-center gap-2 flex-wrap"
             }
           >
+            <div className="text-xs">
+              <TitleFlair post={post} />
+            </div>
             <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}
               className={
-                post?.distinguished == "moderator" &&
-                " text-green-500 dark:text-green-700 "
+                " group-hover:underline " +
+                (post?.distinguished == "moderator" || post?.stickied
+                  ? " text-green-500 dark:text-green-700 "
+                  : " ")
               }
             >
               {`${post?.title}  ` ?? ""}
             </a>
-            <div className="text-xs">
-              <TitleFlair post={post} />
-            </div>
           </h1>
         </div>
         {/* Info */}
@@ -131,7 +133,7 @@ const Row1 = ({
                 e.stopPropagation();
               }}
             >
-              <h2>r/{post?.subreddit ?? "ERR"}</h2>
+              <h2 className="hover:underline">r/{post?.subreddit ?? "ERR"}</h2>
             </a>
           </Link>
           <p>•</p>
@@ -141,19 +143,21 @@ const Row1 = ({
                 e.stopPropagation();
               }}
             >
-              <h2 className="ml-1 mr-1">u/{post?.author ?? ""}</h2>
+              <h2 className="ml-1 mr-1 hover:underline">
+                u/{post?.author ?? ""}
+              </h2>
             </a>
           </Link>
           <p>•</p>
 
           <p className="ml-1">
             {secondsToTime(post?.created_utc, [
-              "s",
-              "min",
-              "hr",
-              "dy",
-              "mo",
-              "yr",
+              "s ago",
+              "min ago",
+              "hr ago",
+              "dy ago",
+              "mo ago",
+              "yr ago",
             ])}
           </p>
           {post?.over_18 && (
