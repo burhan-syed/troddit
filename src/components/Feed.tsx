@@ -216,7 +216,15 @@ const Feed = ({
     data?.token && context.setToken(data?.token);
     setAfter(data?.after);
     data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
-    if (!imgFilter || !vidFilter || !selfFilter || !galFilter || !linkFilter) {
+    if (
+      !imgFilter ||
+      !vidFilter ||
+      !selfFilter ||
+      !galFilter ||
+      !linkFilter ||
+      !imgPortraitFilter ||
+      !imgLandscapeFilter
+    ) {
       data.children = await filterChildren(data.children);
     }
     setPosts(data.children);

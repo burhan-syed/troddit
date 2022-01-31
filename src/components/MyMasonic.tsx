@@ -374,7 +374,9 @@ const MyMasonic = ({
           !vidFilter ||
           !selfFilter ||
           !galFilter ||
-          !linkFilter
+          !linkFilter ||
+          !imgPortraitFilter ||
+          !imgLandscapeFilter
         ) {
           data.children = await filterChildren(data.children);
         }
