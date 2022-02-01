@@ -268,7 +268,10 @@ const ChildComments = ({
             {comment?.data?.all_awardings?.length > 0 && (
               <div className="flex flex-row flex-wrap items-center justify-start pl-1 space-x-1 truncate">
                 <p>•</p>
-                <Awardings all_awardings={comment?.data?.all_awardings} />
+                <Awardings
+                  all_awardings={comment?.data?.all_awardings}
+                  truncate={false}
+                />
               </div>
             )}
           </div>

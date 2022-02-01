@@ -21,7 +21,7 @@ const SideNav = ({ visible, toggle }) => {
   };
   const handleTouchEnd = (e) => {
     if (touchStart - touchEnd > 50) {
-      toggle(false);
+      //toggle(false);
       //console.log("right");
     } else if (touchStart - touchEnd < -50) {
     }

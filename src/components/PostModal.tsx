@@ -51,7 +51,7 @@ const PostModal = ({
   const [openReply, setopenReply] = useState(false);
   const [session, loading] = useSession();
   const context: any = useMainContext();
-  const [imgFull, setimgFull] = useState(true);
+  const [imgFull, setimgFull] = useState(false);
   const [windowWidth, windowHeight] = useWindowSize();
   const [error, setError] = useState(false);
 
@@ -99,11 +99,11 @@ const PostModal = ({
       ) {
         setMediaInfo(apost.mediaInfo);
         setUsePortrait(apost?.mediaInfo?.isPortrait);
-        setimgFull(apost?.mediaInfo?.isPortrait);
+        //setimgFull(apost?.mediaInfo?.isPortrait);
       } else {
         let check = await findMediaInfo(apost);
         setMediaInfo(check);
-        check?.isPortrait ? setUsePortrait(true) : setimgFull(false);
+        //check?.isPortrait ? setUsePortrait(true) : setimgFull(false);
       }
 
       setWait(false);
@@ -376,7 +376,7 @@ const PostModal = ({
                 className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
               >
                 {pHeight && pWidth && (
-                  <div className={"flex-grow " + (!imgFull && " my-auto")}>
+                  <div className={"flex-grow " + (imgFull ? " my-auto" : "")}>
                     <div className={"block relative   "}>
                       <MediaWrapper
                         hideNSFW={hideNSFW}
@@ -636,43 +636,21 @@ const PostModal = ({
                                 </button>
                               </>
                             )}
-                            {mediaInfo?.isPortrait && (
+                            {true && (
                               <button
                                 onClick={(e) => setimgFull((p) => !p)}
                                 className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                               >
                                 {imgFull ? (
                                   <>
-                                    <h1
-                                      className={
-                                        "hidden " +
-                                        (!usePortrait && " md:block ")
-                                      }
-                                    >
-                                      Size
-                                    </h1>
-                                    <BiExpand
-                                      className={
-                                        "flex-none w-6 h-6 " +
-                                        (!usePortrait && " md:pl-2")
-                                      }
+                                    <BiCollapse
+                                      className={"flex-none w-6 h-6 "}
                                     />
                                   </>
                                 ) : (
                                   <>
-                                    <h1
-                                      className={
-                                        "hidden " +
-                                        (!usePortrait && " md:block ")
-                                      }
-                                    >
-                                      Size
-                                    </h1>
-                                    <BiCollapse
-                                      className={
-                                        "flex-none w-6 h-6 " +
-                                        (!usePortrait && " md:pl-2")
-                                      }
+                                    <BiExpand
+                                      className={"flex-none w-6 h-6 "}
                                     />
                                   </>
                                 )}

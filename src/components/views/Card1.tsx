@@ -236,9 +236,7 @@ const Card1 = ({
 
                         <div className="flex flex-row justify-between text-xs font-semibold align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
-                            <p className="">
-                              {numToString(score, 1000) + " points"}
-                            </p>
+                            <p className="">{score + " points"}</p>
                           </div>
                           <a
                             href={post?.permalink}

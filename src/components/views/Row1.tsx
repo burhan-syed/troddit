@@ -258,7 +258,7 @@ const Row1 = ({
                 forceMute={forceMute}
                 allowIFrame={expand}
                 postMode={false}
-                imgFull={true}
+                imgFull={false}
               />
             </a>
             {/* {hideNSFW && (

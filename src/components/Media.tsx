@@ -285,7 +285,7 @@ const Media = ({
       setLoaded(false);
       setToLoad(false);
     };
-  }, [post, allowIFrame, context?.columnOverride]);
+  }, [post, allowIFrame, context?.columnOverride, imgFull]);
 
   const [imgheight, setimgheight] = useState({});
   const [maxheight, setmaxheight] = useState({});
@@ -305,29 +305,38 @@ const Media = ({
     // ) {
     //   imgheight = windowHeight * 0.75;
     // }
-    !post?.mediaInfo?.isPortrait
+    containerDims?.[1]
       ? setimgheight({
           height: `${imgheight}px`,
-          maxHeight: `${Math.floor(
-            windowHeight *
-              (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-          )}px`,
+          maxHeight: `${Math.floor(containerDims?.[1])}px`,
         })
-      : setimgheight({
-          height: `${imgheight}px`,
-          maxHeight: `${
-            containerDims?.[1]
-              ? containerDims?.[1]
-              : Math.floor(
-                  windowHeight *
-                    (postMode
-                      ? 0.5
-                      : context?.columnOverride == 1 && !imgFull
-                      ? 0.75
-                      : cropamount)
-                )
-          }px`,
-        });
+      : context.columnOverride === 1 && !postMode
+      ? setimgheight({ maxHeight: Math.floor(windowHeight * 0.75) })
+      : "";
+
+    // !post?.mediaInfo?.isPortrait
+    //   ? setimgheight({
+    //       //height: `${imgheight}px`,
+    //       maxHeight: `${Math.floor(
+    //         windowHeight *
+    //           (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
+    //       )}px`,
+    //     })
+    //   : setimgheight({
+    //       height: `${imgheight}px`,
+    //       maxHeight: `${
+    //         containerDims?.[1]
+    //           ? containerDims?.[1]
+    //           : Math.floor(
+    //               windowHeight *
+    //                 (postMode
+    //                   ? 0.5
+    //                   : context?.columnOverride == 1 && !imgFull
+    //                   ? 0.75
+    //                   : cropamount)
+    //             )
+    //       }px`,
+    //     });
     setmaxheight({
       maxHeight: `${Math.floor(
         windowHeight *
@@ -418,10 +427,10 @@ const Media = ({
               <Gallery
                 images={galleryInfo}
                 maxheight={
-                  (postMode && imgFull) ||
-                  (context.columnOverride == 1 && !postMode)
-                    ? maxheightnum
-                    : 0
+                  imgFull ? 0 : maxheightnum // postMode && imgFull
+                  // ? // || (context.columnOverride == 1 && !postMode)
+                  //   maxheightnum
+                  // : 0
                 }
               />
             </div>
@@ -432,9 +441,14 @@ const Media = ({
           {isImage && !isIFrame && !isMP4 ? (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
-              className={"relative block "}
+              className={
+                "relative " +
+                (imgFull ? " block" : " flex items-center justify-center ")
+              } //flex items-center justify-center "}
               style={
-                imgFull || (context?.columnOverride == 1 && !postMode) 
+                (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
+                (context.columnOverride === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
+                (postMode && !imgFull) //to prevent iamges from being greater than 75% of window height in post mode w/oimgfull
                   ? imgheight
                   : {}
               }
@@ -447,15 +461,30 @@ const Media = ({
 
               <Image
                 src={imageInfo.url}
-                height={imageInfo.height}
-                width={imageInfo.width}
+                height={
+                  (context?.columnOverride === 1 || (postMode && !imgFull)) &&
+                  imageInfo.height > maxheightnum &&
+                  !imgFull
+                    ? maxheightnum
+                    : imageInfo.height
+                }
+                width={
+                  (context?.columnOverride === 1 || (postMode && !imgFull)) &&
+                  imageInfo.height > maxheightnum &&
+                  !imgFull
+                    ? Math.floor(
+                        imageInfo.width * (maxheightnum / imageInfo.height)
+                      )
+                    : imageInfo.width
+                }
                 alt=""
                 layout={
-                  (imgFull && !(context?.cardStyle === "row1")) ||
-                  (context?.columnOverride == 1 && !postMode) || // && post?.mediaInfo?.isPortrait
-                  imageInfo.url === "spoiler"
-                    ? "fill" //"fill" //fitting image to above container
-                    : "responsive"
+                  // (imgFull && !(context?.cardStyle === "row1")) ||
+                  // context?.columnOverride == 1 ||
+                  // (postMode && !imgFull) || // && post?.mediaInfo?.isPortrait
+                  // imageInfo.url === "spoiler"
+                  //   ? "fixed" //"fill" //fitting image to above container
+                  imgFull ? "responsive" : "intrinsic" //"responsive"
                 }
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
@@ -464,7 +493,7 @@ const Media = ({
                     ? "contain"
                     : "contain"
                 }
-                priority={imgFull}
+                priority={postMode}
                 unoptimized={true}
                 // placeholder="blur"
                 // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="

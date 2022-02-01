@@ -3,17 +3,14 @@ import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { numToString } from "../../lib/utils";
 
-const MAX_DISPLAY = 5;
+const MAX_DISPLAY = 3;
 
 const Awardings = ({ all_awardings, truncate = true }) => {
-  //holds remaining rewards if truncated, or all rewards if not truncated
   const [rewardCount, setRewardCount] = useState(0);
   useEffect(() => {
     let r = 0;
     all_awardings?.forEach((a, i) => {
-      if (i >= MAX_DISPLAY || !truncate) {
-        r = r + a?.count;
-      }
+      r = r + a?.count;
     });
     setRewardCount(r);
     return () => {
@@ -46,11 +43,8 @@ const Awardings = ({ all_awardings, truncate = true }) => {
             )}
           </div>
         ))}
-        {truncate && rewardCount > 0 && (
-          <p className="">{`& ${numToString(rewardCount, 1000)} more`}</p>
-        )}
-        {!truncate && rewardCount > 0 && (
-          <p className="">{`${numToString(rewardCount, 1000)} total`}</p>
+        {rewardCount > 0 && (
+          <p className="">{`${numToString(rewardCount, 1000)} awards`}</p>
         )}
       </div>
     );
