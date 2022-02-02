@@ -16,7 +16,10 @@ export const MainProvider = ({ children }) => {
   const [columns, setColumns] = useState(3);
   const [columnOverride, setColumnOverride] = useState(0);
   const [audioOnHover, setaudioOnHover] = useState(false);
-  const [maximize, setMaximize] = useState(true);
+  //controls how feed appears, switches to true when in multicolumn mode
+  const [wideUI, setWideUI] = useState(true);
+  //saves toggle selection. Used to sync UI when switching back to 1 column. Also used to control postModal view
+  const [saveWideUI, setSaveWideUI] = useState(true);
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
   const [cardStyle, setCardStyle] = useState("default");
@@ -172,15 +175,19 @@ export const MainProvider = ({ children }) => {
     setMediaOnly((m) => !m);
   };
 
-  const toggleMaximize = () => {
-    setMaximize((m) => !m);
+  //syncs wideui and savedwide ui
+  const toggleWideUI = () => {
+    setSaveWideUI((w) => {
+      setWideUI(!w);
+      return !w;
+    });
   };
-  // to force refresh feed so width set properly.. will also need to do this when using multiple columns - revisit later
-  // useEffect(() => {
-  //   cardStyle !== "row1" &&
-  //     columnOverride === 1 &&
-  //     setForceRefresh((f) => f + 1);
-  // }, [maximize]);
+  //to force refresh feed so width set properly when in one column mode
+  useEffect(() => {
+    cardStyle !== "row1" &&
+      columnOverride === 1 &&
+      setForceRefresh((f) => f + 1);
+  }, [wideUI]);
 
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => {
@@ -210,9 +217,16 @@ export const MainProvider = ({ children }) => {
     const saved_columnOverride = parseInt(
       localStorage.getItem("columnOverride")
     );
+    const saved_saveWideUI = localStorage.getItem("saveWideUI");
+    saved_saveWideUI?.includes("true")
+      ? setSaveWideUI(true)
+      : setSaveWideUI(false);
+    const saved_wideUI = localStorage.getItem("wideUI");
+    saved_wideUI?.includes("true") ? setWideUI(true) : setWideUI(false);
     saved_columnOverride && setColumnOverride(saved_columnOverride);
     const saved_cardStyle = localStorage.getItem("cardStyle");
     saved_cardStyle && setCardStyle(saved_cardStyle);
+
     const local_localSubs = localStorage.getItem("localSubs");
     local_localSubs && setLocalSubs(JSON.parse(local_localSubs));
 
@@ -274,6 +288,12 @@ export const MainProvider = ({ children }) => {
     localStorage.setItem("columnOverride", JSON.stringify(columnOverride));
   }, [columnOverride]);
   useEffect(() => {
+    localStorage.setItem("saveWideUI", JSON.stringify(saveWideUI));
+  }, [saveWideUI]);
+  useEffect(() => {
+    localStorage.setItem("wideUI", JSON.stringify(wideUI));
+  }, [wideUI]);
+  useEffect(() => {
     localStorage.setItem("mediaOnly", JSON.stringify(mediaOnly));
   }, [mediaOnly]);
   useEffect(() => {
@@ -295,8 +315,10 @@ export const MainProvider = ({ children }) => {
         toggleAutoplay,
         columns,
         setColumns,
-        maximize,
-        toggleMaximize,
+        wideUI,
+        saveWideUI,
+        toggleWideUI,
+        setWideUI,
         columnOverride,
         setColumnOverride,
         mediaOnly,

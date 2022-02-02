@@ -364,8 +364,8 @@ const Feed = ({
             "w-full " +
             (context.columnOverride === 1 &&
             context.cardStyle !== "row1" &&
-            !context.maximize
-              ? " md:w-11/12 " // max-w-2xl issues when switching between column counts, requires rerender of component, revisit later
+            !context.wideUI
+              ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
               ? " bg-lightPost dark:bg-[#212121] "

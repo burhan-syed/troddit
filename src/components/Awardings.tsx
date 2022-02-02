@@ -44,7 +44,9 @@ const Awardings = ({ all_awardings, truncate = true }) => {
           </div>
         ))}
         {rewardCount > 0 && (
-          <p className="">{`${numToString(rewardCount, 1000)} awards`}</p>
+          <p className="">{`${numToString(rewardCount, 1000)} award${
+            rewardCount > 1 ? "s" : ""
+          }`}</p>
         )}
       </div>
     );

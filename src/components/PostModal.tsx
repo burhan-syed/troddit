@@ -103,20 +103,18 @@ const PostModal = ({
       } else {
         let check = await findMediaInfo(apost);
         setMediaInfo(check);
-        //check?.isPortrait ? setUsePortrait(true) : setimgFull(false);
+        check?.isPortrait ? setUsePortrait(true) : undefined;
       }
 
       setWait(false);
     };
     if (apost?.id) {
       //console.log(windowWidth, windowHeight);
-      if (windowWidth > 1300) {
-        // if (portrait) {
-        //   setUsePortrait(true);
-        //   setWait(false);
-        // } else {
-        //   checkPortrait();
-        // }
+      if (
+        windowWidth > 1300 &&
+        windowHeight < windowWidth &&
+        context.saveWideUI
+      ) {
         checkPortrait();
       } else {
         setUsePortrait(false);
@@ -345,15 +343,13 @@ const PostModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
+      className={
+        "fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
+      }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}
       onTouchEnd={(e) => handleTouchEnd(e)}
     >
-      {/* <div
-          
-          className="left-0 bg-black lg:w-1/12 opacity-80 "
-        ></div> */}
       <div
         onClick={() => handleBack()}
         className="fixed top-0 left-0 w-screen h-full bg-black backdrop-filter backdrop-blur-lg opacity-80 overscroll-none"
@@ -368,7 +364,7 @@ const PostModal = ({
       )}
       {!wait && (
         <>
-          <div className="flex flex-row justify-center h-full">
+          <div className={"flex flex-row justify-center h-full"}>
             {/* Portrait Media */}
             {usePortrait && (
               <div
@@ -396,7 +392,11 @@ const PostModal = ({
             {/* Main Card */}
             <div
               className={
-                (!usePortrait ? "w-full md:w-10/12 lg:w-3/4 " : " md:w-4/12 ") +
+                (!context?.saveWideUI && !usePortrait
+                  ? " max-w-3xl"
+                  : !usePortrait
+                  ? "w-full md:w-10/12 lg:w-3/4 "
+                  : " md:w-4/12 ") +
                 " z-10 pt-2  md:flex md:flex-col md:items-center "
               }
             >
@@ -841,10 +841,6 @@ const PostModal = ({
         </>
       )}
 
-      {/* <div
-          onClick={() => handleBack()}
-          className="right-0 bg-black lg:w-1/12 opacity-80 "
-        ></div> */}
       {context.posts?.length > 0 && (
         <div
           onClick={(e) => changePost(1)}
