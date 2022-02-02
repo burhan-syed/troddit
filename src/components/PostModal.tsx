@@ -392,8 +392,8 @@ const PostModal = ({
             {/* Main Card */}
             <div
               className={
-                (!context?.saveWideUI && !usePortrait
-                  ? " max-w-3xl"
+                (!context?.saveWideUI && !usePortrait && windowWidth > 768
+                  ? " max-w-3xl w-[768px]"
                   : !usePortrait
                   ? "w-full md:w-10/12 lg:w-3/4 "
                   : " md:w-4/12 ") +

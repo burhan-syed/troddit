@@ -192,7 +192,7 @@ const ChildComments = ({
           className={
             "flex-grow mt-3 max-w-full   " +
             (hideChildren && !portraitMode
-              ? " md:pl-2 mb-3 "
+              ? " md:pl-0 mb-3 "
               : hideChildren
               ? " mb-3 "
               : " ")

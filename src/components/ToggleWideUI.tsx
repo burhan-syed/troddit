@@ -22,14 +22,7 @@ const ToggleWideUI = () => {
           uncheckedHandleIcon={<div></div>}
           uncheckedIcon={
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                color: "#FFFBEB",
-                fontSize: 18,
-              }}
+              className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG"
             >
               <CgArrowsMergeAltH />
             </div>

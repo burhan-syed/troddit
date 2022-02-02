@@ -390,20 +390,32 @@ const Media = ({
           {isIFrame && (allowIFrame || context?.columnOverride === 1) ? (
             <div
               className="relative"
+              // style={
+              //   postMode && isYTVid
+              //     ? ytVidHeight
+              //     : true ||
+              //       context?.columnOverride == 1 ||
+              //       windowHeight > windowWidth
+              //     ? {
+              //         height: `${
+              //           windowHeight < windowWidth
+              //             ? Math.floor(windowHeight * 0.75)
+              //             : Math.floor(windowHeight * 0.4)
+              //         }px`,
+              //       }
+              //     : {}
+              // }
+              //filling IFrames in postmode portrait pane or aproximating a 16:9 ratio elsewhere
               style={
-                postMode && isYTVid
-                  ? ytVidHeight
-                  : true ||
-                    context?.columnOverride == 1 ||
-                    windowHeight > windowWidth
-                  ? {
+                containerDims?.[1]
+                  ? { height: `${Math.floor(containerDims[1])}px` }
+                  : {
                       height: `${
-                        windowHeight < windowWidth
-                          ? Math.floor(windowHeight * 0.75)
-                          : Math.floor(windowHeight * 0.4)
+                        Math.floor((!context.saveWideUI ? 768 : windowWidth * (windowWidth < 768 ? 1 : windowWidth >= 1024 ? (3/4) : (10/12)))
+                        *
+                        (9/16))
                       }px`,
                     }
-                  : {}
               }
             >
               <div
