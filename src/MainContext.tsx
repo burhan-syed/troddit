@@ -218,11 +218,11 @@ export const MainProvider = ({ children }) => {
       localStorage.getItem("columnOverride")
     );
     const saved_saveWideUI = localStorage.getItem("saveWideUI");
-    saved_saveWideUI?.includes("true")
-      ? setSaveWideUI(true)
-      : setSaveWideUI(false);
+    saved_saveWideUI?.includes("false")
+      ? setSaveWideUI(false)
+      : setSaveWideUI(true);
     const saved_wideUI = localStorage.getItem("wideUI");
-    saved_wideUI?.includes("true") ? setWideUI(true) : setWideUI(false);
+    saved_wideUI?.includes("false") ? setWideUI(false) : setWideUI(true);
     saved_columnOverride && setColumnOverride(saved_columnOverride);
     const saved_cardStyle = localStorage.getItem("cardStyle");
     saved_cardStyle && setCardStyle(saved_cardStyle);
