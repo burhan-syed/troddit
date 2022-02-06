@@ -51,7 +51,7 @@ const VideoHandler = ({
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
-    console.log(videoInfo.url);
+    //console.log(videoInfo.url);
     if (postMode && containerDims) {
       //console.log(containerDims);
       let ry = containerDims?.[1] / videoInfo?.height;

@@ -176,9 +176,9 @@ const Row1 = ({
               </span>
             </div>
           )}
+          <div className="mx-0.5"></div>
           {post?.all_awardings?.length > 0 && (
-            <div className="flex flex-row flex-wrap items-center justify-start pl-1 truncate">
-              <p>•</p>
+            <div className="flex flex-row flex-wrap items-center justify-start truncate">
               <Awardings all_awardings={post?.all_awardings} />
             </div>
           )}
