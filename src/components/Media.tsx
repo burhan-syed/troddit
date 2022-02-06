@@ -153,20 +153,27 @@ const Media = ({
     const findVideo = async () => {
       let optimize = "1080";
       let url = "";
-      if (!postMode) {
-        if (context?.columns === 3) {
+      if (!imgFull) {
+        if (postMode) {
+          optimize = "720";
+        } else if (context?.columns >= 3 && context?.columns < 5) {
           optimize = "480";
         } else if (context?.columns === 2) {
-          optimize = "1080";
-        } else if (context?.columns > 3) {
+          optimize = "480"; //"1080";
+        } else if (context?.columns === 5) {
+          optimize = "360";
+        } else if (context?.columns > 5) {
           optimize = "360";
         }
       }
 
       if (post?.mediaInfo?.videoInfo) {
         url = post.mediaInfo.videoInfo.url;
-        if (url.includes("DASH_1080") && !postMode) {
+        if (url.includes("DASH_1080") && !imgFull) {
           url = url.replace("DASH_1080", `DASH_${optimize}`);
+        }
+        if (url.includes("DASH_720") && !imgFull) {
+          url = url.replace("DASH_720", `DASH_${optimize}`);
         }
         setVideoInfo({
           url: url,
@@ -410,11 +417,17 @@ const Media = ({
                 containerDims?.[1]
                   ? { height: `${Math.floor(containerDims[1])}px` }
                   : {
-                      height: `${
-                        Math.floor((!context.saveWideUI ? 768 : windowWidth * (windowWidth < 768 ? 1 : windowWidth >= 1024 ? (3/4) : (10/12)))
-                        *
-                        (9/16))
-                      }px`,
+                      height: `${Math.floor(
+                        (!context.saveWideUI
+                          ? 768
+                          : windowWidth *
+                            (windowWidth < 768
+                              ? 1
+                              : windowWidth >= 1024
+                              ? 3 / 4
+                              : 10 / 12)) *
+                          (9 / 16)
+                      )}px`,
                     }
               }
             >

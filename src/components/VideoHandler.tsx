@@ -2,8 +2,8 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
+import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowHeight } from "@react-hook/window-size";
-
 const VideoHandler = ({
   placeholder,
   videoInfo,
@@ -17,6 +17,7 @@ const VideoHandler = ({
   const context: any = useMainContext();
   const video: any = useRef();
   const audioRef: any = useRef();
+  const volRef: any = useRef();
   // const [audioSrc, setaudioSrc] = useState("");
   // const [mounted, setMounted] = useState(false);
   // const [loaded, setLoaded] = useState(false);
@@ -27,9 +28,14 @@ const VideoHandler = ({
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [manualPlay, setmanualPlay] = useState(false);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(!(context?.audioOnHover && postMode));
+  const [volume, setVolume] = useState(
+    !(context?.audioOnHover && postMode) ? 0 : 0.5
+  );
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0.0);
+  const [buffering, setBuffering] = useState(false);
 
   const onLoadedData = () => {
     setVideoLoaded(true);
@@ -45,6 +51,7 @@ const VideoHandler = ({
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
+    console.log(videoInfo.url);
     if (postMode && containerDims) {
       //console.log(containerDims);
       let ry = containerDims?.[1] / videoInfo?.height;
@@ -108,12 +115,46 @@ const VideoHandler = ({
     }
   }, [context.pauseAll]);
 
+  useEffect(() => {
+    setTimeRemaining(video?.current?.duration - video?.current?.currentTime);
+    return () => {
+      //
+    };
+  }, [video?.current?.currentTime]);
+
+  // useEffect(() => {
+  //   //console.log(volume, audioRef.current);
+  //   if (audioRef?.current?.volume) {
+  //     audioRef.current.volume = volume;
+  //   }
+  //   if (volume === 0) {
+  //     //setMuted(true);
+  //   } else if (volume > 0) {
+  //     if (audioRef?.current?.muted !== undefined && hasAudio) {
+  //       //always sync audio
+  //       audioRef.current.currentTime = video.current.currentTime;
+  //       //if audio is not playing and video is playing, play audio
+  //       if (!audioPlaying && videoPlaying) {
+  //         audioRef?.current?.play().catch((e) => console.log(e));
+  //       }
+  //       //toggle audio mute
+  //       audioRef.current.muted = false; //!audioRef.current.muted;
+  //       //if (audioRef.current.muted) audioRef.current.pause();
+  //       //mark manual unmute
+  //       //muted ? setManualAudio(true) : setManualAudio(false);
+  //       setMuted(false);
+  //     }
+  //   }
+  // }, [volume]);
+
   //main control for play/pause button
   const playControl = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    //console.log(video.current);
     //only allow play if video loaded
-    if (videoLoaded) {
+    if (true) {
+      //videoLoaded) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
         //play the video
@@ -169,7 +210,6 @@ const VideoHandler = ({
       if (audioRef.current.muted) audioRef.current.pause();
       //mark manual unmute
       muted ? setManualAudio(true) : setManualAudio(false);
-
       setMuted((m) => !m);
     }
   };
@@ -207,10 +247,15 @@ const VideoHandler = ({
     //if video was not played manually, in card mode,
     if (!manualPlay && videoLoaded && !context.mediaOnly) {
       //play video if not in autoplay
-      if (!context.autoplay) playVideo();
+      //disabling this for now - with change from preload to none when not in autoplay
+      //if (!context.autoplay) playVideo();
 
       //unmute play audio if allowed and video playing
-      if (context.audioOnHover || !muted) {
+      if (
+        context.audioOnHover &&
+        !(context.audioOnHover && postMode) &&
+        videoPlaying
+      ) {
         audioRef.current.muted = false;
         setMuted(false);
         playAudio();
@@ -220,13 +265,13 @@ const VideoHandler = ({
 
   const handleMouseOut = () => {
     //not in manual play, then pause audio and video
-    if (!manualPlay && !context.autoplay) {
+    if (!manualPlay && !context.autoplay && !postMode) {
       pauseAudio();
       pauseVideo();
     }
 
     //also mute if not manually unmuted manipulation
-    if (!manualAudio) {
+    if (!manualAudio && !postMode) {
       setMuted(true);
       audioRef.current.muted = true;
     }
@@ -234,45 +279,22 @@ const VideoHandler = ({
 
   return (
     <div
-      className={
-        "relative overflow-hidden group  " +
-        (postMode && " flex items-center justify-center  ")
-      }
-      // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
-      style={
-        postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
-      }
+      className="flex items-center justify-center min-w-full group hover:cursor-pointer"
+      onClick={(e) => {
+        if (postMode || !context.autoplay) {
+          playControl(e);
+        }
+      }}
     >
-      {videoLoaded ? (
-        ""
-      ) : (
-        <div className="absolute z-10 w-16 h-16 -mt-8 -ml-8 border-b-2 border-gray-900 rounded-full top-1/2 left-1/2 animate-spin"></div>
-      )}
-
-      <div
-        className={
-          `blur-xl ` +
-          `${
-            videoLoaded
-              ? postMode
-                ? " hidden "
-                : " opacity-0 "
-              : " opacity-100"
-          }` +
-          (!videoLoaded && postMode && " absolute")
-        }
-        style={
-          (imgFull || context?.columnOverride == 1) && !videoLoaded
-            ? imgheight
-            : {}
-        }
-      >
+      {/* Background Span Image */}
+      <div className="absolute z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 ">
         <Image
-          className={!postMode ? "absolute top-0 left-0" : " "}
+          className={"scale-110 blur-md "}
           src={placeholder.url}
           height={vidHeight}
           width={vidWidth}
           alt="placeholder"
+          layout="fill"
           unoptimized={true}
           priority={imgFull}
           onError={() => {
@@ -280,98 +302,154 @@ const VideoHandler = ({
           }}
         />
       </div>
-
-      <video
-        ref={video}
-        className={
-          (videoLoaded ? "opacity-100" : "opacity-0") +
-          (!postMode && " absolute top-0 left-0 ")
-        }
-        width={`${vidWidth} !important`}
-        height={`${vidHeight} !important`}
-        autoPlay={context?.autoplay}
-        muted
-        loop
-        preload={context?.autoplay ? "auto" : "metadata"}
-        onWaiting={() => {
-          if (!muted) setPrevMuted(false);
-          //pauseAll();
-          setVideoPlaying(false);
-          pauseAudio();
-        }}
-        onPlaying={() => {
-          setVideoPlaying(true);
-          playAudio();
-        }}
-        onPlay={() => {
-          //.log("VIDEO PLAYING");
-          //playAll();
-        }}
-        onPause={() => {
-          setVideoPlaying(false);
-        }}
-        controls={false} //{!context?.autoplay}
-        onMouseOver={(event) => {
-          handleMouseIn();
-        }}
-        onMouseOut={(event) => {
-          handleMouseOut();
-        }}
-        onLoadedData={onLoadedData}
-        playsInline
-      >
-        <source data-src={videoInfo.url} src={videoInfo.url} type="video/mp4" />
-      </video>
-      <div className="absolute bottom-0 flex flex-row min-w-full p-1 mb-1 text-lightText ">
+      {/* Controls */}
+      <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 text-lightText">
         <button
           onClick={(e) => playControl(e)}
           className={
             (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
-            "items-center justify-center w-8 h-8 rounded opacity-100 "
+            "items-center justify-center w-9 h-9  bg-black rounded-full bg-opacity-20 hover:bg-opacity-40  "
           }
         >
           <div className="">
             {videoPlaying ? (
-              <BsPause className="flex-none w-8 h-8 filter drop-shadow-lg" />
+              <BiPause className="flex-none w-6 h-6 " />
             ) : (
-              <BsPlay className="flex-none w-8 h-8 filter drop-shadow-lg" />
+              <BiPlay className="flex-none w-6 h-6 ml-0.5" />
             )}
           </div>
         </button>
+        {/* <h1>{timeRemaining}</h1> */}
         {hasAudio && (
-          <>
-            <button
-              onClick={(e) => audioControl(e)}
-              className="flex items-center justify-center w-8 h-8 ml-auto "
-            >
-              <div className="filter drop-shadow-lg">
-                {muted ? (
-                  <BsVolumeMute className="w-8 h-8 " />
-                ) : (
-                  <BsVolumeUp className="w-8 h-8 " />
-                )}
-              </div>
-            </button>
-          </>
+          <button
+            onClick={(e) => audioControl(e)}
+            className="flex items-center justify-center ml-auto bg-black rounded-full w-9 h-9 bg-opacity-20 hover:bg-opacity-40"
+          >
+            <div className="">
+              {muted ? (
+                <BiVolumeMute className="flex-none w-4 h-4" />
+              ) : (
+                <BiVolumeFull className="flex-none w-4 h-4 " />
+              )}
+            </div>
+          </button>
         )}
       </div>
 
-      <video
-        autoPlay={false}
-        controls={false}
-        ref={audioRef}
-        muted
-        loop={false}
-        className="hidden"
-        playsInline
-        onCanPlay={onAudioLoaded}
-        onPlaying={() => setAudioPlaying(true)}
-        onPause={() => setAudioPlaying(false)}
-        onWaiting={() => setAudioPlaying(false)}
-        onError={(err) => null}
+      {/* Video */}
+      <div
+        className={
+          "relative overflow-hidden    "
+          //+ (!postMode && videoLoaded && " -mb-1 ") + //there's a margin below the video for some reason
+          //postMode && " flex items-center justify-center  "
+        }
+        // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
+        style={
+          postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
+        }
       >
-        <source data-src={audio} src={audio} type="video/mp4" />
-      </video>
+        {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
+          <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
+        )}
+
+        <div
+          className={
+            `blur-sm ` +
+            `${
+              videoLoaded
+                ? postMode
+                  ? " hidden "
+                  : " opacity-0 "
+                : " opacity-100"
+            }` +
+            (!videoLoaded && postMode && " absolute")
+          }
+          style={
+            (imgFull || context?.columnOverride == 1) && !videoLoaded
+              ? imgheight
+              : {}
+          }
+        >
+          <Image
+            className={!postMode ? "absolute top-0 left-0" : " "}
+            src={placeholder.url}
+            height={vidHeight - 5}
+            width={vidWidth}
+            alt="placeholder"
+            unoptimized={true}
+            priority={imgFull}
+            onError={() => {
+              setUseFallback(true);
+            }}
+          />
+        </div>
+
+        <video
+          ref={video}
+          className={
+            (videoLoaded ? "opacity-100" : "opacity-0") +
+            (!postMode && " absolute top-0 left-0 ")
+          }
+          width={`${vidWidth} `}
+          height={`${vidHeight} `}
+          autoPlay={context?.autoplay || postMode}
+          muted
+          loop
+          preload={context?.autoplay || postMode ? "auto" : "none"}
+          onWaiting={() => {
+            if (!muted) setPrevMuted(false);
+            //pauseAll();
+            setBuffering(true);
+            setVideoPlaying(false);
+            pauseAudio();
+          }}
+          onPlaying={() => {
+            setBuffering(false);
+            setVideoPlaying(true);
+            playAudio();
+          }}
+          onPlay={() => {
+            //.log("VIDEO PLAYING");
+            //playAll();
+          }}
+          onPause={() => {
+            setVideoPlaying(false);
+          }}
+          controls={false} //{!context?.autoplay}
+          onMouseOver={(event) => {
+            handleMouseIn();
+          }}
+          onMouseOut={(event) => {
+            handleMouseOut();
+          }}
+          onLoadedData={onLoadedData}
+          playsInline
+        >
+          <source
+            data-src={videoInfo.url}
+            src={videoInfo.url}
+            type="video/mp4"
+          />
+        </video>
+
+        <video
+          autoPlay={false}
+          controls={false}
+          ref={audioRef}
+          muted={!(context?.audioOnHover && postMode)}
+          loop={false}
+          className="hidden"
+          playsInline
+          onCanPlay={onAudioLoaded}
+          onPlaying={() => setAudioPlaying(true)}
+          onPause={() => setAudioPlaying(false)}
+          onWaiting={() => setAudioPlaying(false)}
+          onError={(err) => null}
+          onLoadStart={(e) => (audioRef.current.volume = 0.5)}
+        >
+          <source data-src={audio} src={audio} type="video/mp4" />
+        </video>
+      </div>
     </div>
   );
 };
