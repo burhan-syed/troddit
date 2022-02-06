@@ -5,6 +5,7 @@ import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowHeight } from "@react-hook/window-size";
 const VideoHandler = ({
+  thumbnail,
   placeholder,
   videoInfo,
   maxHeight = {},
@@ -279,7 +280,10 @@ const VideoHandler = ({
 
   return (
     <div
-      className="flex items-center justify-center min-w-full group hover:cursor-pointer"
+      className={
+        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden "
+        //+(!postMode && context.columnOverride !== 1 && " mb-[-5px]")
+      }
       onClick={(e) => {
         if (postMode || !context.autoplay) {
           playControl(e);
@@ -287,10 +291,10 @@ const VideoHandler = ({
       }}
     >
       {/* Background Span Image */}
-      <div className="absolute z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 ">
+      <div className="absolute top-0 z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 ">
         <Image
-          className={"scale-110 blur-md "}
-          src={placeholder.url}
+          className={"scale-110 blur-md  "}
+          src={thumbnail.url}
           height={vidHeight}
           width={vidWidth}
           alt="placeholder"
@@ -354,7 +358,7 @@ const VideoHandler = ({
 
         <div
           className={
-            `blur-sm ` +
+            ` ` +
             `${
               videoLoaded
                 ? postMode
@@ -364,16 +368,16 @@ const VideoHandler = ({
             }` +
             (!videoLoaded && postMode && " absolute")
           }
-          style={
-            (imgFull || context?.columnOverride == 1) && !videoLoaded
-              ? imgheight
-              : {}
-          }
+          // style={
+          //   (imgFull || context?.columnOverride == 1) && !videoLoaded
+          //     ? imgheight
+          //     : {}
+          // }
         >
           <Image
-            className={!postMode ? "absolute top-0 left-0" : " "}
+            className={!postMode ? "absolute bottom-0 left-0" : " "}
             src={placeholder.url}
-            height={vidHeight - 5}
+            height={vidHeight}
             width={vidWidth}
             alt="placeholder"
             unoptimized={true}
@@ -390,8 +394,8 @@ const VideoHandler = ({
             (videoLoaded ? "opacity-100" : "opacity-0") +
             (!postMode && " absolute top-0 left-0 ")
           }
-          width={`${vidWidth} `}
-          height={`${vidHeight} `}
+          width={`${vidWidth}`}
+          height={`${vidHeight}`}
           autoPlay={context?.autoplay || postMode}
           muted
           loop

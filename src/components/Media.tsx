@@ -151,7 +151,7 @@ const Media = ({
     };
 
     const findVideo = async () => {
-      let optimize = "1080";
+      let optimize = "720";
       let url = "";
       if (!imgFull) {
         if (postMode) {
@@ -185,11 +185,12 @@ const Media = ({
           height: post.mediaInfo.videoInfo.height,
           width: post.mediaInfo.videoInfo.width,
         });
-        setImageInfo({
-          url: checkURL(post?.thumbnail),
-          height: post.mediaInfo.videoInfo.height,
-          width: post.mediaInfo.videoInfo.width,
-        });
+        // setImageInfo({
+        //   url: checkURL(post?.thumbnail),
+        //   height: post.mediaInfo.videoInfo.height,
+        //   width: post.mediaInfo.videoInfo.width,
+        // });
+        await findImage();
         if (url.includes("v.redd.it")) {
           findAudio(post.mediaInfo.videoInfo.url);
         }
@@ -548,7 +549,8 @@ const Media = ({
                   unmountIfInvisible={false}
                 > */}
                 <VideoHandler
-                  placeholder={placeholderInfo}
+                  thumbnail={placeholderInfo}
+                  placeholder={imageInfo} //{placeholderInfo}
                   videoInfo={videoInfo}
                   maxHeight={maxheight}
                   maxHeightNum={maxheightnum}

@@ -37,6 +37,7 @@ export const numToString = (x: number, max = 10000) => {
 export const findMediaInfo = async (post, quick = false) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];
+  let thumbnailInfo;
   let iFrameHTML;
   let gallery; // = [];
   let isPortrait = undefined;
@@ -114,6 +115,7 @@ export const findMediaInfo = async (post, quick = false) => {
     return {
       videoInfo,
       imageInfo,
+      thumbnailInfo,
       iFrameHTML,
       gallery,
       isPortrait,
@@ -146,13 +148,14 @@ export const findMediaInfo = async (post, quick = false) => {
           width: post.preview.reddit_video_preview.width,
         };
 
-        imageInfo = [
+        thumbnailInfo = [
           {
             url: checkURL(post?.thumbnail),
             height: post.preview.reddit_video_preview.height,
             width: post.preview.reddit_video_preview.width,
           },
         ];
+        await findImage(post, true);
         isVideo = true;
         return true;
         //setLoaded(true);
@@ -165,13 +168,14 @@ export const findMediaInfo = async (post, quick = false) => {
           width: post?.preview?.images?.[0]?.variants?.mp4?.source?.width,
         };
 
-        imageInfo = [
+        thumbnailInfo = [
           {
             url: checkURL(post?.preview?.images?.[0]?.source?.url),
             height: post?.preview?.images?.[0]?.source?.height,
             width: post?.preview?.images?.[0]?.source?.width,
           },
         ];
+        await findImage(post, true);
         isVideo = true;
         return true;
       }
@@ -183,13 +187,14 @@ export const findMediaInfo = async (post, quick = false) => {
           height: post.media.reddit_video.height,
           width: post.media.reddit_video.width,
         };
-        imageInfo = [
+        thumbnailInfo = [
           {
             url: checkURL(post?.thumbnail),
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
           },
         ];
+        await findImage(post, true);
         isVideo = true;
         return true;
       }
