@@ -286,7 +286,9 @@ export const MySubsProvider = ({ children }) => {
       setCurrLocation("");
       setCurrSubInfo({});
     }
-    return () => {};
+    return () => {
+      setCurrSubInfo({});
+    };
   }, [router]);
 
   //removing loadallfast from initial page load. Only loadall when needed

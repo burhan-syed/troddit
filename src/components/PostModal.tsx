@@ -292,12 +292,22 @@ const PostModal = ({
     if (move === 1) {
       //console.log(postNum, context.postNum, context.posts.length);
       if (context.posts?.[context.postNum + 1]?.data) {
-        //console.log("movenext");
+        //console.log(router, returnRoute);
         setPost(context.posts[context.postNum + 1].data);
         updateComments(context.posts[context.postNum + 1]?.data?.permalink);
-        // router.push("", context.posts[context.postNum + 1]?.data?.permalink, {
-        //   shallow: true,
-        // });
+        router.replace(
+          "",
+          router.query?.frontsort
+            ? context.posts[context.postNum + 1]?.data?.id
+            : router.route === "/u/[...slug]"
+            ? `/u/${context.posts[context.postNum + 1]?.data?.author}/p/${
+                context.posts[context.postNum + 1]?.data?.id
+              }`
+            : context.posts[context.postNum + 1]?.data?.permalink,
+          {
+            shallow: true,
+          }
+        );
         context.setPostNum((p) => p + 1);
         setVote(0);
       }
@@ -306,9 +316,19 @@ const PostModal = ({
         //console.log("moveback");
         setPost(context.posts[context.postNum - 1].data);
         updateComments(context.posts[context.postNum - 1]?.data?.permalink);
-        // router.push("", context.posts[context.postNum - 1]?.data?.permalink, {
-        //   shallow: true,
-        // });
+        router.replace(
+          "",
+          router.query?.frontsort
+            ? context.posts[context.postNum - 1]?.data?.id
+            : router.route === "/u/[...slug]"
+            ? `/u/${context.posts[context.postNum - 1]?.data?.author}/p/${
+                context.posts[context.postNum - 1]?.data?.id
+              }`
+            : context.posts[context.postNum - 1]?.data?.permalink,
+          {
+            shallow: true,
+          }
+        );
 
         context.setPostNum((p) => p - 1);
         setVote(0);

@@ -126,8 +126,14 @@ const SubredditBanner = ({ subreddits }) => {
     setMultiSub(s);
     setKeepInMultiArray(true);
     //console.log(router);
+    let query = [];
+    for (let q in router.query) {
+      if (q !== "slug") {
+        query.push(`${q}=${router.query[q]}`);
+      }
+    }
     if (router.route === "/r/[...slug]") {
-      router.push(s);
+      router.push(s + (query.length > 0 ? `?${query.join("&")}` : ""));
     } else {
       router.push(`/r/${s}`, `/r/${s}`);
     }

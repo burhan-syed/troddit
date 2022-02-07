@@ -151,7 +151,7 @@ const Post = ({ post, postNum = 0 }) => {
         <PostModal
           permalink={post?.permalink}
           setSelect={setSelect}
-          returnRoute={returnRoute}
+          returnRoute={lastRoute}
           postData={post}
           postNum={postNum}
         />
