@@ -93,7 +93,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
 
   // Tailwind styles. Most importantly notice position absolute, this will sit relative to the carousel's outer div.
   const arrowStyle =
-    "absolute text-lightText text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center opacity-50";
+    "absolute text-lightText text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center bg-opacity-50";
 
   // Let's create dynamic buttons. It can be either left or right. Using
   // isLeft boolean we can determine which side we'll be rendering our button
@@ -120,7 +120,9 @@ const Gallery = ({ images, maxheight = 0 }) => {
   if (loaded) {
     return (
       <div
-        className={"relative flex flex-row items-center"}
+        className={
+          "relative flex flex-row items-center min-w-full justify-center"
+        }
         onTouchStart={(e) => handleTouchStart(e)}
         onTouchMove={(e) => handleTouchMove(e)}
         onTouchEnd={(e) => handleTouchEnd(e)}
@@ -129,7 +131,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
           {"<"}
         </button> */}
         {images.length > 1 && (
-          <div className="absolute z-10 p-2 bg-black rounded-lg opacity-50 text-lightText top-2 right-2">
+          <div className="absolute z-10 p-2 bg-black bg-opacity-50 rounded-lg text-lightText top-2 right-2">
             <h1>{index + 1 + "/" + images.length}</h1>
           </div>
         )}
