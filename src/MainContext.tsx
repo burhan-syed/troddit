@@ -250,6 +250,10 @@ export const MainProvider = ({ children }) => {
     saved_linkFilter?.includes("false")
       ? setLinkFilter(false)
       : setLinkFilter(true);
+    const saved_selfFilter = localStorage.getItem("selfFilter");
+    saved_selfFilter?.includes("false")
+      ? setSelfFilter(false)
+      : setSelfFilter(true);
   }, []);
 
   useEffect(() => {
@@ -273,6 +277,9 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("linkFilter", JSON.stringify(linkFilter));
   }, [linkFilter]);
+  useEffect(() => {
+    localStorage.setItem("selfFilter", JSON.stringify(selfFilter));
+  }, [selfFilter]);
 
   useEffect(() => {
     localStorage.setItem("localSubs", JSON.stringify(localSubs));
