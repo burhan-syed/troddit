@@ -85,7 +85,7 @@ const DropdownItem = ({
     let suggestions = "";
     for (let s of subs) {
       suggestions?.length === 0
-        ? (suggestions = `r/${s.name}`)
+        ? (suggestions = `/r/${s.name}`)
         : (suggestions = suggestions + "+" + s.name);
     }
     return suggestions;
