@@ -6,7 +6,12 @@ import { loadSubredditInfo } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 
-const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
+const DropdownItem = ({
+  sub,
+  isUser = false,
+  preventNav = false,
+  isUserLink = false,
+}) => {
   const [session, loading] = useSession();
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
@@ -23,7 +28,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
         sub?.data?.community_icon?.length > 1
           ? setThumbURL(sub?.data?.community_icon?.replaceAll("amp;", ""))
           : sub?.data?.icon_img?.length > 1
-          ? setThumbURL(sub?.data?.icon_img)
+          ? setThumbURL(sub?.data?.icon_img?.replaceAll("amp;", ""))
           : setThumbURL("");
         // : sub?.data?.header_img?.length > 1 &&
         //   setThumbURL(sub?.data?.header_img);
@@ -55,7 +60,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
   const goToSub = (e, suggestion) => {
     e.preventDefault();
     plausible("goToSub");
-    router.push(`/r/${suggestion}${isMulti ? `?m=${sub?.data?.name}` : ""}`);
+    router.push(`${suggestion}${isMulti ? `?m=${sub?.data?.name}` : ""}`);
   };
 
   const goToMulti = (e) => {
@@ -80,14 +85,14 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
     let suggestions = "";
     for (let s of subs) {
       suggestions?.length === 0
-        ? (suggestions = s.name)
+        ? (suggestions = `r/${s.name}`)
         : (suggestions = suggestions + "+" + s.name);
     }
     return suggestions;
   };
 
   const goTo = (e) => {
-    isMulti ? goToMulti(e) : goToSub(e, sub.data.display_name);
+    isMulti ? goToMulti(e) : goToSub(e, sub.data.url.replace("/user/", "/u/"));
   };
 
   const Line = (
@@ -125,7 +130,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       {/* Text */}
       <h1 className="ml-2 truncate">
         {sub.data?.display_name_prefixed ?? sub.data?.display_name}
-        {isUser && router?.query?.slug?.[0].toString()}
+        {/* {isUser && router?.query?.slug?.[0].toString()} */}
       </h1>
     </div>
   );
@@ -135,7 +140,7 @@ const DropdownItem = ({ sub, isUser = false, preventNav = false }) => {
       {isMulti ? (
         <>{Line}</>
       ) : (
-        <Link href={`/r/${sub?.data?.display_name}`}>
+        <Link href={`${sub?.data?.url?.replace("/user/", "/u/")}`}>
           <a
             onClick={(e) => {
               e.preventDefault();

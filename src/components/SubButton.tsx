@@ -5,18 +5,21 @@ import { ImSpinner2 } from "react-icons/im";
 import { useSubsContext } from "../MySubs";
 import { useMainContext } from "../MainContext";
 
-const SubButton = ({ sub, miniMode = false }) => {
+const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
   const [subbed, setSubbed] = useState(false);
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
-  const { mySubs, myLocalSubs, myMultis, subscribe, loadedSubs } = subsContext;
+  const { mySubs, myFollowing, myLocalSubs, myMultis, subscribe, loadedSubs } =
+    subsContext;
 
   //checking subs
   useEffect(() => {
     let subbed = false;
     if (session) {
-      mySubs.forEach((s) => {
+      let subs = mySubs;
+      if (userMode) subs = myFollowing;
+      subs.forEach((s) => {
         if (s?.data?.name == sub) {
           subbed = true;
           setSubbed(true);
@@ -27,7 +30,7 @@ const SubButton = ({ sub, miniMode = false }) => {
       setloadAPI(false);
       //console.log("checked session subs");
     }
-  }, [session, mySubs, sub]);
+  }, [session, mySubs, sub, userMode, myFollowing]);
   //checking local subs
   useEffect(() => {
     if (!loading && !session) {
@@ -90,8 +93,12 @@ const SubButton = ({ sub, miniMode = false }) => {
                   <AiOutlineMinus />
                 ) : (
                   <>
-                    <span className="group-hover:hidden">Joined</span>
-                    <span className="hidden group-hover:block">Leave</span>
+                    <span className="group-hover:hidden">
+                      {userMode ? "Followed" : "Joined"}
+                    </span>
+                    <span className="hidden group-hover:block">
+                      {userMode ? "Unfollow" : "Leave"}
+                    </span>
                   </>
                 )}
               </div>
@@ -103,7 +110,11 @@ const SubButton = ({ sub, miniMode = false }) => {
                 }}
                 className="flex items-center p-1 space-x-1"
               >
-                {miniMode ? <AiOutlinePlus /> : <span>Join</span>}
+                {miniMode ? (
+                  <AiOutlinePlus />
+                ) : (
+                  <span>{userMode ? "Follow" : "Join"}</span>
+                )}
               </div>
             ) : loadAPI ? (
               <div className={!miniMode ? "p-2" : ""}>

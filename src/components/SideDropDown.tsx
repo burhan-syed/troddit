@@ -7,7 +7,6 @@ import { BiRightTopArrowCircle } from "react-icons/bi";
 import { CgLivePhoto } from "react-icons/cg";
 import { useMainContext } from "../MainContext";
 import { useSubsContext } from "../MySubs";
-import { getMySubs, getMyMultis, getAllMySubs } from "../RedditAPI";
 import DropdownItem from "./DropdownItem";
 
 const SideDropDown = ({ visible = false }) => {

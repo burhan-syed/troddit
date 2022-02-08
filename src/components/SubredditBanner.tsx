@@ -14,8 +14,9 @@ import SubMultiButton from "./SubMultiButton";
 import SubOptButton from "./SubOptButton";
 import { AiOutlinePlus } from "react-icons/ai";
 import { join } from "path";
+import { secondsToDate } from "../../lib/utils";
 
-const SubredditBanner = ({ subreddits }) => {
+const SubredditBanner = ({ subreddits, userMode = false }) => {
   const router = useRouter();
   const subsContext: any = useSubsContext();
   const { currSubInfo, loadCurrSubInfo, multi } = subsContext;
@@ -242,12 +243,17 @@ const SubredditBanner = ({ subreddits }) => {
                   </h1>
 
                   <div className="items-center justify-end hidden space-x-0.5 md:flex">
-                    <SubButton sub={session ? currSubInfo.name : subreddit} />
-                    <SubOptButton
-                      subInfo={currSubInfo}
-                      currMulti={currMulti}
-                      subArray={subArray}
+                    <SubButton
+                      sub={session ? currSubInfo.name : subreddit}
+                      userMode={userMode}
                     />
+                    {!userMode && (
+                      <SubOptButton
+                        subInfo={currSubInfo}
+                        currMulti={currMulti}
+                        subArray={subArray}
+                      />
+                    )}
                   </div>
                 </>
               ) : (
@@ -258,12 +264,19 @@ const SubredditBanner = ({ subreddits }) => {
               {loaded && (
                 <>
                   <p>
-                    {currSubInfo?.subscribers?.toLocaleString("en-US")} members
-                    <span className="px-2">•</span>
-                    {currSubInfo?.active_user_count?.toLocaleString(
-                      "en-US"
-                    )}{" "}
-                    here
+                    {userMode ? (
+                      <>Joined {secondsToDate(currSubInfo?.created)}</>
+                    ) : (
+                      <>
+                        {currSubInfo?.subscribers?.toLocaleString("en-US")}{" "}
+                        members
+                        <span className="px-2">•</span>
+                        {currSubInfo?.active_user_count?.toLocaleString(
+                          "en-US"
+                        )}{" "}
+                        here
+                      </>
+                    )}
                   </p>
                   {currSubInfo?.over18 && (
                     <>
@@ -277,12 +290,17 @@ const SubredditBanner = ({ subreddits }) => {
               )}
             </div>
             <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
-              <SubButton sub={session ? currSubInfo.name : subreddit} />
-              <SubOptButton
-                subInfo={currSubInfo}
-                currMulti={currMulti}
-                subArray={subArray}
+              <SubButton
+                sub={session ? currSubInfo.name : subreddit}
+                userMode={userMode}
               />
+              {!userMode && (
+                <SubOptButton
+                  subInfo={currSubInfo}
+                  currMulti={currMulti}
+                  subArray={subArray}
+                />
+              )}
             </div>
             <div className="p-1 pb-5 text-center md:text-left">
               {loaded ? (

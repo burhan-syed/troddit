@@ -24,6 +24,13 @@ export const secondsToTime = (
   return `${t}${verbiage[5]}`;
 };
 
+export const secondsToDate = (seconds) => {
+  let date = new Date(seconds * 1000);
+  let month = date.toLocaleDateString("en-US", { month: "long" });
+  let day = date.toLocaleDateString("en-US", { day: "numeric" });
+  let year = date.toLocaleDateString("en-US", { year: "numeric" });
+  return `${month} ${day}, ${year}`;
+};
 export const numToString = (x: number, max = 10000) => {
   if (x < max) {
     return x.toString();

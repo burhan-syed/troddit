@@ -6,7 +6,7 @@ import {
   createMulti,
   deleteFromMulti,
   deleteMulti,
-  getAllMySubs,
+  getAllMyFollows,
   getMyMultis,
   getMySubs,
   loadSubInfo,
@@ -25,6 +25,7 @@ export const MySubsProvider = ({ children }) => {
 
   const context: any = useMainContext();
   const [mySubs, setMySubs] = useState([]);
+  const [myFollowing, setMyFollowing] = useState([]);
   const [myLocalSubs, setMyLocalSubs] = useState([]);
   const [myMultis, setMyMultis] = useState([]);
   const [session, loading] = useSession();
@@ -282,6 +283,9 @@ export const MySubsProvider = ({ children }) => {
       }
     } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
+    } else if (router?.pathname === "/u/[...slug]") {
+      loadCurrSubInfo(`u_${router?.query?.slug?.[0]}`);
+      setCurrLocation(router?.query?.slug?.[0]?.toString());
     } else {
       setCurrLocation("");
       setCurrSubInfo({});
@@ -294,6 +298,12 @@ export const MySubsProvider = ({ children }) => {
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
     loadLocalSubs();
+    if (
+      router?.pathname === "/r/[...slug]" ||
+      router?.pathname === "/u/[...slug]"
+    ) {
+      loadAllFast();
+    }
   }, []);
   useEffect(() => {
     if (
@@ -333,7 +343,13 @@ export const MySubsProvider = ({ children }) => {
   const loadLocalSubs = () => {
     let localsubs = [];
     context.localSubs.forEach((s) => {
-      let sub = { data: { name: s, display_name: s } };
+      let sub = {
+        data: {
+          name: s,
+          display_name: s,
+          url: s?.substring(0, 2) === "u_" ? `/u/${s.substring(2)}` : `/r/${s}`,
+        },
+      };
       localsubs.push(sub);
     });
     localsubs = localsubs.sort((a, b) =>
@@ -347,10 +363,12 @@ export const MySubsProvider = ({ children }) => {
     try {
       //console.log('load subs');
       const multis = getMyMultis();
-      const subs = getAllMySubs();
+      const all = getAllMyFollows();
       setMyMultis(await multis);
       setloadedMultis(true);
-      setMySubs(await subs);
+      let { subs, users } = await all;
+      setMySubs(subs);
+      setMyFollowing(users);
       setloadedSubs(true);
     } catch (err) {
       console.log(err);
@@ -376,8 +394,9 @@ export const MySubsProvider = ({ children }) => {
       try {
         //console.log('loadallsubs')
         setloadedSubs(false);
-        let data = await getAllMySubs();
-        setMySubs(data);
+        let data = await getAllMyFollows();
+        setMySubs(data.subs);
+        setMyFollowing(data.users);
         //console.log('loaded subs', data);
         setloadedSubs(true);
       } catch (err) {
@@ -443,6 +462,7 @@ export const MySubsProvider = ({ children }) => {
       value={{
         myLocalSubs,
         mySubs,
+        myFollowing,
         myMultis,
         myLocalMultis,
         createLocalMulti,

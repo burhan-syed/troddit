@@ -24,6 +24,7 @@ const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
   const {
     mySubs,
+    myFollowing,
     myLocalSubs,
     myLocalMultis,
     myMultis,
@@ -40,9 +41,28 @@ const DropdownPane = ({ hide }) => {
   const [expand, setExpand] = useState(false);
   const [expandMultis, setExpandMultis] = useState(true);
   const [expandSubs, setExpandSubs] = useState(true);
+  const [expandFollowing, setExpandFollowing] = useState(true);
   const windowHeight = useWindowHeight();
   const router = useRouter();
   //const [location, setLocation] = useState("home");
+  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
+  const [myLocalFollows, setMyLocalFollows] = useState([]);
+  useEffect(() => {
+    let subs = [];
+    let follows = [];
+    //console.log(myLocalSubs);
+    if (myLocalSubs?.length > 0) {
+      myLocalSubs.forEach((s) => {
+        if (s.data.url.substring(0, 3) === "/u/") {
+          follows.push(s);
+        } else {
+          subs.push(s);
+        }
+      });
+      setMyLocalSubsFiltered(subs);
+      setMyLocalFollows(follows);
+    }
+  }, [myLocalSubs]);
 
   const [session, loading] = useSession();
   // const [subInfo, setSubInfo] = useState({});
@@ -139,7 +159,8 @@ const DropdownPane = ({ hide }) => {
         >
           {/* Quick Links */}
           <div className="flex flex-col py-2 font-light">
-            {router.pathname.includes("/r/") &&
+            {(router.pathname.includes("/r/") ||
+              router.pathname.includes("/u/")) &&
               currSubInfo &&
               mySubs &&
               !multi &&
@@ -149,6 +170,7 @@ const DropdownPane = ({ hide }) => {
                 <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                   <DropdownSubCard
                     sub={{ kind: "t5", data: currSubInfo }}
+                    userMode={router.pathname.includes("/u/") ? true : false}
                     // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                     // // refresh={loadAllSubs}
                     // refresh={undefined}
@@ -232,11 +254,11 @@ const DropdownPane = ({ hide }) => {
                     onClick={() => setExpandSubs((m) => !m)}
                     className={
                       "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
-                      (expandMultis ? " " : " mb-2")
+                      (expandSubs ? " " : " mb-2")
                     }
                   >
                     <p>local subs</p>
-                    {expandMultis ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
+                    {expandSubs ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
                   </div>
                   <div
                     className={
@@ -245,8 +267,8 @@ const DropdownPane = ({ hide }) => {
                     }
                   >
                     <div className="py-2">
-                      {myLocalSubs
-                        ? myLocalSubs.map((sub, i) => {
+                      {myLocalSubsFiltered
+                        ? myLocalSubsFiltered.map((sub, i) => {
                             return (
                               <div
                                 className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
@@ -259,6 +281,47 @@ const DropdownPane = ({ hide }) => {
                         : ""}
                     </div>
                   </div>
+                  {myLocalFollows?.length > 0 && (
+                    <>
+                      <div
+                        onClick={() => setExpandFollowing((m) => !m)}
+                        className={
+                          "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+                          (expandFollowing ? " " : " mb-2")
+                        }
+                      >
+                        <p>local follows</p>
+                        {expandFollowing ? (
+                          <HiOutlineMinusSm />
+                        ) : (
+                          <HiOutlinePlusSm />
+                        )}
+                      </div>
+                      <div
+                        className={
+                          " " +
+                          (expandFollowing
+                            ? " max-h-full"
+                            : " max-h-0 overflow-hidden")
+                        }
+                      >
+                        <div className="py-2">
+                          {myLocalFollows
+                            ? myLocalFollows.map((sub, i) => {
+                                return (
+                                  <div
+                                    className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                    key={i}
+                                  >
+                                    <DropdownItem sub={sub} isUser={true} />
+                                  </div>
+                                );
+                              })
+                            : ""}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <button
@@ -336,6 +399,7 @@ const DropdownPane = ({ hide }) => {
                   </>
                 )}
               </div>
+
               {/* Subs */}
               <div
                 onClick={() => setExpandSubs((e) => !e)}
@@ -392,6 +456,49 @@ const DropdownPane = ({ hide }) => {
                   </div>
                 )}
               </div>
+
+              {/* Follows */}
+              {myFollowing?.length > 0 && (
+                <>
+                  <div
+                    onClick={() => setExpandFollowing((e) => !e)}
+                    className={
+                      "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-lightHighlight dark:hover:bg-darkHighlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
+                      (expandFollowing ? " " : " mb-2")
+                    }
+                  >
+                    <p>follows</p>
+                    {expandFollowing ? (
+                      <HiOutlineMinusSm />
+                    ) : (
+                      <HiOutlinePlusSm />
+                    )}
+                  </div>
+                  <div
+                    className={
+                      " " +
+                      (expandFollowing
+                        ? " max-h-full"
+                        : " max-h-0 overflow-hidden")
+                    }
+                  >
+                    <div className={"py-2"}>
+                      {myFollowing
+                        ? myFollowing.map((sub, i) => {
+                            return (
+                              <div
+                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                key={i}
+                              >
+                                <DropdownItem sub={sub} isUserLink={true} />
+                              </div>
+                            );
+                          })
+                        : ""}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
           {session && error && (

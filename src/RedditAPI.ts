@@ -425,7 +425,7 @@ export const getMySubs = async (after?, count?) => {
   return null;
 };
 
-export const getAllMySubs = async () => {
+export const getAllMyFollows = async () => {
   let alldata = [];
   let after = "";
   let count = 0;
@@ -471,7 +471,17 @@ export const getAllMySubs = async () => {
   alldata = alldata.sort((a, b) =>
     a.data.display_name.localeCompare(b.data.display_name)
   );
-  return alldata;
+  //split subs and users
+  let users = [];
+  let subs = [];
+  alldata.forEach((a) => {
+    if (a?.data?.url?.substring(0, 6) === "/user/") {
+      users.push(a);
+    } else {
+      subs.push(a);
+    }
+  });
+  return { users, subs };
 };
 
 export const getUserMultiSubs = async (user: string, multi: string) => {

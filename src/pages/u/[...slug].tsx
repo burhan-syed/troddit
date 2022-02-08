@@ -58,9 +58,12 @@ const Sort = ({ query }) => {
         <NavBar />
         {loaded && (
           <div>
-            {subsArray?.length > 0 ? (
+            {true ? (
               <div className="w-screen pt-16 ">
-                <SubredditBanner subreddits={subsArray} />
+                <SubredditBanner
+                  subreddits={[`u_${query?.slug?.[0]}`]}
+                  userMode={true}
+                />
               </div>
             ) : (
               <div className="pt-16"></div>
