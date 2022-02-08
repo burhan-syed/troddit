@@ -293,7 +293,7 @@ export const MySubsProvider = ({ children }) => {
     return () => {
       setCurrSubInfo({});
     };
-  }, [router]);
+  }, [router?.query?.slug?.[0]]);
 
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {

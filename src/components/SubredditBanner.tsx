@@ -53,8 +53,17 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
   useEffect(() => {
     //loadcurrSubInfo(subreddit);
     if (subreddit.toUpperCase() === currSubInfo?.display_name?.toUpperCase()) {
+      let bannerurl = "";
+      if (currSubInfo?.banner_background_image?.length > 0) {
+        bannerurl = currSubInfo?.banner_background_image?.replaceAll(
+          "amp;",
+          ""
+        );
+      } else if (currSubInfo?.banner_img?.length > 0) {
+        bannerurl = currSubInfo?.banner_img?.replaceAll("amp;", "");
+      }
       setBanner({
-        backgroundImage: `url("${currSubInfo?.banner_background_image}")`,
+        backgroundImage: `url("${bannerurl}")`,
         backgroundColor:
           currSubInfo?.banner_background_color.length > 1
             ? currSubInfo.banner_background_color
@@ -63,6 +72,9 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
 
       setLoaded(true);
     }
+    return () => {
+      setBanner({});
+    };
   }, [currSubInfo, subreddit]);
 
   useEffect(() => {
