@@ -261,12 +261,12 @@ const PostModal = ({
     setSelect(false);
     //console.log("Clicked back");
     //for handling returning to [frontsort] routes, only clicking in the app works... browser back button kicks to front page
-    if (returnRoute) {
-      //console.log("last route", returnRoute);
-      router.push(returnRoute);
-    } else {
-      router.back();
-    }
+    // if (returnRoute) {
+    //   //console.log("last route", returnRoute);
+    //   router.push(returnRoute);
+    // } else {
+    router.back();
+    //}
   };
 
   useEffect(() => {

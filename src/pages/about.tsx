@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import NavBar from "../components/NavBar";
-
+import { AiOutlineGithub } from "react-icons/ai";
 const about = () => {
   return (
     <div>
@@ -9,35 +9,31 @@ const about = () => {
         <title>troddit · about</title>
       </Head>
       <NavBar />
-      <div className="flex flex-row items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-lightText">
-        <div className="flex flex-col max-w-lg space-y-1 ">
+      <div className="flex flex-col items-center justify-center min-h-screen mx-4 space-y-2 overflow-hidden text-justify dark:text-lightText">
+        <div className="flex flex-col max-w-lg min-h-full space-y-1 ">
           <p className="">
-            Troddit is a web app for Reddit. While an account is not
-            required, we do support secure logins with Reddit so you can vote,
-            comment, and have immediate access to your personal subreddits.
+            Troddit is a web app for Reddit. Follow subreddits and users locally
+            or login with your Reddit account to vote, comment, and manage your
+            existing subscriptions.
           </p>
 
           <p className="py-4">
-            This is an independently run site not affiliated with Reddit. All content on
-            this site is retrieved from the public Reddit API. 
+            This is an independent site not affiliated with Reddit. All content
+            on this site is retrieved from the public Reddit API.
           </p>
-          <p>
-            {
-              "You can support us by sharing this site and if you're feeling generous donations are welcome via "
-            }
+
+          <p className="py-4">
+            For any inquiries, questions, feature requests, or bug reports,
+            create a request on{" "}
             <a
-              className="text-blue-500 underline"
-              href="https://www.paypal.com/donate?hosted_button_id=74C839HD2W2KL"
+              href="https://www.github.com/burhan-syed/troddit"
               target="_blank"
               rel="noreferrer"
+              className="text-blue-500 hover:cursor-pointer"
             >
-              PayPal here.
+              GitHub
             </a>{" "}
-            Thanks!
-          </p>
-          <p className="py-4">
-            For any inquiries, questions, feature requests, or bug reports, I
-            can be reached at{" "}
+            or contact me at{" "}
             <a
               className="text-blue-500 underline"
               href="mailto: trodditdev@gmail.com"
@@ -45,11 +41,28 @@ const about = () => {
               trodditdev@gmail.com
             </a>
           </p>
-          {/* <p className="text-transparent select-none">
-            Hello there, why are you snooping here? {"Don't"} mind this. Troddit
-            supports infinite scrolling for Reddit in a grid format. Masonry
-            layout of Reddit Posts. Reddit Scroller. Reddit browswer. 
-          </p> */}
+
+          <div className="flex flex-row items-center justify-between pt-10 ">
+            <a
+              href="https://ko-fi.com/K3K47IYH1"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11e22d8ff4a5b4a1b3346_Supportbutton-1-p-500.png"
+                alt="Buy Me a Coffee at ko-fi.com"
+                className="h-10 transition-all rounded-md dark:border hover:scale-110"
+              />
+            </a>
+            <a
+              href="https://www.github.com/burhan-syed/troddit"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:cursor-pointer"
+            >
+              <AiOutlineGithub className="w-12 h-12 transition-all hover:scale-110" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
