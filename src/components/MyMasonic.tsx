@@ -188,8 +188,12 @@ const MyMasonic = ({
     if (context.cardStyle == "row1") {
       setItemHeightEstimate(80);
       setCols(1);
-    } else if (context?.columnOverride ?? 0 !== 0) {
-      setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
+    } else if (context?.columnOverride !== 0) {
+      if (context?.columnOverride === 1) {
+        setItemHeightEstimate(Math.floor(windowHeight * 0.75));
+      } else {
+        setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
+      }
       setCols(context.columnOverride);
       context.setColumns(context.columnOverride);
     } else {
@@ -212,7 +216,7 @@ const MyMasonic = ({
       }
     }
     return () => {};
-  }, [windowWidth, context]);
+  }, [windowWidth, context, windowHeight]);
 
   // useEffect(() => {
   //   context.setColumnOverride(0);
@@ -525,7 +529,7 @@ const MyMasonic = ({
             //columnWidth={(windowWidth*5/6 - 8*2) / 3}
             columnCount={cols}
             items={items}
-            itemHeightEstimate={0} //itemheightestimate was making scrollbar jumpy
+            itemHeightEstimate={itemheightestimate} //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
             overscanBy={2}
             render={PostCard}
             className=""
