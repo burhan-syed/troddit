@@ -11,6 +11,7 @@ import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
 import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
+import { AiOutlineTwitter } from "react-icons/ai";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
@@ -227,7 +228,10 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url.includes("twitter.com")) {
+      if (
+        post.url.includes("twitter.com") &&
+        (postMode || context.columnOverride === 1)
+      ) {
         setIsTweet(true);
         return true;
       }
@@ -373,15 +377,28 @@ const Media = ({
     containerDims,
   ]);
 
+  const [tweetLoaded, setTweetLoaded] = useState(false);
+
   return (
-    <div className="block select-none">
+    <div className="block select-none group">
       {loaded && (
         <>
           {isTweet && (
             <div
               className={!imgFull && "flex justify-center " + " bg-transparent"}
             >
+              {/* {!tweetLoaded && (
+                <div className="my-5 bg-gray-300 border rounded-lg w-60 h-96 animate-pulse dark:bg-gray-800"></div>
+              )} */}
               <TwitterTweetEmbed
+                // onLoad={() => setTweetLoaded(true)}
+                placeholder={
+                  <div className="relative my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
+                    <div className="absolute w-full h-full">
+                      <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
+                    </div>
+                  </div>
+                }
                 options={{
                   theme: theme,
                   conversation: "none",
@@ -464,12 +481,13 @@ const Media = ({
             ""
           )}
 
-          {isImage && !isIFrame && !isMP4 ? (
+          {isImage && !isIFrame && !isMP4 && (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
               className={
-                "relative " +
-                (imgFull ? " block" : " flex items-center justify-center ")
+                "relative  " +
+                (imgFull ? " block" : " flex items-center justify-center ") +
+                (post?.mediaInfo?.isTweet ? " py-14 " : " ")
               } //flex items-center justify-center "}
               style={
                 (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
@@ -479,12 +497,14 @@ const Media = ({
                   : {}
               }
             >
-              {mediaLoaded ? (
-                ""
-              ) : (
-                <div className="absolute w-16 h-16 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
+              {!mediaLoaded && (
+                <div className="absolute w-8 h-8 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
               )}
-
+              {post?.mediaInfo?.isTweet && (
+                <div className="absolute flex w-full h-full   bg-[#1A8CD8] rounded-lg  ">
+                  <AiOutlineTwitter className="absolute right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
+                </div>
+              )}
               <Image
                 src={imageInfo.url}
                 height={
@@ -524,13 +544,7 @@ const Media = ({
                 // placeholder="blur"
                 // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
               />
-              {/* <MyImage imageInfo={imageInfo}/> */}
             </div>
-          ) : (
-            // <LazyLoad height={imageInfo.height}>
-            //   <img src={imageInfo.url} alt="img" />
-            // </LazyLoad>
-            ""
           )}
 
           {isMP4 && !isIFrame ? (

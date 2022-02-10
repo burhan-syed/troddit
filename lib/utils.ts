@@ -212,7 +212,7 @@ export const findMediaInfo = async (post, quick = false) => {
   const findImage = async (post, quick = false) => {
     if (post?.url?.includes("twitter.com")) {
       isTweet = true;
-      return true;
+      //return true;
     }
     if (post.media_metadata) {
       gallery = [];
