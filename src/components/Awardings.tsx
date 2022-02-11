@@ -28,7 +28,7 @@ const Awardings = ({ all_awardings, truncate = true }) => {
             {((truncate && i < MAX_DISPLAY) || !truncate) && (
               <div className="flex flex-row pr-1">
                 <Image
-                  src={a?.resized_icons?.[0]?.icon_url ?? a?.icon_url}
+                  src={a?.resized_icons?.[0]?.url ?? a?.icon_url}
                   alt=""
                   unoptimized={true}
                   layout="intrinsic"
