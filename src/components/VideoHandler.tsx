@@ -329,6 +329,15 @@ const VideoHandler = ({
   };
 
   useEffect(() => {
+    if (postMode) {
+      setMuted(!context?.audioOnHover);
+    }
+    return () => {
+      //
+    };
+  }, [context?.audioOnHover]);
+
+  useEffect(() => {
     if (audioRef?.current) {
       audioRef.current.muted = muted;
     }
@@ -509,7 +518,7 @@ const VideoHandler = ({
         >
           {seekTime !== "" && (
             <div
-              className="absolute p-2 text-sm transition-transform rounded-lg bg-opacity-20 bottom-4 dark:bg-black bg-lightBG dark:border-darkBorder"
+              className="absolute p-2 text-sm transition-transform rounded-lg bg-opacity-20 dark:bg-opacity-20 bottom-4 dark:bg-black bg-lightBG dark:border-darkBorder"
               style={{
                 left: `${seekLeftOfset}px`,
                 transform: `translateX(${
@@ -646,7 +655,7 @@ const VideoHandler = ({
           autoPlay={false}
           controls={false}
           ref={audioRef}
-          muted={!(context?.audioOnHover && postMode)}
+          muted={!muted}
           loop={false}
           className="hidden"
           playsInline
