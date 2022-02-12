@@ -228,7 +228,7 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url.includes("twitter.com") && (postMode || allowIFrame)) {
+      if (post.url.includes("twitter.com") && postMode) {
         setIsTweet(true);
         return true;
       }
@@ -478,7 +478,7 @@ const Media = ({
             ""
           )}
 
-          {isImage && !isIFrame && !isMP4 && (
+          {isImage && !isIFrame && !isMP4 && !isTweet && (
             // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
               className={

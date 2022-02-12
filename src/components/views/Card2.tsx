@@ -89,12 +89,12 @@ const Card1 = ({
 
                 <p className="ml-1">
                   {secondsToTime(post?.created_utc, [
-                    "s",
-                    "min",
-                    "hr",
-                    "dy",
-                    "mo",
-                    "yr",
+                    "s ago",
+                    "m ago",
+                    "h ago",
+                    "d ago",
+                    "mo ago",
+                    "yr ago",
                   ])}
                 </p>
                 {post?.over_18 && (
@@ -120,9 +120,9 @@ const Card1 = ({
                   </div>
                 )}
 
-                {/* <div className="flex flex-row ml-auto">
+                <div className="flex flex-row ">
                   <p className="ml-1">{`(${post.domain})`}</p>
-                </div> */}
+                </div>
               </div>
 
               <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">

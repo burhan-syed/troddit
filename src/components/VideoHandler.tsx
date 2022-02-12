@@ -397,6 +397,20 @@ const VideoHandler = ({
           playControl(e);
         }
       }}
+      onMouseEnter={(e) => {
+        if (!postMode && !context.autoplay) {
+          playControl(e);
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (
+          !postMode &&
+          !context.autoplay &&
+          video?.current?.paused === false
+        ) {
+          playControl(e);
+        }
+      }}
     >
       {/* Background Span Image */}
       <div className="absolute top-0 z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 ">
@@ -518,7 +532,7 @@ const VideoHandler = ({
         >
           {seekTime !== "" && (
             <div
-              className="absolute p-2 text-sm transition-transform rounded-lg bg-opacity-20 dark:bg-opacity-20 bottom-4 dark:bg-black bg-lightBG dark:border-darkBorder"
+              className="absolute p-2 text-sm transition-transform bg-black rounded-lg bg-opacity-20 bottom-4 dark:border-darkBorder"
               style={{
                 left: `${seekLeftOfset}px`,
                 transform: `translateX(${
