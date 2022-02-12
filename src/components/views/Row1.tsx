@@ -257,7 +257,7 @@ const Row1 = ({
                 post={post}
                 forceMute={forceMute}
                 allowIFrame={expand}
-                postMode={true}
+                postMode={false}
                 imgFull={false}
               />
             </a>

@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowHeight } from "@react-hook/window-size";
+import { secondsToHMS } from "../../lib/utils";
 const VideoHandler = ({
   thumbnail,
   placeholder,
@@ -19,6 +20,7 @@ const VideoHandler = ({
   const video: any = useRef();
   const audioRef: any = useRef();
   const volRef: any = useRef();
+  const seekRef: any = useRef();
   // const [audioSrc, setaudioSrc] = useState("");
   // const [mounted, setMounted] = useState(false);
   // const [loaded, setLoaded] = useState(false);
@@ -35,10 +37,13 @@ const VideoHandler = ({
   );
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0.0);
+  const [currentTime, setCurrentTime] = useState(0.0);
+  const [videoDuration, setVideoDuration] = useState(0.0);
   const [buffering, setBuffering] = useState(false);
 
   const onLoadedData = () => {
+    setVideoDuration(video?.current?.duration);
+
     setVideoLoaded(true);
   };
   const onAudioLoaded = () => {
@@ -116,36 +121,29 @@ const VideoHandler = ({
     }
   }, [context.pauseAll]);
 
-  useEffect(() => {
-    setTimeRemaining(video?.current?.duration - video?.current?.currentTime);
-    return () => {
-      //
-    };
-  }, [video?.current?.currentTime]);
-
   // useEffect(() => {
   //   //console.log(volume, audioRef.current);
   //   if (audioRef?.current?.volume) {
   //     audioRef.current.volume = volume;
   //   }
-  //   if (volume === 0) {
-  //     //setMuted(true);
-  //   } else if (volume > 0) {
-  //     if (audioRef?.current?.muted !== undefined && hasAudio) {
-  //       //always sync audio
-  //       audioRef.current.currentTime = video.current.currentTime;
-  //       //if audio is not playing and video is playing, play audio
-  //       if (!audioPlaying && videoPlaying) {
-  //         audioRef?.current?.play().catch((e) => console.log(e));
-  //       }
-  //       //toggle audio mute
-  //       audioRef.current.muted = false; //!audioRef.current.muted;
-  //       //if (audioRef.current.muted) audioRef.current.pause();
-  //       //mark manual unmute
-  //       //muted ? setManualAudio(true) : setManualAudio(false);
-  //       setMuted(false);
-  //     }
-  //   }
+  //   // if (volume === 0) {
+  //   //   //setMuted(true);
+  //   // } else if (volume > 0) {
+  //   //   if (audioRef?.current?.muted !== undefined && hasAudio) {
+  //   //     //always sync audio
+  //   //     audioRef.current.currentTime = video.current.currentTime;
+  //   //     //if audio is not playing and video is playing, play audio
+  //   //     if (!audioPlaying && videoPlaying) {
+  //   //       audioRef?.current?.play().catch((e) => console.log(e));
+  //   //     }
+  //   //     //toggle audio mute
+  //   //     audioRef.current.muted = false; //!audioRef.current.muted;
+  //   //     //if (audioRef.current.muted) audioRef.current.pause();
+  //   //     //mark manual unmute
+  //   //     //muted ? setManualAudio(true) : setManualAudio(false);
+  //   //     setMuted(false);
+  //   //   }
+  //   // }
   // }, [volume]);
 
   //main control for play/pause button
@@ -207,8 +205,8 @@ const VideoHandler = ({
         audioRef?.current?.play().catch((e) => console.log(e));
       }
       //toggle audio mute
-      audioRef.current.muted = !audioRef.current.muted;
-      if (audioRef.current.muted) audioRef.current.pause();
+      //audioRef.current.muted = !audioRef.current.muted;
+      //if (audioRef.current.muted) audioRef.current.pause();
       //mark manual unmute
       muted ? setManualAudio(true) : setManualAudio(false);
       setMuted((m) => !m);
@@ -278,14 +276,115 @@ const VideoHandler = ({
     }
   };
 
+  const [showVol, setShowVol] = useState(false);
+
+  const [seekTime, setSeekTime] = useState("");
+  const [seekLeftOfset, setSeekLeftOffset] = useState(0);
+  const [seekTargetLength, setSeekTargetLenght] = useState(0);
+  const showSeek = (e) => {
+    let r = e.nativeEvent.offsetX / e.nativeEvent.target.clientWidth;
+    setSeekLeftOffset(e.nativeEvent.offsetX);
+    setSeekTargetLenght(e.nativeEvent.target.clientWidth);
+    //console.log(secondsToHMS(r * videoDuration));
+    setSeekTime(secondsToHMS(r * videoDuration));
+  };
+
+  const updateSeek = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    //console.log(e, e.nativeEvent.offsetX, e.nativeEvent.target.clientWidth);
+    //console.log(video.current);
+    let r = e.nativeEvent.offsetX / e.nativeEvent.target.clientWidth;
+    //console.log(r, videoDuration, r * videoDuration);
+    video.current.currentTime = r * videoDuration;
+    if (!videoPlaying) {
+      setProgressPerc(video?.current?.currentTime / video?.current?.duration);
+    }
+  };
+
+  const [volumeOffset, setvolumeOffset] = useState(-1);
+  const [volMouseDown, setVolMouseDown] = useState(false);
+  const [showVolSlider, setShowVolSlider] = useState(false);
+  const updateVolume = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    //console.log(e, e.nativeEvent.offsetX, e.nativeEvent.target.clientWidth);
+    //console.log(video.current);
+    let r = Math.abs(
+      1 - e.nativeEvent.offsetY / e.nativeEvent.target.clientHeight
+    );
+    //console.log(e.nativeEvent.offsetY);
+    setvolumeOffset(e.nativeEvent.offsetY);
+    //console.log(r, videoDuration, r * videoDuration);
+    //console.log(r);
+    if (r >= 1) r = 1;
+    if (r <= 0.1) r = 0;
+    r > 0 ? setMuted(false) : setMuted(true);
+    setVolume(r);
+  };
+  const updateVolumeDrag = (e) => {
+    if (volMouseDown) {
+      updateVolume(e);
+    }
+  };
+
+  useEffect(() => {
+    if (audioRef?.current) {
+      audioRef.current.muted = muted;
+    }
+  }, [muted]);
+
+  useEffect(() => {
+    if (audioRef?.current) {
+      audioRef.current.volume = volume;
+    }
+    return () => {
+      //
+    };
+  }, [volume]);
+
+  //smoother progress bar
+  const [progressPerc, setProgressPerc] = useState(0);
+  const [intervalID, setIntervalID] = useState<any>();
+  useEffect(() => {
+    if (videoPlaying && video?.current) {
+      let initial = Date.now();
+      let timepassed = 0;
+      let duration = video?.current?.duration * 1000;
+      let initialTime = video?.current?.currentTime * 1000;
+      let delta = initialTime / duration;
+      //console.log(delta);
+      let updateSeekRange = () => {
+        if (videoPlaying) {
+          //console.log(delta + Date.now() / initial);
+          timepassed = Date.now() - initial;
+          delta = (initialTime + timepassed) / duration;
+          if (delta > 1) delta = 1;
+          //console.log((initialTime + timepassed) / duration);
+          setCurrentTime((initialTime + timepassed) / 1000);
+          setProgressPerc(delta);
+        }
+      };
+
+      setIntervalID((id) => {
+        clearInterval(id);
+        return setInterval(updateSeekRange, 10);
+      });
+    } else {
+      clearInterval(intervalID);
+    }
+    //console.log(video?.current);
+    return () => {};
+  }, [videoPlaying]);
+
   return (
     <div
       className={
-        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden "
+        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden"
         //+(!postMode && context.columnOverride !== 1 && " mb-[-5px]")
       }
       onClick={(e) => {
-        if (postMode || !context.autoplay) {
+        if (postMode || !context.autoplay || true) {
           playControl(e);
         }
       }}
@@ -304,40 +403,141 @@ const VideoHandler = ({
           onError={() => {
             setUseFallback(true);
           }}
+          draggable={false}
         />
       </div>
       {/* Controls */}
-      <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 text-lightText">
-        <button
-          onClick={(e) => playControl(e)}
-          className={
-            (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
-            "items-center justify-center w-9 h-9  bg-black rounded-full bg-opacity-20 hover:bg-opacity-40  "
-          }
-        >
-          <div className="">
-            {videoPlaying ? (
-              <BiPause className="flex-none w-6 h-6 " />
-            ) : (
-              <BiPlay className="flex-none w-6 h-6 ml-0.5" />
-            )}
-          </div>
-        </button>
-        {/* <h1>{timeRemaining}</h1> */}
-        {hasAudio && (
+      <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-lightText">
+        <div className="flex items-center space-x-2">
           <button
-            onClick={(e) => audioControl(e)}
-            className="flex items-center justify-center ml-auto bg-black rounded-full w-9 h-9 bg-opacity-20 hover:bg-opacity-40"
+            onClick={(e) => playControl(e)}
+            className={
+              (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
+              "items-center justify-center w-8 h-8  bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
+            }
           >
             <div className="">
+              {videoPlaying ? (
+                <BiPause className="flex-none w-6 h-6 " />
+              ) : (
+                <BiPlay className="flex-none w-6 h-6 ml-0.5" />
+              )}
+            </div>
+          </button>
+          <div className="hidden group-hover:block">
+            {secondsToHMS(currentTime) + "/" + secondsToHMS(videoDuration)}
+          </div>
+        </div>
+        {hasAudio && (
+          // vol positioner
+          <div
+            className="relative ml-auto"
+            onMouseEnter={() => setShowVolSlider(true)}
+            onMouseLeave={() => setShowVolSlider(false)}
+          >
+            {/* vol container */}
+            <div className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent">
+              {/* slider container */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => setVolMouseDown(true)}
+                onMouseUp={(e) => setVolMouseDown(false)}
+                onMouseLeave={() => setVolMouseDown(false)}
+                className={
+                  "relative bottom-0 left-0  justify-center w-full h-32 bg-black bg-opacity-40 rounded-md " +
+                  (showVolSlider && postMode ? " flex " : " hidden ")
+                  // limiting to post mode currently becuase of slider drag issues
+                }
+              >
+                {/* Slide range */}
+                <div className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28">
+                  {/* Range controls */}
+                  <div
+                    className="absolute z-30 w-full h-full"
+                    onClick={(e) => updateVolume(e)}
+                    //onMouseLeave={() => setVolMouseDown(false)}
+                    onMouseMove={(e) => {
+                      updateVolumeDrag(e);
+                    }}
+                  ></div>
+                  <div className="absolute bottom-0 w-2 h-full">
+                    {/* Control Circle  */}
+                    <div
+                      className="absolute z-20 w-4 h-4 bg-white border rounded-full -left-1 "
+                      style={
+                        muted || volume === 0
+                          ? { bottom: 0 }
+                          : {
+                              transform: `translateY(${
+                                volumeOffset === -1 ? 48 : volumeOffset
+                              }px)`,
+                            }
+                      }
+                      onMouseDown={() => setVolMouseDown(true)}
+                      onMouseUp={() => setVolMouseDown(false)}
+                    ></div>
+                    {/* Vol indicator */}
+                    <div
+                      className="absolute bottom-0 z-10 w-full origin-bottom bg-blue-400 rounded-full dark:bg-red-800"
+                      style={{ height: `${muted ? 0 : volume * 100}%` }}
+                    ></div>
+                    <div className="absolute bottom-0 z-0 w-full h-full bg-white bg-opacity-50 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* mute/unmute button */}
+            <button
+              onClick={(e) => audioControl(e)}
+              onMouseEnter={() => setShowVol(true)}
+              onMouseLeave={() => setShowVol(false)}
+              className="relative flex items-center justify-center w-8 h-8 ml-auto bg-black rounded-md bg-opacity-20 hover:bg-opacity-40"
+            >
               {muted ? (
                 <BiVolumeMute className="flex-none w-4 h-4" />
               ) : (
                 <BiVolumeFull className="flex-none w-4 h-4 " />
               )}
-            </div>
-          </button>
+            </button>
+          </div>
         )}
+        {/* Progress Bar Container*/}
+        <div
+          id={"progressBarConainer"}
+          ref={seekRef}
+          className="absolute bottom-0 left-0 z-10 hidden w-full h-5 group-hover:block "
+        >
+          {seekTime !== "" && (
+            <div
+              className="absolute p-2 text-sm transition-transform rounded-lg bg-opacity-20 bottom-4 dark:bg-black bg-lightBG dark:border-darkBorder"
+              style={{
+                left: `${seekLeftOfset}px`,
+                transform: `translateX(${
+                  seekLeftOfset / seekTargetLength < 0.2
+                    ? 20
+                    : seekLeftOfset / seekTargetLength > 0.9
+                    ? -80
+                    : -20
+                }px)`,
+              }}
+            >
+              {seekTime}
+            </div>
+          )}
+          {/* Video Duration */}
+          <div
+            className="absolute bottom-0 left-0 h-1 origin-left bg-blue-400 dark:bg-red-800 "
+            style={{ width: `${progressPerc * 100}%` }}
+          ></div>
+          <div
+            className="absolute left-0 w-full h-full "
+            onMouseMove={(e) => showSeek(e)}
+            onMouseLeave={() => setSeekTime("")}
+            onClick={(e: any) => {
+              updateSeek(e);
+            }}
+          ></div>
+        </div>
       </div>
 
       {/* Video */}
@@ -385,6 +585,7 @@ const VideoHandler = ({
             onError={() => {
               setUseFallback(true);
             }}
+            draggable={false}
           />
         </div>
 
@@ -427,7 +628,12 @@ const VideoHandler = ({
             handleMouseOut();
           }}
           onLoadedData={onLoadedData}
+          onTimeUpdate={(e: BaseSyntheticEvent) => {
+            //console.log(e.target.currentTime, e.target.duration);
+            //setCurrentTime(e.target.currentTime);
+          }}
           playsInline
+          draggable={false}
         >
           <source
             data-src={videoInfo.url}
@@ -449,7 +655,7 @@ const VideoHandler = ({
           onPause={() => setAudioPlaying(false)}
           onWaiting={() => setAudioPlaying(false)}
           onError={(err) => null}
-          onLoadStart={(e) => (audioRef.current.volume = 0.5)}
+          onLoadStart={(e) => setVolume(0.5)}
         >
           <source data-src={audio} src={audio} type="video/mp4" />
         </video>

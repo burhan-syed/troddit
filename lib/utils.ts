@@ -24,6 +24,24 @@ export const secondsToTime = (
   return `${t}${verbiage[5]}`;
 };
 
+export const secondsToHMS = (e, del = ":") => {
+  if (e <= 0) return "0.00";
+  let h: any = Math.floor(e / 3600);
+  if (h > 0) {
+    h = h.toString().padStart(2, "0");
+  } else {
+    h = "";
+  }
+  let m = Math.floor((e % 3600) / 60).toString();
+  //.padStart(2, "0");
+  let s = Math.floor(e % 60)
+    .toString()
+    .padStart(2, "0");
+
+  return (h !== "" ? `${h}${del}` : "") + m + del + s;
+  //return `${h}:${m}:${s}`;
+};
+
 export const secondsToDate = (seconds) => {
   let date = new Date(seconds * 1000);
   let month = date.toLocaleDateString("en-US", { month: "long" });

@@ -228,10 +228,7 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (
-        post.url.includes("twitter.com") &&
-        (postMode || context.columnOverride === 1)
-      ) {
+      if (post.url.includes("twitter.com") && (postMode || allowIFrame)) {
         setIsTweet(true);
         return true;
       }
