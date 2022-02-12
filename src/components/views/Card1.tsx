@@ -101,7 +101,7 @@ const Card1 = ({
                 )}
 
                 <div className="flex flex-row ">
-                  <p className="ml-1">{`(${post.domain})`}</p>
+                  <p className="ml-1">{`(${post?.domain})`}</p>
                 </div>
               </div>
               <div className="py-2">
@@ -213,7 +213,7 @@ const Card1 = ({
                             </div>
                           )}
                           <div className="">
-                            <p className="ml-1">{`(${post.domain})`}</p>
+                            <p className="ml-1">{`(${post?.domain})`}</p>
                           </div>
                         </div>
                         <h1 className="flex flex-row flex-wrap items-center gap-1 pb-1">

@@ -182,7 +182,7 @@ const Row1 = ({
               <Awardings all_awardings={post?.all_awardings} />
             </div>
           )}
-          <span className="ml-auto text-xs font-xs">{`(${post.domain})`}</span>
+          <span className="ml-auto text-xs font-xs">{`(${post?.domain})`}</span>
         </div>
         {/* Links */}
         <div>

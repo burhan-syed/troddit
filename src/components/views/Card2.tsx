@@ -121,7 +121,7 @@ const Card1 = ({
                 )}
 
                 <div className="flex flex-row ">
-                  <p className="ml-1">{`(${post.domain})`}</p>
+                  <p className="ml-1">{`(${post?.domain})`}</p>
                 </div>
               </div>
 

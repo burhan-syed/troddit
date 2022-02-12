@@ -570,10 +570,10 @@ const VideoHandler = ({
           //+ (!postMode && videoLoaded && " -mb-1 ") + //there's a margin below the video for some reason
           //postMode && " flex items-center justify-center  "
         }
-        // style={imgFull || context?.columnOverride == 1 ? maxHeight : {}}
-        style={
-          postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
-        }
+        // style={
+        //   postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
+        // }
+        //causing blank space below vid
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
           <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
@@ -615,8 +615,8 @@ const VideoHandler = ({
         <video
           ref={video}
           className={
-            (videoLoaded ? "opacity-100" : "opacity-0") +
-            (!postMode && " absolute top-0 left-0 ")
+            (videoLoaded ? "opacity-100 " : " opacity-0") +
+            (!postMode ? " absolute top-0 left-0 " : " ")
           }
           width={`${vidWidth}`}
           height={`${vidHeight}`}
