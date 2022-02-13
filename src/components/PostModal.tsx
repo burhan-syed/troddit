@@ -74,17 +74,25 @@ const PostModal = ({
 
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [touchEndY, setTouchEndY] = useState(0);
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
+    setTouchStartY(e.targetTouches[0].clientY);
   };
   const handleTouchMove = (e) => {
     setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEndY(e.targetTouches[0].clientY);
   };
   const handleTouchEnd = (e) => {
+    //console.log(Math.abs(touchStartY - touchEndY));
     if (touchStart - touchEnd > 100) {
       //changePost(1);
       //console.log("right");
-    } else if (touchStart - touchEnd < -100) {
+    } else if (
+      touchStart - touchEnd < -100 &&
+      Math.abs(touchStartY - touchEndY) < 20
+    ) {
       handleBack();
       //console.log("left");
     }
