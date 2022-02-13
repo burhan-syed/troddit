@@ -540,7 +540,9 @@ const MyMasonic = ({
           )}
           {filterCount > 0 && (
             <div className="fixed bottom-0 left-0 flex-col text-xs select-none">
-              <h1>{count + 1} pages</h1>
+              <h1>
+                {count + 1} page{count + 1 === 1 ? "" : "s"}
+              </h1>
               <h1>{filterCount} filtered</h1>
             </div>
           )}
@@ -550,8 +552,9 @@ const MyMasonic = ({
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
-            Loaded {numposts} post{numposts > 1 ? "s" : ""} on {count + 1} page
-            {count + 1 > 1 ? "s" : ""}.{" "}
+            Loaded {numposts} post{numposts === 1 ? "" : "s"} on {count + 1}{" "}
+            page
+            {count + 1 === 1 ? "" : "s"}.{" "}
           </h1>
         </div>
       )}

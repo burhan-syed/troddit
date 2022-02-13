@@ -342,11 +342,7 @@ const Feed = ({
     return (
       <div className="flex flex-col items-center justify-center mt-16 text-center">
         <div>{"Oops something went wrong :("}</div>
-        <div>
-          {
-            "Please refresh and make sure you're not blocking traffic from Reddit"
-          }
-        </div>
+        <div>{"Please assure traffic from Reddit and refresh"}</div>
         {subreddits !== "" && (
           <div>{`Otherwise, this ${
             isUser ? "user" : "subreddit"
