@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BsFilterRight } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
@@ -6,7 +6,6 @@ import ToggleTheme from "./ToggleTheme";
 import ToggleNSFW from "./ToggleNSFW";
 import ToggleAutoplay from "./ToggleAutoplay";
 import Link from "next/link";
-import ToggleMaximize from "./ToggleMaximize";
 import { useMainContext } from "../MainContext";
 import ToggleMediaOnly from "./ToggleMediaOnly";
 import ToggleAudioOnHover from "./ToggleAudioOnHover";
@@ -20,69 +19,90 @@ function classNames(...classes) {
 const FilterMenu = ({ hide = false }) => {
   const context: any = useMainContext();
   const [openFilter, setOpenFilter] = useState(0);
+  const [active, setActive] = useState(false);
+  const [deg, setDeg] = useState(0);
+  const [degIntervalID, setDegIntervalID] = useState<any>();
+  useEffect(() => {
+    let {
+      imgFilter,
+      vidFilter,
+      selfFilter,
+      galFilter,
+      linkFilter,
+      imgPortraitFilter,
+      imgLandscapeFilter,
+    } = context;
+    if (
+      !imgFilter ||
+      !vidFilter ||
+      !selfFilter ||
+      !galFilter ||
+      !linkFilter ||
+      !imgPortraitFilter ||
+      !imgLandscapeFilter
+    ) {
+      console.log("active");
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+    return () => {
+      setActive(false);
+    };
+  }, [context]);
+
+  useEffect(() => {
+    if (active) {
+      let updateDeg = () => {
+        setDeg((d) => (d += 4));
+      };
+
+      setDegIntervalID((id) => {
+        clearInterval(id);
+        return setInterval(updateDeg, 10);
+      });
+    } else {
+      clearInterval(degIntervalID);
+    }
+    return () => {
+      clearInterval(degIntervalID);
+    };
+  }, [active]);
 
   return (
     <>
       <FilterModal toOpen={openFilter} />
       <button
-        className="relative flex flex-col items-center flex-grow w-full h-full select-none"
+        className={
+          "relative flex flex-col items-center flex-grow w-full h-full select-none"
+        }
         onClick={(e) => {
           e.preventDefault();
           setOpenFilter((o) => o + 1);
         }}
       >
-        <div className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none">
-          <FiFilter className="flex-none w-5 h-5" />
+        <div
+          className={
+            "flex flex-row items-center justify-center w-full h-full bg-white  rounded-md  dark:bg-darkBG dark:border-darkBG focus:outline-none" +
+            (active
+              ? " z-10 scale-90"
+              : " border border-white hover:border-lightBorder dark:hover:border-darkBorder")
+          }
+        >
+          <FiFilter
+            className={"flex-none " + (active ? " w-6 h-6 " : " w-5 h-5 ")}
+          />
         </div>
+        {active && (
+          <div
+            className="absolute z-0 w-full h-full rounded-md"
+            style={{
+              backgroundImage: `linear-gradient(${deg}deg, rgb(96, 165, 250), rgb(255, 255, 255))`,
+            }}
+          ></div>
+        )}
       </button>
     </>
-    // <Menu
-    //   as="div"
-    //   className="relative flex flex-col items-center flex-grow w-full h-full select-none"
-    // >
-    //   <div className="flex-grow w-full">
-    //     <Menu.Button
-    //       name="Options"
-    //       className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none"
-    //     >
-    //       <FiFilter className="flex-none w-5 h-5" />
-    //     </Menu.Button>
-    //   </div>
-
-    //   <Transition
-    //     as={Fragment}
-    //     enter="transition ease-out duration-100"
-    //     enterFrom="transform opacity-0 scale-95"
-    //     enterTo="transform opacity-100 scale-100"
-    //     leave="transition ease-in duration-75"
-    //     leaveFrom="transform opacity-100 scale-100"
-    //     leaveTo="transform opacity-0 scale-95"
-    //   >
-    //     <Menu.Items
-    //       className={
-    //         "absolute right-0 w-40 mt-11 origin-top-right bbg-white dark:bg-darkBG bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder " +
-    //         (hide && " hidden")
-    //       }
-    //     >
-    //       <div className="py-1">
-    //         {filters.map((f,i) => (
-    //           <Menu.Item key={i}>
-    //           {({ active }) => (
-    //             <div
-    //               className={classNames(
-    //                 active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-    //                 "block px-4 py-2 text-sm"
-    //               )}
-    //             >
-    //               <ToggleFilters filter={f} />
-    //             </div>
-    //           )}
-    //         </Menu.Item>
-    //         ))}
-    //         </div>
-    //     </Menu.Items>
-    //   </Transition>
-    // </Menu>
   );
 };
 
