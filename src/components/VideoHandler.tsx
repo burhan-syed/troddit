@@ -121,39 +121,11 @@ const VideoHandler = ({
     }
   }, [context.pauseAll]);
 
-  // useEffect(() => {
-  //   //console.log(volume, audioRef.current);
-  //   if (audioRef?.current?.volume) {
-  //     audioRef.current.volume = volume;
-  //   }
-  //   // if (volume === 0) {
-  //   //   //setMuted(true);
-  //   // } else if (volume > 0) {
-  //   //   if (audioRef?.current?.muted !== undefined && hasAudio) {
-  //   //     //always sync audio
-  //   //     audioRef.current.currentTime = video.current.currentTime;
-  //   //     //if audio is not playing and video is playing, play audio
-  //   //     if (!audioPlaying && videoPlaying) {
-  //   //       audioRef?.current?.play().catch((e) => console.log(e));
-  //   //     }
-  //   //     //toggle audio mute
-  //   //     audioRef.current.muted = false; //!audioRef.current.muted;
-  //   //     //if (audioRef.current.muted) audioRef.current.pause();
-  //   //     //mark manual unmute
-  //   //     //muted ? setManualAudio(true) : setManualAudio(false);
-  //   //     setMuted(false);
-  //   //   }
-  //   // }
-  // }, [volume]);
-
   //main control for play/pause button
-  const playControl = (e) => {
+  const playControl = (e, manual = false) => {
     e.preventDefault();
     e.stopPropagation();
-    //console.log(video.current);
-    //only allow play if video loaded
     if (true) {
-      //videoLoaded) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
         //play the video
@@ -161,11 +133,23 @@ const VideoHandler = ({
           ?.play()
           .then(() => {
             //setVideoPlaying(true); this will be handled directly from the video element
-            setmanualPlay(true);
+            manual && setmanualPlay(true);
+
+            if (
+              hasAudio
+              // &&(audioRef?.current?.paused || audioRef?.current?.ended) &&
+              // !audioPlaying
+            ) {
+              audioRef.current.currentTime = video.current.currentTime;
+              audioRef?.current
+                ?.play()
+                ?.then(() => setAudioPlaying(true))
+                .catch((e) => console.log(e));
+            }
           })
           .catch((e) => {
             //setVideoPlaying(false); this will be handled directly from the video element
-            setmanualPlay(false);
+            manual && setmanualPlay(false);
           });
       }
       //pause the video
@@ -173,27 +157,15 @@ const VideoHandler = ({
         setVideoPlaying(false);
         setmanualPlay(false);
         video?.current?.pause();
-      }
-
-      //play audio if there is audio
-      if (hasAudio) {
-        //if audio is paused, sync it and play
-        if (
-          (audioRef?.current?.paused || audioRef?.current?.ended) &&
-          !audioPlaying
-        ) {
-          audioRef.current.currentTime = video.current.currentTime;
-          audioRef?.current?.play().catch((e) => console.log(e));
-        }
-        //otherwise pause the audio
-        else if (!audioRef?.current?.paused && audioPlaying) {
+        if (!audioRef?.current?.paused) {
           audioRef.current.pause();
+          setAudioPlaying(false);
         }
       }
     }
   };
   //main controls for audio
-  const audioControl = (e) => {
+  const audioControl = (e, manual = false) => {
     e.preventDefault();
     e.stopPropagation();
     //if audio exists
@@ -204,11 +176,7 @@ const VideoHandler = ({
       if (!audioPlaying && videoPlaying) {
         audioRef?.current?.play().catch((e) => console.log(e));
       }
-      //toggle audio mute
-      //audioRef.current.muted = !audioRef.current.muted;
-      //if (audioRef.current.muted) audioRef.current.pause();
-      //mark manual unmute
-      muted ? setManualAudio(true) : setManualAudio(false);
+      manual && setManualAudio(true);
       setMuted((m) => !m);
     }
   };
@@ -242,37 +210,34 @@ const VideoHandler = ({
     videoLoaded && video?.current?.play().catch((e) => console.log(e));
   };
 
-  const handleMouseIn = () => {
-    //if video was not played manually, in card mode,
-    if (!manualPlay && videoLoaded && !context.mediaOnly) {
-      //play video if not in autoplay
-      //disabling this for now - with change from preload to none when not in autoplay
-      //if (!context.autoplay) playVideo();
-
-      //unmute play audio if allowed and video playing
+  const handleMouseIn = (e) => {
+    if (!context.mediaOnly) {
       if (
-        context.audioOnHover &&
-        !(context.audioOnHover && postMode) &&
-        videoPlaying
+        (!manualPlay || video?.current?.paused) &&
+        !context.autoplay &&
+        !postMode
       ) {
-        audioRef.current.muted = false;
+        playControl(e);
+      }
+      if (!postMode && !manualAudio && context.audioOnHover) {
         setMuted(false);
-        playAudio();
       }
     }
   };
 
   const handleMouseOut = () => {
     //not in manual play, then pause audio and video
-    if (!manualPlay && !context.autoplay && !postMode) {
-      pauseAudio();
-      pauseVideo();
-    }
+    if (!context.mediaOnly) {
+      if (!manualPlay && !context.autoplay && !postMode) {
+        pauseAudio();
+        pauseVideo();
+      }
 
-    //also mute if not manually unmuted manipulation
-    if (!manualAudio && !postMode) {
-      setMuted(true);
-      audioRef.current.muted = true;
+      //also mute if not manually unmuted manipulation
+      // if (!manualPlay && !postMode) {
+      //   setMuted(true);
+      //   audioRef.current.muted = true;
+      // }
     }
   };
 
@@ -372,6 +337,10 @@ const VideoHandler = ({
           //console.log((initialTime + timepassed) / duration);
           setCurrentTime((initialTime + timepassed) / 1000);
           setProgressPerc(delta);
+          //handle out of range..
+          if ((initialTime + timepassed) / 1000 > duration) {
+            video.current.currentTime = 0;
+          }
         }
       };
 
@@ -393,23 +362,14 @@ const VideoHandler = ({
         //+(!postMode && context.columnOverride !== 1 && " mb-[-5px]")
       }
       onClick={(e) => {
-        if (postMode || !context.autoplay || true) {
-          playControl(e);
-        }
+        playControl(e, true);
       }}
       onMouseEnter={(e) => {
-        if (!postMode && !context.autoplay) {
-          playControl(e);
-        }
+        // console.log("mouseenter");
+        handleMouseIn(e);
       }}
       onMouseLeave={(e) => {
-        if (
-          !postMode &&
-          !context.autoplay &&
-          video?.current?.paused === false
-        ) {
-          playControl(e);
-        }
+        handleMouseOut();
       }}
     >
       {/* Background Span Image */}
@@ -433,7 +393,10 @@ const VideoHandler = ({
       <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-lightText">
         <div className="flex items-center space-x-2">
           <button
-            onClick={(e) => playControl(e)}
+            onClick={(e) => {
+              //console.log("innerclick");
+              playControl(e, true);
+            }}
             className={
               (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
               "items-center justify-center w-8 h-8  bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
@@ -447,7 +410,7 @@ const VideoHandler = ({
               )}
             </div>
           </button>
-          <div className="hidden group-hover:block">
+          <div className="hidden text-sm group-hover:block">
             {secondsToHMS(currentTime) + "/" + secondsToHMS(videoDuration)}
           </div>
         </div>
@@ -511,7 +474,7 @@ const VideoHandler = ({
             </div>
             {/* mute/unmute button */}
             <button
-              onClick={(e) => audioControl(e)}
+              onClick={(e) => audioControl(e, true)}
               onMouseEnter={() => setShowVol(true)}
               onMouseLeave={() => setShowVol(false)}
               className="relative flex items-center justify-center w-8 h-8 ml-auto bg-black rounded-md bg-opacity-20 hover:bg-opacity-40"
@@ -532,7 +495,7 @@ const VideoHandler = ({
         >
           {seekTime !== "" && (
             <div
-              className="absolute p-2 text-sm transition-transform bg-black rounded-lg bg-opacity-20 bottom-4 dark:border-darkBorder"
+              className="absolute p-2 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 dark:border-darkBorder"
               style={{
                 left: `${seekLeftOfset}px`,
                 transform: `translateX(${
@@ -565,15 +528,8 @@ const VideoHandler = ({
 
       {/* Video */}
       <div
-        className={
-          "relative overflow-hidden    "
-          //+ (!postMode && videoLoaded && " -mb-1 ") + //there's a margin below the video for some reason
-          //postMode && " flex items-center justify-center  "
-        }
-        // style={
-        //   postMode && vidHeight >= vidWidth ? { height: `${vidHeight}px` } : {}
-        // }
-        //causing blank space below vid
+        className={"relative overflow-hidden flex   "}
+        style={containerDims?.[1] && { height: `${containerDims[1]}px` }}
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
           <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
@@ -581,24 +537,23 @@ const VideoHandler = ({
 
         <div
           className={
-            ` ` +
+            `  ` +
             `${
-              videoLoaded
-                ? postMode
-                  ? " hidden "
-                  : " opacity-0 "
-                : " opacity-100"
+              !videoLoaded
+                ? " opacity-100 "
+                : containerDims?.[1]
+                ? " hidden "
+                : postMode
+                ? "opacity-0 "
+                : " opacity-0"
             }` +
-            (!videoLoaded && postMode && " absolute")
+            (!videoLoaded &&
+              containerDims?.[1] &&
+              " absolute top-1/2 -translate-y-1/2 ")
           }
-          // style={
-          //   (imgFull || context?.columnOverride == 1) && !videoLoaded
-          //     ? imgheight
-          //     : {}
-          // }
         >
           <Image
-            className={!postMode ? "absolute bottom-0 left-0" : " "}
+            className={!containerDims?.[1] ? "absolute bottom-0 left-0" : " "} //!postMode ?
             src={placeholder.url}
             height={vidHeight}
             width={vidWidth}
@@ -616,7 +571,7 @@ const VideoHandler = ({
           ref={video}
           className={
             (videoLoaded ? "opacity-100 " : " opacity-0") +
-            (!postMode ? " absolute top-0 left-0 " : " ")
+            (!containerDims?.[1] ? " absolute top-0 left-0 " : " ") //!postMode
           }
           width={`${vidWidth}`}
           height={`${vidHeight}`}
@@ -636,25 +591,11 @@ const VideoHandler = ({
             setVideoPlaying(true);
             playAudio();
           }}
-          onPlay={() => {
-            //.log("VIDEO PLAYING");
-            //playAll();
-          }}
           onPause={() => {
             setVideoPlaying(false);
           }}
-          controls={false} //{!context?.autoplay}
-          onMouseOver={(event) => {
-            handleMouseIn();
-          }}
-          onMouseOut={(event) => {
-            handleMouseOut();
-          }}
+          controls={false}
           onLoadedData={onLoadedData}
-          onTimeUpdate={(e: BaseSyntheticEvent) => {
-            //console.log(e.target.currentTime, e.target.duration);
-            //setCurrentTime(e.target.currentTime);
-          }}
           playsInline
           draggable={false}
         >
