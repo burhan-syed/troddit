@@ -62,15 +62,15 @@ const PostModal = ({
   const escapePress = useKeyPress("Escape");
 
   useEffect(() => {
-    if (nextPress) {
+    if (nextPress && !context.replyFocus) {
       changePost(1);
-    } else if (backPress) {
+    } else if (backPress && !context.replyFocus) {
       changePost(-1);
     } else if (escapePress) {
       handleBack();
     }
     return () => {};
-  }, [nextPress, backPress, escapePress]);
+  }, [nextPress, backPress, escapePress, context.replyFocus]);
 
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);

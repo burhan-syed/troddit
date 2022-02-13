@@ -19,8 +19,8 @@ import {
   FaQuoteRight,
 } from "react-icons/fa";
 import { BsTypeH1 } from "react-icons/bs";
-import {usePlausible} from 'next-plausible'
-
+import { usePlausible } from "next-plausible";
+import { useMainContext } from "../MainContext";
 
 const Editor: any = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -72,6 +72,8 @@ const editor = {
 };
 
 const CommentReply = ({ parent, getHtml }) => {
+  const maincontext: any = useMainContext();
+  const { replyFocus, setReplyFocus } = maincontext;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [html, setHtml] = useState("");
   const [session] = useSession();
@@ -106,7 +108,7 @@ const CommentReply = ({ parent, getHtml }) => {
           setHtml(html);
           getHtml(html);
           setErr(false);
-          plausible('comment');
+          plausible("comment");
           setEditorState(EditorState.createEmpty());
         } else {
           setErr(true);
@@ -115,6 +117,12 @@ const CommentReply = ({ parent, getHtml }) => {
     };
     session && run();
   };
+
+  useEffect(() => {
+    return () => {
+      setReplyFocus(false);
+    };
+  }, []);
 
   return (
     <div className="relative ">
@@ -129,11 +137,17 @@ const CommentReply = ({ parent, getHtml }) => {
             )}
           </div>
           <Editor
+            onFocus={() => {
+              setReplyFocus(true);
+            }}
+            onBlur={() => {
+              setReplyFocus(false);
+            }}
             toolbarClassName={
               "absolute bottom-2 !bg-green-500 !rounded-lg !p-0 w-full !m-0 flex flex-row items-center !border-none "
             }
             editorClassName={
-              "flex flex-none bg-lightBG dark:bg-darkHighlight border border-lightBorder focus:border-lightBorderHighlight dark:border-darkBorder dark:focus:border-darkBorderHighlight rounded-lg px-4 !mx-0 pb-8"
+              "flex flex-none bg-lightBG dark:bg-darkHighlight border hover:cursor-text border-lightBorder focus:border-lightBorderHighlight dark:border-darkBorder dark:focus:border-darkBorderHighlight rounded-lg px-4 !mx-0 pb-8"
             }
             editorState={editorState}
             toolbarHidden

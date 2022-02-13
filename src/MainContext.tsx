@@ -47,6 +47,8 @@ export const MainProvider = ({ children }) => {
   const [scoreFilterNum, setScoreFilterNum] = useState();
   const [scoreGreater, setScoreGreater] = useState(true);
 
+  const [replyFocus, setReplyFocus] = useState(false);
+
   const toggleFilter = (filter) => {
     switch (filter) {
       case "images":
@@ -365,6 +367,8 @@ export const MainProvider = ({ children }) => {
         scoreFilter,
         scoreGreater,
         scoreFilterNum,
+        replyFocus,
+        setReplyFocus,
         //filterCount,
         //setFilterCount
       }}
