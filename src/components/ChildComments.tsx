@@ -359,10 +359,12 @@ const ChildComments = ({
                                   className={
                                     (portraitMode ? "" : "") +
                                     (loadingComments && " animate-pulse ") +
-                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0"
+                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none"
                                   }
                                   onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
+
                                     if (session) {
                                       setLoadingComments(true);
                                       loadChildComments(
