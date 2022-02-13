@@ -29,6 +29,7 @@ const Vote = ({
   const [voteScore, setVoteScore] = useState("");
 
   const castVote = async (e, v) => {
+    e.preventDefault();
     e.stopPropagation();
     if (session) {
       let postv;
