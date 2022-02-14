@@ -1,9 +1,12 @@
 # Troddit 
 ### _A web client for Reddit_
 
-Built with NextJS and Typescript. Styled with TailwindCSS. 
-
 Live at [troddit.com](https://www.troddit.com)
+
+![trodditdemo_compress2](https://user-images.githubusercontent.com/32972409/153781848-86abb458-7bbc-45a3-be49-9b83d8fce281.gif)
+
+
+Built with NextJS and Typescript. Styled with TailwindCSS. 
 
 ## Features
 
