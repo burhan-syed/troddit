@@ -248,10 +248,7 @@ const Row1 = ({
               (hideNSFW && " overflow-hidden relative")
             }
           >
-            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              {/* <div className={hideNSFW && "blur-3xl"}>
-                <Media post={post} imgFull={true} allowIFrame={expand} />
-              </div> */}
+            <a href={post?.permalink} onMouseDown={(e) => e.preventDefault()}>
               <MediaWrapper
                 hideNSFW={hideNSFW}
                 post={post}

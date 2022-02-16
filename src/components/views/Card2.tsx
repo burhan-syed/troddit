@@ -28,7 +28,11 @@ const Card1 = ({
         }
       >
         <div className="">
-          <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+          <a
+            href={post?.permalink}
+            onMouseDown={(e) => e.preventDefault()}
+            className="relative block"
+          >
             <MediaWrapper
               hideNSFW={hideNSFW}
               post={post}

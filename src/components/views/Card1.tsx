@@ -256,7 +256,7 @@ const Card1 = ({
               )}
             </div>
           ) : (
-            <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+            <a href={post?.permalink} onMouseDown={(e) => e.preventDefault()}>
               <div className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}>
                 <MediaWrapper
                   hideNSFW={hideNSFW}

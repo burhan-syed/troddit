@@ -234,10 +234,9 @@ const VideoHandler = ({
       }
 
       //also mute if not manually unmuted manipulation
-      // if (!manualPlay && !postMode) {
-      //   setMuted(true);
-      //   audioRef.current.muted = true;
-      // }
+      if (!manualAudio && !postMode && context.audioOnHover) {
+        setMuted(true);
+      }
     }
   };
 
@@ -285,6 +284,7 @@ const VideoHandler = ({
     if (r >= 1) r = 1;
     if (r <= 0.1) r = 0;
     r > 0 ? setMuted(false) : setMuted(true);
+    setManualAudio(true);
     setVolume(r);
   };
   const updateVolumeDrag = (e) => {
@@ -431,7 +431,7 @@ const VideoHandler = ({
                 onMouseLeave={() => setVolMouseDown(false)}
                 className={
                   "relative bottom-0 left-0  justify-center w-full h-32 bg-black bg-opacity-40 rounded-md " +
-                  (showVolSlider && postMode ? " flex " : " hidden ")
+                  (showVolSlider ? " hidden md:flex " : " hidden ")
                   // limiting to post mode currently becuase of slider drag issues
                 }
               >
