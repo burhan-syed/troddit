@@ -202,7 +202,13 @@ const PostModal = ({
         setPost(postData);
         setLoadingPost(false);
       }
-      const { post, comments } = await loadPost(permalink, sort);
+      const { post, comments, token } = await loadPost(
+        permalink,
+        sort,
+        session ? true : false,
+        context?.token
+      );
+      token && context.setToken(token);
       if (Object.keys(postData).length === 0) {
         //console.log("post", post);
         if (post?.id) {

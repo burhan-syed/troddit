@@ -757,14 +757,28 @@ export const loadMoreComments = async (
   }
 };
 
-export const loadPost = async (permalink, sort = "top") => {
-  const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+export const loadPost = async (
+  permalink,
+  sort = "top",
+  loggedIn = false,
+  token?
+) => {
+  let accessToken = token?.accessToken;
+  let returnToken = token;
+  //const token = await (await getToken())?.accessToken;
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
+    returnToken = await getToken();
+    accessToken = await returnToken?.accessToken;
+  }
+  if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log(permalink.split('/'));
       let res = await axios.get(`https://oauth.reddit.com/${permalink}`, {
         headers: {
-          authorization: `bearer ${token}`,
+          authorization: `bearer ${accessToken}`,
         },
         params: {
           raw_json: 1,
@@ -788,9 +802,9 @@ export const loadPost = async (permalink, sort = "top") => {
         comments: data?.[1]?.data?.children,
       };
       //console.log(data);
-      return post;
+      return { ...post, token: returnToken };
     } catch (err) {
-      return { post: undefined, comments: undefined };
+      return { post: undefined, comments: undefined, token: returnToken };
     }
   } else {
     try {
@@ -803,12 +817,13 @@ export const loadPost = async (permalink, sort = "top") => {
       const data = {
         post: res?.[0]?.data?.children?.[0].data,
         comments: res?.[1]?.data?.children,
+        token: returnToken,
       };
       //console.log(data);
       return data;
     } catch (err) {
       console.log(err);
-      return { post: undefined, comments: undefined };
+      return { post: undefined, comments: undefined, token: returnToken };
     }
   }
 };
