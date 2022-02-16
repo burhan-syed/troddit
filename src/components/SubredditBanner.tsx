@@ -73,6 +73,7 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
       setLoaded(true);
     }
     return () => {
+      setLoaded(false);
       setBanner({});
     };
   }, [currSubInfo, subreddit]);
@@ -228,9 +229,17 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
                 </div>
               </a>
             </Link>
-            <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
-              {loaded ? (
-                <>
+            {!loaded && (
+              <div className="w-full h-56 md:h-44">
+                {/* <div className="h-12 bg-gray-300 rounded-lg w-80 dark:bg-gray-800 animate-pulse "></div>
+                <div className="p-0.5"></div>
+                <div className="h-5 bg-gray-300 rounded-lg w-72 dark:bg-gray-800 animate-pulse "></div>
+                <div className="w-3/4 h-6 bg-gray-300 rounded-lg dark:bg-gray-800 animate-pulse "></div> */}
+              </div>
+            )}
+            {loaded && (
+              <>
+                <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
                   <h1 className="flex items-end text-4xl">
                     <Link href={currSubInfo?.display_name ?? "/"}>
                       <a onClick={() => context.setForceRefresh((p) => p + 1)}>
@@ -267,14 +276,9 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
                       />
                     )}
                   </div>
-                </>
-              ) : (
-                <h1 className="text-4xl text-transparent">r/</h1>
-              )}
-            </div>
-            <div className="flex p-1 space-x-2 text-gray-700 dark:text-gray-500">
-              {loaded && (
-                <>
+                </div>
+
+                <div className="flex p-1 space-x-2 text-gray-700 dark:text-gray-500">
                   <p>
                     {userMode ? (
                       <>Joined {secondsToDate(currSubInfo?.created)}</>
@@ -298,36 +302,35 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
                       </p>
                     </>
                   )}
-                </>
-              )}
-            </div>
-            <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
-              <SubButton
-                sub={session ? currSubInfo.name : subreddit}
-                userMode={userMode}
-              />
-              {!userMode && (
-                <SubOptButton
-                  subInfo={currSubInfo}
-                  currMulti={currMulti}
-                  subArray={subArray}
-                />
-              )}
-            </div>
-            <div className="p-1 pb-5 text-center md:text-left">
-              {loaded ? (
-                <p>{currSubInfo?.public_description}</p>
-              ) : (
-                <p className="py-2"></p>
-              )}
-              <div className="p-1"></div>
-              <button
-                className="px-2 py-1 text-sm border rounded-md dark:bg-darkBG border-lightBorder bg-lightPostHover dark:border-darkPostHover dark:border-2 hover:bg-lightHighlight dark:hover:bg-darkPostHover"
-                onClick={() => setOpenDescription((s) => s + 1)}
-              >
-                Full Description
-              </button>
-            </div>
+                </div>
+                <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
+                  <SubButton
+                    sub={session ? currSubInfo.name : subreddit}
+                    userMode={userMode}
+                  />
+                  {!userMode && (
+                    <SubOptButton
+                      subInfo={currSubInfo}
+                      currMulti={currMulti}
+                      subArray={subArray}
+                    />
+                  )}
+                </div>
+                <div className="p-1 pb-5 text-center md:text-left">
+                  <p>{currSubInfo?.public_description}</p>
+
+                  <div className="p-1"></div>
+                  {!userMode && (
+                    <button
+                      className="px-2 py-1 text-sm border rounded-md dark:bg-darkBG border-lightBorder bg-lightPostHover dark:border-darkPostHover dark:border-2 hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+                      onClick={() => setOpenDescription((s) => s + 1)}
+                    >
+                      Full Description
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
