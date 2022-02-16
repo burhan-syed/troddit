@@ -3,7 +3,7 @@ import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { numToString } from "../../lib/utils";
 
-const MAX_DISPLAY = 3;
+const MAX_DISPLAY = 5;
 
 const Awardings = ({ all_awardings, truncate = true }) => {
   const [rewardCount, setRewardCount] = useState(0);
@@ -21,7 +21,7 @@ const Awardings = ({ all_awardings, truncate = true }) => {
   if (all_awardings?.length > 0)
     return (
       <div
-        className={`p-0.5 px-1 rounded-lg select-none flex flex-row items-center justify-center text-xs font-semibold`}
+        className={`rounded-lg select-none flex flex-row flex-wrap items-center justify-start text-xs font-semibold`}
       >
         {all_awardings.map((a, i) => (
           <div key={i} className="flex-none">

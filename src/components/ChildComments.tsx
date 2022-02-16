@@ -225,7 +225,7 @@ const ChildComments = ({
             )}
             {comment?.data?.distinguished == "moderator" && (
               <>
-                <p className="px-0.5 font-medium text-green-500 dark:text-green-700 dark:opacity-80">
+                <p className="px-0.5 font-medium text-lightGreen dark:text-darkGreen ">
                   {"MOD"}
                 </p>
               </>

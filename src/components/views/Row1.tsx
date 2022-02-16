@@ -18,6 +18,7 @@ import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
+import PostTitle from "../PostTitle";
 const Row1 = ({
   post,
   hasMedia,
@@ -113,14 +114,9 @@ const Row1 = ({
             <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}
-              className={
-                " group-hover:underline " +
-                (post?.distinguished == "moderator" || post?.stickied
-                  ? " text-green-500 dark:text-green-700 "
-                  : " ")
-              }
+              className={" "}
             >
-              {`${post?.title}  ` ?? ""}
+              <PostTitle post={post} />
             </a>
           </h1>
         </div>

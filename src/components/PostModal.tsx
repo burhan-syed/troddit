@@ -28,6 +28,7 @@ import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
 import MediaWrapper from "./views/MediaWrapper";
 import Awardings from "./Awardings";
+import PostTitle from "./PostTitle";
 
 const PostModal = ({
   setSelect,
@@ -609,19 +610,14 @@ const PostModal = ({
 
                         <h1 className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
                           <a
-                            className={
-                              (apost?.distinguished == "moderator" ||
-                                (apost?.stickied &&
-                                  " text-green-500 dark:text-green-700")) +
-                              " text-xl font-semibold mr-2"
-                            }
+                            className={" text-xl font-semibold mr-2"}
                             href={`https://www.reddit.com${
                               apost?.permalink ?? ""
                             }`}
                             target="_blank"
                             rel="noreferrer"
                           >
-                            {apost?.title ?? ""}
+                            <PostTitle post={apost} />
                           </a>
                           <span className="text-sm ">
                             <TitleFlair post={apost} />

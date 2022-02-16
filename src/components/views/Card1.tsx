@@ -7,6 +7,7 @@ import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
+import PostTitle from "../PostTitle";
 
 //og card
 const Card1 = ({
@@ -100,25 +101,22 @@ const Card1 = ({
                   </div>
                 )}
 
-                <div className="flex flex-row ">
-                  <p className="ml-1">{`(${post?.domain})`}</p>
+                <div className="flex flex-row ml-auto">
+                  <p className="">{`(${post?.domain})`}</p>
                 </div>
               </div>
               <div className="py-2">
                 <h1
                   className={
-                    (post?.distinguished == "moderator" ||
-                      (post?.stickied &&
-                        " text-green-500 dark:text-green-700")) +
                     " items-center text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap gap-2"
                   }
                 >
                   <a
                     href={post?.permalink}
                     onClick={(e) => e.preventDefault()}
-                    className="group-hover:underline"
+                    className=""
                   >
-                    {`${post?.title}` ?? ""}
+                    <PostTitle post={post} />
                   </a>
                   <span className="text-sm ">
                     <TitleFlair post={post} />
@@ -212,8 +210,8 @@ const Card1 = ({
                               <Awardings all_awardings={post?.all_awardings} />
                             </div>
                           )}
-                          <div className="">
-                            <p className="ml-1">{`(${post?.domain})`}</p>
+                          <div className="ml-auto">
+                            <p className="">{`(${post?.domain})`}</p>
                           </div>
                         </div>
                         <h1 className="flex flex-row flex-wrap items-center gap-1 pb-1">
@@ -221,13 +219,10 @@ const Card1 = ({
                             href={post?.permalink}
                             onClick={(e) => e.preventDefault()}
                             className={
-                              "py-1 text-lg font-medium leading-none cursor-pointer hover:underline" +
-                              (post?.distinguished == "moderator" ||
-                                (post?.stickied &&
-                                  " text-green-500 dark:text-green-700"))
+                              "py-1 text-lg font-medium leading-none cursor-pointer "
                             }
                           >
-                            {`${post?.title ?? ""}`}
+                            <PostTitle post={post} />
                           </a>
                           <span className="text-xs">
                             <TitleFlair post={post} />
@@ -283,7 +278,7 @@ const Card1 = ({
               </div>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <h1 className="cursor-pointer group-hover:underline">
-                  {`${post.num_comments} ${
+                  {`${numToString(post.num_comments, 1000)} ${
                     post.num_comments === 1 ? "comment" : "comments"
                   }`}
                 </h1>

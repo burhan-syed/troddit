@@ -1,11 +1,12 @@
 import { useMainContext } from "../../MainContext";
 import Link from "next/dist/client/link";
 import Media from "../Media";
-import { secondsToTime } from "../../../lib/utils";
+import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
+import PostTitle from "../PostTitle";
 
 //og card
 const Card1 = ({
@@ -46,17 +47,15 @@ const Card1 = ({
             <div className="p-1 px-2 pt-1.5 select-auto">
               <h1
                 className={
-                  (post?.distinguished == "moderator " ||
-                    (post?.stickied && " text-green-500 dark:text-green-700")) +
                   "  text-lg font-semibold  leading-none cursor-pointer gap-2 flex flex-row flex-wrap "
                 }
               >
                 <a
                   href={post?.permalink}
                   onClick={(e) => e.preventDefault()}
-                  className="group-hover:underline"
+                  className=""
                 >
-                  {post?.title ?? ""}
+                  <PostTitle post={post} />
                 </a>
 
                 <span className="text-sm">
@@ -124,8 +123,8 @@ const Card1 = ({
                   </div>
                 )}
 
-                <div className="flex flex-row ">
-                  <p className="ml-1">{`(${post?.domain})`}</p>
+                <div className="flex flex-row ml-auto">
+                  <p className="">{`(${post?.domain})`}</p>
                 </div>
               </div>
 
@@ -141,7 +140,7 @@ const Card1 = ({
                 </div>
                 <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                   <h1 className="font-sans cursor-pointer group-hover:underline">
-                    {`${post.num_comments} ${
+                    {`${numToString(post.num_comments, 1000)} ${
                       post.num_comments === 1 ? "comment" : "comments"
                     }`}
                   </h1>
