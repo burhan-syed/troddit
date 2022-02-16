@@ -29,20 +29,20 @@ const Card1 = ({
         }
       >
         <div className="">
-          <a
+          {/* <a
             href={post?.permalink}
-            onMouseDown={(e) => e.preventDefault()}
+            onClick={(e) => e.preventDefault()}
             className="relative block"
-          >
-            <MediaWrapper
-              hideNSFW={hideNSFW}
-              post={post}
-              forceMute={forceMute}
-              allowIFrame={false}
-              postMode={false}
-              imgFull={false}
-            />
-          </a>
+          > */}
+          <MediaWrapper
+            hideNSFW={hideNSFW}
+            post={post}
+            forceMute={forceMute}
+            allowIFrame={false}
+            postMode={false}
+            imgFull={false}
+          />
+          {/* </a> */}
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
               <h1

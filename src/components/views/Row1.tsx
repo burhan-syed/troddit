@@ -244,16 +244,16 @@ const Row1 = ({
               (hideNSFW && " overflow-hidden relative")
             }
           >
-            <a href={post?.permalink} onMouseDown={(e) => e.preventDefault()}>
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                forceMute={forceMute}
-                allowIFrame={expand}
-                postMode={false}
-                imgFull={false}
-              />
-            </a>
+            {/* <a href={post?.permalink} onMouseDown={(e) => e.preventDefault()}> */}
+            <MediaWrapper
+              hideNSFW={hideNSFW}
+              post={post}
+              forceMute={forceMute}
+              allowIFrame={expand}
+              postMode={false}
+              imgFull={false}
+            />
+            {/* </a> */}
             {/* {hideNSFW && (
               <div className="absolute flex flex-row justify-center w-full opacity-50 text-lightText top-1/2">
                 hidden
