@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: troddit.com
+Token: 7eeb7655d21d2337edef0efbb3b5b575193cddaf3e8a2018f69e7a0d07c322bb
