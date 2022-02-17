@@ -377,8 +377,6 @@ const VideoHandler = ({
         <Image
           className={"scale-110 blur-md  "}
           src={thumbnail.url}
-          height={vidHeight}
-          width={vidWidth}
           alt="placeholder"
           layout="fill"
           unoptimized={true}
@@ -386,7 +384,6 @@ const VideoHandler = ({
           onError={() => {
             setUseFallback(true);
           }}
-          draggable={false}
         />
       </div>
       {/* Controls */}
