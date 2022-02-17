@@ -40,6 +40,7 @@ const VideoHandler = ({
   const [currentTime, setCurrentTime] = useState(0.0);
   const [videoDuration, setVideoDuration] = useState(0.0);
   const [buffering, setBuffering] = useState(false);
+  const [mouseIn, setMouseIn] = useState(false);
 
   const onLoadedData = () => {
     setVideoDuration(video?.current?.duration);
@@ -211,6 +212,7 @@ const VideoHandler = ({
   };
 
   const handleMouseIn = (e) => {
+    setMouseIn(true);
     if (!context.mediaOnly) {
       if (
         (!manualPlay || video?.current?.paused) &&
@@ -226,6 +228,7 @@ const VideoHandler = ({
   };
 
   const handleMouseOut = () => {
+    setMouseIn(false);
     //not in manual play, then pause audio and video
     if (!context.mediaOnly) {
       if (!manualPlay && !context.autoplay && !postMode) {
@@ -321,7 +324,7 @@ const VideoHandler = ({
   const [progressPerc, setProgressPerc] = useState(0);
   const [intervalID, setIntervalID] = useState<any>();
   useEffect(() => {
-    if (videoPlaying && video?.current) {
+    if (videoPlaying && video?.current && mouseIn) {
       let initial = Date.now();
       let timepassed = 0;
       let duration = video?.current?.duration * 1000;
@@ -353,7 +356,7 @@ const VideoHandler = ({
     }
     //console.log(video?.current);
     return () => {};
-  }, [videoPlaying]);
+  }, [videoPlaying, mouseIn]);
 
   return (
     <div
@@ -395,7 +398,9 @@ const VideoHandler = ({
               playControl(e, true);
             }}
             className={
-              (context?.autoplay ? " hidden group-hover:flex " : " flex ") +
+              (context?.autoplay
+                ? `${mouseIn ? " flex " : " hidden "}`
+                : " flex ") +
               "items-center justify-center w-8 h-8  bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
             }
           >
@@ -407,7 +412,7 @@ const VideoHandler = ({
               )}
             </div>
           </button>
-          <div className="hidden text-sm group-hover:block">
+          <div className={" text-sm " + (mouseIn ? " block  " : " hidden ")}>
             {secondsToHMS(currentTime) + "/" + secondsToHMS(videoDuration)}
           </div>
         </div>
@@ -488,7 +493,10 @@ const VideoHandler = ({
         <div
           id={"progressBarConainer"}
           ref={seekRef}
-          className="absolute bottom-0 left-0 z-10 hidden w-full h-5 group-hover:block "
+          className={
+            "absolute bottom-0 left-0 z-10  w-full h-5  " +
+            (mouseIn ? " block " : " hidden ")
+          }
         >
           {seekTime !== "" && (
             <div
