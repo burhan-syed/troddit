@@ -27,14 +27,17 @@ const MediaWrapper = ({
   }, [post]);
 
   const toggleHide = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setHidden(false);
+    if (hidden) {
+      e.preventDefault();
+      e.stopPropagation();
+      setHidden(false);
+    }
   };
 
   return (
     <div
-      className={hideNSFW && hidden ? "relative overflow-hidden" : undefined}
+      className={hideNSFW && hidden ? "relative overflow-hidden " : undefined}
+      onClick={toggleHide}
     >
       <div
         className={"relative " + (hideNSFW && hidden ? " blur-3xl" : undefined)}
@@ -49,10 +52,7 @@ const MediaWrapper = ({
         />
       </div>
       {hideNSFW && hidden && (
-        <div
-          className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-7 top-1/2 text-lightText hover:cursor-pointer"
-          onClick={toggleHide}
-        >
+        <div className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-7 top-1/2 text-lightText hover:cursor-pointer">
           <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
           <VscEye className="hidden w-10 h-10 group-hover:block" />
           <h1 className="hidden text-xs group-hover:block">Click to Unhide</h1>

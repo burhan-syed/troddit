@@ -29,6 +29,7 @@ const Feed = ({
   isMulti = false,
   isSubFlair = false,
   isSearch = false,
+  safeSearch = false,
 }) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
@@ -143,7 +144,15 @@ const Feed = ({
       setError(false);
       updateLoading(true);
     };
-  }, [subreddits, sort, range, sessloading, context.forceRefresh, query.q]);
+  }, [
+    subreddits,
+    sort,
+    range,
+    sessloading,
+    context.forceRefresh,
+    query.q,
+    safeSearch,
+  ]);
 
   const fetchFront = async () => {
     let data: any = await loadFront(
@@ -172,7 +181,7 @@ const Feed = ({
       undefined,
       query?.t,
       context?.token,
-      context?.nsfw === "true" ? true : false
+      safeSearch ? undefined : true
     );
     if (data?.children) {
       await manageData(data);
@@ -224,7 +233,7 @@ const Feed = ({
         subs?.split("+")?.[0] ?? "all",
         query?.t,
         context?.token,
-        context?.nsfw === "true" ? true : false
+        safeSearch ? undefined : true
       );
     } else {
       setSubsArray(subs.split("+"));
@@ -421,6 +430,7 @@ const Feed = ({
                 session={session}
                 isSubFlair={isSubFlair}
                 filterNum={filterCount}
+                safeSearch={safeSearch}
               />
             </ErrorBoundary>
           )}

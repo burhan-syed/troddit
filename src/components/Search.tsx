@@ -63,7 +63,8 @@ const Search = ({ id }) => {
         .join("+")
         ?.split("+")?.[0];
       setCurrSub(sub);
-      setSrRestrict(true);
+      //this is annoying
+      //setSrRestrict(true);
     } else {
       setCurrSub("");
       setSrRestrict(false);
@@ -77,7 +78,6 @@ const Search = ({ id }) => {
   const onSuggestionsFetchRequested = async ({ value }) => {
     lastRequest.current = value;
     setSuggestions([
-      { kind: "loading" },
       {
         kind: "search",
         data: {
@@ -85,6 +85,13 @@ const Search = ({ id }) => {
           q: value,
           include_over_18: false,
           display_name_prefixed: `r/${value.value}`,
+        },
+      },
+      {
+        kind: "loading",
+        data: {
+          display_name_prefixed: `r/${value}`,
+          display_name: value,
         },
       },
     ]);
@@ -150,7 +157,7 @@ const Search = ({ id }) => {
         );
         setmorethanonesuggestion(suggestions.length > 1);
         //console.log("kept", lastRequest.current);
-        return [...suggestions, search];
+        return [search, ...suggestions];
       } else {
         //console.log("discard", lastRequest.current, value.value);
         // return {};
@@ -278,37 +285,47 @@ const Search = ({ id }) => {
     }
     if (suggestion?.kind === "search") {
       return (
-        <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight">
-          <AiOutlineSearch className="w-6 h-6" />
-          <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
-          {currSub !== "" && (
-            <div
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSrRestrict((r) => !r);
-              }}
-              className="flex flex-row items-center mt-auto ml-auto space-x-1 "
-            >
-              <h1 className="text-xs">Limit to r/{currSub}</h1>
-              <div
-                className={
-                  "w-5 h-5 p-0.5 border rounded-md transition-all  " +
-                  (srRestrict
-                    ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
-                    : " dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder")
-                }
-              >
-                <AiOutlineCheck
-                  className={
-                    "absolute p-0.5 translate-x-[-1px] transition-all text-white" +
-                    (srRestrict ? " scale-100 " : " scale-0")
-                  }
-                />
-              </div>
+        <Link
+          href={
+            srRestrict && currSub
+              ? `/r/${currSub}/search?sort=relevance&t=all&q=${suggestion?.data?.q}`
+              : `/search?q=${suggestion?.data?.q}&sort=relevance&t=all`
+          }
+        >
+          <a>
+            <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+              <AiOutlineSearch className="w-6 h-6" />
+              <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
+              {currSub !== "" && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSrRestrict((r) => !r);
+                  }}
+                  className="flex flex-row items-center mt-auto ml-auto space-x-2 group"
+                >
+                  <h1 className="text-xs">Limit to r/{currSub}</h1>
+                  <div
+                    className={
+                      "w-7 h-7 p-0.5 border rounded-md transition-all flex items-center justify-center   " +
+                      (srRestrict
+                        ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
+                        : " dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 group-hover:border-0")
+                    }
+                  >
+                    <AiOutlineCheck
+                      className={
+                        " w-4 h-4  pt-[1px] pl-[1px] flex-none transition-all text-white" +
+                        (srRestrict ? " scale-100 " : " scale-0")
+                      }
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </a>
+        </Link>
       );
     }
     return (
@@ -372,12 +389,17 @@ const Search = ({ id }) => {
                   )}
                 </div>
               </div>
-              <div
-                className="p-2 ml-auto border rounded-md dark:text-lightText dark:hover:ring-2 hover:bg-white dark:hover:bg-darkBorderHighlight hover:ring-1"
-                onClick={(e) => addSub(e, suggestion?.data?.display_name)}
-              >
-                <AiOutlinePlus className="" />
-              </div>
+              {currSub && (
+                <div
+                  className="flex flex-row items-center ml-auto space-x-2 group"
+                  onClick={(e) => addSub(e, suggestion?.data?.display_name)}
+                >
+                  <span className="text-xs">Multi Browse</span>
+                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 dark:text-lightText group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder">
+                    <AiOutlinePlus className="" />
+                  </div>
+                </div>
+              )}
             </div>
           </a>
         </Link>
@@ -435,15 +457,16 @@ const Search = ({ id }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     setValue("");
-    if (loading) {
-      if (srRestrict && currSub !== "") {
-        router.push(
-          `/r/${currSub}/search?sort=relevance&t=all&q=${lastRequest.current}`
-        );
-      } else {
-        router.push(`/search?q=${lastRequest.current}&sort=relevance&t=all`);
-      }
-    } else if (suggestion?.kind === "search") {
+    // if (loading) {
+    //   if (srRestrict && currSub !== "") {
+    //     router.push(
+    //       `/r/${currSub}/search?sort=relevance&t=all&q=${lastRequest.current}`
+    //     );
+    //   } else {
+    //     router.push(`/search?q=${lastRequest.current}&sort=relevance&t=all`);
+    //   }
+    // } else
+    if (suggestion?.kind === "search") {
       if (srRestrict && currSub !== "") {
         router.push(
           `/r/${currSub}/search?sort=relevance&t=all&q=${suggestion?.data?.q}`
@@ -451,6 +474,8 @@ const Search = ({ id }) => {
       } else {
         router.push(`/search?q=${suggestion?.data?.q}&sort=relevance&t=all`);
       }
+    } else if (suggestion?.kind === "loading") {
+      router.push(`/r/${suggestion?.data?.display_name}`);
     } else if (suggestion?.kind === "t5") {
       if (
         suggestion?.data?.display_name

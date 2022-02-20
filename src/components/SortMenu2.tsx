@@ -114,7 +114,7 @@ const SortMenu2 = ({ hide = false }) => {
       if (router?.query?.t) {
         path = path.replace(`t=${router.query?.t}`, `t=${r}`);
       } else {
-        path = path + `&t=${r}`;
+        path = path.replace("?", `?t=${r}&`);
       }
       router.push(path);
     } else if (router.pathname === "/search") {
@@ -591,7 +591,6 @@ const SortMenu2 = ({ hide = false }) => {
                     {({ active }) => (
                       <div className="group">
                         <div
-                          onTouchStart={(e) => setTopTouch(false)}
                           onClick={(e) => updateRange(e, "all", "relevance")}
                           className={classNames(
                             active
@@ -614,7 +613,7 @@ const SortMenu2 = ({ hide = false }) => {
                         {true && (
                           <ul
                             className={
-                              (active || topTouch ? "block " : "hidden ") +
+                              (active ? "block " : "hidden ") +
                               (true && "top-36 ") +
                               "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                             }
@@ -628,7 +627,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "hour", "relevance")
                                   }
@@ -646,7 +644,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "day", "relevance")
                                   }
@@ -664,7 +661,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "week", "relevance")
                                   }
@@ -682,7 +678,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "month", "relevance")
                                   }
@@ -700,7 +695,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "year", "relevance")
                                   }
@@ -718,7 +712,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "all", "relevance")
                                   }
@@ -739,7 +732,6 @@ const SortMenu2 = ({ hide = false }) => {
                     {({ active }) => (
                       <div className="group">
                         <div
-                          onTouchStart={(e) => setTopTouch(false)}
                           onClick={(e) => updateRange(e, "all", "comments")}
                           className={classNames(
                             active
@@ -762,7 +754,7 @@ const SortMenu2 = ({ hide = false }) => {
                         {true && (
                           <ul
                             className={
-                              (active || topTouch ? "block " : "hidden ") +
+                              (active ? "block " : "hidden ") +
                               (true && "top-48 ") +
                               "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                             }
@@ -776,7 +768,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "hour", "comments")
                                   }
@@ -794,7 +785,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "day", "comments")
                                   }
@@ -812,7 +802,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "week", "comments")
                                   }
@@ -830,7 +819,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "month", "comments")
                                   }
@@ -848,7 +836,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "year", "comments")
                                   }
@@ -866,7 +853,6 @@ const SortMenu2 = ({ hide = false }) => {
                                       : "") +
                                     " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
                                   }
-                                  onTouchStart={(e) => setTopTouch(false)}
                                   onClick={(e) =>
                                     updateRange(e, "all", "comments")
                                   }
@@ -889,7 +875,6 @@ const SortMenu2 = ({ hide = false }) => {
                     <Menu.Item>
                       {({ active }) => (
                         <div
-                          onTouchStart={(e) => setTopTouch(false)}
                           onClick={(e) => updateSort(e, "rising")}
                           className={classNames(
                             active

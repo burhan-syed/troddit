@@ -71,6 +71,7 @@ const MyMasonic = ({
   isSearch = false,
   filterNum = 0,
   session = {},
+  safeSearch = false,
   //page,
 }) => {
   const router = useRouter();
@@ -323,7 +324,7 @@ const MyMasonic = ({
         query?.slug?.[0] ?? undefined,
         query?.t,
         context?.token,
-        context?.nsfw === "true" ? true : undefined
+        safeSearch ? undefined : true
       );
     } else if (isUser || router?.pathname === "/u/[...slug]") {
       if (isMulti) {
@@ -358,7 +359,7 @@ const MyMasonic = ({
         query.slug[0],
         query?.t,
         context?.token,
-        context?.nsfw === "true" ? true : undefined
+        true
       );
     } else {
       let subs = query?.slug?.[0]

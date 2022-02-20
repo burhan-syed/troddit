@@ -28,11 +28,14 @@ const SearchPage = ({ query }) => {
       safeSearch ? undefined : true,
       router.query?.type === "user" ? "user" : "sr"
     );
-    let filtered = subs.children.filter(
-      (c) => c?.data?.accept_followers === true
-    );
-    setAfter(subs.after);
-    setSubs((p) => [...p, ...filtered]);
+    if (subs?.children) {
+      let filtered = subs?.children?.filter(
+        (c) => c?.data?.accept_followers === true
+      );
+      setSubs((p) => [...p, ...filtered]);
+    }
+
+    setAfter(subs?.after);
   };
 
   useEffect(() => {
@@ -81,11 +84,15 @@ const SearchPage = ({ query }) => {
         router.query?.type === "user" || searchUsers ? "user" : "sr"
       );
       //console.log(subs);
-      let filtered = subs.children.filter(
-        (c) => c?.data?.accept_followers === true
-      );
-      setAfter(subs.after);
-      setSubs(filtered);
+      if (subs?.children) {
+        let filtered = subs.children.filter(
+          (c) => c?.data?.accept_followers === true
+        );
+        setSubs(filtered);
+      }
+
+      setAfter(subs?.after);
+
       setLoading(false);
     };
     getSearch();
@@ -185,7 +192,7 @@ const SearchPage = ({ query }) => {
                     e.preventDefault();
                   }}
                 >
-                  See More
+                  {"     "}
                 </button>
               </div>
             )}
@@ -244,8 +251,12 @@ const SearchPage = ({ query }) => {
                                       `type=${router.query.type}`,
                                       `type=${searchUsers ? "user" : "sr"}`
                                     )
-                                  : router.asPath +
-                                      `&type=${searchUsers ? "user" : "sr"}`
+                                  : router.asPath.replace(
+                                      "search?",
+                                      `search?type=${
+                                        searchUsers ? "user" : "sr"
+                                      }&`
+                                    )
                               );
                             } else if (after) {
                               loadMore();
@@ -282,16 +293,19 @@ const SearchPage = ({ query }) => {
                     </div>
                     <div
                       className={
-                        "absolute top-0 flex items-center justify-center w-full h-full text-center border border-gray-300 bg-lightPost group dark:bg-darkBG dark:border-trueGray-700 " +
+                        "absolute top-0 flex flex-col items-center justify-center w-full h-full text-center border border-gray-300 bg-lightPost group dark:bg-darkBG dark:border-trueGray-700 " +
                         (context?.cardStyle === "row1" ||
                         context?.cardStyle === "card2" ||
                         context?.mediaOnly
                           ? "  "
                           : " rounded-md ")
                       }
-                    >{`Didn't find any ${
-                      searchUsers ? "users" : "subreddits"
-                    } searching for "${query.q}"`}</div>
+                    >
+                      <h1>{`Didn't find any ${
+                        searchUsers ? "users" : "subreddits"
+                      } for "${query.q}"`}</h1>
+                      <h1>{`Safe Search is ${safeSearch ? " on " : "off"}`}</h1>
+                    </div>
                   </div>
                 </>
               )
@@ -322,7 +336,7 @@ const SearchPage = ({ query }) => {
         </div>
         {!expand && (
           <div className="">
-            <Feed query={query} isSearch={true} />
+            <Feed query={query} isSearch={true} safeSearch={safeSearch} />
           </div>
         )}
       </div>

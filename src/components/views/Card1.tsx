@@ -251,18 +251,26 @@ const Card1 = ({
               )}
             </div>
           ) : (
-            // <a href={post?.permalink} onMouseDown={(e) => e.preventDefault()}>
-            <div className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}>
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                forceMute={forceMute}
-                allowIFrame={allowIFrame}
-                postMode={false}
-                imgFull={false}
-              />
-            </div>
-            // </a>
+            <a
+              href={post?.permalink}
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <div className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}>
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  forceMute={forceMute}
+                  allowIFrame={allowIFrame}
+                  postMode={false}
+                  imgFull={false}
+                />
+              </div>
+            </a>
           )}
 
           {(!context.mediaOnly || !hasMedia) && (

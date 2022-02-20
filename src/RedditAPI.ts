@@ -245,23 +245,52 @@ export const getRedditSearch = async (
     accessToken = await returnToken?.accessToken;
   }
 
-  if (loggedIn && accessToken && ratelimit_remaining > 1 && !searchtype) {
+  if (
+    loggedIn &&
+    accessToken &&
+    ratelimit_remaining > 1 &&
+    !searchtype
+    // p["include_over_18"] !== "0" //oath api doesn't respect this setting
+  ) {
     try {
-      //console.log("WITH LOGIN", token);
-      const res1 = await axios.get(oathsearch, {
-        headers: {
-          authorization: `bearer ${accessToken}`,
-        },
-        params: p,
-      });
-      let res = await res1.data;
-      //console.log(res);
-      ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+      //dealing with oath not respecting including_over_18 parameter
+      let children = [];
+      let after = "";
+      let before = "";
+      do {
+        const res1 = await axios.get(oathsearch, {
+          headers: {
+            authorization: `bearer ${accessToken}`,
+          },
+          params: p,
+        });
+        let res = await res1.data;
+        //console.log(oathsearch, p);
+        ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+        after = res?.data?.after;
+        p["after"] = after;
+        before = res?.data?.before;
+        if (p["include_over_18"] === "0") {
+          children = [
+            ...children,
+            ...res?.data?.children?.filter((c) => {
+              return c.data.over_18 !== true;
+            }),
+          ];
+        } else {
+          children = res?.data?.children;
+        }
+      } while (
+        p["include_over_18"] === "0" &&
+        after &&
+        children.length < 25 &&
+        ratelimit_remaining > 1
+      );
 
       return {
-        after: res.data.after,
-        before: res.data.before,
-        children: res.data.children,
+        after: after,
+        before: before,
+        children: children,
         token: returnToken,
       };
     } catch (err) {
