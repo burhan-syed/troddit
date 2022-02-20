@@ -40,16 +40,13 @@ class MyDocument extends Document {
           <meta name="msapplication-tap-highlight" content="no" />
 
           <link rel="apple-touch-icon" href="/icon-512.png" />
-   
+
           <link rel="shortcut icon" href="/favicon.ico" />
 
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:url" content="https://troddit.com" />
           <meta name="twitter:title" content="troddit" />
-          <meta
-            name="twitter:description"
-            content="A web app for Reddit"
-          />
+          <meta name="twitter:description" content="A web app for Reddit" />
           <meta
             name="twitter:image"
             content="https://troddit.com/icon-192.png"
@@ -66,7 +63,8 @@ class MyDocument extends Document {
           />
         </Head>
         <PlausibleProvider domain="troddit.com">
-          <body className="overflow-x-hidden text-gray-900 bg-coolGray-200 dark:bg-black dark:text-lightText scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full">
+          <body className="overflow-x-hidden text-gray-900 bg-coolGray-200 dark:bg-black dark:text-lightText ">
+            {/* scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full */}
             <Main />
             <NextScript />
           </body>

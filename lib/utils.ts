@@ -332,7 +332,7 @@ export const findMediaInfo = async (post, quick = false) => {
         html.setAttribute("height", "100%");
         html.setAttribute("width", "100%");
         let htmlsrc = html.getAttribute("src");
-        if (htmlsrc.includes("clips.twitch.tv")) {
+        if (htmlsrc?.includes("clips.twitch.tv")) {
           html.setAttribute(
             "src",
             `https://clips.twitch.tv/embed?clip=${

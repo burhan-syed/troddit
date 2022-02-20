@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
-import { AiOutlineHome } from "react-icons/ai";
+import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
 import { CgLivePhoto } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import {
@@ -98,6 +98,8 @@ const DropdownPane = ({ hide }) => {
               <BiRightTopArrowCircle className="w-6 h-6" />
             ) : currLocation === "ALL" ? (
               <CgLivePhoto className="w-6 h-6" />
+            ) : currLocation === "SEARCH" ? (
+              <AiOutlineSearch className="w-6 h-6" />
             ) : multi ? (
               <div>
                 <DropdownItem
@@ -129,7 +131,8 @@ const DropdownPane = ({ hide }) => {
           }
           {(currLocation == "HOME" ||
             currLocation == "POPULAR" ||
-            currLocation == "ALL") && (
+            currLocation == "ALL" ||
+            currLocation === "SEARCH") && (
             <h1 className="ml-2 capitalize truncate">
               {currLocation.toLowerCase()}
             </h1>

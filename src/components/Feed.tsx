@@ -8,6 +8,7 @@ import {
   loadUserPosts,
   loadSubInfo,
   getUserMultiPosts,
+  getRedditSearch,
   loadSubFlairPosts,
 } from "../RedditAPI";
 
@@ -27,6 +28,7 @@ const Feed = ({
   isUser = false,
   isMulti = false,
   isSubFlair = false,
+  isSearch = false,
 }) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,6 @@ const Feed = ({
   };
 
   useEffect(() => {
-    //console.log("query:", query);
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       updateLoading(false);
@@ -78,7 +79,7 @@ const Feed = ({
         query?.frontsort?.includes("new") ||
         query?.frontsort?.includes("rising")
       ) {
-        setSort(query?.frontsort ?? "best");
+        setSort(query?.frontsort ?? "hot");
         setRange(query?.t ?? "");
       } else {
         //fetching from post from direct url
@@ -88,16 +89,17 @@ const Feed = ({
       //fetchFront();
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "best");
+      setSort(query?.sort ?? query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
       //fetchSubs();
     } else {
-      setSort(query?.frontsort ?? "best");
+      setSort(query?.frontsort ?? query?.sort ?? "hot");
       setRange(query?.t ?? "");
 
       //causing client side errors
       //!sessloading && fetchFront();
     }
+
     return () => {};
   }, [query, sessloading]);
 
@@ -106,6 +108,8 @@ const Feed = ({
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       updateLoading(false);
+    } else if (isSearch) {
+      !sessloading && fetchSearch();
     } else if (query.frontsort) {
       if (
         query?.frontsort == "" ||
@@ -138,7 +142,7 @@ const Feed = ({
       setError(false);
       updateLoading(true);
     };
-  }, [subreddits, sort, range, sessloading, context.forceRefresh]);
+  }, [subreddits, sort, range, sessloading, context.forceRefresh, query.q]);
 
   const fetchFront = async () => {
     let data: any = await loadFront(
@@ -158,9 +162,35 @@ const Feed = ({
     }
   };
 
+  const fetchSearch = async () => {
+    let data = await getRedditSearch(
+      query,
+      "",
+      query?.sort,
+      session ? true : false,
+      undefined,
+      query?.t,
+      context?.token,
+      context?.nsfw === "true" ? true : false
+    );
+    if (data?.children) {
+      await manageData(data);
+    } else {
+      setError(true);
+      updateLoading(false);
+    }
+  };
+
   const fetchSubs = async () => {
     //console.log(query);
     let data: any;
+    let subs = query?.slug?.[0]
+      .split(" ")
+      .join("+")
+      .split(",")
+      .join("+")
+      .split("%20")
+      .join("+");
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
     } else if (isUser) {
@@ -179,20 +209,23 @@ const Feed = ({
         );
       }
     } else if (isSubFlair) {
-      data = await loadSubFlairPosts(
-        query.slug[0],
-        query?.q,
+      // data = await loadSubFlairPosts(
+      //   query.slug[0],
+      //   query?.q,
+      //   query?.sort,
+      //   query?.t
+      // );
+      data = await getRedditSearch(
+        query,
+        "",
         query?.sort,
-        query?.t
+        session ? true : false,
+        subs?.split("+")?.[0] ?? "all",
+        query?.t,
+        context?.token,
+        context?.nsfw === "true" ? true : false
       );
     } else {
-      let subs = query?.slug?.[0]
-        .split(" ")
-        .join("+")
-        .split(",")
-        .join("+")
-        .split("%20")
-        .join("+");
       setSubsArray(subs.split("+"));
       //console.log(subs);
       data = await loadSubreddits(
@@ -383,6 +416,7 @@ const Feed = ({
                 initAfter={after}
                 isUser={isUser}
                 isMulti={isMulti}
+                isSearch={isSearch}
                 session={session}
                 isSubFlair={isSubFlair}
                 filterNum={filterCount}

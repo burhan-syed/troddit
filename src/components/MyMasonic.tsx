@@ -19,6 +19,7 @@ import {
   useInfiniteLoader,
 } from "masonic";
 import {
+  getRedditSearch,
   getUserMultiPosts,
   loadFront,
   loadSubFlairPosts,
@@ -67,6 +68,7 @@ const MyMasonic = ({
   isUser = false,
   isMulti = false,
   isSubFlair = false,
+  isSearch = false,
   filterNum = 0,
   session = {},
   //page,
@@ -312,6 +314,17 @@ const MyMasonic = ({
         context?.localSubs
         //items.length
       );
+    } else if (isSearch || router?.pathname === "/search") {
+      data = await getRedditSearch(
+        query,
+        loadafter,
+        query?.sort,
+        session ? true : false,
+        query?.slug?.[0] ?? undefined,
+        query?.t,
+        context?.token,
+        context?.nsfw === "true" ? true : undefined
+      );
     } else if (isUser || router?.pathname === "/u/[...slug]") {
       if (isMulti) {
         data = await getUserMultiPosts(
@@ -330,12 +343,22 @@ const MyMasonic = ({
         );
       }
     } else if (isSubFlair) {
-      data = await loadSubFlairPosts(
-        query.slug[0],
-        query?.q,
+      // data = await loadSubFlairPosts(
+      //   query.slug[0],
+      //   query?.q,
+      //   query?.sort,
+      //   query?.t,
+      //   loadafter
+      // );
+      data = await getRedditSearch(
+        query,
+        loadafter,
         query?.sort,
+        session ? true : false,
+        query.slug[0],
         query?.t,
-        loadafter
+        context?.token,
+        context?.nsfw === "true" ? true : undefined
       );
     } else {
       let subs = query?.slug?.[0]

@@ -40,9 +40,7 @@ const Sort = ({ query }) => {
         )}
         <Feed
           query={query}
-          isSubFlair={
-            query?.slug?.[1] === "search" && query?.q?.includes("flair")
-          }
+          isSubFlair={query?.slug?.[1] === "search" && query?.q}
         />
       </main>
     </div>

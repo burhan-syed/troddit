@@ -45,11 +45,11 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
       }
       return found;
     };
-    setcurrMultiExist(findIfMultiExist());
+    currMulti && setcurrMultiExist(findIfMultiExist());
   }, [session, myLocalMultis, myMultis, currMulti]);
 
   useEffect(() => {
-    setSubInMulti(findIfSubInMulti());
+    currMulti && setSubInMulti(findIfSubInMulti());
   }, [subInfo, session, myLocalMultis, myMultis, currMulti]);
 
   const findIfSubInMulti = () => {
@@ -128,7 +128,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
           <>
             <div className="flex items-center justify-center w-6">
               <Menu.Button
-                name="Sort Page By"
+                name="Extra Sub Menu"
                 className={
                   "w-6 flex justify-center items-center  border-2 dark:border dark:border-lightBorder  rounded-md cursor-pointer dark:hover:bg-darkBorder hover:bg-lightHighlight"
                 }
@@ -148,7 +148,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
             >
               <Menu.Items
                 className={
-                  "absolute right-0 w-40 mt-2 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  border-2 dark:border dark:border-lightBorder "
+                  "absolute right-0  w-40 mt-2 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  border-2 dark:border dark:border-lightBorder "
                 }
               >
                 <div className="py-1 ">
@@ -170,7 +170,11 @@ const SubOptButton = ({ subInfo, subArray, currMulti }) => {
                             (active ? "  " : " hidden ")
                           }
                         >
-                          <div onClick={() => setopenMulti((s) => s + 1)}>
+                          <div
+                            onClick={(e) => {
+                              setopenMulti((s) => s + 1);
+                            }}
+                          >
                             <div
                               className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight hover:cursor-pointer"
                               onClick={multiCreate}

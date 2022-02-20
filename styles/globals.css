@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import '~react-draft-wysiwyg/dist/react-draft-wysiwyg.css'; 
+@import "~react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 :root {
   scrollbar-width: thin;
@@ -38,7 +38,7 @@
 }
 
 .react-autosuggest__input {
-  @apply flex-none w-full h-full px-2 text-gray-300 outline-none dark:text-gray-700;
+  @apply flex-none w-full h-full px-2 text-sm text-gray-300 outline-none dark:text-gray-700;
 }
 
 .react-autosuggest__input--focused {
@@ -58,92 +58,13 @@
 .react-autosuggest__suggestion--highlighted {
   @apply bg-lightHighlight dark:bg-darkHighlight;
 }
-/* .react-autosuggest__section-container {
-}
-.react-autosuggest__section-container--first {
-}
-
-.react-autosuggest__section-title {
-} */
 
 #innerhtml a {
   @apply text-blue-600 underline dark:text-blue-400;
 }
 #innerhtml p {
-  
 }
 
 .react-markdown a {
   @apply text-blue-800 underline;
 }
-/* 
-.react-autosuggest__container {
-  position: relative;
-}
-
-.react-autosuggest__input {
-  background-color: transparent;
-  width: 100%;
-  font-family: Helvetica, sans-serif;
-  font-weight: 300;
-  font-size: 16px;
-}
-
-.react-autosuggest__input--focused {
-  outline: none;
-}
-
-.react-autosuggest__input--open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.react-autosuggest__suggestions-container {
-  display: none;
-}
-
-.react-autosuggest__suggestions-container--open {
-  display: block;
-  position: absolute;
-  top: 37px;
-  width: 100%;
-  border: 1px solid #aaa;
-  background-color: #fff;
-  font-family: Helvetica, sans-serif;
-  font-weight: 300;
-  font-size: 16px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  z-index: 2;
-  overflow: hidden;
-  max-height: 20rem;
-}
-
-.react-autosuggest__suggestions-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-}
-
-.react-autosuggest__suggestion {
-  cursor: pointer;
-  padding: 10px 20px;
-}
-
-.react-autosuggest__suggestion--highlighted {
-  background-color: #ddd;
-}
-
-.react-autosuggest__section-container {
-  border-top: 1px dashed #ccc;
-}
-
-.react-autosuggest__section-container--first {
-  border-top: 0;
-}
-
-.react-autosuggest__section-title {
-  padding: 10px 0 0 10px;
-  font-size: 12px;
-  color: #777;
-} */

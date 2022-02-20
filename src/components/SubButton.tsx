@@ -63,7 +63,16 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   };
 
   return (
-    <div className="relative select-none">
+    <div
+      className="relative select-none"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!loadAPI) {
+          startSubscribe(subbed ? "unsub" : !subbed && "sub", sub);
+        }
+      }}
+    >
       <div
         className={
           (!miniMode
@@ -82,13 +91,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
         ) : (
           <>
             {subbed && !loadAPI ? (
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  startSubscribe("unsub", sub);
-                }}
-                className="flex items-center p-1 space-x-1 group"
-              >
+              <div className="flex items-center p-1 space-x-1 group">
                 {miniMode ? (
                   <AiOutlineMinus />
                 ) : (
@@ -103,13 +106,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
                 )}
               </div>
             ) : !subbed && !loadAPI ? (
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  startSubscribe("sub", sub);
-                }}
-                className="flex items-center p-1 space-x-1"
-              >
+              <div className="flex items-center p-1 space-x-1">
                 {miniMode ? (
                   <AiOutlinePlus />
                 ) : (

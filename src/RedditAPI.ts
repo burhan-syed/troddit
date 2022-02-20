@@ -158,6 +158,7 @@ export const loadSubreddits = async (
         after: res.data.after,
         before: res.data.before,
         children: res.data.children,
+        token: returnToken,
       };
     } catch (err) {
       //console.log(err);
@@ -178,6 +179,7 @@ export const loadSubreddits = async (
         after: res.data.after,
         before: res.data.before,
         children: res.data.children,
+        token: returnToken,
       };
     } catch (err) {
       return null;
@@ -185,6 +187,143 @@ export const loadSubreddits = async (
   }
 };
 
+export const getRedditSearch = async (
+  params,
+  after,
+  sort = "hot",
+  loggedIn = false,
+  subreddit = "all",
+  range?,
+  token?,
+  include_over_18?,
+  searchtype?
+) => {
+  let p = {
+    ...params,
+    after: after,
+    sort: sort,
+    t: range,
+    raw_json: 1,
+  };
+  let oathsearch = `https://oauth.reddit.com/search`;
+  let noauthsearch = `${REDDIT}/search.json`;
+  if (p?.q?.substring(0, 5)?.toUpperCase() === "FLAIR") {
+    p.q = p.q.replaceAll(" ", "%2B").replaceAll("+", "%2B");
+  }
+  if (include_over_18) {
+    p["include_over_18"] = "1";
+  } else {
+    p["include_over_18"] = "0";
+  }
+  if (subreddit !== "all") {
+    oathsearch = `https://oauth.reddit.com/r/${subreddit}/search/.json?q=${
+      p.q
+    }&sort=${sort}&restrict_sr=on&include_over_18=${
+      include_over_18 ? "on" : "0"
+    }&t=${range}&after=${after}`;
+    noauthsearch = `https://www.reddit.com/r/${subreddit}/search/.json?q=${
+      p.q
+    }&sort=${sort}&restrict_sr=on&include_over_18=${
+      include_over_18 ? "on" : "0"
+    }&t=${range}&after=${after}`;
+    p = { raw_json: 1 };
+  }
+
+  if (searchtype === "sr") {
+    p["type"] = "sr";
+  } else if (searchtype === "user") {
+    p["type"] = "user";
+  }
+  //console.log(p);
+  let accessToken = token?.accessToken;
+  let returnToken = token;
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
+    returnToken = await getToken();
+    accessToken = await returnToken?.accessToken;
+  }
+
+  if (loggedIn && accessToken && ratelimit_remaining > 1 && !searchtype) {
+    try {
+      //console.log("WITH LOGIN", token);
+      const res1 = await axios.get(oathsearch, {
+        headers: {
+          authorization: `bearer ${accessToken}`,
+        },
+        params: p,
+      });
+      let res = await res1.data;
+      //console.log(res);
+      ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+
+      return {
+        after: res.data.after,
+        before: res.data.before,
+        children: res.data.children,
+        token: returnToken,
+      };
+    } catch (err) {
+      //console.log(err);
+    }
+  } else {
+    try {
+      const res = await (
+        await axios.get(noauthsearch, {
+          params: p,
+        })
+      ).data;
+      //console.log(res);
+      return {
+        after: res.data.after,
+        before: res.data.before,
+        children: res.data.children,
+        token: returnToken,
+      };
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+};
+//retiring for  getRedditSearch
+export const loadSubFlairPosts = async (
+  subreddit,
+  flair: string,
+  sort = "new",
+  range = "",
+  after = ""
+) => {
+  let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
+  // console.log(
+  //   flair,
+  //   `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`
+  // );
+  try {
+    const res = await axios.get(
+      `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`,
+      {
+        params: {
+          raw_json: 1,
+          // q: f,
+          // sort: sort,
+          // t: range,
+          // restrict_sr: "on",
+          // include_over_18: "on",
+        },
+      }
+    );
+    let data = await res.data;
+    return {
+      after: data?.data?.after,
+      before: data?.data?.before,
+      children: data?.data?.children,
+    };
+  } catch (err) {
+    console.log(err);
+  }
+};
 export const getUserMultiPosts = async (
   user: string,
   multiname: string,
@@ -212,7 +351,6 @@ export const getUserMultiPosts = async (
     return null;
   }
 };
-
 export const loadSubFlairs = async (subreddit) => {
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
@@ -230,39 +368,6 @@ export const loadSubFlairs = async (subreddit) => {
       console.log(err);
       return false;
     }
-  }
-};
-export const loadSubFlairPosts = async (
-  subreddit,
-  flair: string,
-  sort = "new",
-  range = "",
-  after = ""
-) => {
-  let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
-  //
-  try {
-    const res = await axios.get(
-      `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`,
-      {
-        params: {
-          raw_json: 1,
-          // q: f,
-          // sort: sort,
-          // t: range,
-          // restrict_sr: "on",
-          // include_over_18: "on",
-        },
-      }
-    );
-    let data = await res.data;
-    return {
-      after: data?.data?.after,
-      before: data?.data?.before,
-      children: data?.data?.children,
-    };
-  } catch (err) {
-    console.log(err);
   }
 };
 //oauth request

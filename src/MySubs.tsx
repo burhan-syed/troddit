@@ -281,6 +281,8 @@ export const MySubsProvider = ({ children }) => {
       if (curr.toUpperCase() !== "ALL" || curr.toUpperCase() !== "POPULAR") {
         loadCurrSubInfo(curr);
       }
+    } else if (router?.route === "/search") {
+      setCurrLocation("SEARCH");
     } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
     } else if (router?.pathname === "/u/[...slug]") {
@@ -293,14 +295,15 @@ export const MySubsProvider = ({ children }) => {
     return () => {
       setCurrSubInfo({});
     };
-  }, [router?.query?.slug?.[0]]);
+  }, [router?.query?.slug?.[0], router.route]);
 
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
     loadLocalSubs();
     if (
       router?.pathname === "/r/[...slug]" ||
-      router?.pathname === "/u/[...slug]"
+      router?.pathname === "/u/[...slug]" ||
+      router?.pathname === "/search"
     ) {
       loadAllFast();
     }

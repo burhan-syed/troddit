@@ -10,13 +10,14 @@ import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
 import { usePlausible } from "next-plausible";
 
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlinePlus, AiOutlineSearch, AiOutlineCheck } from "react-icons/ai";
 
 const Search = ({ id }) => {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
+  const [placeHolder, setPlaceHolder] = useState("search");
   const [suggestions, setSuggestions] = useState<any>([]);
   const [session] = useSession();
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,8 @@ const Search = ({ id }) => {
   const context: any = useMainContext();
   const lastRequest = useRef(null);
   const [updated, setUpdated] = useState(false);
+  const [srRestrict, setSrRestrict] = useState(false);
+  const [currSub, setCurrSub] = useState("");
   const plausible = usePlausible();
 
   useEffect(() => {
@@ -32,26 +35,89 @@ const Search = ({ id }) => {
     setUpdated(false);
   }, [lastRequest?.current]);
 
+  useEffect(() => {
+    let sub = "";
+    if (router.route === "/r/[...slug]" && router?.query?.slug?.[0]) {
+      sub = router.query.slug[0];
+    }
+    if (router?.query?.q) {
+      setPlaceHolder(
+        "searching " +
+          `"${router?.query?.q?.toString()}"` +
+          (sub !== "" ? ` in r/${sub}` : "")
+      );
+    }
+    return () => {
+      setPlaceHolder("search");
+    };
+  }, [router?.query?.q]);
+
+  useEffect(() => {
+    if (router.pathname === "/r/[...slug]") {
+      let sub = router?.query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%20")
+        .join("+")
+        ?.split("+")?.[0];
+      setCurrSub(sub);
+      setSrRestrict(true);
+    } else {
+      setCurrSub("");
+      setSrRestrict(false);
+    }
+    return () => {
+      setCurrSub("");
+      setSrRestrict(false);
+    };
+  }, [router]);
+
   const onSuggestionsFetchRequested = async ({ value }) => {
     lastRequest.current = value;
-    setSuggestions([value]);
+    setSuggestions([
+      { kind: "loading" },
+      {
+        kind: "search",
+        data: {
+          restrict_sr: false,
+          q: value,
+          include_over_18: false,
+          display_name_prefixed: `r/${value.value}`,
+        },
+      },
+    ]);
     const suggestions = await getSuggestions({ value });
     if (suggestions?.length > 0) {
       setSuggestions(suggestions);
       setLoading(false);
       setUpdated(true);
-      // console.log("u", updated);
     }
   };
-
+  const searchFields = [
+    "author, flair, nsfw, self, selftext, site, subreddit, title, url",
+  ];
+  const extractFields = (query) => {};
   const getSuggestions = async (value) => {
     //console.log(value);
+    let search = {
+      kind: "search",
+      data: {
+        restrict_sr: false,
+        q: value.value,
+        include_over_18: false,
+        display_name_prefixed: `r/${value.value}`,
+      },
+    };
     let suggestions = [
       {
+        kind: "t5",
         data: {
           display_name_prefixed: `r/${value.value}`,
           display_name: value.value,
           over18: false,
+          default: true,
         },
       },
     ];
@@ -66,7 +132,7 @@ const Search = ({ id }) => {
         let filtered = data.filter((sub) => {
           if (context.nsfw === "true" || sub?.data?.over18 !== true) {
             if (
-              sub?.data?.display_name.toLowerCase() ===
+              sub?.data?.display_name?.toLowerCase() ===
               value.value.toLowerCase()
             ) {
               match = true;
@@ -75,7 +141,7 @@ const Search = ({ id }) => {
           }
         });
         if (match) {
-          suggestions = filtered;
+          suggestions = [...filtered];
         } else {
           suggestions = [...suggestions, ...filtered];
         }
@@ -84,39 +150,26 @@ const Search = ({ id }) => {
         );
         setmorethanonesuggestion(suggestions.length > 1);
         //console.log("kept", lastRequest.current);
-        return suggestions;
+        return [...suggestions, search];
       } else {
         //console.log("discard", lastRequest.current, value.value);
         // return {};
       }
-    } else {
-      //fallback to local search
-      session && seterror(true);
-      let search = localSearch(value.value);
-      if (search?.length > 0) {
-        suggestions = [...suggestions, ...search];
-      }
-      setlastsuggestion(
-        suggestions[suggestions.length - 1]?.data?.display_name_prefixed
-      );
-      setmorethanonesuggestion(suggestions.length > 1);
-      return suggestions;
     }
-
-    // if (suggestions.length < 1 || error) {
-    //   //suggestions.push({ name: value });
-    //   suggestions = [
-    //     {
-    //       data: {
-    //         display_name_prefixed: value.value,
-    //         display_name: value.value,
-    //         over18: false,
-    //       },
-    //     },
-    //   ];
-
+    // else {
+    //   //fallback to local search
+    //   session && seterror(true);
+    //   let localsearch = localSearch(value.value);
+    //   if (localsearch?.length > 0) {
+    //     suggestions = [...suggestions, ...localsearch];
+    //   }
+    //   setlastsuggestion(
+    //     suggestions[suggestions.length - 1]?.data?.display_name_prefixed
+    //   );
+    //   setmorethanonesuggestion(suggestions.length > 1);
+    //   return [...suggestions, search];
     // }
-    //return suggestions;
+    return [];
   };
 
   //https://frontpagemetrics.com/
@@ -150,62 +203,46 @@ const Search = ({ id }) => {
   };
 
   const getSuggestionValue = (suggestion) => {
-    return suggestion?.data?.display_name;
+    return suggestion?.data?.display_name ?? suggestion?.data?.q ?? "";
   };
 
   const renderSuggestion = (suggestion) => {
-    //console.log(suggestion);
-    if (loading) {
+    if (loading && suggestion?.kind === "loading") {
       return (
-        <div>
-          {/* <Link href={`r/${suggestion?.data?.display_name?.replace('r/','')}`?? `${value.replace('r/','')}`}>
-            <a> */}
-          <div
-            // onClick={(e) =>}
-            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-          >
-            <div className="ml-2">
-              {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
-                <div className="relative w-6 h-6 rounded-full">
-                  <Image
-                    src={
-                      suggestion?.data?.icon_image ?? suggestion?.data?.icon_img
-                    }
-                    alt="r"
-                    layout="fill"
-                    className="rounded-full"
-                    unoptimized={true}
-                  ></Image>
-                </div>
-              ) : (
-                <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
-                  r/
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col ml-4">
-              <div>{suggestion?.data?.display_name_prefixed ?? value}</div>
-              <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
-                {suggestion?.data?.subscribers
-                  ? suggestion.data.subscribers.toLocaleString("en-US") +
-                    " followers "
-                  : "?? followers "}
-                {suggestion?.data?.over18 && (
-                  <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                    nsfw
-                  </span>
+        <>
+          {/* Default value */}
+          <div>
+            <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight ">
+              <div className="ml-2">
+                {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
+                  <div className="relative w-6 h-6 rounded-full">
+                    <Image
+                      src={
+                        suggestion?.data?.icon_image ??
+                        suggestion?.data?.icon_img
+                      }
+                      alt="r"
+                      layout="fill"
+                      className="rounded-full"
+                      unoptimized={true}
+                    ></Image>
+                  </div>
+                ) : (
+                  <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                    r/
+                  </div>
                 )}
               </div>
+              <div className="flex flex-col ml-4">
+                <div>{lastRequest.current}</div>
+                <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                  {"?? followers "}
+                </div>
+              </div>
             </div>
-          </div>
-          {/* </a>
-          </Link> */}
-          {!suggestion?.data?.subscribers && (
+            {/* Loading placeholder */}
             <>
-              <div
-                // onClick={(e) =>}
-                className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight "
-              >
+              <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight ">
                 <div className="ml-2">
                   {suggestion?.data?.icon_image ??
                   suggestion?.data?.icon_img ? (
@@ -230,19 +267,46 @@ const Search = ({ id }) => {
                 <div className="flex flex-col ml-4">
                   <div className="h-4 bg-gray-200 rounded-md w-52 dark:bg-gray-500 animate-pulse"></div>
                   <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight animate-pulse">
-                    {suggestion?.data?.subscribers
-                      ? suggestion.data.subscribers.toLocaleString("en-US") +
-                        " followers "
-                      : "?? followers "}
-                    {suggestion?.data?.over18 && (
-                      <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
-                        nsfw
-                      </span>
-                    )}
+                    {"?? followers "}
                   </div>
                 </div>
               </div>
             </>
+          </div>
+        </>
+      );
+    }
+    if (suggestion?.kind === "search") {
+      return (
+        <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+          <AiOutlineSearch className="w-6 h-6" />
+          <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
+          {currSub !== "" && (
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSrRestrict((r) => !r);
+              }}
+              className="flex flex-row items-center mt-auto ml-auto space-x-1 "
+            >
+              <h1 className="text-xs">Limit to r/{currSub}</h1>
+              <div
+                className={
+                  "w-5 h-5 p-0.5 border rounded-md transition-all  " +
+                  (srRestrict
+                    ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
+                    : " dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder")
+                }
+              >
+                <AiOutlineCheck
+                  className={
+                    "absolute p-0.5 translate-x-[-1px] transition-all text-white" +
+                    (srRestrict ? " scale-100 " : " scale-0")
+                  }
+                />
+              </div>
+            </div>
           )}
         </div>
       );
@@ -325,7 +389,7 @@ const Search = ({ id }) => {
           lastsuggestion === suggestion?.data?.display_name_prefixed && (
             <>
               <div className="flex flex-col items-center justify-center w-full h-full py-3 bg-white border rounded-lg select-none dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight">
-                <h1>{"Can't connect to Reddit for search"}</h1>
+                <h1>{"No subreddit suggestions"}</h1>
               </div>
             </>
           )}
@@ -371,18 +435,36 @@ const Search = ({ id }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     setValue("");
-    //console.log(updated);
-    if (
-      suggestion?.data?.display_name
-        ?.toLowerCase()
-        .includes(lastRequest.current.toLowerCase()) ||
-      updated
-    ) {
-      goToSub(event, suggestion?.data?.display_name ?? "popular");
-    } else {
-      //console.log(lastRequest, suggestion?.data?.display_name);
-      goToSub(event, lastRequest.current);
+    if (loading) {
+      if (srRestrict && currSub !== "") {
+        router.push(
+          `/r/${currSub}/search?sort=relevance&t=all&q=${lastRequest.current}`
+        );
+      } else {
+        router.push(`/search?q=${lastRequest.current}&sort=relevance&t=all`);
+      }
+    } else if (suggestion?.kind === "search") {
+      if (srRestrict && currSub !== "") {
+        router.push(
+          `/r/${currSub}/search?sort=relevance&t=all&q=${suggestion?.data?.q}`
+        );
+      } else {
+        router.push(`/search?q=${suggestion?.data?.q}&sort=relevance&t=all`);
+      }
+    } else if (suggestion?.kind === "t5") {
+      if (
+        suggestion?.data?.display_name
+          ?.toLowerCase()
+          .includes(lastRequest.current.toLowerCase()) ||
+        updated
+      ) {
+        goToSub(event, suggestion?.data?.display_name ?? "popular");
+      } else {
+        //console.log(lastRequest, suggestion?.data?.display_name);
+        goToSub(event, lastRequest.current);
+      }
     }
+
     plausible("search");
   };
 
@@ -391,13 +473,13 @@ const Search = ({ id }) => {
   };
 
   const inputProps = {
-    placeholder: "find subreddit",
+    placeholder: placeHolder,
     value,
     onChange: onChange,
   };
 
   return (
-    <div className="flex flex-row w-full h-full ">
+    <div className="flex flex-row w-full h-full">
       <Autosuggest
         id={id}
         suggestions={suggestions}

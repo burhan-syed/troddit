@@ -41,7 +41,7 @@ const FilterMenu = ({ hide = false }) => {
       !imgPortraitFilter ||
       !imgLandscapeFilter
     ) {
-      console.log("active");
+      //console.log("active");
       setActive(true);
     } else {
       setActive(false);
