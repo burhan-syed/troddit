@@ -243,7 +243,7 @@ const SortMenu2 = ({ hide = false }) => {
               ) : (
                 ""
               )}
-              {sort === "comments" ? (
+              {router?.query?.sort === "comments" ? (
                 <div className="flex flex-row items-baseline justify-between">
                   <GoCommentDiscussion className="flex-none w-6 h-6 mr-1" />
                 </div>

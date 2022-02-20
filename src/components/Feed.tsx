@@ -67,6 +67,7 @@ const Feed = ({
   };
 
   useEffect(() => {
+    //console.log(query);
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
       updateLoading(false);
@@ -119,18 +120,18 @@ const Feed = ({
         query?.frontsort?.includes("new") ||
         query?.frontsort?.includes("rising")
       ) {
-        setSort(query?.frontsort ?? "best");
-        setRange(query?.t ?? "");
+        // setSort(query?.frontsort ?? "best");
+        // setRange(query?.t ?? "");
         !sessloading && fetchFront();
       }
     } else if (query.slug) {
-      setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "best");
-      setRange(query?.t ?? "");
+      // setSubreddits(query?.slug?.[0] ?? "");
+      // setSort(query?.slug?.[1] ?? "best");
+      // setRange(query?.t ?? "");
       !sessloading && fetchSubs();
     } else {
-      setSort(query?.frontsort ?? "best");
-      setRange(query?.t ?? "");
+      // setSort(query?.frontsort ?? "best");
+      // setRange(query?.t ?? "");
       !sessloading && fetchFront();
     }
     return () => {
