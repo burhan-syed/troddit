@@ -20,7 +20,9 @@ const SubredditBanner = ({ subreddits, userMode }) => {
 
   const [openDescription, setOpenDescription] = useState(0);
  
-
+  useEffect(() => {
+    setCurrSubData(currSubInfo?.data?.subreddit ?? currSubInfo?.data)
+  }, [currSubInfo])
 
 
   //entry point

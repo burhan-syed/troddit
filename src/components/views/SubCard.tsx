@@ -232,10 +232,10 @@ const SubCard = ({
         <div
           className={
             "flex flex-row  " +
-            (tall ? " md:ml-[6.5rem] mt-2  md:-mt-4 " : " pl-5 ml-[3.25rem]")
+            (tall ? " md:ml-[6.5rem]  mt-2  md:-mt-4 " : " pl-5 ml-[3.25rem]")
           }
         >
-          <h1 className="text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
+          <h1 className="mx-auto text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
             {data?.data?.public_description}
           </h1>
           <div
