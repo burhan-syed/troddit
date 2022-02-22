@@ -108,14 +108,14 @@ const SubCard = ({
       <div
         className={
           "flex flex-col my-2 " +
-          (tall ? "h-52 md:h-40 mx-6 " : " h-[8.75rem] md:h-24 mx-2 ")
+          (tall ? " md:h-40 mx-6 " : " h-[8.75rem] md:h-24 mx-2 ")
         }
       >
-        <div className={"flex flex-row " + (tall ? " mt-[4.5rem] " : " mt-6")}>
+        <div className={"flex  " + (tall ? " mt-[4.5rem] flex-col md:flex-row " : " mt-6 flex-row")}>
           <div
             className={
               "z-20 flex-none  border-2 hover:cursor-pointer rounded-full dark:bg-darkBG bg-lightPost" +
-              (tall ? " -mt-2 w-24 h-24 " : " w-16 h-16")
+              (tall ? " -mt-2 w-24 h-24 mx-auto md:mx-0" : " w-16 h-16")
             }
             onClick={() => {
               !link && openDescription() //context.setForceRefresh((p) => p + 1);
@@ -145,9 +145,9 @@ const SubCard = ({
           <div className="flex flex-col ">
             <div
               className={
-                "z-10 flex flex-row   pl-5 pr-2  -ml-3.5 space-x-2 rounded-tr-md pl-auto dark:bg-darkBG bg-lightPost " +
+                "z-10 flex flex-row mx-auto md:mx-0  md:pl-5 md:pr-2  md:-ml-3.5 space-x-2 md:rounded-tr-md pl-auto dark:bg-darkBG bg-lightPost " +
                 (tall
-                  ? " border-t border-r pt-[6px] pb-[-3px] items-end mt-[10px] "
+                  ? " md:border-t md:border-r md:pt-[6px] md:pb-[-3px] items-end md:mt-[10px] "
                   : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2")
               }
             >
@@ -206,13 +206,36 @@ const SubCard = ({
           </div>
         </div>
 
+        <div className="z-20 flex flex-row mx-auto mt-2 space-x-1 md:hidden">
+          <SubButton
+            sub={
+              data?.kind == "t5"
+                ? session
+                  ? data?.data?.name
+                  : data?.data?.display_name
+                : session
+                ? data?.data?.subreddit?.name
+                : data?.data?.subreddit?.display_name
+            }
+            userMode={data?.kind === "t2"}
+          />
+          {data?.kind !== "t2" && !link && (
+              <SubOptButton
+                subInfo={subInfo}
+                currMulti={currMulti}
+                subArray={subArray}
+                openDescription={openDescription}
+              />
+            )}
+        </div>
+
         <div
           className={
             "flex flex-row  " +
-            (tall ? " ml-[6.5rem] -mt-2 md:-mt-4 " : " pl-5 ml-[3.25rem]")
+            (tall ? " md:ml-[6.5rem] mt-2  md:-mt-4 " : " pl-5 ml-[3.25rem]")
           }
         >
-          <h1 className="h-8 -mt-6 overflow-x-hidden overflow-y-scroll text-xs scrollbar-none">
+          <h1 className="text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
             {data?.data?.public_description}
           </h1>
           <div
@@ -243,27 +266,7 @@ const SubCard = ({
             )}
           </div>
         </div>
-        <div className="z-20 flex flex-row mt-2 ml-auto space-x-1 md:hidden">
-          <SubButton
-            sub={
-              data?.kind == "t5"
-                ? session
-                  ? data?.data?.name
-                  : data?.data?.display_name
-                : session
-                ? data?.data?.subreddit?.name
-                : data?.data?.subreddit?.display_name
-            }
-            userMode={data?.kind === "t2"}
-          />
-          {data?.kind === "t5" && !link && subInfo && currMulti && subArray && (
-            <SubOptButton
-              subInfo={subInfo}
-              currMulti={currMulti}
-              subArray={subArray}
-            />
-          )}
-        </div>
+        
       </div>
     </div>
   );
