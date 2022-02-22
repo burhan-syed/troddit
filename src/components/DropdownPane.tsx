@@ -115,7 +115,7 @@ const DropdownPane = ({ hide }) => {
             ) : currSubInfo ? (
               <div>
                 <DropdownItem
-                  sub={{ kind: "t5", data: currSubInfo }}
+                  sub={{ kind: "t5", data: currSubInfo?.data?.subreddit ?? currSubInfo?.data }}
                   isUser={router.pathname.includes("/u/")}
                   preventNav={true}
                 />
@@ -172,7 +172,7 @@ const DropdownPane = ({ hide }) => {
               currLocation !== "POPULAR" && (
                 <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                   <DropdownSubCard
-                    sub={{ kind: "t5", data: currSubInfo }}
+                    sub={{ kind: "t5", data: currSubInfo?.data?.subreddit ?? currSubInfo?.data }}
                     userMode={router.pathname.includes("/u/") ? true : false}
                     // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                     // // refresh={loadAllSubs}

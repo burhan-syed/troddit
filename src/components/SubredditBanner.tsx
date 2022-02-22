@@ -1,96 +1,27 @@
-import SubButton from "./SubButton";
+
 import SubInfoModal from "./SubInfoModal";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/dist/client/image";
-import Link from "next/dist/client/link";
-import { useSession } from "next-auth/client";
-import { loadSubredditInfo } from "../RedditAPI";
-import { BsBoxArrowInUpRight } from "react-icons/bs";
-import { useMainContext } from "../MainContext";
+import { useState, useEffect } from "react";
 import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
-import SubMultiButton from "./SubMultiButton";
-import SubOptButton from "./SubOptButton";
-import { AiOutlinePlus } from "react-icons/ai";
-import { join } from "path";
-import { secondsToDate } from "../../lib/utils";
+import SubPills from "./SubPills";
+import SubCard from "./views/SubCard";
 
-const SubredditBanner = ({ subreddits, userMode = false }) => {
+const SubredditBanner = ({ subreddits, userMode }) => {
   const router = useRouter();
   const subsContext: any = useSubsContext();
   const { currSubInfo, loadCurrSubInfo, multi } = subsContext;
-  const [session] = useSession();
+  const [currSubData, setCurrSubData] = useState<any>({});
   const [subreddit, setSubreddit] = useState("");
   const [multiSub, setMultiSub] = useState("");
   const [currMulti, setCurrMulti] = useState("");
   const [subArray, setSubArray] = useState([]);
   const [keepInMultiArray, setKeepInMultiArray] = useState(false);
-  const context: any = useMainContext();
-  const [hideNSFW, sethideNSFW] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+
   const [openDescription, setOpenDescription] = useState(0);
-  const [thumbURL, setThumbURL] = useState("");
-  const [banner, setBanner] = useState({});
+ 
 
-  const pillsRef: any = useRef();
-  useEffect(() => {
-    const el = pillsRef.current;
-    if (el) {
-      const onWheel = (e) => {
-        if (e.deltaY == 0) return;
-        e.preventDefault();
-        el.scrollTo({
-          left: el.scrollLeft + e.deltaY * 2,
-          behavior: "smooth",
-        });
-      };
-      el.addEventListener("wheel", onWheel);
-      return () => el.removeEventListener("wheel", onWheel);
-    }
-  }, []);
 
-  useEffect(() => {
-    //loadcurrSubInfo(subreddit);
-    if (subreddit.toUpperCase() === currSubInfo?.display_name?.toUpperCase()) {
-      let bannerurl = "";
-      if (currSubInfo?.banner_background_image?.length > 0) {
-        bannerurl = currSubInfo?.banner_background_image?.replaceAll(
-          "amp;",
-          ""
-        );
-      } else if (currSubInfo?.banner_img?.length > 0) {
-        bannerurl = currSubInfo?.banner_img?.replaceAll("amp;", "");
-      }
-      setBanner({
-        backgroundImage: `url("${bannerurl}")`,
-        backgroundColor:
-          currSubInfo?.banner_background_color.length > 1
-            ? currSubInfo.banner_background_color
-            : currSubInfo?.key_color,
-      });
-
-      setLoaded(true);
-    }
-    return () => {
-      setLoaded(false);
-      setBanner({});
-    };
-  }, [currSubInfo, subreddit]);
-
-  useEffect(() => {
-    if (currSubInfo?.icon_url) {
-      setThumbURL(currSubInfo.icon_url);
-    } else {
-      currSubInfo?.community_icon?.length > 1
-        ? setThumbURL(currSubInfo?.community_icon?.replaceAll("amp;", ""))
-        : currSubInfo?.icon_img?.length > 1
-        ? setThumbURL(currSubInfo?.icon_img)
-        : setThumbURL("");
-      // : currSubInfo?.header_img?.length > 1 &&
-      //   setThumbURL(currSubInfo?.header_img);
-    }
-  }, [currSubInfo]);
 
   //entry point
   useEffect(() => {
@@ -113,11 +44,6 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
     }
   }, [subreddits]);
 
-  useEffect(() => {
-    currSubInfo?.over18 && context.nsfw == "false"
-      ? sethideNSFW(true)
-      : sethideNSFW(false);
-  }, [context.nsfw, currSubInfo.over18]);
 
   useEffect(() => {
     if (multi) {
@@ -147,7 +73,7 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
       }
     }
     if (router.route === "/r/[...slug]") {
-      router.push(s + (query.length > 0 ? `?${query.join("&")}` : ""));
+      router.push(s + (query?.length > 0 ? `?${query.join("&")}` : ""));
     } else {
       router.push(`/r/${s}`, `/r/${s}`);
     }
@@ -177,229 +103,43 @@ const SubredditBanner = ({ subreddits, userMode = false }) => {
     }
   };
 
-  return (
-    <div
-      className={
-        "w-full h-full -mt-2 " +
-        (subArray.length === 1 && multi === ""
-          ? "mb-2  md:mb-8 lg:mb-10"
-          : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
-      }
-    >
-      <div className="relative border-b shadow-xl dark:bg-trueGray-900 bg-lightPost border-lightBorder dark:border-darkBorder">
-        <SubInfoModal
-          toOpen={openDescription}
-          descriptionHTML={currSubInfo?.description_html}
-          displayName={currSubInfo?.display_name_prefixed}
-        />
-        <div className="">
-          <div
-            className={
-              (hideNSFW && " blur-xl overflow-hidden") +
-              ` w-full h-[150px] bg-cover bg-center flex items-center justify-center border-b-4 border-lightBorder `
-            }
-            style={banner}
-          ></div>
-          <div className="flex flex-col items-center justify-center w-11/12 mx-auto md:items-start">
-            <Link href={currSubInfo?.display_name ?? "/"}>
-              <a>
-                <div
-                  className="flex flex-row items-center w-24 h-24 -mt-12 overflow-hidden border-4 rounded-full cursor-pointer border-lightBorder bg-lightPost dark:bg-trueGray-900"
-                  style={{ backgroundColor: currSubInfo?.primary_color }}
-                  onClick={() => {
-                    context.setForceRefresh((p) => p + 1);
-                  }}
-                >
-                  {thumbURL?.includes("https") ? (
-                    <Image
-                      src={thumbURL}
-                      alt=""
-                      height={currSubInfo?.icon_size?.[0] ?? 256}
-                      width={currSubInfo?.icon_size?.[1] ?? 256}
-                      unoptimized={true}
-                      objectFit="cover"
-                      className={"rounded-full " + (hideNSFW && " blur-xl ")}
-                    />
-                  ) : (
-                    <div
-                      className="rounded-full dark:bg-trueGray-900 bg-lightPost"
-                      style={{ backgroundColor: currSubInfo?.primary_color }}
-                    ></div>
-                  )}
-                </div>
-              </a>
-            </Link>
-            {!loaded && (
-              <div className="w-full h-56 md:h-44">
-                {/* <div className="h-12 bg-gray-300 rounded-lg w-80 dark:bg-gray-800 animate-pulse "></div>
-                <div className="p-0.5"></div>
-                <div className="h-5 bg-gray-300 rounded-lg w-72 dark:bg-gray-800 animate-pulse "></div>
-                <div className="w-3/4 h-6 bg-gray-300 rounded-lg dark:bg-gray-800 animate-pulse "></div> */}
-              </div>
-            )}
-            {loaded && (
-              <>
-                <div className="flex items-center justify-center w-full h-12 pt-2 pb-1 md:justify-between">
-                  <h1 className="flex items-end text-4xl">
-                    <Link href={currSubInfo?.display_name ?? "/"}>
-                      <a onClick={() => context.setForceRefresh((p) => p + 1)}>
-                        {currSubInfo?.display_name_prefixed}
-                      </a>
-                    </Link>
-                    <a
-                      href={`https://www.reddit.com/${currSubInfo?.display_name_prefixed}`}
-                      target={"_blank"}
-                      rel="noreferrer"
-                      className="mb-4 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
-                    >
-                      <span className="">
-                        <BsBoxArrowInUpRight className="w-4 h-4" />
-                      </span>
-                    </a>
-                    {subArray.length > 1 && multiSub === "" && (
-                      <span className="ml-1 text-xl">{`and ${
-                        subArray.length - 1
-                      } more`}</span>
-                    )}
-                  </h1>
+  const toggleOpenDescription = () => {
+    setOpenDescription(p => p+1)
+  }
 
-                  <div className="items-center justify-end hidden space-x-0.5 md:flex">
-                    <SubButton
-                      sub={session ? currSubInfo.name : subreddit}
-                      userMode={userMode}
-                    />
-                    {!userMode && (
-                      <SubOptButton
-                        subInfo={currSubInfo}
+  return (
+      
+      <div
+        className={
+          "w-full h-full -mt-2 relative  " +
+          (subArray.length === 1 && multi === ""
+            ? " mb-2  md:mb-4 lg:mb-6"
+            : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
+        }
+      >
+        <SubInfoModal
+        toOpen={openDescription}
+        descriptionHTML={currSubData?.description_html}
+        displayName={currSubData?.display_name_prefixed}
+      />
+         <SubCard data={currSubInfo} link={false} tall={true} subInfo={currSubData}
                         currMulti={currMulti}
                         subArray={subArray}
-                      />
-                    )}
-                  </div>
-                </div>
+                        openDescription={toggleOpenDescription}/>
+        
+         
 
-                <div className="flex p-1 space-x-2 text-gray-700 dark:text-gray-500">
-                  <p>
-                    {userMode ? (
-                      <>Joined {secondsToDate(currSubInfo?.created)}</>
-                    ) : (
-                      <>
-                        {currSubInfo?.subscribers?.toLocaleString("en-US")}{" "}
-                        members
-                        <span className="px-2">•</span>
-                        {currSubInfo?.active_user_count?.toLocaleString(
-                          "en-US"
-                        )}{" "}
-                        here
-                      </>
-                    )}
-                  </p>
-                  {currSubInfo?.over18 && (
-                    <>
-                      <span>•</span>
-                      <p className="text-red-400 text-color dark:text-red-700">
-                        NSFW
-                      </p>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-end my-1 space-x-1 space-y-1 md:hidden">
-                  <SubButton
-                    sub={session ? currSubInfo.name : subreddit}
-                    userMode={userMode}
-                  />
-                  {!userMode && (
-                    <SubOptButton
-                      subInfo={currSubInfo}
-                      currMulti={currMulti}
-                      subArray={subArray}
-                    />
-                  )}
-                </div>
-                <div className="p-1 pb-5 text-center md:text-left">
-                  <p>{currSubInfo?.public_description}</p>
-
-                  <div className="p-1"></div>
-                  {!userMode && (
-                    <button
-                      className="px-2 py-1 text-sm border rounded-md dark:bg-darkBG border-lightBorder bg-lightPostHover dark:border-darkPostHover dark:border-2 hover:bg-lightHighlight dark:hover:bg-darkPostHover"
-                      onClick={() => setOpenDescription((s) => s + 1)}
-                    >
-                      Full Description
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        {(multi || subArray.length > 1 || currMulti) && (
+          <SubPills
+            subArray={subArray}
+            currMulti={currMulti}
+            multiSub={multiSub}
+            goToMulti={goToMulti}
+            goToMultiSub={goToMultiSub}
+            removeSub={removeSub}
+          />
+        )}
       </div>
-
-      {(multi || subArray.length > 1 || currMulti) && (
-        <div className="">
-          <div
-            className={
-              (subArray?.length < 12 ? "md:w-11/12 mx-auto " : " ") +
-              " flex items-center justify-start text-sm space-x-2"
-            }
-          >
-            <div onClick={(e) => goToMulti(e)} className="flex-none">
-              <a
-                href={`${subArray.join("+")}${
-                  currMulti ? `?m=${currMulti}` : ""
-                }`}
-              >
-                <div
-                  className={
-                    "items-center px-4 py-1.5 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-                    (multiSub === "" && "  ring-2")
-                  }
-                >
-                  {`${currMulti ? `${currMulti}` : "Multi"} (${
-                    subArray.length
-                  })`}
-                </div>
-              </a>
-            </div>
-            <div
-              ref={pillsRef}
-              className="flex p-1 space-x-2 overflow-x-scroll capitalize scrollbar-none"
-            >
-              {subArray.map((s) => (
-                <div
-                  onClick={(e) => {
-                    goToMultiSub(e, s);
-                  }}
-                  key={s}
-                >
-                  <a href={`${s}`}>
-                    <div
-                      className={
-                        "flex items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-                        (s.toUpperCase() === multiSub.toUpperCase() &&
-                          "  ring-2")
-                      }
-                    >
-                      <h1 className="">{s}</h1>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          removeSub(s);
-                        }}
-                        className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1"
-                      >
-                        <AiOutlinePlus className="flex-none w-4 h-4 rotate-45 " />
-                      </button>
-                    </div>
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
   );
 };
 

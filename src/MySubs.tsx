@@ -286,7 +286,7 @@ export const MySubsProvider = ({ children }) => {
     } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
     } else if (router?.pathname === "/u/[...slug]") {
-      loadCurrSubInfo(`u_${router?.query?.slug?.[0]}`);
+      loadCurrSubInfo(`${router?.query?.slug?.[0]}`, true);
       setCurrLocation(router?.query?.slug?.[0]?.toString());
     } else {
       setCurrLocation("");
@@ -299,15 +299,17 @@ export const MySubsProvider = ({ children }) => {
 
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
-    loadLocalSubs();
+    
     if (
-      router?.pathname === "/r/[...slug]" ||
+      !loadedSubs && 
+      (router?.pathname === "/r/[...slug]" ||
       router?.pathname === "/u/[...slug]" ||
-      router?.pathname === "/search"
+      router?.pathname === "/search")
     ) {
+      loadLocalSubs();
       loadAllFast();
     }
-  }, []);
+  }, [router?.pathname, loadedSubs]);
   useEffect(() => {
     if (
       router?.pathname === "/r/[...slug]" &&
@@ -335,9 +337,11 @@ export const MySubsProvider = ({ children }) => {
     }
   }, [session, loading]);
 
-  const loadCurrSubInfo = async (sub) => {
-    const info = await loadSubredditInfo(sub);
-    if (info?.name) {
+  const loadCurrSubInfo = async (sub, isUser = false) => {
+    let info = await loadSubredditInfo(sub, isUser);
+    if (info) {
+      //console.log(info);
+
       setCurrSubInfo(info);
       return info;
     }

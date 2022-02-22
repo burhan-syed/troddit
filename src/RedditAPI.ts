@@ -39,7 +39,7 @@ export const loadFront = async (
   range?: string,
   after?: string,
   count?: number,
-  localSubs?: []
+  localSubs?: [string]
 ) => {
   //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
   let accessToken = token?.accessToken;
@@ -78,11 +78,12 @@ export const loadFront = async (
       //console.log(err);
     }
   } else {
-    if (localSubs?.length > 0) {
+    let filteredsubs = localSubs.filter(s => s.substring(0,2) !== 'u_')
+    if (filteredsubs?.length > 0) {
       return loadSubreddits(
         loggedIn,
         token,
-        localSubs.join("+"),
+        filteredsubs.join("+"),
         sort,
         range,
         after,
@@ -420,11 +421,12 @@ export const loadSubInfo = async (subreddit) => {
   return false;
 };
 //search request no auth required
-export const loadSubredditInfo = async (query) => {
+export const loadSubredditInfo = async (query, loaduser = false) => {
   if (query) {
+    //console.log(query);
     try {
       const res = await (
-        await axios.get(`${REDDIT}/r/${query}/about.json`, {
+        await axios.get(`${REDDIT}/${loaduser ? 'user' : 'r'}/${query}/about.json`, {
           ///search/.json?q=${query}&type=sr&include_over_18=on`, {
           params: {
             raw_json: 1,
@@ -436,7 +438,7 @@ export const loadSubredditInfo = async (query) => {
       //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
       // }
 
-      return res?.data;
+      return res
     } catch (err) {
       console.log(err);
       return [];

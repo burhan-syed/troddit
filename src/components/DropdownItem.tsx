@@ -37,7 +37,7 @@ const DropdownItem = ({
 
     const findSubInfo = async (sub) => {
       let subinfo = await loadSubredditInfo(sub?.data?.display_name);
-      findThumbnail({ data: subinfo });
+      findThumbnail({ data: subinfo?.data });
     };
     if (sub?.kind == "t5") {
       findThumbnail(sub);

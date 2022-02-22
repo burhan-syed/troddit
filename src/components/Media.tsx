@@ -213,7 +213,7 @@ const Media = ({
       //console.log(post?.mediaInfo?.iFrameHTML.src);
       if (post?.mediaInfo?.iFrameHTML) {
         if (
-          post?.mediaInfo?.iFrameHTML.src.includes("youtube.com")
+          post?.mediaInfo?.iFrameHTML?.src?.includes("youtube.com")
           // || post?.mediaInfo?.iFrameHTML.src.includes("twitch.tv/embed")
         ) {
           setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
