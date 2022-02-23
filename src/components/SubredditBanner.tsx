@@ -1,4 +1,3 @@
-
 import SubInfoModal from "./SubInfoModal";
 
 import { useState, useEffect } from "react";
@@ -6,8 +5,14 @@ import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
 import SubPills from "./SubPills";
 import SubCard from "./views/SubCard";
+import Link from "next/link";
 
-const SubredditBanner = ({ subreddits, userMode }) => {
+const SubredditBanner = ({
+  subreddits,
+  userMode,
+  ownProfile = "",
+  name = "",
+}) => {
   const router = useRouter();
   const subsContext: any = useSubsContext();
   const { currSubInfo, loadCurrSubInfo, multi } = subsContext;
@@ -19,11 +24,10 @@ const SubredditBanner = ({ subreddits, userMode }) => {
   const [keepInMultiArray, setKeepInMultiArray] = useState(false);
 
   const [openDescription, setOpenDescription] = useState(0);
- 
-  useEffect(() => {
-    setCurrSubData(currSubInfo?.data?.subreddit ?? currSubInfo?.data)
-  }, [currSubInfo])
 
+  useEffect(() => {
+    setCurrSubData(currSubInfo?.data?.subreddit ?? currSubInfo?.data);
+  }, [currSubInfo]);
 
   //entry point
   useEffect(() => {
@@ -45,7 +49,6 @@ const SubredditBanner = ({ subreddits, userMode }) => {
       setKeepInMultiArray(false);
     }
   }, [subreddits]);
-
 
   useEffect(() => {
     if (multi) {
@@ -106,32 +109,113 @@ const SubredditBanner = ({ subreddits, userMode }) => {
   };
 
   const toggleOpenDescription = () => {
-    setOpenDescription(p => p+1)
-  }
+    setOpenDescription((p) => p + 1);
+  };
 
   return (
-      
-      <div
-        className={
-          "w-full h-full -mt-2 relative  " +
-          (subArray.length === 1 && multi === ""
-            ? " mb-2  md:mb-4 lg:mb-6"
-            : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
-        }
-      >
-        <SubInfoModal
+    <div
+      className={
+        "w-full h-full -mt-2 relative  " +
+        (subArray.length === 1 && multi === ""
+          ? " mb-2  md:mb-4 lg:mb-6"
+          : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
+      }
+    >
+      <SubInfoModal
         toOpen={openDescription}
         descriptionHTML={currSubData?.description_html}
         displayName={currSubData?.display_name_prefixed}
       />
-         <SubCard data={currSubInfo} link={false} tall={true} subInfo={currSubData}
-                        currMulti={currMulti}
-                        subArray={subArray}
-                        openDescription={toggleOpenDescription}/>
-        
-         
+      <SubCard
+        data={currSubInfo}
+        link={false}
+        tall={true}
+        subInfo={currSubData}
+        currMulti={currMulti}
+        subArray={subArray}
+        openDescription={toggleOpenDescription}
+        selfProfile={name}
+      />
 
-        {(multi || subArray.length > 1 || currMulti) && (
+      {name && (
+        <div className="flex flex-row w-full mt-2 md:-mb-5 md:justify-center ">
+          <div className="flex flex-row mx-2 space-x-4 text-xl md:w-11/12">
+            <Link href={`/u/${name}`}>
+              <a>
+                <div
+                  className={
+                    " cursor-pointer font-bold" +
+                    (ownProfile === ""
+                      ? " font-bold  "
+                      : " opacity-50 hover:opacity-70")
+                  }
+                >
+                  Overview
+                </div>
+              </a>
+            </Link>
+            <Link href={`/u/${name}/submitted`}>
+              <a>
+                <div
+                  className={
+                    " cursor-pointer font-bold" +
+                    (ownProfile === "SUBMITTED"
+                      ? " font-bold  "
+                      : " opacity-50 hover:opacity-70")
+                  }
+                >
+                  Submitted
+                </div>
+              </a>
+            </Link>
+            <Link href={`/u/${name}/upvoted`}>
+              <a>
+                <div
+                  className={
+                    " cursor-pointer font-bold" +
+                    (ownProfile === "UPVOTED"
+                      ? " font-bold  "
+                      : " opacity-50 hover:opacity-70")
+                  }
+                >
+                  Upvoted
+                </div>
+              </a>
+            </Link>
+            <Link href={`/u/${name}/downvoted`}>
+              <a>
+                <div
+                  className={
+                    " cursor-pointer font-bold" +
+                    (ownProfile === "DOWNVOTED"
+                      ? " font-bold  "
+                      : " opacity-50 hover:opacity-70")
+                  }
+                >
+                  Downvoted
+                </div>
+              </a>
+            </Link>
+            <Link href={`/u/${name}/saved`}>
+              <a>
+                <div
+                  className={
+                    " cursor-pointer font-bold" +
+                    (ownProfile === "SAVED"
+                      ? " font-bold  "
+                      : " opacity-50 hover:opacity-70")
+                  }
+                >
+                  Saved
+                </div>
+              </a>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {(multi || subArray.length > 1 || currMulti) &&
+        !currSubInfo?.data?.subreddit && (
           <SubPills
             subArray={subArray}
             currMulti={currMulti}
@@ -141,7 +225,7 @@ const SubredditBanner = ({ subreddits, userMode }) => {
             removeSub={removeSub}
           />
         )}
-      </div>
+    </div>
   );
 };
 

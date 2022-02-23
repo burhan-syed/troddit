@@ -10,6 +10,7 @@ import {
   getUserMultiPosts,
   getRedditSearch,
   loadSubFlairPosts,
+  loadUserSelf,
 } from "../RedditAPI";
 
 import { useRouter } from "next/router";
@@ -30,6 +31,7 @@ const Feed = ({
   isSubFlair = false,
   isSearch = false,
   safeSearch = false,
+  ownProfile = "",
 }) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
@@ -121,18 +123,11 @@ const Feed = ({
         query?.frontsort?.includes("new") ||
         query?.frontsort?.includes("rising")
       ) {
-        // setSort(query?.frontsort ?? "best");
-        // setRange(query?.t ?? "");
         !sessloading && fetchFront();
       }
     } else if (query.slug) {
-      // setSubreddits(query?.slug?.[0] ?? "");
-      // setSort(query?.slug?.[1] ?? "best");
-      // setRange(query?.t ?? "");
       !sessloading && fetchSubs();
     } else {
-      // setSort(query?.frontsort ?? "best");
-      // setRange(query?.t ?? "");
       !sessloading && fetchFront();
     }
     return () => {
@@ -152,6 +147,7 @@ const Feed = ({
     context.forceRefresh,
     query.q,
     safeSearch,
+    ownProfile,
   ]);
 
   const fetchFront = async () => {
@@ -192,7 +188,6 @@ const Feed = ({
   };
 
   const fetchSubs = async () => {
-    //console.log(query);
     let data: any;
     let subs = query?.slug?.[0]
       .split(" ")
@@ -204,7 +199,18 @@ const Feed = ({
     if (query?.slug?.[1] === "comments") {
       setFetchPost(true);
     } else if (isUser) {
-      if (isMulti) {
+      if (ownProfile !== "") {
+        data = await loadUserSelf(
+          context?.token,
+          session ? true : false,
+          ownProfile.toLocaleLowerCase(),
+          query?.sort,
+          query?.t,
+          "",
+          session?.user?.name
+        );
+        //console.log(data);
+      } else if (isMulti) {
         data = await getUserMultiPosts(
           query?.slug?.[0],
           query?.slug?.[2],
@@ -214,7 +220,7 @@ const Feed = ({
       } else {
         data = await loadUserPosts(
           query?.slug?.[0] ?? "",
-          query?.slug?.[1] ?? "hot",
+          query?.sort ?? "hot",
           query?.t ?? ""
         );
       }
@@ -249,6 +255,9 @@ const Feed = ({
     if (data?.children) {
       setIsSubreddit(true);
       await manageData(data);
+    } else if (data) {
+      setNothingHere(true);
+      updateLoading(false);
     } else {
       setError(true);
       updateLoading(false);
@@ -425,6 +434,7 @@ const Feed = ({
                 initItems={posts}
                 initAfter={after}
                 isUser={isUser}
+                ownProfile={ownProfile}
                 isMulti={isMulti}
                 isSearch={isSearch}
                 session={session}

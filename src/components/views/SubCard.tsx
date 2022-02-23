@@ -8,6 +8,7 @@ import { useMainContext } from "../../MainContext";
 import SubButton from "../SubButton";
 import SubOptButton from "../SubOptButton";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
+import Login from "../Login";
 
 const SubCard = ({
   data,
@@ -17,6 +18,7 @@ const SubCard = ({
   currMulti = undefined,
   subArray = undefined,
   openDescription = undefined,
+  selfProfile = undefined,
 }) => {
   const context: any = useMainContext();
   const [thumbURL, setThumbURL] = useState("");
@@ -26,7 +28,7 @@ const SubCard = ({
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);
-
+    //console.log(data);
     let currSubInfo = data?.data;
     if (data.kind === "t2" && data?.data?.subreddit)
       currSubInfo = data.data.subreddit;
@@ -57,7 +59,7 @@ const SubCard = ({
       // : currSubInfo?.header_img?.length > 1 &&
       //   setThumbURL(currSubInfo?.header_img);
     }
-    //data?.kind === 't2' || data?.kind === 't5' && 
+    //data?.kind === 't2' || data?.kind === 't5' &&
     setLoading(false);
     return () => {
       setThumbURL("");
@@ -108,17 +110,22 @@ const SubCard = ({
       <div
         className={
           "flex flex-col my-2 " +
-          (tall ? " md:h-40 mx-6 " : " h-[8.75rem] md:h-24 mx-2 ")
+          (tall ? " md:h-40 mx-6 md:mx-16 " : " h-[8.75rem] md:h-24 mx-2 ")
         }
       >
-        <div className={"flex  " + (tall ? " mt-[4.5rem] flex-col md:flex-row " : " mt-6 flex-row")}>
+        <div
+          className={
+            "flex  " +
+            (tall ? " mt-[4.5rem] flex-col md:flex-row " : " mt-6 flex-row")
+          }
+        >
           <div
             className={
               "z-20 flex-none  border-2 hover:cursor-pointer rounded-full dark:bg-darkBG bg-lightPost" +
               (tall ? " -mt-2 w-24 h-24 mx-auto md:mx-0" : " w-16 h-16")
             }
             onClick={() => {
-              !link && openDescription() //context.setForceRefresh((p) => p + 1);
+              !link && openDescription(); //context.setForceRefresh((p) => p + 1);
             }}
           >
             {thumbURL?.includes("https") && !hideNSFW ? (
@@ -151,51 +158,60 @@ const SubCard = ({
                   : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2")
               }
             >
-              {(loading) ? (
+              {loading ? (
                 <>
                   <div className="h-6 w-52"></div>
                 </>
               ) : (
                 <>
-                  <h1 className={"font-semibold  hover:cursor-pointer hover:underline group-hover:underline" + (tall ? " " : " ")}
-                  onClick={() => {
-                    !link && context.setForceRefresh((p) => p + 1);
-                  }}
+                  <h1
+                    className={
+                      "font-semibold  hover:cursor-pointer hover:underline group-hover:underline" +
+                      (tall ? " " : " ")
+                    }
+                    onClick={() => {
+                      !link && context.setForceRefresh((p) => p + 1);
+                    }}
                   >
                     {data?.kind === "t2"
                       ? `u/${data?.data?.name}`
-                      : data?.data?.display_name_prefixed ?? <div className="w-16">r/</div>}
-                      
+                      : data?.data?.display_name_prefixed ?? (
+                          <div className="w-16">r/</div>
+                        )}
                   </h1>
-                  {!link && (data?.data?.url || data?.data?.subreddit?.url) && 
-                      <a
-                      href={`https://www.reddit.com${data?.data?.url ?? data?.data?.subreddit?.url}`}
+                  {!link && (data?.data?.url || data?.data?.subreddit?.url) && (
+                    <a
+                      href={`https://www.reddit.com${
+                        data?.data?.url ?? data?.data?.subreddit?.url
+                      }`}
                       target={"_blank"}
                       rel="noreferrer"
                       className="mb-3 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
                     >
-                        <BsBoxArrowInUpRight className="w-3 h-3 -ml-1" />
-                      
+                      <BsBoxArrowInUpRight className="w-3 h-3 -ml-1" />
                     </a>
-                      }
+                  )}
                   <h1 className="text-xs font-semibold pb-0.5">
                     {data?.kind === "t2"
                       ? `${numToString(
-                        data?.data?.comment_karma ??
-                          0 + data?.data?.link_karma ??
-                          0,
-                        1000
-                      )} karma` 
-                      : `${data?.data?.subscribers?.toLocaleString(
-                        "en-US"
-                      ) ?? "               "} members` }
+                          parseInt(data?.data?.comment_karma) +
+                            parseInt(data?.data?.link_karma),
+                          1000
+                        )} karma`
+                      : `${
+                          data?.data?.subscribers?.toLocaleString("en-US") ??
+                          "               "
+                        } members`}
                   </h1>
-                  {!link && data?.data?.active_user_count && <span className="text-xs font-semibold opacity-70 pb-0.5">{data?.data?.active_user_count?.toLocaleString(
-                            "en-US"
-                          )} here</span>}
+                  {!link && data?.data?.active_user_count && (
+                    <span className="text-xs font-semibold opacity-70 pb-0.5">
+                      {data?.data?.active_user_count?.toLocaleString("en-US")}{" "}
+                      here
+                    </span>
+                  )}
                   {(data?.data?.over18 || data?.data?.subreddit?.over_18) && (
                     <>
-                      <span className="text-xs text-red-400 text-color dark:text-red-700">
+                      <span className="text-xs text-red-400 text-color dark:text-red-700 pb-0.5">
                         NSFW
                       </span>
                     </>
@@ -207,43 +223,9 @@ const SubCard = ({
         </div>
 
         <div className="z-20 flex flex-row mx-auto mt-2 space-x-1 md:hidden">
-          <SubButton
-            sub={
-              data?.kind == "t5"
-                ? session
-                  ? data?.data?.name
-                  : data?.data?.display_name
-                : session
-                ? data?.data?.subreddit?.name
-                : data?.data?.subreddit?.display_name
-            }
-            userMode={data?.kind === "t2"}
-          />
-          {data?.kind !== "t2" && !link && (
-              <SubOptButton
-                subInfo={subInfo}
-                currMulti={currMulti}
-                subArray={subArray}
-                openDescription={openDescription}
-              />
-            )}
-        </div>
-
-        <div
-          className={
-            "flex flex-row  " +
-            (tall ? " md:ml-[6.5rem]  mt-2  md:-mt-4 " : " pl-5 ml-[3.25rem]")
-          }
-        >
-          <h1 className="mx-auto text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
-            {data?.data?.public_description}
-          </h1>
-          <div
-            className={
-              "relative hidden md:flex  flex-row mb-auto ml-auto -mt-6 space-x-1 " +
-              (tall ? " " : " ")
-            }
-          >
+          {selfProfile ? (
+            <Login />
+          ) : (
             <SubButton
               sub={
                 data?.kind == "t5"
@@ -256,6 +238,55 @@ const SubCard = ({
               }
               userMode={data?.kind === "t2"}
             />
+          )}
+
+          {data?.kind !== "t2" && !link && (
+            <SubOptButton
+              subInfo={subInfo}
+              currMulti={currMulti}
+              subArray={subArray}
+              openDescription={openDescription}
+            />
+          )}
+        </div>
+        <div
+          className={
+            "flex flex-row   " +
+            (tall ? " md:ml-[6.25rem]  mt-2  md:-mt-3 " : " pl-5 ml-[3.25rem]")
+          }
+        >
+          <h1 className="mx-auto text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
+            {data?.data?.subreddit?.public_description ??
+              data?.data?.public_description}
+          </h1>
+          <div
+            className={
+              "relative hidden md:flex  flex-row mb-auto ml-auto mt-[-1.6rem] space-x-1 " +
+              (tall ? " " : " ")
+            }
+          >
+            {selfProfile ? (
+              <div
+                className={
+                  "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder hover:bg-lightHighlight p-1 rounded-md cursor-pointer dark:hover:bg-darkBorder"
+                }
+              >
+                <Login />
+              </div>
+            ) : (
+              <SubButton
+                sub={
+                  data?.kind == "t5"
+                    ? session
+                      ? data?.data?.name
+                      : data?.data?.display_name
+                    : session
+                    ? data?.data?.subreddit?.name
+                    : data?.data?.subreddit?.display_name
+                }
+                userMode={data?.kind === "t2"}
+              />
+            )}
             {data?.kind !== "t2" && !link && (
               <SubOptButton
                 subInfo={subInfo}
@@ -266,7 +297,6 @@ const SubCard = ({
             )}
           </div>
         </div>
-        
       </div>
     </div>
   );

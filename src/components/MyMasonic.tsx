@@ -25,6 +25,7 @@ import {
   loadSubFlairPosts,
   loadSubreddits,
   loadUserPosts,
+  loadUserSelf,
 } from "../RedditAPI";
 import Post from "./Post";
 // import * as gtag from "../../lib/gtag";
@@ -70,8 +71,9 @@ const MyMasonic = ({
   isSubFlair = false,
   isSearch = false,
   filterNum = 0,
-  session = {},
   safeSearch = false,
+  ownProfile = "",
+  session,
   //page,
 }) => {
   const router = useRouter();
@@ -327,7 +329,18 @@ const MyMasonic = ({
         safeSearch ? undefined : true
       );
     } else if (isUser || router?.pathname === "/u/[...slug]") {
-      if (isMulti) {
+      if (ownProfile !== "") {
+        data = await loadUserSelf(
+          context?.token,
+          session ? true : false,
+          ownProfile.toLocaleLowerCase(),
+          query?.sort,
+          query?.t,
+          loadafter,
+          session?.user?.name
+        );
+        //console.log(data);
+      } else if (isMulti) {
         data = await getUserMultiPosts(
           query?.slug?.[0],
           query?.slug?.[2],
@@ -338,7 +351,7 @@ const MyMasonic = ({
       } else {
         data = await loadUserPosts(
           query?.slug?.[0] ?? "",
-          query?.slug?.[1] ?? "hot",
+          query?.sort ?? "hot",
           query?.t ?? "",
           loadafter
         );

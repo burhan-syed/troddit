@@ -25,6 +25,7 @@ const SortMenu2 = ({ hide = false }) => {
 
   useEffect(() => {
     router?.query?.t ? setRange(router.query.t.toString()) : setRange("");
+    router.query?.sort && setSort(router.query?.sort);
   }, [router.query]);
 
   useEffect(() => {
@@ -89,13 +90,25 @@ const SortMenu2 = ({ hide = false }) => {
           `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`
         );
       } else if (router.query?.slug?.[0] ?? false) {
-        router.push(
-          `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${
-            router?.query?.m?.length > 0
-              ? `?m=${encodeURI(router?.query?.m?.toString())}`
-              : ""
-          }`
-        );
+        if (isUser) {
+          //console.log(router.query?.slug?.[0]);
+          router.push({
+            pathname: `/u/${router.query?.slug?.[0]}${
+              router.query?.slug?.[1] ? `/${router.query?.slug?.[1]}` : ``
+            }`,
+            query: {
+              sort: s,
+            },
+          });
+        } else {
+          router.push(
+            `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${
+              router?.query?.m?.length > 0
+                ? `?m=${encodeURI(router?.query?.m?.toString())}`
+                : ""
+            }`
+          );
+        }
       } else {
         router.push(`/${s}`);
       }
@@ -145,15 +158,28 @@ const SortMenu2 = ({ hide = false }) => {
         `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`
       );
     } else if (router.query?.slug?.[0] ?? false) {
-      router.push(
-        `/${isUser ? "u" : "r"}/${
-          router.query?.slug?.[0] ?? "hot"
-        }/top/?t=${encodeURI(r)}${
-          router?.query?.m?.length > 0
-            ? `&m=${encodeURI(router?.query?.m?.toString())}`
-            : ""
-        }`
-      );
+      if (isUser) {
+        //console.log(router.query?.slug?.[0]);
+        router.push({
+          pathname: `/u/${router.query?.slug?.[0]}${
+            router.query?.slug?.[1] ? `/${router.query?.slug?.[1]}` : ``
+          }`,
+          query: {
+            sort: s,
+            t: r,
+          },
+        });
+      } else {
+        router.push(
+          `/${isUser ? "u" : "r"}/${
+            router.query?.slug?.[0] ?? "hot"
+          }/top/?t=${encodeURI(r)}${
+            router?.query?.m?.length > 0
+              ? `&m=${encodeURI(router?.query?.m?.toString())}`
+              : ""
+          }`
+        );
+      }
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",

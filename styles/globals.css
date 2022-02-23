@@ -6,6 +6,9 @@
 :root {
   scrollbar-width: thin;
 }
+::-webkit-scrollbar {
+  display: none;
+}
 
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */

@@ -19,6 +19,7 @@ import { useScroll } from "../hooks/useScroll";
 import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
+import LoginProfile from "./LoginProfile";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
@@ -138,7 +139,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               }
               onClick={() => plausible("login")}
             >
-              <Login />
+              <LoginProfile />
             </div>
 
             <div

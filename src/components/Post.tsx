@@ -89,6 +89,18 @@ const Post = ({ post, postNum = 0 }) => {
         // console.log("FRONSORT");
         //setReturnRoute(router.asPath);
         router.push("", post.id, { shallow: true });
+      } else if (
+        router.pathname.includes("/u/") &&
+        session?.user?.name?.toUpperCase() ===
+          router?.query?.slug?.[0]?.toUpperCase()
+      ) {
+        router.push(
+          "",
+          `/u/${router.query?.slug?.[0]}/${
+            router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
+          }${post.id}`,
+          { shallow: true }
+        );
       } else if (router.pathname.includes("/u/")) {
         router.push("", `/u/${post.author}/p/${post.id}`, { shallow: true });
       } else {

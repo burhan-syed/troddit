@@ -50,12 +50,17 @@ export const secondsToDate = (seconds) => {
   return `${month} ${day}, ${year}`;
 };
 export const numToString = (x: number, max = 10000) => {
+  let suffix = "k";
   if (x < max) {
     return x.toString();
   } else {
-    let y = Math.floor(x / 1000);
-    let z = (x / 1000).toFixed(1);
-    return z.toString() + "k";
+    let y = x / 1000;
+    if (y > 1000) {
+      y = y / 1000;
+      suffix = "m";
+    }
+    let z = y.toFixed(1);
+    return z.toString() + suffix;
   }
 };
 

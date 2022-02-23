@@ -314,6 +314,12 @@ const PostModal = ({
           "",
           router.query?.frontsort
             ? context.posts[context.postNum + 1]?.data?.id
+            : router.route === "/u/[...slug]" &&
+              session?.user?.name?.toUpperCase() ===
+                router?.query?.slug?.[0]?.toUpperCase()
+            ? `/u/${router.query?.slug?.[0]}/${
+                router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
+              }${context.posts[context.postNum + 1]?.data?.id}`
             : router.route === "/u/[...slug]"
             ? `/u/${context.posts[context.postNum + 1]?.data?.author}/p/${
                 context.posts[context.postNum + 1]?.data?.id
@@ -335,6 +341,12 @@ const PostModal = ({
           "",
           router.query?.frontsort
             ? context.posts[context.postNum - 1]?.data?.id
+            : router.route === "/u/[...slug]" &&
+              session?.user?.name?.toUpperCase() ===
+                router?.query?.slug?.[0]?.toUpperCase()
+            ? `/u/${router.query?.slug?.[0]}/${
+                router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
+              }${context.posts[context.postNum - 1]?.data?.id}`
             : router.route === "/u/[...slug]"
             ? `/u/${context.posts[context.postNum - 1]?.data?.author}/p/${
                 context.posts[context.postNum - 1]?.data?.id

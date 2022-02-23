@@ -78,7 +78,7 @@ export const loadFront = async (
       //console.log(err);
     }
   } else {
-    let filteredsubs = localSubs.filter(s => s.substring(0,2) !== 'u_')
+    let filteredsubs = localSubs.filter((s) => s.substring(0, 2) !== "u_");
     if (filteredsubs?.length > 0) {
       return loadSubreddits(
         loggedIn,
@@ -107,7 +107,7 @@ export const loadFront = async (
           after: res.data.after,
           before: res.data.before,
           children: res.data.children,
-          token: token,
+          token: returnToken,
         };
       } catch (err) {
         //console.log(err);
@@ -426,19 +426,22 @@ export const loadSubredditInfo = async (query, loaduser = false) => {
     //console.log(query);
     try {
       const res = await (
-        await axios.get(`${REDDIT}/${loaduser ? 'user' : 'r'}/${query}/about.json`, {
-          ///search/.json?q=${query}&type=sr&include_over_18=on`, {
-          params: {
-            raw_json: 1,
-          },
-        })
+        await axios.get(
+          `${REDDIT}/${loaduser ? "user" : "r"}/${query}/about.json`,
+          {
+            ///search/.json?q=${query}&type=sr&include_over_18=on`, {
+            params: {
+              raw_json: 1,
+            },
+          }
+        )
       ).data;
       //console.log(query, res);
       // for (let i = 0; i < res?.data?.children?.length - 1; i++){
       //   if (res?.data?.children?.[i]?.data?.display_name?.toUpperCase() === query.toUpperCase()) return res?.data?.children?.[i]?.data
       // }
 
-      return res
+      return res;
     } catch (err) {
       console.log(err);
       return [];
@@ -519,16 +522,71 @@ export const loadUserPosts = async (
       nextafter = res?.data?.after;
     } catch (err) {
       //console.log(err);
-      return null;
+      return { after: undefined };
     }
   }
   if (filtered_children.length > 0) {
     return {
-      after: null,
+      after: undefined,
       children: filtered_children,
     };
   }
-  return null;
+  return { after: undefined };
+};
+
+export const loadUserSelf = async (
+  token,
+  loggedIn,
+  where,
+  sort,
+  range,
+  after,
+  username?
+) => {
+  let accessToken = token?.accessToken;
+  let returnToken = token;
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
+    returnToken = await getToken();
+    accessToken = await returnToken?.accessToken;
+  }
+
+  if (loggedIn && accessToken && ratelimit_remaining > 1) {
+    try {
+      const res = await axios.get(
+        `https://oauth.reddit.com/user/${username}/${where}`,
+        {
+          headers: {
+            Authorization: `bearer ${accessToken}`,
+          },
+          params: {
+            raw_json: 1,
+            after: after,
+            username: username,
+            t: range,
+            sort: sort,
+            given: where,
+            type: "links",
+          },
+        }
+      );
+      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      const data = await res.data;
+
+      return {
+        after: data.data.after,
+        before: data.data.before,
+        children: data.data.children,
+        token: returnToken,
+      };
+    } catch (err) {
+      console.log(err);
+      return undefined;
+    }
+  }
+  return undefined;
 };
 
 export const getMySubs = async (after?, count?) => {
