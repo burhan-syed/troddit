@@ -99,7 +99,7 @@ const Sort = ({ query }) => {
         <NavBar />
         {forbidden ? (
           <div className="flex items-center justify-center w-screen h-screen">
-            Accces Forbidden
+            Access Forbidden
           </div>
         ) : (
           loaded && (

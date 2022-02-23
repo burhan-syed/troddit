@@ -19,7 +19,7 @@ export default function LoginProfile() {
             <Link href={`/u/${session?.user?.name}`}>
               <a>
                 <button className="w-full h-full text-center capitalize">
-                  {session?.user?.name}
+                  Profile
                 </button>
               </a>
             </Link>
