@@ -1,9 +1,5 @@
-const SaveButton = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+const SaveButton = ({ category, id, saved, innerStyle }) => {
+  return <div>{innerStyle}</div>;
+};
 
-export default SaveButton
+export default SaveButton;

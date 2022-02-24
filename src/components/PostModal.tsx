@@ -9,6 +9,7 @@ import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BiComment } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
+import { BsBookmarks } from "react-icons/bs";
 
 import { useWindowSize } from "@react-hook/window-size";
 import { BiExit } from "react-icons/bi";
@@ -29,6 +30,7 @@ import Vote from "./Vote";
 import MediaWrapper from "./views/MediaWrapper";
 import Awardings from "./Awardings";
 import PostTitle from "./PostTitle";
+import SaveButton from "./SaveButton";
 
 const PostModal = ({
   setSelect,
@@ -728,6 +730,14 @@ const PostModal = ({
                                   Reply
                                 </h1>
                               </button>
+                            </div>
+                            <div>
+                              <SaveButton
+                                category={"t5"}
+                                id={apost?.data?.name}
+                                saved={apost?.data?.saved}
+                                innerStyle={<div>test2</div>}
+                              />
                             </div>
                             <a
                               href={`${apost?.url}` ?? "https://reddit.com"}
