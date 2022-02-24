@@ -8,7 +8,12 @@ import MultiManageModal from "./MultiManageModal";
 import { useSession } from "next-auth/client";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
 
-const SubOptButton = ({ subInfo, subArray, currMulti, openDescription=undefined }) => {
+const SubOptButton = ({
+  subInfo,
+  subArray,
+  currMulti,
+  openDescription = undefined,
+}) => {
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
   const {
@@ -128,6 +133,7 @@ const SubOptButton = ({ subInfo, subArray, currMulti, openDescription=undefined 
           <>
             <div className="flex items-center justify-center w-6">
               <Menu.Button
+                title={"more actions"}
                 name="Extra Sub Menu"
                 className={
                   "w-6 flex justify-center items-center  border-2 dark:border dark:border-lightBorder  rounded-md cursor-pointer dark:hover:bg-darkBorder hover:bg-lightHighlight"
@@ -300,24 +306,24 @@ const SubOptButton = ({ subInfo, subArray, currMulti, openDescription=undefined 
                       )}
                     </Menu.Item>
                   )}
-                  {openDescription && 
-                   <Menu.Item>
-                   {({ active }) => (
-                     <div
-                       className={
-                         (active
-                           ? "bg-lightHighlight dark:bg-darkHighlight "
-                           : "") + " block px-4 py-1 text-sm"
-                       }
-                       onClick={openDescription}
-                     >
-                       <div className="flex flex-row justify-end cursor-pointer select-none">
-                         {`Full Description`}
-                       </div>
-                     </div>
-                   )}
-                 </Menu.Item>
-                  }
+                  {openDescription && (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={
+                            (active
+                              ? "bg-lightHighlight dark:bg-darkHighlight "
+                              : "") + " block px-4 py-1 text-sm"
+                          }
+                          onClick={openDescription}
+                        >
+                          <div className="flex flex-row justify-end cursor-pointer select-none">
+                            {`Full Description`}
+                          </div>
+                        </div>
+                      )}
+                    </Menu.Item>
+                  )}
                   {subArray?.length > 1 && !session && !loading && (
                     <Menu.Item>
                       {({ active }) => (

@@ -73,6 +73,7 @@ const FilterMenu = ({ hide = false }) => {
     <>
       <FilterModal toOpen={openFilter} />
       <button
+        title={"filters"}
         className={
           "relative flex flex-col items-center flex-grow w-full h-full select-none"
         }

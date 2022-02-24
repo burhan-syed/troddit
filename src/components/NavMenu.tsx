@@ -69,6 +69,7 @@ const NavMenu = ({ hide = false }) => {
     >
       <div className="flex-grow w-full">
         <Menu.Button
+          title={"options"}
           name="Options"
           className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none"
         >

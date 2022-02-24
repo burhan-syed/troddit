@@ -9,7 +9,7 @@ const ToggleNSFW = () => {
 
   useEffect(() => {}, [context]);
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div onClick={(e) => e.stopPropagation()} title={"censor 18+ posts"}>
       <label className="flex flex-row items-center justify-between cursor-pointer">
         <span>NSFW</span>
 

@@ -391,6 +391,7 @@ const Search = ({ id }) => {
               </div>
               {currSub && (
                 <div
+                  title={`add r/${suggestion?.data?.display_name} to current feed`}
                   className="flex flex-row items-center ml-auto space-x-2 group"
                   onClick={(e) => addSub(e, suggestion?.data?.display_name)}
                 >

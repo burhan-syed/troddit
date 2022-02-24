@@ -21,6 +21,7 @@ import {
 import { BsTypeH1 } from "react-icons/bs";
 import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
+import { ImSpinner2 } from "react-icons/im";
 
 const Editor: any = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -147,22 +148,26 @@ const CommentReply = ({ parent, getHtml }) => {
               "absolute bottom-2 !bg-green-500 !rounded-lg !p-0 w-full !m-0 flex flex-row items-center !border-none "
             }
             editorClassName={
-              "flex flex-none bg-lightBG dark:bg-darkHighlight border hover:cursor-text border-lightBorder focus:border-lightBorderHighlight dark:border-darkBorder dark:focus:border-darkBorderHighlight rounded-lg px-4 !mx-0 pb-8"
+              "scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full bg-lightBG dark:bg-darkHighlight border  hover:cursor-text border-lightBorder flex-wrap focus-within:border-lightBorderHighlight focus-within:brightness-100 leading-tight  brightness-80 dark:border-darkBorder dark:focus-within:border-darkBorderHighlight rounded-lg px-4 pb-8"
             }
             editorState={editorState}
             toolbarHidden
             toolbar={editor}
             onEditorStateChange={editorStateChange}
           />
-          <div className="absolute bottom-0 right-0 flex flex-row justify-end">
+          <div className="absolute right-0 flex flex-row justify-end bottom-2">
             <button
               onClick={(e) => !loading && submit(e)}
               className={
-                "px-2 m-2 border-2 bg-white border-lightBorderHighlight rounded-lg focus:bg-lightBorderHighlight dark:bg-darkBG dark:border-darkBorderHighlight dark:focus:bg-darkBorderHighlight " +
-                (loading && " text-lightBorder")
+                "flex items-center relative justify-center px-4 py-1.5 ml-auto mr-4 text-center  border border-lightBorderHighlight    dark:border-darkBorder hover:bg-lightPostHover rounded-md cursor-pointer dark:hover:bg-darkBorder "
               }
             >
-              Comment
+              <h1 className={loading ? " opacity-50 " : " mx-3 "}>Comment</h1>
+              {loading && (
+                <div className="flex flex-none ">
+                  <ImSpinner2 className="ml-2 animate-spin" />
+                </div>
+              )}
             </button>
           </div>
         </>

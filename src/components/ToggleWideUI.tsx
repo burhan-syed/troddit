@@ -7,7 +7,10 @@ const ToggleWideUI = () => {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div
+      onClick={(e) => e.stopPropagation()}
+      title={"toggle wide ui in single column and posts"}
+    >
       <label className="flex flex-row items-center justify-between cursor-pointer">
         <span className="cursor-pointer">Wide UI</span>
         <ReactSwitch
@@ -21,9 +24,7 @@ const ToggleWideUI = () => {
           }
           uncheckedHandleIcon={<div></div>}
           uncheckedIcon={
-            <div
-              className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG"
-            >
+            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
               <CgArrowsMergeAltH />
             </div>
           }

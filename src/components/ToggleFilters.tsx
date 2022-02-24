@@ -7,6 +7,7 @@ const ToggleFilters = ({ filter }) => {
   const context: any = useMainContext();
   const { theme, setTheme } = useTheme();
   const [checked, setChecked] = useState(false);
+  const [title, setTitle] = useState("filter toggle");
   useEffect(() => {
     //console.log(filter, context.filters, context.filters.filter)
     let f = "";
@@ -36,14 +37,26 @@ const ToggleFilters = ({ filter }) => {
         f = "imgLandscapeFilter";
         break;
     }
+    setTitle(
+      `${context[f] ? "Showing" : "Filtering"} ${
+        filter === "links"
+          ? "link posts"
+          : filter === "self"
+          ? "self posts"
+          : filter === "portrait" || filter === "landscape"
+          ? `${filter} images/videos`
+          : filter
+      } `
+    );
     //console.log(filter, f, context[f])
     context[f] ? setChecked(true) : setChecked(false);
   }, [context, filter]);
 
   return (
     <div
+      title={title}
       onClick={(e) => e.stopPropagation()}
-      className="rounded-lg  group dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+      className="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight"
     >
       <label className="flex flex-row items-center justify-between p-2 cursor-pointer ">
         <span className="capitalize ">{filter}</span>

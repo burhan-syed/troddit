@@ -64,6 +64,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
 
   return (
     <div
+      title={subbed ? "unsubscribe" : "subscribe"}
       className="relative select-none"
       onClick={(e) => {
         e.preventDefault();
