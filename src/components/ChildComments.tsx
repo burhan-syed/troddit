@@ -9,6 +9,7 @@ import Link from "next/dist/client/link";
 import Vote from "./Vote";
 import { ImSpinner2 } from "react-icons/im";
 import Awardings from "./Awardings";
+import SaveButton from "./SaveButton";
 
 const ChildComments = ({
   comment,
@@ -203,41 +204,42 @@ const ChildComments = ({
           }}
         >
           {/* Author and comment data*/}
-          <div className="flex flex-row flex-wrap items-center justify-start pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
+          <div className="flex flex-row flex-wrap items-center justify-between pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
             {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
-            <Link href={`/u/${comment?.data?.author}`}>
-              <a
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <h1 className="hover:underline">
-                  {comment?.data?.author ?? ""}
-                </h1>
-              </a>
-            </Link>
-            {(comment?.data?.author == op || comment?.data?.is_submitter) && (
-              <>
-                <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">
-                  {"OP"}
-                </p>
-              </>
-            )}
-            {comment?.data?.distinguished == "moderator" && (
-              <>
-                <p className="px-0.5 font-medium text-lightGreen dark:text-darkGreen ">
-                  {"MOD"}
-                </p>
-              </>
-            )}
-            {comment?.data?.distinguished == "admin" && (
-              <>
-                <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">
-                  {"ADMIN"}
-                </p>
-              </>
-            )}
-            {/* {!portraitMode && (
+            <div className="flex flex-row items-center space-x-1">
+              <Link href={`/u/${comment?.data?.author}`}>
+                <a
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <h1 className="hover:underline">
+                    {comment?.data?.author ?? ""}
+                  </h1>
+                </a>
+              </Link>
+              {(comment?.data?.author == op || comment?.data?.is_submitter) && (
+                <>
+                  <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">
+                    {"OP"}
+                  </p>
+                </>
+              )}
+              {comment?.data?.distinguished == "moderator" && (
+                <>
+                  <p className="px-0.5 font-medium text-lightGreen dark:text-darkGreen ">
+                    {"MOD"}
+                  </p>
+                </>
+              )}
+              {comment?.data?.distinguished == "admin" && (
+                <>
+                  <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">
+                    {"ADMIN"}
+                  </p>
+                </>
+              )}
+              {/* {!portraitMode && (
               <div className="flex-row hidden space-x-1 md:flex ">
                 <p>•</p>
                 <h1
@@ -254,25 +256,39 @@ const ChildComments = ({
               </div>
             )} */}
 
-            <p>•</p>
-            <p className="">
-              {secondsToTime(comment?.data?.created_utc, [
-                "s",
-                "min",
-                "hr",
-                "dy",
-                "mo",
-                "yr",
-              ])}
-            </p>
-            {comment?.data?.all_awardings?.length > 0 && (
-              <div className="flex flex-row flex-wrap items-center justify-start pl-1 space-x-1 truncate">
-                <p>•</p>
-                <Awardings
-                  all_awardings={comment?.data?.all_awardings}
-                  truncate={false}
-                />
-              </div>
+              <p>•</p>
+              <p className="">
+                {secondsToTime(comment?.data?.created_utc, [
+                  "s ago",
+                  "min ago",
+                  "hr ago",
+                  "dy ago",
+                  "mo ago",
+                  "yr ago",
+                ])}
+              </p>
+
+              {comment?.data?.all_awardings?.length > 0 && (
+                <div className="flex flex-row flex-wrap items-center justify-start pl-1 space-x-1 truncate">
+                  <Awardings
+                    all_awardings={comment?.data?.all_awardings}
+                    truncate={false}
+                  />
+                </div>
+              )}
+            </div>
+            {comment?.data?.edited && (
+              <p className="pr-2 text-xs italic ">
+                edited{" "}
+                {secondsToTime(comment?.data?.edited, [
+                  "s ago",
+                  "min ago",
+                  "hr ago",
+                  "dy ago",
+                  "mo ago",
+                  "yr ago",
+                ])}
+              </p>
             )}
           </div>
 
@@ -332,6 +348,12 @@ const ChildComments = ({
                 >
                   Reply
                 </button>
+                <div className="pl-2 cursor-pointer hover:underline">
+                  <SaveButton
+                    id={comment?.data?.name}
+                    saved={comment?.data?.saved}
+                  />
+                </div>
               </div>
 
               {/* Comment Reply */}

@@ -719,25 +719,30 @@ const PostModal = ({
                                 <BsReply
                                   className={
                                     "flex-none w-6 h-6 scale-x-[-1] " +
-                                    (!usePortrait && " md:pr-2")
+                                    (!usePortrait && " md:pr-1")
                                   }
                                 />
                                 <h1
                                   className={
-                                    "hidden " + (!usePortrait && " md:block ")
+                                    "hidden " +
+                                    (!usePortrait && " md:block pl-0.5")
                                   }
                                 >
                                   Reply
                                 </h1>
                               </button>
                             </div>
-                            <div>
+                            <div
+                              className={
+                                "flex flex-row items-center cursor-pointer p-2  border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                              }
+                            >
                               <SaveButton
-                                category={"t5"}
-                                id={apost?.data?.name}
-                                saved={apost?.data?.saved}
-                                innerStyle={<div>test2</div>}
-                              />
+                                id={apost?.name}
+                                saved={apost?.saved}
+                                post={true}
+                                isPortrait={usePortrait}
+                              ></SaveButton>
                             </div>
                             <a
                               href={`${apost?.url}` ?? "https://reddit.com"}
