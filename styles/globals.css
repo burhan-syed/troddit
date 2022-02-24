@@ -7,7 +7,7 @@
   scrollbar-width: thin;
 }
 ::-webkit-scrollbar {
-  display: none;
+  scrollbar-width: thin;
 }
 
 .my-masonry-grid {
