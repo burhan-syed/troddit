@@ -10,6 +10,7 @@ import ToggleMediaOnly from "./ToggleMediaOnly";
 import ToggleAudioOnHover from "./ToggleAudioOnHover";
 import Login from "./Login";
 import ToggleWideUI from "./ToggleWideUI";
+import ToggleHoverplay from "./ToggleHoverplay";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -380,6 +381,18 @@ const NavMenu = ({ hide = false }) => {
                   )}
                 >
                   <ToggleWideUI />
+                </div>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <ToggleHoverplay />
                 </div>
               )}
             </Menu.Item>

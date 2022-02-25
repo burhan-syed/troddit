@@ -9,7 +9,7 @@ const ToggleAudioOnHover = () => {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      title={"unmute on video hover or post open"}
+      title={"unmute on post open and video hover"}
     >
       <label className="flex flex-row items-center justify-between cursor-pointer">
         <span className="">Audio</span>

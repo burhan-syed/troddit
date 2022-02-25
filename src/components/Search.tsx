@@ -502,6 +502,8 @@ const Search = ({ id }) => {
     placeholder: placeHolder,
     value,
     onChange: onChange,
+    onFocus: () => context.setReplyFocus(true),
+    onBlur: () => context.setReplyFocus(false),
   };
 
   return (

@@ -26,7 +26,10 @@ const Awardings = ({ all_awardings, truncate = true }) => {
         {all_awardings.map((a, i) => (
           <div key={i} className="flex-none">
             {((truncate && i < MAX_DISPLAY) || !truncate) && (
-              <div className="flex flex-row pr-1">
+              <div
+                className="flex flex-row pr-1"
+                title={`${a?.name} (${a?.count})`}
+              >
                 <Image
                   src={a?.resized_icons?.[1]?.url ?? a?.icon_url}
                   alt=""
@@ -45,7 +48,7 @@ const Awardings = ({ all_awardings, truncate = true }) => {
         ))}
         {rewardCount > 0 && (
           <p className="">{`${numToString(rewardCount, 1000)} award${
-            rewardCount > 1 ? "s" : ""
+            rewardCount === 1 ? "" : "s"
           }`}</p>
         )}
       </div>

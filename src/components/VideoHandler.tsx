@@ -5,6 +5,7 @@ import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowHeight } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
+import { useKeyPress } from "../hooks/KeyPress";
 const VideoHandler = ({
   thumbnail,
   placeholder,
@@ -41,6 +42,7 @@ const VideoHandler = ({
   const [videoDuration, setVideoDuration] = useState(0.0);
   const [buffering, setBuffering] = useState(false);
   const [mouseIn, setMouseIn] = useState(false);
+  const [focused, setFocused] = useState(postMode);
 
   const onLoadedData = () => {
     setVideoDuration(video?.current?.duration);
@@ -123,9 +125,9 @@ const VideoHandler = ({
   }, [context.pauseAll]);
 
   //main control for play/pause button
-  const playControl = (e, manual = false) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const playControl = (e?, manual = false) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     if (true) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
@@ -166,9 +168,9 @@ const VideoHandler = ({
     }
   };
   //main controls for audio
-  const audioControl = (e, manual = false) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const audioControl = (e?, manual = false) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     //if audio exists
     if (audioRef?.current?.muted !== undefined && hasAudio) {
       //always sync audio
@@ -213,7 +215,11 @@ const VideoHandler = ({
 
   const handleMouseIn = (e) => {
     setMouseIn(true);
-    if (!context.mediaOnly) {
+    if (
+      !context.mediaOnly &&
+      context.hoverplay &&
+      context.cardStyle !== "row1"
+    ) {
       if (
         (!manualPlay || video?.current?.paused) &&
         !context.autoplay &&
@@ -221,25 +227,28 @@ const VideoHandler = ({
       ) {
         playControl(e);
       }
-      if (!postMode && !manualAudio && context.audioOnHover) {
-        setMuted(false);
-      }
+    }
+    if (!postMode && !manualAudio && context.audioOnHover) {
+      setMuted(false);
     }
   };
 
   const handleMouseOut = () => {
     setMouseIn(false);
     //not in manual play, then pause audio and video
-    if (!context.mediaOnly) {
+    if (
+      !context.mediaOnly &&
+      context.hoverplay &&
+      context.cardStyle !== "row1"
+    ) {
       if (!manualPlay && !context.autoplay && !postMode) {
         pauseAudio();
         pauseVideo();
       }
-
-      //also mute if not manually unmuted manipulation
-      if (!manualAudio && !postMode && context.audioOnHover) {
-        setMuted(true);
-      }
+    }
+    //also mute if not manually unmuted manipulation
+    if (!manualAudio && !postMode && context.audioOnHover) {
+      setMuted(true);
     }
   };
 
@@ -358,6 +367,20 @@ const VideoHandler = ({
     return () => {};
   }, [videoPlaying, mouseIn]);
 
+  const kPress = useKeyPress("k");
+  const spacePress = useKeyPress("Space");
+  const mPress = useKeyPress("m");
+
+  useEffect(() => {
+    console.log(kPress, mPress);
+    if (focused && !context?.replyFocus) {
+      (kPress || spacePress) && playControl();
+      mPress && audioControl();
+    }
+
+    return () => {};
+  }, [kPress, mPress]);
+
   return (
     <div
       className={
@@ -369,9 +392,11 @@ const VideoHandler = ({
       }}
       onMouseEnter={(e) => {
         // console.log("mouseenter");
+        setFocused(true);
         handleMouseIn(e);
       }}
       onMouseLeave={(e) => {
+        !postMode && setFocused(false);
         handleMouseOut();
       }}
     >
@@ -380,7 +405,7 @@ const VideoHandler = ({
         <Image
           className={"scale-110 blur-md  "}
           src={thumbnail.url}
-          alt="placeholder"
+          alt=""
           layout="fill"
           unoptimized={true}
           priority={imgFull}
@@ -580,7 +605,9 @@ const VideoHandler = ({
           }
           width={`${vidWidth}`}
           height={`${vidHeight}`}
-          autoPlay={context?.autoplay || postMode}
+          autoPlay={
+            context?.autoplay || postMode || context.cardStyle === "row1"
+          }
           muted
           loop
           preload={context?.autoplay || postMode ? "auto" : "none"}

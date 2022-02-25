@@ -62,16 +62,21 @@ const PostModal = ({
 
   const nextPress = useKeyPress("ArrowRight");
   const backPress = useKeyPress("ArrowLeft");
+  const aPress = useKeyPress("a");
+  const zPress = useKeyPress("z");
   const escapePress = useKeyPress("Escape");
 
   useEffect(() => {
-    if (nextPress && !context.replyFocus) {
-      changePost(1);
-    } else if (backPress && !context.replyFocus) {
-      changePost(-1);
-    } else if (escapePress) {
-      handleBack();
+    if (!context.replyFocus) {
+      if (nextPress) {
+        changePost(1);
+      } else if (backPress) {
+        changePost(-1);
+      } else if (escapePress) {
+        handleBack();
+      }
     }
+
     return () => {};
   }, [nextPress, backPress, escapePress, context.replyFocus]);
 

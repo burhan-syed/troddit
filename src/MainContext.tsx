@@ -13,6 +13,7 @@ export const MainProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
+  const [hoverplay, setHoverPlay] = useState(true);
   const [columns, setColumns] = useState(3);
   const [columnOverride, setColumnOverride] = useState(0);
   const [audioOnHover, setaudioOnHover] = useState(false);
@@ -196,6 +197,9 @@ export const MainProvider = ({ children }) => {
       return prevNSFW === "false" ? "true" : "false";
     });
   };
+  const toggleHoverPlay = () => {
+    setHoverPlay((a) => !a);
+  };
   const toggleAutoplay = () => {
     setAutoplay((a) => !a);
   };
@@ -208,6 +212,8 @@ export const MainProvider = ({ children }) => {
     saved_nsfw?.includes("true") ? setNSFW("true") : setNSFW("false");
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
+    const saved_hoverplay = localStorage.getItem("hoverplay");
+    saved_hoverplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_mediaOnly = localStorage.getItem("mediaOnly");
     saved_mediaOnly?.includes("true")
       ? setMediaOnly(true)
@@ -294,6 +300,9 @@ export const MainProvider = ({ children }) => {
     localStorage.setItem("autoplay", JSON.stringify(autoplay));
   }, [autoplay]);
   useEffect(() => {
+    localStorage.setItem("hoverplay", JSON.stringify(hoverplay));
+  }, [hoverplay]);
+  useEffect(() => {
     localStorage.setItem("columnOverride", JSON.stringify(columnOverride));
   }, [columnOverride]);
   useEffect(() => {
@@ -322,6 +331,8 @@ export const MainProvider = ({ children }) => {
         setLoginModal,
         autoplay,
         toggleAutoplay,
+        hoverplay,
+        toggleHoverPlay,
         columns,
         setColumns,
         wideUI,
