@@ -558,6 +558,7 @@ const PostModal = ({
                           score={apost?.score}
                           size={7}
                           postindex={context.postNum}
+                          postMode={true}
                         />
                       </div>
                       {/* Main Media Column */}
