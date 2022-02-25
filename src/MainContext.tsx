@@ -213,7 +213,7 @@ export const MainProvider = ({ children }) => {
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_hoverplay = localStorage.getItem("hoverplay");
-    saved_hoverplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
+    saved_hoverplay?.includes("true") ? setHoverPlay(true) : setHoverPlay(false);
     const saved_mediaOnly = localStorage.getItem("mediaOnly");
     saved_mediaOnly?.includes("true")
       ? setMediaOnly(true)

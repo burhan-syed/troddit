@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import { useMainContext } from "../MainContext";
+import { useKeyPress } from "../hooks/KeyPress";
 
 const calculateScore = (x: number) => {
   if (x < 1000) {
@@ -21,16 +22,19 @@ const Vote = ({
   size = 6,
   hideScore = false,
   postindex = undefined,
+  postMode = false
 }) => {
   const [session] = useSession();
   const context: any = useMainContext();
+  const aPress = useKeyPress("a");
+  const zPress = useKeyPress("z");
 
   const [liked, setLiked] = useState<boolean>();
   const [voteScore, setVoteScore] = useState("");
 
   const castVote = async (e, v) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e?.preventDefault();
+    e?.stopPropagation();
     if (session) {
       let postv;
       if (v === liked) {
@@ -65,6 +69,18 @@ const Vote = ({
       //setLiked(undefined);
     };
   }, [score, likes]);
+
+  useEffect(() => {
+    if (!context.replyFocus && postMode) {
+      if (aPress) {
+        castVote(undefined, true);
+      } else if (zPress) {
+        castVote(undefined, false);
+      }
+    }
+
+    return () => {};
+  }, [aPress, zPress, context.replyFocus]);
 
   return (
     <>

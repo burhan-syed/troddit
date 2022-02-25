@@ -62,8 +62,6 @@ const PostModal = ({
 
   const nextPress = useKeyPress("ArrowRight");
   const backPress = useKeyPress("ArrowLeft");
-  const aPress = useKeyPress("a");
-  const zPress = useKeyPress("z");
   const escapePress = useKeyPress("Escape");
 
   useEffect(() => {
