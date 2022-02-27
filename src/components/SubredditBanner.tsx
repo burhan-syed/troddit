@@ -216,14 +216,16 @@ const SubredditBanner = ({
 
       {(multi || subArray.length > 1 || currMulti) &&
         !currSubInfo?.data?.subreddit && (
-          <SubPills
-            subArray={subArray}
-            currMulti={currMulti}
-            multiSub={multiSub}
-            goToMulti={goToMulti}
-            goToMultiSub={goToMultiSub}
-            removeSub={removeSub}
-          />
+          <div className={"mx-auto  md:w-11/12"}>
+            <SubPills
+              subArray={subArray}
+              currMulti={currMulti}
+              multiSub={multiSub}
+              goToMulti={goToMulti}
+              goToMultiSub={goToMultiSub}
+              removeSub={removeSub}
+            />
+          </div>
         )}
     </div>
   );

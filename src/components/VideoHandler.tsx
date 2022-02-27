@@ -372,7 +372,6 @@ const VideoHandler = ({
   const mPress = useKeyPress("m");
 
   useEffect(() => {
-    console.log(kPress, mPress);
     if (focused && !context?.replyFocus) {
       (kPress || spacePress) && playControl();
       mPress && audioControl();
