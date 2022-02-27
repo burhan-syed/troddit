@@ -94,7 +94,7 @@ const SubCard = ({
     >
       <div
         className={
-          ` absolute  w-full  bg-cover bg-center bg-blue-400 dark:bg-red-800 ` +
+          ` absolute  w-full  bg-cover bg-center  ` +
           (context?.cardStyle === "row1" ||
           context?.cardStyle === "card2" ||
           context?.mediaOnly
@@ -102,7 +102,8 @@ const SubCard = ({
             : tall
             ? " "
             : " rounded-t-md ") +
-          (tall ? " h-[121px] border-b " : " h-16")
+          (tall ? " h-[121px] border-b " : " h-16") +
+          (hideNSFW || !subBanner ? "  bg-blue-400 dark:bg-red-800" : "")
         }
         style={hideNSFW ? {} : subBanner}
       ></div>
@@ -142,10 +143,15 @@ const SubCard = ({
               <div
                 className={
                   "rounded-full bg-blue-700" +
-                  " w-full h-full  text-lightText text-6xl overflow-hidden items-center justify-center flex"
+                  " w-full h-full  text-lightText text-6xl overflow-hidden items-center justify-center flex "
                 }
               >
                 {data?.kind === "t2" ? "u/" : "r/"}
+                {hideNSFW && (
+                  <span className="absolute ml-16 text-xs opacity-70 ">
+                    {"18+"}
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -176,7 +182,9 @@ const SubCard = ({
                     {data?.kind === "t2"
                       ? `u/${data?.data?.name}`
                       : data?.data?.display_name_prefixed ?? (
-                          <div className="w-16">r/</div>
+                          <div className="w-16 text-transparent">
+                            {"loading.."}
+                          </div>
                         )}
                   </h1>
                   {!link && (data?.data?.url || data?.data?.subreddit?.url) && (
@@ -192,16 +200,20 @@ const SubCard = ({
                     </a>
                   )}
                   <h1 className="text-xs font-semibold pb-0.5">
-                    {data?.kind === "t2"
-                      ? `${numToString(
-                          parseInt(data?.data?.comment_karma) +
-                            parseInt(data?.data?.link_karma),
-                          1000
-                        )} karma`
-                      : `${
-                          data?.data?.subscribers?.toLocaleString("en-US") ??
-                          "               "
-                        } members`}
+                    {data?.kind === "t2" &&
+                    (data?.data?.comment_karma || data?.data?.link_karma) ? (
+                      `${numToString(
+                        parseInt(data?.data?.comment_karma) +
+                          parseInt(data?.data?.link_karma),
+                        1000
+                      )} karma`
+                    ) : data?.data?.subscribers ? (
+                      `${data?.data?.subscribers?.toLocaleString(
+                        "en-US"
+                      )} members`
+                    ) : (
+                      <div className={"w-40"}></div>
+                    )}
                   </h1>
                   {!link && data?.data?.active_user_count && (
                     <span className="text-xs font-semibold opacity-70 pb-0.5">
