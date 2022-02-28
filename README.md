@@ -5,7 +5,7 @@ Live at [troddit.com](https://www.troddit.com)
 
 ## Images
 ### Flexible column viewing.  
-#### In multi-reddit mode with subreddit pills. Subreddits pane options menu open.
+#### In multi-reddit mode with subreddit pills. Subreddits pane and options menu open.
 <img width="1725" alt="columns_options" src="https://user-images.githubusercontent.com/32972409/155919206-e7256397-b2a7-4718-bd17-ff1982b56d1a.png">
 
 ### Classic rows view
