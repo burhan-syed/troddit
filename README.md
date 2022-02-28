@@ -3,10 +3,27 @@
 
 Live at [troddit.com](https://www.troddit.com)
 
-![trodditdemo_compress2](https://user-images.githubusercontent.com/32972409/153781848-86abb458-7bbc-45a3-be49-9b83d8fce281.gif)
+## Images
+### Flexible column viewing.  
+#### In multi-reddit mode with subreddit pills. Subreddits pane options menu open.
+<img width="1725" alt="columns_options" src="https://user-images.githubusercontent.com/32972409/155919206-e7256397-b2a7-4718-bd17-ff1982b56d1a.png">
 
+### Classic rows view
+<img width="1725" alt="classicrows_light" src="https://user-images.githubusercontent.com/32972409/155919273-1f5ba3ef-5f4f-45ec-a12b-ea3e5847e24c.png">  
 
-Built with NextJS and Typescript. Styled with TailwindCSS. 
+#### with inline media expansion and custom reddit video player
+<img width="1725" alt="lightmode_row_open" src="https://user-images.githubusercontent.com/32972409/155919303-ec87bc67-bd2b-4cb5-b2c1-21456bf509df.png">
+
+### Open posts with comments to the side and use arrows for navigation
+<img width="1725" alt="post_open" src="https://user-images.githubusercontent.com/32972409/155919310-0d57fdaa-03a0-47c0-be03-1c29da6e87ac.png">
+
+### Search for subreddits, users, and posts.  
+#### Sort options and single column mode with wide UI disabled also shown
+<img width="1724" alt="search_narrow" src="https://user-images.githubusercontent.com/32972409/155919321-7dd78a3b-5eac-4753-92f9-295d44447e17.png">  
+
+### Fully responsive, downloadable as PWA
+<img width="377" alt="responsive_troddit" src="https://user-images.githubusercontent.com/32972409/155920807-d6be76a6-c5e6-4f2a-b899-4910d7ca3801.png">
+
 
 ## Features
 
