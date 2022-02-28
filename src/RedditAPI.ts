@@ -1040,7 +1040,6 @@ export const saveLink = async (category, id, isSaved) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
-      console.log(category, id, token);
       const res = await fetch(
         `https://oauth.reddit.com/api/${isSaved ? "unsave" : "save"}`,
         {
@@ -1052,22 +1051,8 @@ export const saveLink = async (category, id, isSaved) => {
           body: `id=${id}`, //&category=${category}
         }
       );
-      // const res = await axios.post(
-      //   `https://oauth.reddit.com/api/${isSaved ? "unsave" : "save"}`,
-      //   {
-      //     headers: {
-      //       authorization: `bearer ${token}`,
-      //     },
-      //     params: {
-      //       id: id,
-      //       category: undefined,
-      //     },
-      //   }
-      // );
 
-      console.log(res);
       if (res) {
-        //console.log(res);
         return true;
       } else {
         return false;
@@ -1091,7 +1076,6 @@ export const postVote = async (dir: number, id) => {
         },
         body: `id=${id}&dir=${dir}&rank=3`,
       });
-      console.log(res);
       if (res.ok) {
         return true;
       } else {

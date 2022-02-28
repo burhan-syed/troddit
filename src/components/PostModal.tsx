@@ -408,6 +408,7 @@ const PostModal = ({
       ></div>
       {context.posts?.[context.postNum - 1]?.data && (
         <div
+          title={`previous post (left arrow)`}
           onClick={(e) => changePost(-1)}
           className="fixed p-2 text-gray-400 cursor-pointer left-4 hover:text-gray-300 top-1/2"
         >
@@ -454,6 +455,7 @@ const PostModal = ({
             >
               <div className="absolute md:fixed left-4 top-16">
                 <RiArrowGoBackLine
+                  title={"back (esc)"}
                   onClick={() => handleBack()}
                   className="w-8 h-8 mt-1 text-gray-400 cursor-pointer hover:text-gray-300"
                 />
@@ -564,65 +566,71 @@ const PostModal = ({
                       {/* Main Media Column */}
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
+                        <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
+                          <div className="flex flex-row flex-wrap">
+                            <Link href={`/u/${apost?.author}`}>
+                              <a
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <h2 className="ml-1 mr-1 font-semibold hover:underline">
+                                  u/
+                                  {apost?.author ?? ""}
+                                </h2>
+                              </a>
+                            </Link>
+                            <Link href={`/r/${apost?.subreddit}`}>
+                              <a
+                                className="mr-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                              >
+                                on{" "}
+                                <span className="font-semibold hover:underline">
+                                  r/{apost?.subreddit ?? "unknown"}
+                                </span>
+                              </a>
+                            </Link>
 
-                        <div className="flex flex-row flex-wrap pt-1.5 text-sm md:pl-3">
-                          <Link href={`/u/${apost?.author}`}>
-                            <a
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            >
-                              <h2 className="ml-1 mr-1 font-semibold hover:underline">
-                                u/
-                                {apost?.author ?? ""}
-                              </h2>
-                            </a>
-                          </Link>
-                          <Link href={`/r/${apost?.subreddit}`}>
-                            <a
-                              className="mr-1"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            >
-                              on{" "}
-                              <span className="font-semibold hover:underline">
-                                r/{apost?.subreddit ?? "unknown"}
-                              </span>
-                            </a>
-                          </Link>
-
-                          <p className="">
-                            {secondsToTime(apost?.created_utc)}
-                          </p>
-                          {apost?.over_18 && (
-                            <div className="flex flex-row pl-1 space-x-1">
-                              <p>•</p>
-                              <span className="text-red-400 text-color dark:text-red-700">
-                                NSFW
-                              </span>
-                            </div>
-                          )}
-                          {apost?.spoiler && (
-                            <div className="flex flex-row pl-1 space-x-1">
-                              <p>•</p>
-                              <span className="text-red-400 text-color dark:text-red-700">
-                                SPOILER
-                              </span>
-                            </div>
-                          )}
-                          <div className="mx-1"></div>
-                          {apost?.all_awardings?.length > 0 && (
-                            <div className="flex flex-row flex-wrap items-center justify-start truncate ">
+                            <p className="">
+                              {secondsToTime(apost?.created_utc)}
+                            </p>
+                            {apost?.over_18 && (
+                              <div className="flex flex-row pl-1 space-x-1">
+                                <p>•</p>
+                                <span className="text-red-400 text-color dark:text-red-700">
+                                  NSFW
+                                </span>
+                              </div>
+                            )}
+                            {apost?.spoiler && (
+                              <div className="flex flex-row pl-1 space-x-1">
+                                <p>•</p>
+                                <span className="text-red-400 text-color dark:text-red-700">
+                                  SPOILER
+                                </span>
+                              </div>
+                            )}
+                            <div className="mx-1"></div>
+                            {apost?.all_awardings?.length > 0 && (
                               <Awardings
                                 all_awardings={apost?.all_awardings}
                                 truncate={false}
                               />
-                            </div>
-                          )}
-
-                          <div className="flex flex-row items-center justify-center ml-auto">
-                            <p className="text-xs text-gray-400 dark:text-gray-500">{`(${apost?.domain})`}</p>
+                            )}
+                          </div>
+                          <div className="flex flex-row justify-center ml-auto">
+                            <a
+                              title="open source"
+                              href={`${apost.url}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <p className="text-xs text-gray-400 dark:text-gray-500 hover:underline">{`(${apost?.domain})`}</p>
+                            </a>
                           </div>
                         </div>
 
@@ -908,6 +916,7 @@ const PostModal = ({
 
       {context.posts?.length > 0 && (
         <div
+          title={`next post (right arrow)`}
           onClick={(e) => changePost(1)}
           className="fixed p-2 text-gray-400 cursor-pointer right-4 hover:text-gray-300 top-1/2"
         >

@@ -115,7 +115,10 @@ const DropdownPane = ({ hide }) => {
             ) : currSubInfo ? (
               <div>
                 <DropdownItem
-                  sub={{ kind: "t5", data: currSubInfo?.data?.subreddit ?? currSubInfo?.data }}
+                  sub={{
+                    kind: "t5",
+                    data: currSubInfo?.data?.subreddit ?? currSubInfo?.data,
+                  }}
                   isUser={router.pathname.includes("/u/")}
                   preventNav={true}
                 />
@@ -140,9 +143,8 @@ const DropdownPane = ({ hide }) => {
         </div>
         <BsChevronDown
           className={
-            show
-              ? "-rotate-180"
-              : "rotate-0" + "transform transition duration-200"
+            (show ? "-rotate-180" : "rotate-0") +
+            " transform transition duration-200"
           }
         />
       </div>
@@ -172,7 +174,10 @@ const DropdownPane = ({ hide }) => {
               currLocation !== "POPULAR" && (
                 <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
                   <DropdownSubCard
-                    sub={{ kind: "t5", data: currSubInfo?.data?.subreddit ?? currSubInfo?.data }}
+                    sub={{
+                      kind: "t5",
+                      data: currSubInfo?.data?.subreddit ?? currSubInfo?.data,
+                    }}
                     userMode={router.pathname.includes("/u/") ? true : false}
                     // mySubs={mySubs.length > 0 ? mySubs : myLocalSubs}
                     // // refresh={loadAllSubs}
@@ -221,7 +226,12 @@ const DropdownPane = ({ hide }) => {
                     }
                   >
                     <p>multis</p>
-                    {expandMultis ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
+                    <BsChevronDown
+                      className={
+                        (expandMultis ? "-rotate-180 " : "rotate-0 ") +
+                        "transform transition duration-200"
+                      }
+                    />
                   </div>
                   <div
                     className={
@@ -261,7 +271,12 @@ const DropdownPane = ({ hide }) => {
                     }
                   >
                     <p>local subs</p>
-                    {expandSubs ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
+                    <BsChevronDown
+                      className={
+                        (expandSubs ? "-rotate-180 " : "rotate-0 ") +
+                        "transform transition duration-200"
+                      }
+                    />
                   </div>
                   <div
                     className={
@@ -294,11 +309,12 @@ const DropdownPane = ({ hide }) => {
                         }
                       >
                         <p>local follows</p>
-                        {expandFollowing ? (
-                          <HiOutlineMinusSm />
-                        ) : (
-                          <HiOutlinePlusSm />
-                        )}
+                        <BsChevronDown
+                          className={
+                            (expandFollowing ? "-rotate-180 " : "rotate-0 ") +
+                            "transform transition duration-200"
+                          }
+                        />
                       </div>
                       <div
                         className={
@@ -352,7 +368,12 @@ const DropdownPane = ({ hide }) => {
                 }
               >
                 <p>multis</p>
-                {expandMultis ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
+                <BsChevronDown
+                  className={
+                    (expandMultis ? "-rotate-180 " : "rotate-0 ") +
+                    "transform transition duration-200"
+                  }
+                />{" "}
               </div>
               <div
                 className={
@@ -412,7 +433,12 @@ const DropdownPane = ({ hide }) => {
                 }
               >
                 <p>subs</p>
-                {expandSubs ? <HiOutlineMinusSm /> : <HiOutlinePlusSm />}
+                <BsChevronDown
+                  className={
+                    (expandSubs ? "-rotate-180 " : "rotate-0 ") +
+                    "transform transition duration-200"
+                  }
+                />{" "}
               </div>
               <div
                 className={
@@ -471,11 +497,12 @@ const DropdownPane = ({ hide }) => {
                     }
                   >
                     <p>follows</p>
-                    {expandFollowing ? (
-                      <HiOutlineMinusSm />
-                    ) : (
-                      <HiOutlinePlusSm />
-                    )}
+                    <BsChevronDown
+                      className={
+                        (expandFollowing ? "-rotate-180 " : "rotate-0 ") +
+                        "transform transition duration-200"
+                      }
+                    />
                   </div>
                   <div
                     className={

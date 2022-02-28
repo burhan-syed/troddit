@@ -9,6 +9,7 @@ const SaveButton = ({
   saved,
   post = false,
   isPortrait = false,
+  row = false,
   category = "",
   children = <></>,
 }) => {
@@ -34,18 +35,19 @@ const SaveButton = ({
   };
   return (
     <div
-      className="flex flex-row"
+      className="flex flex-row space-x-1 "
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         save();
       }}
     >
-      {post && (
+      {(post || row) && (
         <BsBookmarks
           className={
-            "flex-none w-6 h-6  " +
-            (!isPortrait ? " md:pr-2" : " ") +
+            "flex-none   " +
+            (row ? " w-4 h-4 " : " w-6 h-6 ") +
+            (!isPortrait && !row ? " md:pr-2 " : row ? "  " : " ") +
             (isSaved ? " dark:text-yellow-300 text-yellow-600 " : " ")
           }
         />

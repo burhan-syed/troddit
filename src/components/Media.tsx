@@ -244,7 +244,19 @@ const Media = ({
         let done = false;
         let width = windowWidth; // screen.width;
         if (!imgFull) {
-          width = width / (context?.columns ?? 1);
+          if (containerDims?.[0]) {
+            width = containerDims?.[0];
+          } else if (
+            !context.saveWideUI &&
+            context.cardStyle !== "row1" &&
+            (context.columns === 1 || postMode)
+          ) {
+            width = 768; //3xl width
+          } else if (postMode) {
+            width = windowWidth;
+          } else {
+            width = width / (context?.columns ?? 1);
+          }
         }
         post.mediaInfo.imageInfo.forEach((res, i) => {
           if (!done) {
@@ -412,28 +424,13 @@ const Media = ({
           {isIFrame && (allowIFrame || context?.columnOverride === 1) ? (
             <div
               className="relative"
-              // style={
-              //   postMode && isYTVid
-              //     ? ytVidHeight
-              //     : true ||
-              //       context?.columnOverride == 1 ||
-              //       windowHeight > windowWidth
-              //     ? {
-              //         height: `${
-              //           windowHeight < windowWidth
-              //             ? Math.floor(windowHeight * 0.75)
-              //             : Math.floor(windowHeight * 0.4)
-              //         }px`,
-              //       }
-              //     : {}
-              // }
               //filling IFrames in postmode portrait pane or aproximating a 16:9 ratio elsewhere
               style={
                 containerDims?.[1]
                   ? { height: `${Math.floor(containerDims[1])}px` }
                   : {
                       height: `${Math.floor(
-                        (!context.saveWideUI
+                        (!context.saveWideUI && context.cardStyle !== "row1"
                           ? 768
                           : windowWidth *
                             (windowWidth < 768

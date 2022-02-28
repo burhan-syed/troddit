@@ -20,9 +20,7 @@ const Awardings = ({ all_awardings, truncate = true }) => {
 
   if (all_awardings?.length > 0)
     return (
-      <div
-        className={`rounded-lg select-none flex flex-row flex-wrap items-center justify-start text-xs font-semibold`}
-      >
+      <>
         {all_awardings.map((a, i) => (
           <div key={i} className="flex-none">
             {((truncate && i < MAX_DISPLAY) || !truncate) && (
@@ -47,11 +45,13 @@ const Awardings = ({ all_awardings, truncate = true }) => {
           </div>
         ))}
         {rewardCount > 0 && (
-          <p className="">{`${numToString(rewardCount, 1000)} award${
+          <p
+            className={` select-none    text-xs font-semibold`}
+          >{`${numToString(rewardCount, 1000)} award${
             rewardCount === 1 ? "" : "s"
           }`}</p>
         )}
-      </div>
+      </>
     );
   return <></>;
 };

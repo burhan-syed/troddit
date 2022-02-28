@@ -14,9 +14,7 @@ const SubCardPlaceHolder = ({ user = false }) => {
     <div
       className={
         "relative z-0 transition-colors bg-contain border border-gray-300 shadow-md bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 group" +
-        (context?.cardStyle === "row1" ||
-        context?.cardStyle === "card2" ||
-        context?.mediaOnly
+        (context?.cardStyle === "card2" || context?.mediaOnly
           ? "  "
           : " rounded-md ")
       }
@@ -24,9 +22,7 @@ const SubCardPlaceHolder = ({ user = false }) => {
       <div
         className={
           ` absolute  w-full h-16 bg-cover bg-center z-[-1] bg-blue-400 dark:bg-red-800  ` +
-          (context?.cardStyle === "row1" ||
-          context?.cardStyle === "card2" ||
-          context?.mediaOnly
+          (context?.cardStyle === "card2" || context?.mediaOnly
             ? "  "
             : " rounded-t-md ")
         }

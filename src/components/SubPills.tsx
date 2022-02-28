@@ -50,15 +50,10 @@ const SubPills = ({
     <div
       title={!expand ? "expand" : "collapse"}
       onClick={() => setExpand((e) => !e)}
-      className="flex-none cursor-pointer"
+      className="flex items-center justify-center flex-none text-center border rounded-md cursor-pointer select-none h-9 w-7 dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
     >
-      <div
-        className={
-          "items-center px-1 h-9 w-7 py-2 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
-        }
-      >
-        <BsChevronDown className={expand ? "-rotate-180" : " rotate-0 "} />
-      </div>
+      {" "}
+      <BsChevronDown className={expand ? "-rotate-180" : " rotate-0 "} />
     </div>
   );
 

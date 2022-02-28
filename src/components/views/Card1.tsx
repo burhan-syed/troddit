@@ -42,69 +42,82 @@ const Card1 = ({
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row flex-wrap items-center py-1 text-xs truncate select-auto text-gray">
-                <Link href={`/r/${post?.subreddit}`}>
+              <div className="flex flex-row items-start py-1 text-xs text-gray-400 truncate select-auto text-gray dark:text-gray-500">
+                <div className="flex flex-row flex-wrap items-start text-xs text-gray-400 truncate select-auto text-gray dark:text-gray-500">
+                  <Link href={`/r/${post?.subreddit}`}>
+                    <a
+                      title={`go to r/${post?.subreddit}`}
+                      className="mr-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <h2 className="font-semibold text-black hover:underline dark:text-lightText ">
+                        r/{post?.subreddit ?? ""}
+                      </h2>
+                    </a>
+                  </Link>
+                  <p>•</p>
+                  <Link href={`/u/${post?.author}`}>
+                    <a
+                      title={`see u/${post?.author}'s posts`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <h2 className="ml-1 mr-1 hover:underline">
+                        u/{post?.author ?? ""}
+                      </h2>
+                    </a>
+                  </Link>
+                  <p>•</p>
+                  <p className="ml-1 font-">
+                    {secondsToTime(post?.created_utc, [
+                      "s ago",
+                      "m ago",
+                      "h ago",
+                      "d ago",
+                      "mo ago",
+                      "yr ago",
+                    ])}
+                  </p>
+                  {post?.over_18 && (
+                    <div className="flex flex-row pl-1 space-x-1">
+                      <p>•</p>
+                      <span className="text-red-400 text-color dark:text-red-700">
+                        NSFW
+                      </span>
+                    </div>
+                  )}
+                  {post?.spoiler && (
+                    <div className="flex flex-row pl-1 space-x-1">
+                      <p>•</p>
+                      <span className="text-red-400 text-color dark:text-red-700">
+                        SPOILER
+                      </span>
+                    </div>
+                  )}
+                  <div className="mx-1"></div>
+                  {post?.all_awardings?.length > 0 && (
+                    <Awardings
+                      all_awardings={post?.all_awardings}
+                      truncate={false}
+                    />
+                  )}
+                </div>
+                <div className="flex flex-row flex-none ml-auto hover:underline">
                   <a
-                    className="mr-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
+                    title="open source"
+                    href={`${post.url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <h2 className="font-semibold hover:underline">
-                      r/{post?.subreddit ?? ""}
-                    </h2>
+                    <p className="">{`(${post?.domain})`}</p>
                   </a>
-                </Link>
-                <p>•</p>
-                <Link href={`/u/${post?.author}`}>
-                  <a
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <h2 className="ml-1 mr-1 hover:underline">
-                      u/{post?.author ?? ""}
-                    </h2>
-                  </a>
-                </Link>
-                <p>•</p>
-                <p className="ml-1 font-">
-                  {secondsToTime(post?.created_utc, [
-                    "s ago",
-                    "m ago",
-                    "h ago",
-                    "d ago",
-                    "mo ago",
-                    "yr ago",
-                  ])}
-                </p>
-                {post?.over_18 && (
-                  <div className="flex flex-row pl-1 space-x-1">
-                    <p>•</p>
-                    <span className="text-red-400 text-color dark:text-red-700">
-                      NSFW
-                    </span>
-                  </div>
-                )}
-                {post?.spoiler && (
-                  <div className="flex flex-row pl-1 space-x-1">
-                    <p>•</p>
-                    <span className="text-red-400 text-color dark:text-red-700">
-                      SPOILER
-                    </span>
-                  </div>
-                )}
-                <div className="mx-0.5"></div>
-                {post?.all_awardings?.length > 0 && (
-                  <div className="flex flex-row flex-wrap items-center justify-start truncate">
-                    <Awardings all_awardings={post?.all_awardings} />
-                  </div>
-                )}
-
-                <div className="flex flex-row ml-auto">
-                  <p className="">{`(${post?.domain})`}</p>
                 </div>
               </div>
+
               <div className="py-2">
                 <h1
                   className={
@@ -151,7 +164,7 @@ const Card1 = ({
                         onClick={(e) => e.preventDefault()}
                       ></a>
                       <div className="top-0 hidden w-full p-2 text-lightText group-hover:absolute group-hover:block ">
-                        <div className="flex flex-row items-center text-xs font-light truncate text-gray">
+                        <div className="flex flex-row items-center text-xs font-light truncate ">
                           <Link href={`/r/${post?.subreddit}`}>
                             <a
                               className="mr-1"
@@ -229,7 +242,7 @@ const Card1 = ({
                           </span>
                         </h1>
 
-                        <div className="flex flex-row justify-between text-xs font-semibold align-bottom select-none">
+                        <div className="flex flex-row justify-between text-xs font-bold align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
                             <p className="">{score + " points"}</p>
                           </div>
@@ -237,7 +250,7 @@ const Card1 = ({
                             href={post?.permalink}
                             onClick={(e) => e.preventDefault()}
                           >
-                            <h1 className="cursor-pointer hover:underline ">
+                            <h1 className="cursor-pointer hover:underline">
                               {`${numToString(post.num_comments, 1000)} ${
                                 post.num_comments === 1 ? "comment" : "comments"
                               }`}
@@ -274,8 +287,8 @@ const Card1 = ({
           )}
 
           {(!context.mediaOnly || !hasMedia) && (
-            <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
-              <div className="flex flex-row items-center space-x-1 font-semibold">
+            <div className="flex flex-row justify-between py-1 pt-1 text-sm font-semibold align-bottom select-none">
+              <div className="flex flex-row items-center space-x-1 ">
                 <Vote
                   name={post?.name}
                   score={post?.score}
@@ -285,7 +298,12 @@ const Card1 = ({
                 />
               </div>
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1 className="cursor-pointer group-hover:underline">
+                <h1
+                  className={
+                    "cursor-pointer hover:underline" +
+                    " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
+                  }
+                >
                   {`${numToString(post.num_comments, 1000)} ${
                     post.num_comments === 1 ? "comment" : "comments"
                   }`}

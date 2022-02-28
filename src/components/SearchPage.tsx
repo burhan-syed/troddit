@@ -216,7 +216,12 @@ const SearchPage = ({ query }) => {
                     }
                   })}
                   {subs.length > 0 && (
-                    <div className="flex flex-row min-w-full mt-2 ">
+                    <div
+                      className={
+                        "flex flex-row min-w-full mt-2 " +
+                        (expand ? " mb-2 " : " ")
+                      }
+                    >
                       {expand && (
                         <div
                           onClick={(e) => {

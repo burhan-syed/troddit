@@ -524,16 +524,22 @@ const VideoHandler = ({
         >
           {seekTime !== "" && (
             <div
-              className="absolute p-2 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 dark:border-darkBorder"
+              className="absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 dark:border-darkBorder"
               style={{
-                left: `${seekLeftOfset}px`,
-                transform: `translateX(${
-                  seekLeftOfset / seekTargetLength < 0.2
-                    ? 20
-                    : seekLeftOfset / seekTargetLength > 0.9
-                    ? -80
-                    : -20
-                }px)`,
+                left: `${
+                  seekLeftOfset <= 24
+                    ? 0
+                    : seekLeftOfset >= seekTargetLength - 24
+                    ? seekTargetLength - 48
+                    : seekLeftOfset - 24
+                }px`,
+                // transform: `translateX(${
+                //   seekLeftOfset / seekTargetLength < 0.2
+                //     ? 20
+                //     : seekLeftOfset / seekTargetLength > 0.9
+                //     ? -80
+                //     : -20
+                // }px)`,
               }}
             >
               {seekTime}

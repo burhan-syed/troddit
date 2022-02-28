@@ -19,6 +19,7 @@ import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
+import SaveButton from "../SaveButton";
 const Row1 = ({
   post,
   hasMedia,
@@ -32,7 +33,12 @@ const Row1 = ({
   const [expand, setexpand] = useState(false);
 
   return (
-    <div className="flex flex-row items-start py-1 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover border-l border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  ">
+    <div
+      className={
+        (postNum === 0 ? " border-t rounded-t-md " : " ") +
+        "flex flex-row items-start py-1 pb-2 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover hover:border-l hover:border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  "
+      }
+    >
       {/* Votes */}
       <div
         className={
@@ -114,14 +120,14 @@ const Row1 = ({
             <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}
-              className={" "}
+              className={" font-semibold"}
             >
               <PostTitle post={post} />
             </a>
           </h1>
         </div>
         {/* Info */}
-        <div className="flex flex-row flex-wrap items-center pt-1 text-xs truncate text-lightBorderHighlight">
+        <div className="flex flex-row flex-wrap items-center pt-1 text-xs text-gray-400 truncate dark:text-gray-500">
           <Link href={`/r/${post?.subreddit}`}>
             <a
               className="mr-1"
@@ -178,11 +184,19 @@ const Row1 = ({
               <Awardings all_awardings={post?.all_awardings} />
             </div>
           )}
-          <span className="ml-auto text-xs font-xs">{`(${post?.domain})`}</span>
+          <span className="ml-auto text-xs font-xs hover:underline">
+            <a
+              title="open source"
+              href={`${post.url}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >{`(${post?.domain})`}</a>
+          </span>
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-lightBorderHighlight dark:text-darkBorderHighlight">
+          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs text-gray-400 select-none dark:text-gray-500">
             <button
               className={
                 "flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
@@ -204,7 +218,7 @@ const Row1 = ({
             </button>
 
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <button className="flex flex-row items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <button className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                 <BiComment className="flex-none w-4 h-4 " />
                 <h1 className="">{`${
                   numToString(post?.num_comments, 1000) ?? "??"
@@ -214,12 +228,20 @@ const Row1 = ({
                 }`}</h1>
               </button>
             </a>
+            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:cursor-pointer ">
+              <SaveButton
+                id={post?.name}
+                saved={post?.saved}
+                row={true}
+                isPortrait={false}
+              />
+            </div>
             <a
               href={`${post?.url}` ?? "https://troddit.com"}
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex flex-row items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                 <BiExit className="flex-none w-4 h-4 " />
                 <h1 className="hidden md:block">Source</h1>
               </div>
@@ -229,7 +251,7 @@ const Row1 = ({
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex flex-row items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                 <ImReddit className="flex-none w-4 h-4 mb-0.5" />
                 <h1 className="hidden md:block ">Original</h1>
               </div>

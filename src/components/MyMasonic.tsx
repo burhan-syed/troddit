@@ -17,6 +17,7 @@ import {
   useScroller,
   useScrollToIndex,
   useInfiniteLoader,
+  List,
 } from "masonic";
 import {
   getRedditSearch,
@@ -548,25 +549,32 @@ const MyMasonic = ({
   //   //setItems(items);
   // }, []);
 
+  const loadInfo = (
+    <>
+      {end && (
+        <div className="flex flex-row items-center justify-center text-lg font-bold">
+          <h1>
+            Loaded {numposts} post{numposts === 1 ? "" : "s"} on {count + 1}{" "}
+            page
+            {count + 1 === 1 ? "" : "s"}.{" "}
+          </h1>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div>
       {!loading && (
         <>
           <Masonry
             onRender={maybeLoadMorePosts}
-            //positioner={positioner}
-            // The distance in px between the top of the document and the top of the
-            // masonry grid container
-            //offset={offset}
-            // The height of the virtualization window
-            //height={windowHeight}
-            // Forwards the ref to the masonry container element
-            //key={page}
-            columnGutter={0} //cols == 1 ? 5 : cols < 4 ? 10 : 5}
-            //columnWidth={(windowWidth*5/6 - 8*2) / 3}
+            columnGutter={0}
             columnCount={cols}
             items={items}
-            itemHeightEstimate={itemheightestimate} //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
+            itemHeightEstimate={
+              context.cardStyle === "row1" ? 0 : itemheightestimate
+            } //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
             overscanBy={2}
             render={PostCard}
             className=""
@@ -586,15 +594,7 @@ const MyMasonic = ({
         </>
       )}
 
-      {end && (
-        <div className="flex flex-row items-center justify-center text-lg font-bold">
-          <h1>
-            Loaded {numposts} post{numposts === 1 ? "" : "s"} on {count + 1}{" "}
-            page
-            {count + 1 === 1 ? "" : "s"}.{" "}
-          </h1>
-        </div>
-      )}
+      {loadInfo}
       {/* {error && (
         <div className="flex flex-col items-center justify-center text-center ">
         

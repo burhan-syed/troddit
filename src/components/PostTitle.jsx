@@ -1,15 +1,15 @@
 const PostTitle = ({ post }) => {
   return (
-    <div
+    <h1
       className={
         " group-hover:underline " +
         (post?.distinguished == "moderator" || post?.stickied
-          ? " text-lightGreen dark:text-darkGreen"
+          ? " text-lightGreen dark:text-darkGreen "
           : " ")
       }
     >
       {`${post?.title ?? ""}`}
-    </div>
+    </h1>
   );
 };
 

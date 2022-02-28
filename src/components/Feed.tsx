@@ -418,7 +418,7 @@ const Feed = ({
               ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
-              ? " bg-lightPost dark:bg-[#212121] "
+              ? " bg-lightPost dark:bg-[#212121] rounded-t-md rounded-b-md border shadow-2xl border-gray-300  dark:border-trueGray-700"
               : " ")
           }
         >

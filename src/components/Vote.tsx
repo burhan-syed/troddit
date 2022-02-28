@@ -22,7 +22,7 @@ const Vote = ({
   size = 6,
   hideScore = false,
   postindex = undefined,
-  postMode = false
+  postMode = false,
 }) => {
   const [session] = useSession();
   const context: any = useMainContext();
@@ -85,6 +85,7 @@ const Vote = ({
   return (
     <>
       <BiUpvote
+        title={`upvote ${postMode ? "(a)" : ""}`}
         onClick={(e) => castVote(e, true)}
         className={
           (liked && " text-upvote ") +
@@ -108,6 +109,7 @@ const Vote = ({
       )}
 
       <BiDownvote
+        title={`downvote ${postMode ? "(v)" : ""}`}
         onClick={(e) => castVote(e, false)}
         className={
           (liked === false && " text-downvote ") +
