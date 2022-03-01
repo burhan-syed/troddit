@@ -220,7 +220,7 @@ const DropdownPane = ({ hide }) => {
                 onChange={(e) => {
                   setFilter(e.target.value);
                 }}
-                className="w-full mx-2 px-1 border py-1.5 outline-none text-sm rounded"
+                className="w-full mx-2 px-2 border py-1.5 outline-none text-sm rounded border-lightBorder bg-transparent dark:bg-darkBG dark:border-darkBorder dark:text-lightText"
               />
             </div>
           </div>
