@@ -114,9 +114,13 @@ const Row1 = ({
               " text-base leading-none cursor-pointer select-auto flex flex-row items-center gap-2 flex-wrap"
             }
           >
-            <div className="text-xs">
-              <TitleFlair post={post} />
-            </div>
+            {(post?.link_flair_text?.length > 0 ||
+              post?.link_flair_richtext?.length > 0) && (
+              <div className="text-xs">
+                <TitleFlair post={post} />
+              </div>
+            )}
+
             <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}

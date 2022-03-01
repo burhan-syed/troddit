@@ -47,6 +47,7 @@ const DropdownPane = ({ hide }) => {
   //const [location, setLocation] = useState("home");
   const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
   const [myLocalFollows, setMyLocalFollows] = useState([]);
+  const [filter, setFilter] = useState("");
   useEffect(() => {
     let subs = [];
     let follows = [];
@@ -106,6 +107,7 @@ const DropdownPane = ({ hide }) => {
                   sub={{
                     data: {
                       display_name: multi,
+                      name: multi,
                       subreddits: ["", ""],
                     },
                   }}
@@ -186,6 +188,7 @@ const DropdownPane = ({ hide }) => {
                   />
                 </div>
               )}
+
             <Link href="/" passHref>
               <a>
                 <div className="flex flex-row items-center py-1.5 space-x-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight pl-4 cursor-pointer">
@@ -210,6 +213,16 @@ const DropdownPane = ({ hide }) => {
                 </div>
               </a>
             </Link>
+            <div className="flex flex-row items-center justify-center mx-1">
+              <input
+                type="text"
+                placeholder="Filter.."
+                onChange={(e) => {
+                  setFilter(e.target.value);
+                }}
+                className="w-full mx-2 px-1 border py-1.5 outline-none text-sm rounded"
+              />
+            </div>
           </div>
           {!session && (
             <>
@@ -243,16 +256,27 @@ const DropdownPane = ({ hide }) => {
                   >
                     <div className="py-2">
                       {myLocalMultis
-                        ? myLocalMultis.map((multi, i) => {
-                            return (
-                              <div
-                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                                key={i}
-                              >
-                                <DropdownItem sub={multi} />
-                              </div>
-                            );
-                          })
+                        ? myLocalMultis
+                            .filter(
+                              (multi) =>
+                                filter === "" ||
+                                multi.data?.display_name_prefixed
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase()) ||
+                                multi.data?.display_name
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase())
+                            )
+                            .map((multi, i) => {
+                              return (
+                                <div
+                                  className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                  key={i}
+                                >
+                                  <DropdownItem sub={multi} />
+                                </div>
+                              );
+                            })
                         : ""}
                     </div>
                   </div>
@@ -286,16 +310,27 @@ const DropdownPane = ({ hide }) => {
                   >
                     <div className="py-2">
                       {myLocalSubsFiltered
-                        ? myLocalSubsFiltered.map((sub, i) => {
-                            return (
-                              <div
-                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                                key={i}
-                              >
-                                <DropdownItem sub={sub} />
-                              </div>
-                            );
-                          })
+                        ? myLocalSubsFiltered
+                            .filter(
+                              (sub) =>
+                                filter === "" ||
+                                sub.data?.display_name_prefixed
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase()) ||
+                                sub.data?.display_name
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase())
+                            )
+                            .map((sub, i) => {
+                              return (
+                                <div
+                                  className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                  key={i}
+                                >
+                                  <DropdownItem sub={sub} />
+                                </div>
+                              );
+                            })
                         : ""}
                     </div>
                   </div>
@@ -408,16 +443,24 @@ const DropdownPane = ({ hide }) => {
                   <>
                     <div className="py-2">
                       {myMultis
-                        ? myMultis.map((multi, i) => {
-                            return (
-                              <div
-                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                                key={`${i}_${multi.data.display_name}`}
-                              >
-                                <DropdownItem sub={multi} />
-                              </div>
-                            );
-                          })
+                        ? myMultis
+                            .filter(
+                              (multi) =>
+                                filter === "" ||
+                                multi.data.display_name
+                                  .toUpperCase()
+                                  .includes(filter.toUpperCase())
+                            )
+                            .map((multi, i) => {
+                              return (
+                                <div
+                                  className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                  key={`${i}_${multi.data.display_name}`}
+                                >
+                                  <DropdownItem sub={multi} />
+                                </div>
+                              );
+                            })
                         : ""}
                     </div>
                   </>
@@ -471,16 +514,27 @@ const DropdownPane = ({ hide }) => {
                 ) : (
                   <div className={"py-2"}>
                     {mySubs
-                      ? mySubs.map((sub, i) => {
-                          return (
-                            <div
-                              className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                              key={i}
-                            >
-                              <DropdownItem sub={sub} />
-                            </div>
-                          );
-                        })
+                      ? mySubs
+                          .filter(
+                            (sub) =>
+                              filter === "" ||
+                              sub.data?.display_name_prefixed
+                                ?.toUpperCase()
+                                .includes(filter.toUpperCase()) ||
+                              sub.data?.display_name
+                                ?.toUpperCase()
+                                .includes(filter.toUpperCase())
+                          )
+                          .map((sub, i) => {
+                            return (
+                              <div
+                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                key={i}
+                              >
+                                <DropdownItem sub={sub} />
+                              </div>
+                            );
+                          })
                       : ""}
                   </div>
                 )}
@@ -514,16 +568,27 @@ const DropdownPane = ({ hide }) => {
                   >
                     <div className={"py-2"}>
                       {myFollowing
-                        ? myFollowing.map((sub, i) => {
-                            return (
-                              <div
-                                className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
-                                key={i}
-                              >
-                                <DropdownItem sub={sub} isUserLink={true} />
-                              </div>
-                            );
-                          })
+                        ? myFollowing
+                            .filter(
+                              (sub) =>
+                                filter === "" ||
+                                sub.data?.display_name_prefixed
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase()) ||
+                                sub.data?.display_name
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase())
+                            )
+                            .map((sub, i) => {
+                              return (
+                                <div
+                                  className="px-4 py-2 hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+                                  key={i}
+                                >
+                                  <DropdownItem sub={sub} isUserLink={true} />
+                                </div>
+                              );
+                            })
                         : ""}
                     </div>
                   </div>

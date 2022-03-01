@@ -129,7 +129,9 @@ const DropdownItem = ({
       </div>
       {/* Text */}
       <h1 className="ml-2 truncate">
-        {sub.data?.display_name_prefixed ?? sub.data?.display_name}
+        {isMulti
+          ? sub.data?.name
+          : sub.data?.display_name_prefixed ?? sub.data?.display_name}
         {/* {isUser && router?.query?.slug?.[0].toString()} */}
       </h1>
     </div>
