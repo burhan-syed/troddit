@@ -38,7 +38,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
 
       if (maxheight > 0) {
         let newimages = [];
-        console.log(maxheight);
+        //console.log(maxheight);
         images.forEach((img, i) => {
           if (img.height > maxheight) {
             ratio = maxheight / img.height;

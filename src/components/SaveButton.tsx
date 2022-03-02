@@ -12,6 +12,7 @@ const SaveButton = ({
   row = false,
   category = "",
   children = <></>,
+  postindex = undefined,
 }) => {
   const [session, loading] = useSession();
   const context: any = useMainContext();
@@ -28,7 +29,11 @@ const SaveButton = ({
       let pstatus = isSaved;
       setIsSaved((s) => !s);
       const res = await saveLink(category, id, isSaved);
-      !res && setIsSaved(pstatus);
+      if (res) {
+        context.updateSaves(postindex, !pstatus);
+      } else {
+        setIsSaved(pstatus);
+      }
     } else if (!loading) {
       context.setLoginModal(true);
     }

@@ -238,6 +238,7 @@ const Row1 = ({
                 saved={post?.saved}
                 row={true}
                 isPortrait={false}
+                postindex={postNum}
               />
             </div>
             <a

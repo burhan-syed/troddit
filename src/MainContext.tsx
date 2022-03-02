@@ -151,6 +151,13 @@ export const MainProvider = ({ children }) => {
     setPosts(p);
   };
 
+  const updateSaves = (i, save) => {
+    let p = posts;
+    if (p?.[i]?.data) {
+      p[i].data.saved = save;
+    }
+  };
+
   const [localSubs, setLocalSubs] = useState([]);
   const subToSub = async (action, sub) => {
     if (action == "sub") {
@@ -213,7 +220,9 @@ export const MainProvider = ({ children }) => {
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_hoverplay = localStorage.getItem("hoverplay");
-    saved_hoverplay?.includes("true") ? setHoverPlay(true) : setHoverPlay(false);
+    saved_hoverplay?.includes("true")
+      ? setHoverPlay(true)
+      : setHoverPlay(false);
     const saved_mediaOnly = localStorage.getItem("mediaOnly");
     saved_mediaOnly?.includes("true")
       ? setMediaOnly(true)
@@ -359,6 +368,7 @@ export const MainProvider = ({ children }) => {
         token,
         setToken,
         updateLikes,
+        updateSaves,
         forceRefresh,
         setForceRefresh,
         loading,
