@@ -1,7 +1,6 @@
 import { useMainContext } from "../../MainContext";
 import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
-import Media from "../Media";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
 import { useState } from "react";
@@ -9,11 +8,8 @@ import { useState } from "react";
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
 import { BsCardText } from "react-icons/bs";
-import {
-  AiOutlineShrink,
-  AiOutlineExpandAlt,
-  AiOutlineLink,
-} from "react-icons/ai";
+import { AiOutlineLink } from "react-icons/ai";
+import { CgArrowsExpandDownRight, CgArrowsExpandUpLeft } from "react-icons/cg";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
@@ -114,20 +110,32 @@ const Row1 = ({
               " text-base leading-none cursor-pointer select-auto flex flex-row items-center gap-2 flex-wrap"
             }
           >
-            {(post?.link_flair_text?.length > 0 ||
-              post?.link_flair_richtext?.length > 0) && (
-              <div className="text-xs">
-                <TitleFlair post={post} />
-              </div>
-            )}
+            <h1>
+              {(post?.link_flair_text?.length > 0 ||
+                post?.link_flair_richtext?.length > 0) && (
+                <span className="mr-1 text-sm">
+                  <TitleFlair post={post} />
+                </span>
+              )}
+              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <span
+                  className={
+                    " group-hover:underline font-semibold text-base " +
+                    (post?.distinguished == "moderator" || post?.stickied
+                      ? " text-lightGreen dark:text-darkGreen "
+                      : " ")
+                  }
+                >{`${post?.title ?? ""}`}</span>
+              </a>
+            </h1>
 
-            <a
+            {/* <a
               href={post?.permalink}
               onClick={(e) => e.preventDefault()}
               className={" font-semibold"}
             >
               <PostTitle post={post} />
-            </a>
+            </a> */}
           </h1>
         </div>
         {/* Info */}
@@ -203,7 +211,7 @@ const Row1 = ({
           <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs text-gray-400 select-none dark:text-gray-500">
             <button
               className={
-                "flex flex-row items-center h-6 px-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
+                "flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
                 (!hasMedia &&
                   !post?.selftext_html &&
                   "opacity-0 cursor-default")
@@ -215,7 +223,13 @@ const Row1 = ({
               }}
             >
               {hasMedia || post?.selftext_html ? (
-                <>{expand ? <AiOutlineShrink /> : <AiOutlineExpandAlt />}</>
+                <>
+                  {expand ? (
+                    <CgArrowsExpandUpLeft className="flex-none w-4 h-4" />
+                  ) : (
+                    <CgArrowsExpandDownRight className="flex-none w-4 h-4" />
+                  )}
+                </>
               ) : (
                 <AiOutlineLink />
               )}
@@ -264,10 +278,11 @@ const Row1 = ({
           </div>
         </div>
         {/* Hidden Media */}
+
         {expand && (
           <div
             className={
-              "block p-1 border-gray-100 md:border-l dark:border-darkHighlight " +
+              "block p-1 border-gray-100 md:border-l origin-top dark:border-darkHighlight " +
               (hideNSFW && " overflow-hidden relative")
             }
           >
