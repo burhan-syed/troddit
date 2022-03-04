@@ -567,14 +567,15 @@ const PostModal = ({
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
                         <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
-                          <div className="flex flex-row flex-wrap">
+                          <div className="flex flex-row flex-wrap items-start ">
                             <Link href={`/u/${apost?.author}`}>
                               <a
+                                title={`see u/${apost?.author}'s posts`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                 }}
                               >
-                                <h2 className="ml-1 mr-1 font-semibold hover:underline">
+                                <h2 className="ml-1 mr-1 -translate-y-0.5 font-semibold hover:underline">
                                   u/
                                   {apost?.author ?? ""}
                                 </h2>
@@ -582,7 +583,8 @@ const PostModal = ({
                             </Link>
                             <Link href={`/r/${apost?.subreddit}`}>
                               <a
-                                className="mr-1"
+                                title={`go to r/${apost?.subreddit}`}
+                                className="mr-1 -translate-y-0.5"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                 }}
@@ -594,11 +596,11 @@ const PostModal = ({
                               </a>
                             </Link>
 
-                            <p className="">
+                            <p className="-translate-y-0.5">
                               {secondsToTime(apost?.created_utc)}
                             </p>
                             {apost?.over_18 && (
-                              <div className="flex flex-row pl-1 space-x-1">
+                              <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
                                 <span className="text-red-400 text-color dark:text-red-700">
                                   NSFW
@@ -606,7 +608,7 @@ const PostModal = ({
                               </div>
                             )}
                             {apost?.spoiler && (
-                              <div className="flex flex-row pl-1 space-x-1">
+                              <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
                                 <span className="text-red-400 text-color dark:text-red-700">
                                   SPOILER
@@ -621,7 +623,7 @@ const PostModal = ({
                               />
                             )}
                           </div>
-                          <div className="flex flex-row justify-center ml-auto">
+                          <div className="flex flex-row justify-center flex-none ml-auto">
                             <a
                               title="open source"
                               href={`${apost.url}`}
@@ -645,7 +647,7 @@ const PostModal = ({
                           >
                             <PostTitle post={apost} />
                           </a>
-                          <span className="text-sm ">
+                          <span className="text-sm font-medium ">
                             <TitleFlair post={apost} />
                           </span>
                         </h1>
@@ -698,6 +700,7 @@ const PostModal = ({
                             )}
                             {true && (
                               <button
+                                autoFocus
                                 onClick={(e) => setimgFull((p) => !p)}
                                 className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                               >

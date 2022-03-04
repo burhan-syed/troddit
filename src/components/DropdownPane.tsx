@@ -1,6 +1,6 @@
 import axios from "axios";
 import router, { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
@@ -48,6 +48,7 @@ const DropdownPane = ({ hide }) => {
   const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
   const [myLocalFollows, setMyLocalFollows] = useState([]);
   const [filter, setFilter] = useState("");
+  const filterRef = useRef(null);
   useEffect(() => {
     let subs = [];
     let follows = [];
@@ -72,6 +73,10 @@ const DropdownPane = ({ hide }) => {
     !show && tryLoadAll();
     setShow((show) => !show);
   };
+
+  useEffect(() => {
+    show && filterRef.current.focus();
+  }, [show]);
 
   return (
     <div className="flex flex-col items-center w-full h-full select-none">
@@ -215,6 +220,7 @@ const DropdownPane = ({ hide }) => {
             </Link>
             <div className="flex flex-row items-center justify-center mx-1">
               <input
+                ref={filterRef}
                 type="text"
                 placeholder="Filter.."
                 onChange={(e) => {

@@ -297,7 +297,7 @@ const SortMenu2 = ({ hide = false }) => {
               <div className="py-1">
                 {/* Best */}
                 {!isUser && (
-                  <Menu.Item>
+                  <Menu.Item disabled={isUser}>
                     {({ active }) => (
                       <div
                         onTouchStart={(e) => setTopTouch(false)}
@@ -322,29 +322,25 @@ const SortMenu2 = ({ hide = false }) => {
                   </Menu.Item>
                 )}
                 {/* Hot */}
-                {true && (
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div
-                        onTouchStart={(e) => setTopTouch(false)}
-                        onClick={(e) => updateSort(e, "hot")}
-                        className={classNames(
-                          active
-                            ? "bg-lightHighlight dark:bg-darkHighlight"
-                            : "",
-                          "block px-4 py-1 text-sm"
-                        )}
-                      >
-                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
-                          <AiOutlineFire className="flex-none w-5 h-5" />
-                          <span className={sort === "hot" ? " font-bold " : ""}>
-                            Hot
-                          </span>
-                        </div>
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onTouchStart={(e) => setTopTouch(false)}
+                      onClick={(e) => updateSort(e, "hot")}
+                      className={classNames(
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        "block px-4 py-1 text-sm"
+                      )}
+                    >
+                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                        <AiOutlineFire className="flex-none w-5 h-5" />
+                        <span className={sort === "hot" ? " font-bold " : ""}>
+                          Hot
+                        </span>
                       </div>
-                    )}
-                  </Menu.Item>
-                )}
+                    </div>
+                  )}
+                </Menu.Item>
                 {/* New */}
                 <Menu.Item>
                   {({ active }) => (
@@ -370,112 +366,6 @@ const SortMenu2 = ({ hide = false }) => {
                           </span>
                         </div>
                       </div>
-                      {false && (
-                        <ul
-                          className={
-                            (active || topTouch ? "block " : "hidden ") +
-                            (isSubFlair && "top-12 ") +
-                            "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
-                          }
-                        >
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "hour" && sort === "new"
-                                    ? `font-bold`
-                                    : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "hour", "new")}
-                              >
-                                Hour
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "day" && sort === "new"
-                                    ? `font-bold`
-                                    : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "day", "new")}
-                              >
-                                24 Hours
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "week" && sort === "new"
-                                    ? `font-bold`
-                                    : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "week", "new")}
-                              >
-                                Week
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "month" && sort === "new"
-                                    ? `font-bold`
-                                    : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "month", "new")}
-                              >
-                                Month
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "year" && sort === "new"
-                                    ? `font-bold`
-                                    : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "year", "new")}
-                              >
-                                Year
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={
-                                  (range === "all" && sort === "new"
-                                    ? `font-bold `
-                                    : "") +
-                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                }
-                                onTouchStart={(e) => setTopTouch(false)}
-                                onClick={(e) => updateRange(e, "all", "new")}
-                              >
-                                All
-                              </div>
-                            )}
-                          </Menu.Item>
-                        </ul>
-                      )}
                     </div>
                   )}
                 </Menu.Item>
@@ -485,7 +375,7 @@ const SortMenu2 = ({ hide = false }) => {
                     <div
                       className="group"
                       onTouchStart={(e) => setTopTouch(true)}
-                      onClick={(e) => !topTouch && updateRange(e, "day")}
+                      onClick={(e) => !topTouch && updateRange(e, "all")}
                     >
                       <div
                         className={classNames(
@@ -506,105 +396,93 @@ const SortMenu2 = ({ hide = false }) => {
                         className={
                           (active || topTouch ? "block " : "hidden ") +
                           (isUser ? "top-12 " : "top-24 ") +
-                          "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                          "absolute  w-32 -left-32  bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                         }
                       >
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "hour" && sort === "top"
-                                  ? `font-bold`
-                                  : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "hour")}
-                            >
-                              Hour
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "day" && sort === "top"
-                                  ? `font-bold`
-                                  : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "day")}
-                            >
-                              24 Hours
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "week" && sort === "top"
-                                  ? `font-bold`
-                                  : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "week")}
-                            >
-                              Week
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "month" && sort === "top"
-                                  ? `font-bold`
-                                  : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "month")}
-                            >
-                              Month
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "year" && sort === "top"
-                                  ? `font-bold`
-                                  : "") +
-                                " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "year")}
-                            >
-                              Year
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className={
-                                (range === "all" && sort === "top"
-                                  ? `font-bold `
-                                  : "") +
-                                " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                              }
-                              onTouchStart={(e) => setTopTouch(false)}
-                              onClick={(e) => updateRange(e, "all")}
-                            >
-                              All
-                            </div>
-                          )}
-                        </Menu.Item>
+                        <li>
+                          <div
+                            className={
+                              (range === "hour" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "hour")}
+                          >
+                            Hour
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "day" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "day")}
+                          >
+                            24 Hours
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "week" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "week")}
+                          >
+                            Week
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "month" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "month")}
+                          >
+                            Month
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "year" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "year")}
+                          >
+                            Year
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "all" && sort === "top"
+                                ? `font-bold `
+                                : "") +
+                              " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "all")}
+                          >
+                            All
+                          </div>
+                        </li>
                       </ul>
                     </div>
                   )}
@@ -613,7 +491,15 @@ const SortMenu2 = ({ hide = false }) => {
                 {(isSubFlair ||
                   router.route === "/search" ||
                   router.query.q) && (
-                  <Menu.Item>
+                  <Menu.Item
+                    disabled={
+                      !(
+                        isSubFlair ||
+                        router.route === "/search" ||
+                        router.query.q
+                      )
+                    }
+                  >
                     {({ active }) => (
                       <div className="group">
                         <div
@@ -644,108 +530,96 @@ const SortMenu2 = ({ hide = false }) => {
                               "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                             }
                           >
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "hour" && sort === "relevance"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "hour", "relevance")
-                                  }
-                                >
-                                  Hour
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "day" && sort === "relevance"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "day", "relevance")
-                                  }
-                                >
-                                  24 Hours
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "week" && sort === "relevance"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "week", "relevance")
-                                  }
-                                >
-                                  Week
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "month" && sort === "relevance"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "month", "relevance")
-                                  }
-                                >
-                                  Month
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "year" && sort === "relevance"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "year", "relevance")
-                                  }
-                                >
-                                  Year
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "all" && sort === "relevance"
-                                      ? `font-bold `
-                                      : "") +
-                                    " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "all", "relevance")
-                                  }
-                                >
-                                  All
-                                </div>
-                              )}
-                            </Menu.Item>
+                            <li>
+                              <div
+                                className={
+                                  (range === "hour" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "hour", "relevance")
+                                }
+                              >
+                                Hour
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "day" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "day", "relevance")
+                                }
+                              >
+                                24 Hours
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "week" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "week", "relevance")
+                                }
+                              >
+                                Week
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "month" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "month", "relevance")
+                                }
+                              >
+                                Month
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "year" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "year", "relevance")
+                                }
+                              >
+                                Year
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "all" && sort === "relevance"
+                                    ? `font-bold `
+                                    : "") +
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "all", "relevance")
+                                }
+                              >
+                                All
+                              </div>
+                            </li>
                           </ul>
                         )}
                       </div>
@@ -754,7 +628,9 @@ const SortMenu2 = ({ hide = false }) => {
                 )}
                 {/* Comments */}
                 {(router.route === "/search" || router.query.q) && (
-                  <Menu.Item>
+                  <Menu.Item
+                    disabled={!(router.route === "/search" || router.query.q)}
+                  >
                     {({ active }) => (
                       <div className="group">
                         <div
@@ -785,108 +661,96 @@ const SortMenu2 = ({ hide = false }) => {
                               "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
                             }
                           >
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "hour" && sort === "comments"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "hour", "comments")
-                                  }
-                                >
-                                  Hour
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "day" && sort === "comments"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "day", "comments")
-                                  }
-                                >
-                                  24 Hours
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "week" && sort === "comments"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "week", "comments")
-                                  }
-                                >
-                                  Week
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "month" && sort === "comments"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "month", "comments")
-                                  }
-                                >
-                                  Month
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "year" && sort === "comments"
-                                      ? `font-bold`
-                                      : "") +
-                                    " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "year", "comments")
-                                  }
-                                >
-                                  Year
-                                </div>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  className={
-                                    (range === "all" && sort === "comments"
-                                      ? `font-bold `
-                                      : "") +
-                                    " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
-                                  }
-                                  onClick={(e) =>
-                                    updateRange(e, "all", "comments")
-                                  }
-                                >
-                                  All
-                                </div>
-                              )}
-                            </Menu.Item>
+                            <li>
+                              <div
+                                className={
+                                  (range === "hour" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "hour", "comments")
+                                }
+                              >
+                                Hour
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "day" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "day", "comments")
+                                }
+                              >
+                                24 Hours
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "week" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "week", "comments")
+                                }
+                              >
+                                Week
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "month" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "month", "comments")
+                                }
+                              >
+                                Month
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "year" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "year", "comments")
+                                }
+                              >
+                                Year
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "all" && sort === "comments"
+                                    ? `font-bold `
+                                    : "") +
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "all", "comments")
+                                }
+                              >
+                                All
+                              </div>
+                            </li>
                           </ul>
                         )}
                       </div>
@@ -898,7 +762,16 @@ const SortMenu2 = ({ hide = false }) => {
                   !isSubFlair &&
                   router.route !== "/search" &&
                   !router?.query?.q && (
-                    <Menu.Item>
+                    <Menu.Item
+                      disabled={
+                        !(
+                          !isUser &&
+                          !isSubFlair &&
+                          router.route !== "/search" &&
+                          !router?.query?.q
+                        )
+                      }
+                    >
                       {({ active }) => (
                         <div
                           onClick={(e) => updateSort(e, "rising")}

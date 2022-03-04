@@ -144,10 +144,10 @@ const Feed = ({
     sort,
     range,
     sessloading,
-    context.forceRefresh,
     query.q,
     safeSearch,
     ownProfile,
+    context.forceRefresh,
   ]);
 
   const fetchFront = async () => {
@@ -441,6 +441,7 @@ const Feed = ({
                 isSubFlair={isSubFlair}
                 filterNum={filterCount}
                 safeSearch={safeSearch}
+                key={context.fastRefresh}
               />
             </ErrorBoundary>
           )}

@@ -26,8 +26,10 @@ export const MainProvider = ({ children }) => {
   const [cardStyle, setCardStyle] = useState("default");
   const [posts, setPosts] = useState([]);
   const [postNum, setPostNum] = useState(0);
+  const [gAfter, setGAfter] = useState("");
   const [token, setToken] = useState();
   const [forceRefresh, setForceRefresh] = useState(0);
+  const [fastRefresh, setFastRefresh] = useState(0);
 
   //filters in the inverse sense, true = allowed
   const [imgFilter, setImgFilter] = useState(true);
@@ -196,7 +198,7 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     cardStyle !== "row1" &&
       columnOverride === 1 &&
-      setForceRefresh((f) => f + 1);
+      setFastRefresh((f) => f + 1);
   }, [wideUI]);
 
   const toggleNSFW = () => {
@@ -361,6 +363,8 @@ export const MainProvider = ({ children }) => {
         setCardStyle,
         posts,
         setPosts,
+        gAfter,
+        setGAfter,
         postNum,
         setPostNum,
         localSubs,
@@ -371,6 +375,8 @@ export const MainProvider = ({ children }) => {
         updateSaves,
         forceRefresh,
         setForceRefresh,
+        fastRefresh,
+        setFastRefresh,
         loading,
         setLoading,
         toggleFilter,

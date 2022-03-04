@@ -130,6 +130,7 @@ const MyMasonic = ({
     setAfter(initAfter);
     setNumPosts(initItems.length);
     context.setPosts(initItems);
+    context.setGAfter(initAfter);
     setItems(initItems);
     initItems.length < 1 && loadMoreItems(0, 10);
 
@@ -254,13 +255,17 @@ const MyMasonic = ({
 
       lastload = "";
       setLoadingMore(true);
-      const nextItems = await getPostsPromise(startIndex, stopIndex);
+      const { payload, lastafter } = await getPostsPromise(
+        startIndex,
+        stopIndex
+      );
       //console.log("nextitems", nextItems, after);
       setLoadingMore(false);
       setItems((current) => {
         //console.log("after", after);
-        context.setPosts([...current, ...nextItems]);
-        return [...current, ...nextItems];
+        context.setPosts([...current, ...payload]);
+        context.setGAfter(lastafter);
+        return [...current, ...payload];
       });
     }
   };
@@ -441,7 +446,7 @@ const MyMasonic = ({
     let caughtup = false;
     let n = numposts;
     let payload = [];
-
+    let lastafter = "";
     //let fastafter = after;
     while (payload.length < end - start && !caughtup) {
       //console.log("loop", after);
@@ -455,18 +460,20 @@ const MyMasonic = ({
           caughtup = true;
           allowload = false;
           //console.log("early return");
-          return payload;
+          lastafter = data.after;
+          return { payload, lastafter };
         }
         //fastafter = data?.after;
         //lastload = fastafter;
         //console.log(data.posts);
+        lastafter = data.after;
         payload = [...payload, ...data.posts];
       }
     }
     setNumPosts((n) => n + payload.length);
     allowload = true;
     block.current = false;
-    return payload;
+    return { payload, lastafter };
   };
   const filterChildren = async (data: Array<any>) => {
     async function filter(arr, callback) {

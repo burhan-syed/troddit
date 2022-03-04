@@ -71,7 +71,7 @@ const Card1 = ({
                     </a>
                   </Link>
                   <p>•</p>
-                  <p className="ml-1 font-">
+                  <p className="ml-1 ">
                     {secondsToTime(post?.created_utc, [
                       "s ago",
                       "m ago",
