@@ -31,6 +31,7 @@ import MediaWrapper from "./views/MediaWrapper";
 import Awardings from "./Awardings";
 import PostTitle from "./PostTitle";
 import SaveButton from "./SaveButton";
+import UserFlair from "./UserFlair";
 
 const PostModal = ({
   setSelect,
@@ -379,6 +380,36 @@ const PostModal = ({
     }
   }, [wait, usePortrait]);
 
+  const commentPlaceHolder = (
+    <div className="mx-2 my-1 border rounded-md h-44 border-lightBorder dark:border-darkBorder">
+      <div className={"flex flex-row"}>
+        {/* Left column */}
+        <div
+          className={
+            "h-44 w-1 rounded-l-md  md:w-4 flex-none  cursor-pointer group animate-pulse"
+          }
+        >
+          <div className="flex-none w-0.5 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+        </div>
+        {/* Comment Body */}
+        <div
+          className={
+            "flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-2 mr-4"
+          }
+        >
+          {/* Author */}
+          <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
+          {/* Main Comment Body */}
+          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (wait && direct) {
     return (
       <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
@@ -575,12 +606,18 @@ const PostModal = ({
                                   e.stopPropagation();
                                 }}
                               >
-                                <h2 className="ml-1 mr-1 -translate-y-0.5 font-semibold hover:underline">
+                                <h2 className="ml-1 mr-1 -translate-y-0.5 font-semibold hover:underline group">
                                   u/
                                   {apost?.author ?? ""}
+                                  {apost?.author_flair_text?.length > 0 && (
+                                    <span className="mx-1 text-xs">
+                                      <UserFlair post={apost} />
+                                    </span>
+                                  )}
                                 </h2>
                               </a>
                             </Link>
+
                             <Link href={`/r/${apost?.subreddit}`}>
                               <a
                                 title={`go to r/${apost?.subreddit}`}
@@ -859,40 +896,12 @@ const PostModal = ({
                   {/* Loading Comments */}
                   {loadingComments ? (
                     // Comment Loader
-
-                    <div className="mx-2 my-1 border rounded-md border-lightBorder dark:border-darkBorder h-80">
-                      <div className={"flex flex-row"}>
-                        {/* Left column */}
-                        <div
-                          className={
-                            "h-80 w-1  md:w-4 flex-none  cursor-pointer group animate-pulse"
-                          }
-                        >
-                          <div className="flex-none w-0.5 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
-                        </div>
-                        {/* Comment Body */}
-                        <div
-                          className={
-                            "flex-grow flex-col mt-3 pt-2 space-y-2 animate-pulse ml-2 mr-4"
-                          }
-                        >
-                          {/* Author */}
-                          <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
-                          {/* Main Comment Body */}
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                          <div className="w-full h-5 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-                        </div>
-                      </div>
-                    </div>
+                    <>
+                      {[...Array(5)].map((u, i) => (
+                        <div key={i}>{commentPlaceHolder}</div>
+                      ))}{" "}
+                    </>
                   ) : (
-                    // Loaded Comment
                     <div
                       ref={divRef}
                       className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden"

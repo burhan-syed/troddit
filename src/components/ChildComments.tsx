@@ -11,6 +11,7 @@ import { ImSpinner2 } from "react-icons/im";
 import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
+import UserFlair from "./UserFlair";
 
 const ChildComments = ({
   comment,
@@ -216,9 +217,15 @@ const ChildComments = ({
                 >
                   <h1 className="hover:underline">
                     {comment?.data?.author ?? ""}
+                    {comment?.data?.author_flair_text?.length > 0 && (
+                      <span className="ml-2 mr-0.5 text-xs">
+                        <UserFlair post={comment.data} />
+                      </span>
+                    )}
                   </h1>
                 </a>
               </Link>
+
               {(comment?.data?.author == op || comment?.data?.is_submitter) && (
                 <>
                   <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">
@@ -279,7 +286,7 @@ const ChildComments = ({
               )}
             </div>
             {comment?.data?.edited && (
-              <p className="pr-2 text-xs italic " >
+              <p className="pr-2 text-xs italic ">
                 edited{" "}
                 {secondsToTime(comment?.data?.edited, [
                   "s ago",
@@ -306,7 +313,9 @@ const ChildComments = ({
                   if (cellText?.type === "Range") e.stopPropagation();
                 }}
                 className="py-1 pl-3 mr-1 md:pl-0"
-              ><ParseBodyHTML html={comment?.data?.body_html}/></div>
+              >
+                <ParseBodyHTML html={comment?.data?.body_html} />
+              </div>
 
               {/* Vote */}
               <div
@@ -329,11 +338,10 @@ const ChildComments = ({
                 </div>
                 <button
                   className={
-                    "text-sm " + (
-                    hideChildren || comment?.myreply
+                    "text-sm " +
+                    (hideChildren || comment?.myreply
                       ? "hidden"
-                      : "block hover:underline"
-                    )
+                      : "block hover:underline")
                   }
                   onClick={(e) => {
                     e.preventDefault();
