@@ -162,6 +162,7 @@ export const MainProvider = ({ children }) => {
     if (p?.[i]?.data) {
       p[i].data.saved = save;
     }
+    setPosts(p);
   };
 
   const [localSubs, setLocalSubs] = useState([]);
