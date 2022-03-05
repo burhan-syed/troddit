@@ -63,14 +63,13 @@
 }
 
 #innerhtml a {
-  @apply text-blue-600 underline dark:text-blue-400;
+  @apply text-blue-700 underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300;
 }
 #innerhtml p {
 }
 #innerhtml .md-spoiler-text {
-	@apply text-transparent hover:text-black dark:hover:text-lightText bg-darkBorderHighlight  dark:bg-lightBorder  hover:bg-transparent dark:hover:bg-transparent p-0.5 rounded-md
+  @apply text-transparent hover:text-[#44403c] dark:hover:text-[#d6d3d1] bg-darkBorderHighlight  dark:bg-lightBorder  hover:bg-transparent dark:hover:bg-transparent p-0.5 rounded-md;
 }
-
 
 .react-markdown a {
   @apply text-blue-800 underline;

@@ -583,11 +583,17 @@ const Media = ({
             <div
               className={
                 "p-1 overflow-y-auto select-text  overscroll-auto scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" +
-                (!imgFull &&
-                  " max-h-96 border-b dark:border-darkBorderHighlight")
+                (!imgFull
+                  ? " max-h-96 border-b dark:border-darkBorderHighlight"
+                  : " ") +
+                (containerDims?.[1] ? " mx-4 my-2 " : "")
               }
             >
-              <ParseBodyHTML html={post?.selftext_html} small={postMode ? false : true} limitWidth={postMode && !context.postWideUI}/>
+              <ParseBodyHTML
+                html={post?.selftext_html}
+                small={postMode ? false : true}
+                limitWidth={postMode && !context.postWideUI}
+              />
             </div>
           ) : !context.mediaOnly ? (
             ""

@@ -120,7 +120,7 @@ export const findMediaInfo = async (post, quick = false) => {
     if (
       post.thumbnail === "self" ||
       post.is_self ||
-      post.domain.includes("self")
+      post?.domain?.includes("self")
     ) {
       isSelf = true;
     }

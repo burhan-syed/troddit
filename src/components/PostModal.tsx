@@ -127,7 +127,7 @@ const PostModal = ({
       if (
         windowWidth > 1300 &&
         windowHeight < windowWidth &&
-        context.postWideUi
+        context.postWideUI
       ) {
         checkPortrait();
       } else {

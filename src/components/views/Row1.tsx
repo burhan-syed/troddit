@@ -113,7 +113,7 @@ const Row1 = ({
             <h1>
               {(post?.link_flair_text?.length > 0 ||
                 post?.link_flair_richtext?.length > 0) && (
-                <span className="mr-1 text-sm">
+                <span className="mr-2 text-sm">
                   <TitleFlair post={post} />
                 </span>
               )}
