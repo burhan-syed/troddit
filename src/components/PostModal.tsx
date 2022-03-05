@@ -127,7 +127,7 @@ const PostModal = ({
       if (
         windowWidth > 1300 &&
         windowHeight < windowWidth &&
-        context.saveWideUI
+        context.postWideUi
       ) {
         checkPortrait();
       } else {
@@ -445,7 +445,7 @@ const PostModal = ({
             {/* Main Card */}
             <div
               className={
-                (!context?.saveWideUI && !usePortrait && windowWidth > 768
+                (!context?.postWideUI && !usePortrait && windowWidth > 768
                   ? " max-w-3xl w-[768px]"
                   : !usePortrait
                   ? "w-full md:w-10/12 lg:w-3/4 "

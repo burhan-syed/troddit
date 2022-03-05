@@ -67,6 +67,10 @@
 }
 #innerhtml p {
 }
+#innerhtml .md-spoiler-text {
+	@apply text-transparent hover:text-black dark:hover:text-lightText bg-darkBorderHighlight  dark:bg-lightBorder  hover:bg-transparent dark:hover:bg-transparent p-0.5 rounded-md
+}
+
 
 .react-markdown a {
   @apply text-blue-800 underline;

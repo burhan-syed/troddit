@@ -1,7 +1,6 @@
 const colors = require("tailwindcss/colors");
 module.exports = {
-  mode: "jit",
-  purge: [
+  content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
@@ -25,9 +24,9 @@ module.exports = {
         darkGreen: "#7AFBD6",
         upvote: "#F97316",
         downvote: "#60A5FA",
-        blueGray: colors.blueGray,
-        coolGray: colors.coolGray,
-        trueGray: colors.trueGray,
+        blueGray: colors.slate,
+        gray: colors.gray,
+        trueGray: colors.neutral,
       },
     },
   },
@@ -35,5 +34,5 @@ module.exports = {
     extend: {},
     scrollbar: ["dark", "rounded"],
   },
-  plugins: [require("tailwind-scrollbar")],
+  plugins: [require("tailwind-scrollbar"),require('@tailwindcss/typography'),],
 };

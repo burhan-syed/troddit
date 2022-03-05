@@ -449,6 +449,16 @@ export const loadSubredditInfo = async (query, loaduser = false) => {
   } else return [];
 };
 
+export const getWikiContent = async(wikiquery) => {
+    try{
+      const content = await (await axios.get(`https://www.reddit.com/r/${wikiquery.join('/')}.json`, {params: {raw_json: 1}} )).data
+      
+      return content;
+    } catch (err) { return undefined}
+    
+  }
+
+
 export const subToSub = async (action, name) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
@@ -1101,7 +1111,7 @@ export const postComment = async (parent, text) => {
         },
         body: `api_type=${"json"}&return_rtjson=${true}&text=${text}&thing_id=${parent}`,
       });
-
+      console.log(res);
       if (res.ok) {
         return true;
       } else {

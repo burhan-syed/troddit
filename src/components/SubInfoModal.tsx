@@ -2,10 +2,14 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { RiArrowGoBackLine } from "react-icons/ri";
+import { useRouter } from 'next/router'
+import ParseBodyHTML from "./ParseBodyHTML";
+
 
 const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
+  const router = useRouter(); 
 
   useEffect(() => {
     toOpen > 0 && setOpen(true);
@@ -13,6 +17,7 @@ const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
       //
     };
   }, [toOpen]);
+
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -53,14 +58,15 @@ const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
           >
             <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg md:max-w-3xl lg:max-w-5xl sm:w-full">
               <div className="relative px-4 pt-5 pb-4 overflow-visible bg-white dark:bg-darkBG sm:p-6 sm:pb-4">
-                <div
+                <button
+                ref={cancelButtonRef}
                   className="absolute flex items-center justify-center w-8 h-8 ml-auto text-gray-500 top-2 right-2 hover:text-gray-900 dark:hover:text-gray-200 hover:cursor-pointer"
                   onClick={() => {
                     setOpen(false);
                   }}
                 >
                   <RiArrowGoBackLine className="w-8 h-8 " />
-                </div>
+                </button>
                 <div className="sm:flex sm:items-start">
                   
                   <div className="mt-4 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -81,13 +87,7 @@ const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
                           if (cellText?.type === "Range") e.stopPropagation();
                         }}
                         className="pb-2 pl-3 mr-1 md:pl-0"
-                        id="innerhtml"
-                        dangerouslySetInnerHTML={{
-                          __html:
-                            descriptionHTML ??
-                            `<div>${"No description found"}</div>`,
-                        }}
-                      ></div>
+                      ><ParseBodyHTML html={descriptionHTML}/></div>
                     </div>
                   </div>
                 </div>

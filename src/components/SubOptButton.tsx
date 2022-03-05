@@ -7,6 +7,7 @@ import DropdownItem from "./DropdownItem";
 import MultiManageModal from "./MultiManageModal";
 import { useSession } from "next-auth/client";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
+import Link from 'next/link'
 
 const SubOptButton = ({
   subInfo,
@@ -307,6 +308,7 @@ const SubOptButton = ({
                     </Menu.Item>
                   )}
                   {openDescription && (
+                    <>
                     <Menu.Item>
                       {({ active }) => (
                         <div
@@ -318,11 +320,29 @@ const SubOptButton = ({
                           onClick={openDescription}
                         >
                           <div className="flex flex-row justify-end cursor-pointer select-none">
-                            {`Full Description`}
+                            {`Sidebar`}
                           </div>
                         </div>
                       )}
                     </Menu.Item>
+                    <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        className={
+                          (active
+                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            : "") + " block px-4 py-1 text-sm cursor-pointer select-none"
+                        }
+                      >
+                        <Link href={`/r/${subArray[0]}/wiki/`}>
+                          <a className="flex flex-row justify-end">
+                          {`Wiki`}
+                          </a>
+                        </Link>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  </>
                   )}
                   {subArray?.length > 1 && !session && !loading && (
                     <Menu.Item>

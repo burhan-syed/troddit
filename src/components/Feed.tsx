@@ -124,7 +124,7 @@ const Feed = ({
         query?.frontsort?.includes("rising")
       ) {
         !sessloading && fetchFront();
-      }
+      } else {setFetchPost(true)}
     } else if (query.slug) {
       !sessloading && fetchSubs();
     } else {

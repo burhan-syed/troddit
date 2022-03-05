@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
+import ParseBodyHTML from "./ParseBodyHTML";
 const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
@@ -586,23 +587,11 @@ const Media = ({
                   " max-h-96 border-b dark:border-darkBorderHighlight")
               }
             >
-              <div
-                className="mr-1.5"
-                id="innerhtml"
-                dangerouslySetInnerHTML={{ __html: post?.selftext_html }}
-              ></div>
+              <ParseBodyHTML html={post?.selftext_html} small={postMode ? false : true} limitWidth={postMode && !context.postWideUI}/>
             </div>
           ) : !context.mediaOnly ? (
             ""
           ) : (
-            // (
-            //   // <p className="overflow-y-scroll max-h-60 overflow-ellipsis overscroll-contain">{post.selftext}</p>
-            //   <div className={"overflow-y-auto  overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800" + (!imgFull && " max-h-96 ")}>
-            //     <p>
-            //       {post?.selftext}
-            //     </p>
-            //   </div>
-            // )
             ""
           )}
         </>

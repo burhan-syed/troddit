@@ -21,6 +21,10 @@ export const MainProvider = ({ children }) => {
   const [wideUI, setWideUI] = useState(true);
   //saves toggle selection. Used to sync UI when switching back to 1 column. Also used to control postModal view
   const [saveWideUI, setSaveWideUI] = useState(true);
+  //if posts should also be wide ui/narrow ui
+  const [syncWideUI, setSyncWideUI] = useState(true);
+  const [postWideUI, setPostWideUI] = useState(true);
+
   const [mediaOnly, setMediaOnly] = useState(false);
   const [pauseAll, setPauseAll] = useState(false);
   const [cardStyle, setCardStyle] = useState("default");
@@ -191,6 +195,7 @@ export const MainProvider = ({ children }) => {
   const toggleWideUI = () => {
     setSaveWideUI((w) => {
       setWideUI(!w);
+      syncWideUI && setPostWideUI(!w);
       return !w;
     });
   };
@@ -347,6 +352,10 @@ export const MainProvider = ({ children }) => {
         columns,
         setColumns,
         wideUI,
+        syncWideUI,
+        postWideUI,
+        setPostWideUI,
+        setSyncWideUI,
         saveWideUI,
         toggleWideUI,
         setWideUI,

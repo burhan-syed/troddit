@@ -10,6 +10,7 @@ import Vote from "./Vote";
 import { ImSpinner2 } from "react-icons/im";
 import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
+import ParseBodyHTML from "./ParseBodyHTML";
 
 const ChildComments = ({
   comment,
@@ -204,7 +205,7 @@ const ChildComments = ({
           }}
         >
           {/* Author and comment data*/}
-          <div className="flex flex-row flex-wrap items-center justify-between pl-3 space-x-1 text-base text-gray-400 md:pl-0 dark:text-gray-500">
+          <div className="flex flex-row flex-wrap items-center justify-between pl-3 space-x-1 text-sm text-gray-400 md:pl-0 dark:text-gray-500">
             {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
             <div className="flex flex-row items-center space-x-1">
               <Link href={`/u/${comment?.data?.author}`}>
@@ -278,7 +279,7 @@ const ChildComments = ({
               )}
             </div>
             {comment?.data?.edited && (
-              <p className="pr-2 text-xs italic ">
+              <p className="pr-2 text-xs italic " >
                 edited{" "}
                 {secondsToTime(comment?.data?.edited, [
                   "s ago",
@@ -304,14 +305,8 @@ const ChildComments = ({
                     e.stopPropagation();
                   if (cellText?.type === "Range") e.stopPropagation();
                 }}
-                className="pb-2 pl-3 mr-1 md:pl-0"
-                id="innerhtml"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    comment?.data?.body_html ??
-                    `<div>${comment?.data?.body ?? "No comment found"}</div>`,
-                }}
-              ></div>
+                className="py-1 pl-3 mr-1 md:pl-0"
+              ><ParseBodyHTML html={comment?.data?.body_html}/></div>
 
               {/* Vote */}
               <div
@@ -334,9 +329,11 @@ const ChildComments = ({
                 </div>
                 <button
                   className={
+                    "text-sm " + (
                     hideChildren || comment?.myreply
                       ? "hidden"
                       : "block hover:underline"
+                    )
                   }
                   onClick={(e) => {
                     e.preventDefault();
@@ -348,7 +345,7 @@ const ChildComments = ({
                 >
                   Reply
                 </button>
-                <div className="pl-2 cursor-pointer hover:underline">
+                <div className="pl-2 text-sm cursor-pointer hover:underline">
                   <SaveButton
                     id={comment?.data?.name}
                     saved={comment?.data?.saved}
@@ -381,7 +378,7 @@ const ChildComments = ({
                                   className={
                                     (portraitMode ? "" : "") +
                                     (loadingComments && " animate-pulse ") +
-                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none"
+                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none text-sm"
                                   }
                                   onClick={(e) => {
                                     e.preventDefault();
