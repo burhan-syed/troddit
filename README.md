@@ -1,11 +1,13 @@
 # Troddit 
-### _A web client for Reddit_
+### _An alternative front end web client for Reddit_
 
 Live at [troddit.com](https://www.troddit.com)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K47IYH1)
+
 ## Images
 ### Flexible column viewing.  
-#### In multi-reddit mode with subreddit pills. Subreddits pane and options menu open.
+Shown browsing a multi-reddit. Subreddits pane and options menu open.
 <img width="1725" alt="columns_options" src="https://user-images.githubusercontent.com/32972409/155919206-e7256397-b2a7-4718-bd17-ff1982b56d1a.png">
 
 ### Classic rows view
@@ -18,7 +20,7 @@ Live at [troddit.com](https://www.troddit.com)
 <img width="1725" alt="post_open" src="https://user-images.githubusercontent.com/32972409/155919310-0d57fdaa-03a0-47c0-be03-1c29da6e87ac.png">
 
 ### Search for subreddits, users, and posts.  
-#### Sort options and single column mode with wide UI disabled also shown
+Shown in single column mode with wide UI disabled. Sort options menu is open.
 <img width="1724" alt="search_narrow" src="https://user-images.githubusercontent.com/32972409/155919321-7dd78a3b-5eac-4753-92f9-295d44447e17.png">  
 
 ### Fully responsive, downloadable as PWA
@@ -29,8 +31,8 @@ Live at [troddit.com](https://www.troddit.com)
 
 - Secure logins with Reddit to enable voting, commenting, managing your subreddits and multireddits (aka feeds), and access to your personal front page. 
 - 'Offline mode' to follow subreddits and manage multis locally without login. Autogenerates a personal front page. 
-  - Visit your [subreddits multi](https://www.reddit.com/subreddits), replace 'reddit' with 'troddit' in the URL, then use the 'Join All' option to quickly follow all subs locally. 
-- Search for subreddits with auto-complete. 
+  - Visit your [subreddits multi](https://www.reddit.com/subreddits) and copy the multireddit link. Replace 'reddit' with 'troddit' in the URL and then use the 'Join All' option to quickly follow all subs locally. 
+- Search Reddit for posts or subreddits quickly with auto-complete. 
 - Filter posts by type (Images, Video/GIFs, Links, Self)  
 - View posts in single column, custom multi-column with a grid-masonry layout, or a simple row mode. All with infinite-scrolling. 
 - Choose your card style: Original for full post text in card, Compact to exclude post text, or Media to hide all text and card padding. 
