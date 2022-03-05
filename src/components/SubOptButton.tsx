@@ -334,7 +334,7 @@ const SubOptButton = ({
                             : "") + " block px-4 py-1 text-sm cursor-pointer select-none"
                         }
                       >
-                        <Link href={`/r/${subArray[0]}/wiki/`}>
+                        <Link href={`/r/${subInfo?.display_name}/wiki/`}>
                           <a className="flex flex-row justify-end">
                           {`Wiki`}
                           </a>

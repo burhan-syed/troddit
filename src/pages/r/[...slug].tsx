@@ -60,7 +60,7 @@ const Sort = ({ query }) => {
         )}
         {wikiMode ? 
         
-      <div className="flex flex-col w-full mb-10 md:mx-10 lg:mx-20">
+      <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
         <Link href={`/r/${subsArray[0]}/wiki`}><a><h1 className="text-lg font-bold">Wiki</h1></a></Link>
       <ParseBodyHTML html={wikiContent}/>
       </div>
