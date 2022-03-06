@@ -14,6 +14,7 @@ module.exports = withPlausibleProxy()(
           destination: "/u/:path*",
           permanent: true,
         },
+        { source: "/comments/:path*", destination: "/:path*", permanent: true },
       ];
     },
     async rewrites() {
