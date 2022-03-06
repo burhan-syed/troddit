@@ -32,7 +32,7 @@ import Post from "./Post";
 // import * as gtag from "../../lib/gtag";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
-import { usePlausible } from "next-plausible";
+// import { usePlausible } from "next-plausible";
 import { findMediaInfo } from "../../lib/utils";
 import { useRouter } from "next/router";
 
@@ -103,7 +103,7 @@ const MyMasonic = ({
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
   const prevAfter = useRef(null);
   const prevAfters = useRef({});
   const currAfter = useRef(null);
@@ -411,7 +411,7 @@ const MyMasonic = ({
       if (true) {
         //after === prevAfter.current
         prevAfters.current[loadafter] = 1;
-        plausible("infinitescroll");
+        // plausible("infinitescroll");
         data?.token && context.setToken(data?.token);
         setCount((c) => c + 1);
         currAfter.current = data?.after;

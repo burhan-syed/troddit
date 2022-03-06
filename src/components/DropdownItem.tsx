@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
-import { usePlausible } from "next-plausible";
+// import { usePlausible } from "next-plausible";
 import { loadSubredditInfo } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
@@ -17,7 +17,7 @@ const DropdownItem = ({
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
   useEffect(() => {
     //console.log('>>',sub);
     sub?.data?.subreddits ? setisMulti(true) : setisMulti(false);
@@ -59,7 +59,7 @@ const DropdownItem = ({
 
   const goToSub = (e, suggestion) => {
     e.preventDefault();
-    plausible("goToSub");
+    // plausible("goToSub");
     router.push(`${suggestion}${isMulti ? `?m=${sub?.data?.name}` : ""}`);
   };
 
@@ -72,12 +72,7 @@ const DropdownItem = ({
       );
     } else {
       let suggestions = combineMulti(sub.data.subreddits);
-      plausible("goToMulti");
-      // for (let s of sub.data.subreddits) {
-      //   suggestions.length === 0
-      //     ? (suggestions = s.name)
-      //     : (suggestions = suggestions + "+" + s.name);
-      // }
+      // plausible("goToMulti");
       goToSub(e, suggestions);
     }
   };

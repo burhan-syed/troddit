@@ -6,20 +6,8 @@ import draftToMarkdown from "draftjs-to-markdown";
 import { runMain } from "module";
 import { useSession } from "../../node_modules/next-auth/client";
 import { postComment } from "../RedditAPI";
-import {
-  FaBold,
-  FaItalic,
-  FaUnderline,
-  FaSuperscript,
-  FaListUl,
-  FaStrikethrough,
-  FaListOl,
-  FaHeading,
-  FaLink,
-  FaQuoteRight,
-} from "react-icons/fa";
-import { BsTypeH1 } from "react-icons/bs";
-import { usePlausible } from "next-plausible";
+
+// import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import { ImSpinner2 } from "react-icons/im";
 
@@ -81,7 +69,7 @@ const CommentReply = ({ parent, getHtml }) => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
 
   const editorStateChange = async (editorState) => {
     setEditorState(editorState);
@@ -109,7 +97,7 @@ const CommentReply = ({ parent, getHtml }) => {
           setHtml(html);
           getHtml(html);
           setErr(false);
-          plausible("comment");
+          // plausible("comment");
           setEditorState(EditorState.createEmpty());
         } else {
           setErr(true);

@@ -4,8 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { MdErrorOutline } from "react-icons/md";
 import { useMainContext } from "../MainContext";
 import { signIn } from "next-auth/client";
-import {usePlausible} from 'next-plausible'
-
+import { usePlausible } from "next-plausible";
 
 const Login = () => {
   const [open, setOpen] = useState(false);
@@ -14,7 +13,7 @@ const Login = () => {
   const plausible = usePlausible();
   useEffect(() => {
     if (context.loginModal) {
-      plausible('loginPrompt');
+      plausible("loginPrompt");
       setOpen(true);
     } else {
       setOpen(false);
@@ -76,7 +75,8 @@ const Login = () => {
                     </Dialog.Title>
                     <div className="mt-3">
                       <p className="text-sm text-gray-500">
-                        A login is required to vote and access additional features. You can login with your Reddit account below. 
+                        A login is required to vote and access additional
+                        features. You can login with your Reddit account below.
                       </p>
                     </div>
                   </div>
@@ -88,7 +88,7 @@ const Login = () => {
                   className="inline-flex justify-center w-full px-4 py-2 text-base font-medium bg-blue-700 border border-transparent rounded-md shadow-sm text-lightText hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => {
                     context.setLoginModal(false);
-                    signIn('reddit');
+                    signIn("reddit");
                   }}
                 >
                   Login

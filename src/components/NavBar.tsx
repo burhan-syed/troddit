@@ -95,7 +95,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             className="w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
               setSidebarVisible((vis) => !vis);
-              plausible("sidenav");
+              // plausible("sidenav");
             }}
           />
           <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">

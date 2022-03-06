@@ -8,7 +8,7 @@ import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/client";
 import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
-import { usePlausible } from "next-plausible";
+// import { usePlausible } from "next-plausible";
 
 import { AiOutlinePlus, AiOutlineSearch, AiOutlineCheck } from "react-icons/ai";
 
@@ -28,7 +28,7 @@ const Search = ({ id }) => {
   const [updated, setUpdated] = useState(false);
   const [srRestrict, setSrRestrict] = useState(false);
   const [currSub, setCurrSub] = useState("");
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
 
   useEffect(() => {
     //console.log("f", updated);
@@ -491,7 +491,7 @@ const Search = ({ id }) => {
       }
     }
 
-    plausible("search");
+    // plausible("search");
   };
 
   const onChange = (event, { newValue, method }) => {

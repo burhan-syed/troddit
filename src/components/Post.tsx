@@ -17,7 +17,7 @@ import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
 import Row1 from "./views/Row1";
 
-import { usePlausible } from "next-plausible";
+// import { usePlausible } from "next-plausible";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
@@ -28,7 +28,7 @@ const Post = ({ post, postNum = 0 }) => {
   const router = useRouter();
   const [session, loading] = useSession();
   const [hasMedia, setHasMedia] = useState(false);
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
   const [margin, setMargin] = useState("m-1");
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const Post = ({ post, postNum = 0 }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
-    plausible("postOpen");
+    // plausible("postOpen");
     if (!e.ctrlKey) {
       setLastRoute(router.asPath);
       context.setPauseAll(true);

@@ -25,7 +25,7 @@ import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
-import { usePlausible } from "next-plausible";
+// import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
 import MediaWrapper from "./views/MediaWrapper";
 import Awardings from "./Awardings";
@@ -59,7 +59,7 @@ const PostModal = ({
   const [windowWidth, windowHeight] = useWindowSize();
   const [error, setError] = useState(false);
 
-  const plausible = usePlausible();
+  // const plausible = usePlausible();
 
   const nextPress = useKeyPress("ArrowRight");
   const backPress = useKeyPress("ArrowLeft");
@@ -143,18 +143,6 @@ const PostModal = ({
     };
   }, [apost, windowWidth]);
 
-  const castVote = async (e, v) => {
-    e.stopPropagation();
-    plausible("castVote");
-    if (session) {
-      v === vote ? (v = 0) : undefined;
-      //getUserVotes();
-      let res = await postVote(v, apost?.name);
-      res ? setVote(v) : undefined;
-    } else {
-      context.toggleLoginModal();
-    }
-  };
   const divRef = useRef<HTMLDivElement>(null);
 
   const updateMyReplies = (html) => {
@@ -367,7 +355,6 @@ const PostModal = ({
         setVote(0);
       }
     }
-    plausible("postChange");
   };
 
   const portraitDivRef = useRef(null);
