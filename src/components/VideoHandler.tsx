@@ -446,12 +446,25 @@ const VideoHandler = ({
             className="relative ml-auto"
             onMouseEnter={() => setShowVolSlider(true)}
             onMouseLeave={() => setShowVolSlider(false)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
           >
             {/* vol container */}
-            <div className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent">
+            <div
+              className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
               {/* slider container */}
               <div
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
                 onMouseDown={(e) => setVolMouseDown(true)}
                 onMouseUp={(e) => setVolMouseDown(false)}
                 onMouseLeave={() => setVolMouseDown(false)}
@@ -462,7 +475,13 @@ const VideoHandler = ({
                 }
               >
                 {/* Slide range */}
-                <div className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28">
+                <div
+                  className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
                   {/* Range controls */}
                   <div
                     className="absolute z-30 w-full h-full"
