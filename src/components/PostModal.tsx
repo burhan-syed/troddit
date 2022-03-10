@@ -270,7 +270,10 @@ const PostModal = ({
     setSelect(false);
     //console.log("Clicked back");
     //for handling returning to [frontsort] routes, only clicking in the app works... browser back button kicks to front page
-    if (returnRoute) {
+    if (returnRoute === "multimode"){
+      //do nothing
+    }
+    else if (returnRoute) {
       //console.log("last route", returnRoute);
       router.push(returnRoute);
     } else {
@@ -304,6 +307,7 @@ const PostModal = ({
         //console.log(router, returnRoute);
         setPost(context.posts[context.postNum + 1].data);
         updateComments(context.posts[context.postNum + 1]?.data?.permalink);
+        if (!(router.route === "/u/[...slug]" && router.query?.slug?.[1]?.toUpperCase() === "M")){
         router.replace(
           "",
           router.query?.frontsort
@@ -323,6 +327,7 @@ const PostModal = ({
             shallow: true,
           }
         );
+        }
         context.setPostNum((p) => p + 1);
         setVote(0);
       }
@@ -331,6 +336,8 @@ const PostModal = ({
         //console.log("moveback");
         setPost(context.posts[context.postNum - 1].data);
         updateComments(context.posts[context.postNum - 1]?.data?.permalink);
+        if (!(router.route === "/u/[...slug]" && router.query?.slug?.[1]?.toUpperCase() === "M")){
+
         router.replace(
           "",
           router.query?.frontsort
@@ -350,6 +357,7 @@ const PostModal = ({
             shallow: true,
           }
         );
+        }
 
         context.setPostNum((p) => p - 1);
         setVote(0);

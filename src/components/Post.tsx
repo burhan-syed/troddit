@@ -102,7 +102,12 @@ const Post = ({ post, postNum = 0 }) => {
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
-        router.push("", `/u/${post.author}/p/${post.id}`, { shallow: true });
+        if (router.query?.slug?.[1]?.toUpperCase() === "M"){
+          //no routing
+        } else {
+          router.push("", `/u/${post.author}/p/${post.id}`, { shallow: true });
+
+        }
       } else {
         router.push("", post.permalink, { shallow: true });
       }
@@ -163,7 +168,7 @@ const Post = ({ post, postNum = 0 }) => {
         <PostModal
           permalink={post?.permalink}
           setSelect={setSelect}
-          returnRoute={undefined}
+          returnRoute={router.query?.slug?.[1]?.toUpperCase() === "M" ? "multimode" : undefined}
           postData={post}
           postNum={postNum}
         />

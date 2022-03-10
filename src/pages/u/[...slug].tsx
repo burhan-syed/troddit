@@ -21,11 +21,10 @@ const Sort = ({ query }) => {
     const getSubsArray = async () => {
       let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
       // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
+      
       subs?.length > 0 &&
         router.push(
-          `/r/${subs.join("+")}${query?.slug?.[3] && `/${query?.slug?.[3]}`}${
-            query?.t && `?t=${query?.t}`
-          }`
+          `/r/${subs.join("+")}`
         );
       //?m=${query.slug[2]}
       setLoaded(true);
@@ -48,7 +47,6 @@ const Sort = ({ query }) => {
       }
     };
 
-    //console.log(query);
     if (!loading) {
       if (
         session?.user?.name?.toUpperCase() === query?.slug?.[0]?.toUpperCase()
@@ -58,7 +56,7 @@ const Sort = ({ query }) => {
       if (query?.slug?.[1] === "p") {
         router.replace(`/${query.slug?.[2]}`);
         setLoaded(true);
-      } else if (
+      }  else if (
         query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "SAVED" ||
         query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
