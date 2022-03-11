@@ -5,9 +5,13 @@ import { useMainContext } from "../MainContext";
 import { useEffect, useState } from "react";
 const ToggleFilters = ({ filter }) => {
   const context: any = useMainContext();
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const [checked, setChecked] = useState(false);
   const [title, setTitle] = useState("filter toggle");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {
     //console.log(filter, context.filters, context.filters.filter)
     let f = "";
@@ -51,6 +55,7 @@ const ToggleFilters = ({ filter }) => {
     //console.log(filter, f, context[f])
     context[f] ? setChecked(true) : setChecked(false);
   }, [context, filter]);
+  if (!mounted) return null;
 
   return (
     <div
@@ -75,8 +80,8 @@ const ToggleFilters = ({ filter }) => {
               <BsX />
             </div>
           }
-          offColor={theme === "dark" ? "#4B5563" : "#D1D5DB"}
-          onColor={theme === "dark" ? "#4B5563" : "#D1D5DB"}
+          offColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
+          onColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
           offHandleColor="#0284C7"
           onHandleColor="#0284C7"
         />

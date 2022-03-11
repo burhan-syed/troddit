@@ -2,14 +2,16 @@ import { useTheme } from "next-themes";
 import ReactSwitch from "react-switch";
 import { FaSun } from "react-icons/fa";
 import { RiMoonLine } from "react-icons/ri";
-import {FaRegMoon} from 'react-icons/fa'
-import {BiMoon,BiSun} from 'react-icons/bi'
-import { useEffect } from "react";
+import { FaRegMoon } from "react-icons/fa";
+import { BiMoon, BiSun } from "react-icons/bi";
+import { useEffect, useState } from "react";
 const ToggleTheme = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    
-  }, [])
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -17,7 +19,7 @@ const ToggleTheme = () => {
         <span>Theme</span>
         <ReactSwitch
           onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-          checked={theme === "dark"}
+          checked={resolvedTheme === "dark"}
           checkedHandleIcon={<div></div>}
           checkedIcon={
             <div
@@ -49,7 +51,7 @@ const ToggleTheme = () => {
             </div>
           }
           offColor="#EA580C"
-          onColor={theme === "dark" ? "#4B5563" : "#D1D5DB"}
+          onColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
           offHandleColor="#F59E0B"
           onHandleColor="#0284C7"
         />

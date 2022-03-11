@@ -1,13 +1,18 @@
 import { useMainContext } from "../MainContext";
 import ReactSwitch from "react-switch";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 const ToggleNSFW = () => {
   const context: any = useMainContext();
-  const { theme, setTheme } = useTheme();
-
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {}, [context]);
+  if (!mounted) return null;
+
   return (
     <div onClick={(e) => e.stopPropagation()} title={"censor 18+ posts"}>
       <label className="flex flex-row items-center justify-between cursor-pointer">
@@ -38,9 +43,9 @@ const ToggleNSFW = () => {
             </div>
           }
           offColor="#059669"
-          onColor={theme === "dark" ? "#4B5563" : "#D1D5DB"}
+          onColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
           offHandleColor="#4ADE80"
-          onHandleColor={theme === "dark" ? "#991B1B" : "#EF4444"}
+          onHandleColor={resolvedTheme === "dark" ? "#991B1B" : "#EF4444"}
         />
       </label>
     </div>
