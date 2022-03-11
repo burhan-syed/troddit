@@ -246,6 +246,15 @@ export const MainProvider = ({ children }) => {
     saved_saveWideUI?.includes("false")
       ? setSaveWideUI(false)
       : setSaveWideUI(true);
+    const saved_syncWideUI = localStorage.getItem("syncWideUI");
+    saved_saveWideUI?.includes("false")
+      ? setSyncWideUI(false)
+      : setSyncWideUI(true);
+    const saved_postWideUI = localStorage.getItem("postWideUI");
+    saved_saveWideUI?.includes("false")
+      ? setPostWideUI(false)
+      : setPostWideUI(true);
+
     const saved_wideUI = localStorage.getItem("wideUI");
     saved_wideUI?.includes("false") ? setWideUI(false) : setWideUI(true);
     saved_columnOverride && setColumnOverride(saved_columnOverride);
@@ -325,6 +334,12 @@ export const MainProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("saveWideUI", JSON.stringify(saveWideUI));
   }, [saveWideUI]);
+  useEffect(() => {
+    localStorage.setItem("syncWideUI", JSON.stringify(syncWideUI));
+  }, [syncWideUI]);
+  useEffect(() => {
+    localStorage.setItem("postWideUI", JSON.stringify(postWideUI));
+  }, [postWideUI]);
   useEffect(() => {
     localStorage.setItem("wideUI", JSON.stringify(wideUI));
   }, [wideUI]);
