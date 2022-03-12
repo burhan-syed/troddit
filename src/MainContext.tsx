@@ -196,7 +196,8 @@ export const MainProvider = ({ children }) => {
   const toggleWideUI = () => {
     setSaveWideUI((w) => {
       setWideUI(!w);
-      syncWideUI && setPostWideUI(!w);
+      //syncWideUI &&
+      setPostWideUI(!w);
       return !w;
     });
   };
@@ -247,11 +248,11 @@ export const MainProvider = ({ children }) => {
       ? setSaveWideUI(false)
       : setSaveWideUI(true);
     const saved_syncWideUI = localStorage.getItem("syncWideUI");
-    saved_saveWideUI?.includes("false")
+    saved_syncWideUI?.includes("false")
       ? setSyncWideUI(false)
       : setSyncWideUI(true);
     const saved_postWideUI = localStorage.getItem("postWideUI");
-    saved_saveWideUI?.includes("false")
+    saved_postWideUI?.includes("false")
       ? setPostWideUI(false)
       : setPostWideUI(true);
 
