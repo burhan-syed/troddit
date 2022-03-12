@@ -8,7 +8,6 @@ const ToggleWideUI = () => {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    console.log(theme, resolvedTheme);
     setMounted(true);
   }, []);
   if (!mounted) return null;
