@@ -617,7 +617,7 @@ const PostModal = ({
                       <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
                         {/* Title etc*/}
                         <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
-                          <div className="flex flex-row flex-wrap items-start ">
+                          <div className="flex flex-row flex-wrap items-start group">
                             <Link href={`/u/${apost?.author}`}>
                               <a
                                 title={`see u/${apost?.author}'s posts`}

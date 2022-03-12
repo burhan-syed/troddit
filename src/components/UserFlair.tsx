@@ -1,16 +1,24 @@
 import { useTheme } from "next-themes";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
+import { useEffect, useState } from "react";
+
+
 
 const UserFlair = ({ post }) => {
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
   if (post?.author_flair_richtext?.length > 0 || post?.author_flair_text)
     return (
       <div
         className={`px-1 rounded-lg inline-block select-none ${
           post?.author_flair_text_color == "light"
             ? " text-lightText "
-            : theme === "dark"
+            : resolvedTheme === "dark"
             ? "text-lightText"
             : "text-black"
         }`}
@@ -18,14 +26,14 @@ const UserFlair = ({ post }) => {
           backgroundColor: `${
             post?.author_flair_background_color
               ? post?.author_flair_background_color
-              : theme === "dark"
+              : resolvedTheme === "dark"
               ? " "
               : " "
           }`,
         }}
       >
         {post?.author_flair_richtext?.length > 0 ? (
-          <div className="flex flex-row items-center justify-center group ">
+          <div className="flex flex-row items-center justify-center ">
             {post?.author_flair_richtext.map((e, i) => (
               <div key={i} className="">
                 {e?.e == "emoji" && (

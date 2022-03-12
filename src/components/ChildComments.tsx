@@ -218,7 +218,7 @@ const ChildComments = ({
           {/* Author and comment data*/}
           <div className="flex flex-row flex-wrap items-center justify-between pl-3 space-x-1 text-sm text-gray-400 md:pl-0 dark:text-gray-500">
             {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
-            <div className="flex flex-row items-center space-x-1">
+            <div className="flex flex-row items-center space-x-1 group">
               <Link href={`/u/${comment?.data?.author}`}>
                 <a
                   onClick={(e) => {
