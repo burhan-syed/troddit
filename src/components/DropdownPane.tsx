@@ -218,17 +218,17 @@ const DropdownPane = ({ hide }) => {
                 </div>
               </a>
             </Link>
-            <div className="flex flex-row items-center justify-center mx-1">
-              <input
-                ref={filterRef}
-                type="text"
-                placeholder="Filter.."
-                onChange={(e) => {
-                  setFilter(e.target.value);
-                }}
-                className="w-full mx-2 px-2 border py-1.5 outline-none text-sm rounded border-lightBorder bg-transparent dark:bg-darkBG dark:border-darkBorder dark:text-lightText"
-              />
-            </div>
+          </div>
+          <div className="flex flex-row items-center justify-center mx-1 mb-2">
+            <input
+              ref={filterRef}
+              type="text"
+              placeholder="Filter.."
+              onChange={(e) => {
+                setFilter(e.target.value);
+              }}
+              className="w-full mx-2 px-2 border py-1.5 outline-none text-sm rounded border-lightBorder bg-transparent dark:bg-darkBG dark:border-darkBorder dark:text-lightText"
+            />
           </div>
           {!session && (
             <>
