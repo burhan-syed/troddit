@@ -239,8 +239,9 @@ export const findMediaInfo = async (post, quick = false) => {
     }
     if (post.media_metadata) {
       gallery = [];
-      for (let i in post.media_metadata) {
-        let image = post.media_metadata[i];
+      for (let i in post.gallery_data.items) {
+        let id = post.gallery_data.items[i].media_id
+        let image = post.media_metadata[id];
         if (image.p) {
           if (image.p.length > 0) {
             let num = image.p.length - 1;
