@@ -40,6 +40,7 @@ const PostModal = ({
   postData = {},
   postNum = 0,
   direct = false,
+  commentsDirect = false
 }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
@@ -58,6 +59,14 @@ const PostModal = ({
   const [imgFull, setimgFull] = useState(false);
   const [windowWidth, windowHeight] = useWindowSize();
   const [error, setError] = useState(false);
+  const commentsRef = useRef<HTMLDivElement>(null);
+  const executeScroll = () => {
+       commentsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    
+  };
 
   // const plausible = usePlausible();
 
@@ -142,8 +151,12 @@ const PostModal = ({
       setWait(true);
     };
   }, [apost, windowWidth]);
-
-  const divRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    console.log(commentsRef);
+    if (commentsRef?.current && commentsDirect) {
+      executeScroll();
+    }
+  }, [commentsRef?.current, commentsDirect]);
 
   const updateMyReplies = (html) => {
     const newreply = {
@@ -884,7 +897,10 @@ const PostModal = ({
                       left: 0,
                     }}
                   ></div>
-                  <div className="flex flex-row justify-between h-10 px-2 mt-2 ">
+                  <div
+                    ref={commentsRef}
+                    className="flex flex-row justify-between h-10 px-2 mt-2 "
+                  >
                     <div className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2">
                       <BiComment className="flex-none w-6 h-6 " />
                       <div className="flex flex-row items-center mb-1 space-x-1">
@@ -896,7 +912,7 @@ const PostModal = ({
                         </h1>
                       </div>
                     </div>
-                    <div className="z-10 flex-none">
+                    <div className="z-10 flex-none mb-1">
                       <CommentSort updateSort={updateSort} sortBy={sort} />
                     </div>
                   </div>
@@ -909,10 +925,7 @@ const PostModal = ({
                       ))}{" "}
                     </>
                   ) : (
-                    <div
-                      ref={divRef}
-                      className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden"
-                    >
+                    <div className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden">
                       <h1 className="">
                         {post_comments?.[0] ? "" : "no comments :("}
                       </h1>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { useSession } from "next-auth/client";
@@ -29,7 +29,15 @@ const ChildComments = ({
   const [vote, setVote] = useState(0);
   const [session, loading] = useSession();
   const context: any = useMainContext();
-
+  const parentRef = useRef(null);
+  const executeScroll = () => {
+    if (parentRef.current.getBoundingClientRect().top < 0) {
+      return parentRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
   const [childcomments, setchildcomments] = useState([]);
 
   const [myReplies, setmyReplies] = useState([]);
@@ -159,6 +167,7 @@ const ChildComments = ({
 
   return (
     <div
+      ref={parentRef}
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
@@ -182,6 +191,7 @@ const ChildComments = ({
           onClick={(e) => {
             e.stopPropagation();
             setHideChildren((h) => !h);
+            executeScroll();
           }}
           className={
             "min-h-full w-1  flex-none  cursor-pointer group" +
