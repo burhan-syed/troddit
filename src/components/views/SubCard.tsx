@@ -102,7 +102,7 @@ const SubCard = ({
           (hideNSFW ||
           (subBanner?.backgroundImage?.length < 9 &&
             subBanner?.backgroundColor?.length < 2)
-            ? "  bg-blue-400 dark:bg-red-800"
+            ? "  bg-lightScroll dark:bg-darkScroll"
             : "")
         }
         style={hideNSFW ? {} : subBanner}

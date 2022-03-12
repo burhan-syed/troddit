@@ -270,10 +270,9 @@ const PostModal = ({
     setSelect(false);
     //console.log("Clicked back");
     //for handling returning to [frontsort] routes, only clicking in the app works... browser back button kicks to front page
-    if (returnRoute === "multimode"){
+    if (returnRoute === "multimode") {
       //do nothing
-    }
-    else if (returnRoute) {
+    } else if (returnRoute) {
       //console.log("last route", returnRoute);
       router.push(returnRoute);
     } else {
@@ -307,26 +306,33 @@ const PostModal = ({
         //console.log(router, returnRoute);
         setPost(context.posts[context.postNum + 1].data);
         updateComments(context.posts[context.postNum + 1]?.data?.permalink);
-        if (!(router.route === "/u/[...slug]" && router.query?.slug?.[1]?.toUpperCase() === "M")){
-        router.replace(
-          "",
-          router.query?.frontsort
-            ? context.posts[context.postNum + 1]?.data?.id
-            : router.route === "/u/[...slug]" &&
-              session?.user?.name?.toUpperCase() ===
-                router?.query?.slug?.[0]?.toUpperCase()
-            ? `/u/${router.query?.slug?.[0]}/${
-                router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-              }${context.posts[context.postNum + 1]?.data?.id}`
-            : router.route === "/u/[...slug]"
-            ? `/u/${context.posts[context.postNum + 1]?.data?.author}/p/${
-                context.posts[context.postNum + 1]?.data?.id
-              }`
-            : context.posts[context.postNum + 1]?.data?.permalink,
-          {
-            shallow: true,
-          }
-        );
+        if (
+          !(
+            router.route === "/u/[...slug]" &&
+            router.query?.slug?.[1]?.toUpperCase() === "M"
+          )
+        ) {
+          router.replace(
+            "",
+            router.query?.frontsort
+              ? context.posts[context.postNum + 1]?.data?.id
+              : router.route === "/u/[...slug]" &&
+                session?.user?.name?.toUpperCase() ===
+                  router?.query?.slug?.[0]?.toUpperCase()
+              ? `/u/${router.query?.slug?.[0]}/${
+                  router?.query?.slug?.[1]
+                    ? `${router?.query?.slug?.[1]}/`
+                    : `p/`
+                }${context.posts[context.postNum + 1]?.data?.id}`
+              : router.route === "/u/[...slug]"
+              ? `/u/${context.posts[context.postNum + 1]?.data?.author}/p/${
+                  context.posts[context.postNum + 1]?.data?.id
+                }`
+              : context.posts[context.postNum + 1]?.data?.permalink,
+            {
+              shallow: true,
+            }
+          );
         }
         context.setPostNum((p) => p + 1);
         setVote(0);
@@ -336,27 +342,33 @@ const PostModal = ({
         //console.log("moveback");
         setPost(context.posts[context.postNum - 1].data);
         updateComments(context.posts[context.postNum - 1]?.data?.permalink);
-        if (!(router.route === "/u/[...slug]" && router.query?.slug?.[1]?.toUpperCase() === "M")){
-
-        router.replace(
-          "",
-          router.query?.frontsort
-            ? context.posts[context.postNum - 1]?.data?.id
-            : router.route === "/u/[...slug]" &&
-              session?.user?.name?.toUpperCase() ===
-                router?.query?.slug?.[0]?.toUpperCase()
-            ? `/u/${router.query?.slug?.[0]}/${
-                router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-              }${context.posts[context.postNum - 1]?.data?.id}`
-            : router.route === "/u/[...slug]"
-            ? `/u/${context.posts[context.postNum - 1]?.data?.author}/p/${
-                context.posts[context.postNum - 1]?.data?.id
-              }`
-            : context.posts[context.postNum - 1]?.data?.permalink,
-          {
-            shallow: true,
-          }
-        );
+        if (
+          !(
+            router.route === "/u/[...slug]" &&
+            router.query?.slug?.[1]?.toUpperCase() === "M"
+          )
+        ) {
+          router.replace(
+            "",
+            router.query?.frontsort
+              ? context.posts[context.postNum - 1]?.data?.id
+              : router.route === "/u/[...slug]" &&
+                session?.user?.name?.toUpperCase() ===
+                  router?.query?.slug?.[0]?.toUpperCase()
+              ? `/u/${router.query?.slug?.[0]}/${
+                  router?.query?.slug?.[1]
+                    ? `${router?.query?.slug?.[1]}/`
+                    : `p/`
+                }${context.posts[context.postNum - 1]?.data?.id}`
+              : router.route === "/u/[...slug]"
+              ? `/u/${context.posts[context.postNum - 1]?.data?.author}/p/${
+                  context.posts[context.postNum - 1]?.data?.id
+                }`
+              : context.posts[context.postNum - 1]?.data?.permalink,
+            {
+              shallow: true,
+            }
+          );
         }
 
         context.setPostNum((p) => p - 1);
@@ -448,7 +460,7 @@ const PostModal = ({
             {usePortrait && (
               <div
                 ref={portraitDivRef}
-                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
+                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
               >
                 {pHeight && pWidth && (
                   <div className={"flex-grow " + (imgFull ? " my-auto" : "")}>
@@ -488,7 +500,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg md:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800"
+                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg md:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}

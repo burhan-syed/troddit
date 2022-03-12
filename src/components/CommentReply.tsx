@@ -136,7 +136,7 @@ const CommentReply = ({ parent, getHtml }) => {
               "absolute bottom-2 !bg-green-500 !rounded-lg !p-0 w-full !m-0 flex flex-row items-center !border-none "
             }
             editorClassName={
-              "scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full bg-lightBG dark:bg-darkHighlight border  hover:cursor-text border-lightBorder flex-wrap focus-within:border-lightBorderHighlight focus-within:brightness-100 leading-tight  brightness-80 dark:border-darkBorder dark:focus-within:border-darkBorderHighlight rounded-lg px-4 pb-8"
+              "scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll scrollbar-thumb-rounded-full bg-lightBG dark:bg-darkHighlight border  hover:cursor-text border-lightBorder flex-wrap focus-within:border-lightBorderHighlight focus-within:brightness-100 leading-tight  brightness-80 dark:border-darkBorder dark:focus-within:border-darkBorderHighlight rounded-lg px-4 pb-8"
             }
             editorState={editorState}
             toolbarHidden

@@ -91,7 +91,7 @@ const DropdownPane = ({ hide }) => {
       {/* Main Button */}
       <div
         className={
-          "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-white rounded-md hover:cursor-pointer hover:border-lightBorder rounded-2 dark:bg-darkBG dark:hover:border-darkBorder dark:border-darkBG" +
+          "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer hover:border-lightBorder rounded-2 dark:bg-darkBG dark:hover:border-darkBorder dark:border-darkBG" +
           (show ? " border-lightBorder dark:border-darkBorder" : "")
         }
         onClick={handleClick}
@@ -165,7 +165,7 @@ const DropdownPane = ({ hide }) => {
         {/* scroll */}
         <div
           className={
-            "grid grid-cols-1 overflow-y-auto overscroll-contain scrollbar-thin transition-all   scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800 " +
+            "grid grid-cols-1 overflow-y-auto overscroll-contain scrollbar-thin transition-all   scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll " +
             (expand ? " max-h-[90vh]" : "  max-h-96 ")
           }
         >

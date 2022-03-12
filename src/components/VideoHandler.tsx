@@ -509,7 +509,7 @@ const VideoHandler = ({
                     ></div>
                     {/* Vol indicator */}
                     <div
-                      className="absolute bottom-0 z-10 w-full origin-bottom bg-blue-400 rounded-full dark:bg-red-800"
+                      className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-lightScroll dark:bg-darkScroll"
                       style={{ height: `${muted ? 0 : volume * 100}%` }}
                     ></div>
                     <div className="absolute bottom-0 z-0 w-full h-full bg-white bg-opacity-50 rounded-full"></div>

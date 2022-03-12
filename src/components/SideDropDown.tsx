@@ -35,7 +35,7 @@ const SideDropDown = ({ visible = false }) => {
   }, [visible]);
 
   return (
-    <div className="grid h-full grid-cols-1 overflow-y-auto select-none overscroll-contain scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800">
+    <div className="grid h-full grid-cols-1 overflow-y-auto select-none overscroll-contain scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll">
       {/* Quick Links */}
       <div className="flex flex-col py-2 font-light">
         <Link href="/" passHref>
