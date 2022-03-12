@@ -184,6 +184,7 @@ const ChildComments = ({
         onClick={(e) => {
           e.stopPropagation();
           setHideChildren((h) => !h);
+          executeScroll();
         }}
       >
         {/* Left Ribbon */}
@@ -213,6 +214,7 @@ const ChildComments = ({
           onClick={(e) => {
             e.stopPropagation();
             setHideChildren((h) => !h);
+            executeScroll();
           }}
         >
           {/* Author and comment data*/}
