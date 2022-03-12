@@ -152,7 +152,6 @@ const PostModal = ({
     };
   }, [apost, windowWidth]);
   useEffect(() => {
-    console.log(commentsRef);
     if (commentsRef?.current && commentsDirect) {
       executeScroll();
     }

@@ -60,7 +60,7 @@ const VideoHandler = ({
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
-    //console.log(videoInfo.url);
+    // console.log(maxHeight, imgFull);
     if (postMode && containerDims) {
       //console.log(containerDims);
       let ry = containerDims?.[1] / videoInfo?.height;
@@ -80,7 +80,7 @@ const VideoHandler = ({
           Math.floor(videoInfo.height * (containerDims?.[0] / videoInfo?.width))
         );
       }
-    } else if (imgFull || (context.columnOverride == 1 && !postMode)) {
+    } else if (!imgFull || (context.columnOverride == 1 && !postMode)) {
       if (videoInfo?.height && maxHeightNum) {
         let r = maxHeightNum / videoInfo.height;
         setVidHeight(Math.floor(videoInfo.height * r));
