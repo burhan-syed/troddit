@@ -36,14 +36,16 @@ const ParseBodyHTML = ({ html, small = true, limitWidth = false }) => {
       return replaceUserDomains(str);
     };
 
-    const replaceUserDomains = (str) => {
+    const replaceUserDomains = (str: String) => {
       let redditRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))/gm;
+      //excluding poll links for now
+      let pollRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/poll\/)/gm;
       // let youtubeRegex = /([A-z.]+\.)?youtu(be\.com|\.be)/gm;
       // let twitterRegex = /([A-z.]+\.)?twitter\.com/gm;
       // let instagramRegex = /([A-z.]+\.)?instagram.com/gm;
-
-      str = str.replace(redditRegex, "troddit.com");
-
+      if (!str.match(pollRegex)) {
+        str = str.replace(redditRegex, "troddit.com");
+      }
       return str;
     };
 
