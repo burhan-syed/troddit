@@ -505,7 +505,7 @@ export const loadUserPosts = async (
     try {
       const res = await (
         await axios.get(
-          `${REDDIT}/user/${username}/submitted.json?sort=${sort}`,
+          `${REDDIT}/user/${username}/.json?sort=${sort}`,
           {
             params: {
               raw_json: 1,
