@@ -395,7 +395,7 @@ const Search = ({ id }) => {
                   className="flex flex-row items-center ml-auto space-x-2 group"
                   onClick={(e) => addSub(e, suggestion?.data?.display_name)}
                 >
-                  <span className="text-xs">Multi Browse</span>
+                  <span className="hidden text-xs lg:block">Multi Browse</span>
                   <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 dark:text-lightText group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder">
                     <AiOutlinePlus className="" />
                   </div>

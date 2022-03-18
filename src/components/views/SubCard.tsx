@@ -111,7 +111,7 @@ const SubCard = ({
       <div
         className={
           "flex flex-col my-2 " +
-          (tall ? " md:h-40 mx-6 md:mx-16 " : " h-[8.75rem] md:h-24 mx-2 ")
+          (tall ? " md:h-40 mx-6 md:mx-16 " : "  h-24  mx-2 ")
         }
       >
         <div
@@ -158,10 +158,10 @@ const SubCard = ({
           <div className="flex flex-col ">
             <div
               className={
-                "z-10 flex flex-row mx-auto md:mx-0  md:pl-5 md:pr-2  md:-ml-3.5 space-x-2 md:rounded-tr-md pl-auto dark:bg-darkBG bg-lightPost " +
+                "z-10 flex flex-row mx-auto    space-x-2  pl-auto dark:bg-darkBG bg-lightPost " +
                 (tall
-                  ? " md:border-t md:border-r md:pt-[6px] md:pb-[-3px] items-end md:mt-[10px] "
-                  : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2")
+                  ? " md:border-t md:border-r md:pt-[6px] md:pb-[-3px] items-end md:mt-[10px] md:rounded-tr-md md:pl-5 md:pr-2  md:-ml-3.5 md:mx-0"
+                  : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2 rounded-tr-md pl-5 pr-2  -ml-3.5")
               }
             >
               {loading ? (
@@ -170,23 +170,34 @@ const SubCard = ({
                 </>
               ) : (
                 <>
-                  <h1
-                    className={
-                      "font-semibold  hover:cursor-pointer hover:underline group-hover:underline" +
-                      (tall ? " " : " ")
+                  <Link
+                    href={
+                      data?.kind === "t2"
+                        ? `/u/${data?.data?.name}`
+                        : `/r/${data?.data?.display_name}`
                     }
-                    onClick={() => {
-                      !link && context.setForceRefresh((p) => p + 1);
-                    }}
+                    passHref
                   >
-                    {data?.kind === "t2"
-                      ? `u/${data?.data?.name}`
-                      : data?.data?.display_name_prefixed ?? (
-                          <div className="w-16 text-transparent">
-                            {"loading.."}
-                          </div>
-                        )}
-                  </h1>
+                    <a>
+                      <h1
+                        className={
+                          "font-semibold  hover:cursor-pointer hover:underline group-hover:underline" +
+                          (tall ? " " : " ")
+                        }
+                        onClick={() => {
+                          !link && context.setForceRefresh((p) => p + 1);
+                        }}
+                      >
+                        {data?.kind === "t2"
+                          ? `u/${data?.data?.name}`
+                          : data?.data?.display_name_prefixed ?? (
+                              <div className="w-16 text-transparent">
+                                {"loading.."}
+                              </div>
+                            )}
+                      </h1>
+                    </a>
+                  </Link>
                   {!link && (data?.data?.url || data?.data?.subreddit?.url) && (
                     <a
                       href={`https://www.reddit.com${
@@ -234,47 +245,27 @@ const SubCard = ({
           </div>
         </div>
 
-        <div className="z-20 flex flex-row mx-auto mt-2 space-x-1 md:hidden">
-          {selfProfile ? (
-            <Login />
-          ) : (
-            <SubButton
-              sub={
-                data?.kind == "t5"
-                  ? session
-                    ? data?.data?.name
-                    : data?.data?.display_name
-                  : session
-                  ? data?.data?.subreddit?.name
-                  : data?.data?.subreddit?.display_name
-              }
-              userMode={data?.kind === "t2"}
-            />
-          )}
-
-          {data?.kind !== "t2" && !link && (
-            <SubOptButton
-              subInfo={subInfo}
-              currMulti={currMulti}
-              subArray={subArray}
-              openDescription={openDescription}
-            />
-          )}
-        </div>
         <div
           className={
             "flex flex-row   " +
             (tall ? " md:ml-[6.25rem]  mt-2  md:-mt-3 " : " pl-5 ml-[3.25rem]")
           }
         >
-          <h1 className="mx-auto text-xs text-center md:text-left md:h-8 md:-mt-6 md:overflow-x-hidden md:overflow-y-scroll scrollbar-none md:mx-0">
+          <h1
+            className={
+              " text-xs overflow-x-hidden overflow-y-scroll scrollbar-none md:mx-0" +
+              (tall
+                ? " text-center md:text-left md:h-8 md:-mt-6 mx-auto "
+                : " -mt-6 h-8")
+            }
+          >
             {data?.data?.subreddit?.public_description ??
               data?.data?.public_description}
           </h1>
           <div
             className={
-              "relative hidden md:flex  flex-row mb-auto ml-auto mt-[-1.6rem] space-x-1 " +
-              (tall ? " " : " ")
+              "relative  mb-auto ml-auto mt-[-1.6rem] space-x-1 " +
+              (tall ? " hidden md:flex  flex-row  " : " ")
             }
           >
             {selfProfile ? (
@@ -309,6 +300,39 @@ const SubCard = ({
             )}
           </div>
         </div>
+        {tall && (
+          <div
+            className={
+              "z-20 md:hidden flex flex-row mx-auto mt-2 space-x-1  min-w-full justify-between" +
+              (tall ? "  " : "")
+            }
+          >
+            {selfProfile ? (
+              <Login />
+            ) : (
+              <SubButton
+                sub={
+                  data?.kind == "t5"
+                    ? session
+                      ? data?.data?.name
+                      : data?.data?.display_name
+                    : session
+                    ? data?.data?.subreddit?.name
+                    : data?.data?.subreddit?.display_name
+                }
+                userMode={data?.kind === "t2"}
+              />
+            )}
+            {data?.kind !== "t2" && !link && (
+              <SubOptButton
+                subInfo={subInfo}
+                currMulti={currMulti}
+                subArray={subArray}
+                openDescription={openDescription}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
