@@ -136,7 +136,7 @@ const SubredditBanner = ({
         currMulti={currMulti}
         subArray={subArray}
         openDescription={toggleOpenDescription}
-        selfProfile={name}
+        isSelf={isSelf}
       />
 
       {name && (
@@ -147,7 +147,7 @@ const SubredditBanner = ({
                 <div
                   className={
                     " cursor-pointer font-bold" +
-                    ((userPostMode === "" ||  userPostMode === "OVERVIEW")
+                    (userPostMode === "" || userPostMode === "OVERVIEW"
                       ? " font-bold  "
                       : " opacity-50 hover:opacity-70")
                   }
@@ -230,8 +230,11 @@ const SubredditBanner = ({
                 </Link>{" "}
               </>
             )}
-                      {userPostMode === "SAVED" && <div className="ml-auto text-sm"><ToggleUserPostType /></div>}
-
+            {userPostMode === "SAVED" && (
+              <div className="ml-auto text-sm">
+                <ToggleUserPostType />
+              </div>
+            )}
           </div>
         </div>
       )}

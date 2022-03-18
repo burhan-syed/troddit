@@ -2,8 +2,7 @@ import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import ReactSwitch from "react-switch";
 import { useMainContext } from "../MainContext";
-import { BiComment,BiDetail } from "react-icons/bi";
-
+import { BiComment, BiDetail } from "react-icons/bi";
 
 const ToggleUserPostType = () => {
   const context: any = useMainContext();
@@ -17,20 +16,20 @@ const ToggleUserPostType = () => {
   return (
     <div onClick={(e) => e.stopPropagation()} title={"toggle links/comments"}>
       <label className="flex flex-row items-center justify-between cursor-pointer">
-        <span>Type</span>
+        <span className="mr-2">Type</span>
         <ReactSwitch
           onChange={toggleUserPostType}
-          checked={userPostType === 'links'}
+          checked={userPostType === "links"}
           checkedHandleIcon={<div></div>}
           checkedIcon={
             <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
-              <BiDetail/>
+              <BiDetail />
             </div>
           }
           uncheckedHandleIcon={<div></div>}
           uncheckedIcon={
             <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
-              <BiComment/>
+              <BiComment />
             </div>
           }
           offColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}

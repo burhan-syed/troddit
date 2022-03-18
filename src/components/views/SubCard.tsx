@@ -18,7 +18,7 @@ const SubCard = ({
   currMulti = undefined,
   subArray = undefined,
   openDescription = undefined,
-  selfProfile = undefined,
+  isSelf = false,
 }) => {
   const context: any = useMainContext();
   const [thumbURL, setThumbURL] = useState("");
@@ -268,7 +268,7 @@ const SubCard = ({
               (tall ? " hidden md:flex  flex-row  " : " ")
             }
           >
-            {selfProfile ? (
+            {isSelf ? (
               <div
                 className={
                   "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder hover:bg-lightHighlight p-1 rounded-md cursor-pointer dark:hover:bg-darkBorder"
@@ -307,7 +307,7 @@ const SubCard = ({
               (tall ? "  " : "")
             }
           >
-            {selfProfile ? (
+            {isSelf ? (
               <Login />
             ) : (
               <SubButton
