@@ -17,29 +17,28 @@ const Sort = ({ query }) => {
   const [username, setUserName] = useState("");
   const [isMulti, setIsMulti] = useState(false);
   const [feedQuery, setFeedQuery] = useState("");
-  useEffect(() => {
-    const getSubsArray = async () => {
-      let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
-      // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
-      
-      subs?.length > 0 &&
-        router.push(
-          `/r/${subs.join("+")}`
-        );
-      //?m=${query.slug[2]}
-      setLoaded(true);
-    };
 
+  const getSubsArray = async () => {
+    let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
+    // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
+
+    subs?.length > 0 && router.push(`/r/${subs.join("+")}`);
+    //?m=${query.slug[2]}
+    setLoaded(true);
+  };
+
+  useEffect(() => {
     const sessionLoad = async (user, mode) => {
       if (
-        !session ||
-        session?.user?.name?.toUpperCase() !== user.toUpperCase()
+        (!session ||
+          session?.user?.name?.toUpperCase() !== user.toUpperCase()) &&
+        (mode === "SAVED" || mode === "UPVOTED" || mode === "DOWNVOTED")
       ) {
         setForbidden(true);
         return false;
       } else {
         setForbidden(false);
-        setUserName(session?.user?.name);
+        setUserName(query?.slug?.[0]);
         setFeedQuery(query);
         setIsUser(true);
         setLoaded(true);
@@ -48,29 +47,27 @@ const Sort = ({ query }) => {
     };
 
     if (!loading) {
-      if (
-        session?.user?.name?.toUpperCase() === query?.slug?.[0]?.toUpperCase()
-      ) {
-        setUserName(query?.slug?.[0]);
-      }
       if (query?.slug?.[1] === "p") {
-        router.replace(`/${query.slug?.[2]}`);
+        // router.replace(`/${query.slug?.[2]}`);
         setLoaded(true);
-      }  else if (
+      } else if (
         query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "SAVED" ||
         query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "OVERVIEW" ||
-        query?.slug?.[1]?.toUpperCase() === "SUBMITTED"
+        query?.slug?.[1]?.toUpperCase() === "SUBMITTED" ||
+        query?.slug?.[1]?.toUpperCase() === "COMMENTS"
       ) {
         sessionLoad(query?.slug?.[0], query?.slug?.[1]);
       } else {
         setIsUser(true);
         setFeedQuery(query);
         if (query?.slug?.[1] === "m" && query?.slug?.[2]?.length > 0) {
-          getSubsArray();
           setIsMulti(true);
+          setLoaded(true);
         } else {
+          setUserName(query?.slug?.[0]);
+
           setLoaded(true);
         }
       }
@@ -79,6 +76,7 @@ const Sort = ({ query }) => {
     return () => {
       setLoaded(false);
       setIsUser(false);
+      setIsMulti(false);
       setForbidden(false);
       setUserName("");
       setMode("");
@@ -107,9 +105,22 @@ const Sort = ({ query }) => {
                   <SubredditBanner
                     subreddits={[`u_${query?.slug?.[0]}`]}
                     userMode={true}
-                    ownProfile={mode}
+                    userPostMode={mode}
                     name={username}
+                    isSelf={
+                      username?.toUpperCase() ===
+                      session?.user?.name?.toUpperCase()
+                    }
                   />
+                  {isMulti && (
+                    <div className="flex justify-center w-full ">{`Viewing multi "${query?.slug?.[2]}" by u/${query?.slug?.[0]}`}</div>
+                  )}
+                  {isMulti && !session && (
+                    <div className="flex justify-center w-full pb-2">{`Login to save this multi`}</div>
+                  )}
+                  {isMulti && session && (
+                    <div className="flex justify-center w-full pb-2 hover:cursor-pointer hover:font-semibold" onClick={getSubsArray}>Click to Extract Subreddits</div>
+                  )}
                 </div>
               ) : (
                 <div className="pt-16"></div>
@@ -117,7 +128,10 @@ const Sort = ({ query }) => {
               <Feed
                 query={feedQuery}
                 isUser={isUser}
-                ownProfile={mode}
+                isSelf={
+                  username?.toUpperCase() === session?.user?.name?.toUpperCase()
+                }
+                userPostMode={mode}
                 isMulti={isMulti}
               />
             </div>

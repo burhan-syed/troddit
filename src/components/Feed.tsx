@@ -31,7 +31,8 @@ const Feed = ({
   isSubFlair = false,
   isSearch = false,
   safeSearch = false,
-  ownProfile = "",
+  userPostMode = "",
+  isSelf = false,
 }) => {
   const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,7 @@ const Feed = ({
     linkFilter,
     imgPortraitFilter,
     imgLandscapeFilter,
+    userPostType,
   } = context;
   const [filterCount, setFilterCount] = useState(0);
   // const breakpointColumnsObj = {
@@ -71,7 +73,7 @@ const Feed = ({
 
   useEffect(() => {
     //console.log(query);
-    if (query?.slug?.[1] === "comments") {
+    if (query?.slug?.[1] === "comments" && !userPostMode) {
       setFetchPost(true);
       updateLoading(false);
     } else if (query.frontsort) {
@@ -109,7 +111,7 @@ const Feed = ({
 
   useEffect(() => {
     setFilterCount(0);
-    if (query?.slug?.[1] === "comments") {
+    if (query?.slug?.[1] === "comments" && !userPostMode) {
       setFetchPost(true);
       updateLoading(false);
     } else if (isSearch) {
@@ -124,7 +126,9 @@ const Feed = ({
         query?.frontsort?.includes("rising")
       ) {
         !sessloading && fetchFront();
-      } else {setFetchPost(true)}
+      } else {
+        setFetchPost(true);
+      }
     } else if (query.slug) {
       !sessloading && fetchSubs();
     } else {
@@ -146,7 +150,8 @@ const Feed = ({
     sessloading,
     query.q,
     safeSearch,
-    ownProfile,
+    userPostMode,
+    userPostType,
     context.forceRefresh,
   ]);
 
@@ -196,18 +201,20 @@ const Feed = ({
       .join("+")
       .split("%20")
       .join("+");
-    if (query?.slug?.[1] === "comments") {
+    if (query?.slug?.[1] === "comments" && !userPostMode) {
       setFetchPost(true);
     } else if (isUser) {
-      if (ownProfile !== "") {
+      if (userPostMode !== "" && isSelf) {
+        console.log(userPostMode);
         data = await loadUserSelf(
           context?.token,
           session ? true : false,
-          ownProfile.toLocaleLowerCase(),
+          userPostMode.toLocaleLowerCase(),
           query?.sort,
           query?.t,
           "",
-          session?.user?.name
+          session?.user?.name,
+          userPostType === "comments" ? "comments" : "links"
         );
         //console.log(data);
       } else if (isMulti) {
@@ -221,7 +228,10 @@ const Feed = ({
         data = await loadUserPosts(
           query?.slug?.[0] ?? "",
           query?.sort ?? "hot",
-          query?.t ?? ""
+          query?.t ?? "",
+          "",
+          undefined,
+          userPostMode
         );
       }
     } else if (isSubFlair) {
@@ -434,7 +444,7 @@ const Feed = ({
                 initItems={posts}
                 initAfter={after}
                 isUser={isUser}
-                ownProfile={ownProfile}
+                userPostMode={userPostMode}
                 isMulti={isMulti}
                 isSearch={isSearch}
                 session={session}

@@ -72,9 +72,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
     }
   }, [myLocalSubs]);
 
-  useEffect(() => {
-    console.log(myMultis);
-  }, [myMultis]);
 
   const constructMultiLink = (multi) => {
     let subs = [];

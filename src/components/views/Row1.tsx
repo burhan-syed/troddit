@@ -20,9 +20,6 @@ const Row1 = ({
   post,
   hasMedia,
   hideNSFW,
-  score,
-  vote,
-  castVote,
   forceMute,
   postNum,
 }) => {

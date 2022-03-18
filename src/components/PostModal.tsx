@@ -40,7 +40,8 @@ const PostModal = ({
   postData = {},
   postNum = 0,
   direct = false,
-  commentsDirect = false
+  commentsDirect = false,
+  commentMode = false,
 }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
@@ -61,11 +62,10 @@ const PostModal = ({
   const [error, setError] = useState(false);
   const commentsRef = useRef<HTMLDivElement>(null);
   const executeScroll = () => {
-       commentsRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    
+    commentsRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   // const plausible = usePlausible();
@@ -205,7 +205,7 @@ const PostModal = ({
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (Object.keys(postData).length > 0) {
+      if (Object.keys(postData).length > 0 && !commentMode) {
         setPost(postData);
         setLoadingPost(false);
       }
@@ -216,7 +216,7 @@ const PostModal = ({
         context?.token
       );
       token && context.setToken(token);
-      if (Object.keys(postData).length === 0) {
+      if (Object.keys(postData).length === 0 || commentMode) {
         //console.log("post", post);
         if (post?.id) {
           //let d = await findMediaInfo(post);
@@ -911,9 +911,11 @@ const PostModal = ({
                         </h1>
                       </div>
                     </div>
-                    <div className="z-10 flex-none mb-1">
-                      <CommentSort updateSort={updateSort} sortBy={sort} />
-                    </div>
+                    {!commentMode && (
+                      <div className="z-10 flex-none mb-1">
+                        <CommentSort updateSort={updateSort} sortBy={sort} />
+                      </div>
+                    )}
                   </div>
                   {/* Loading Comments */}
                   {loadingComments ? (
@@ -928,6 +930,18 @@ const PostModal = ({
                       <h1 className="">
                         {post_comments?.[0] ? "" : "no comments :("}
                       </h1>
+                      {/* Open All Comments */}
+                      {commentMode && (
+                        <div className="flex-grow w-full px-2 mt-1">
+                          <div className="p-2 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                            <Link href={apost.permalink} passHref>
+                              <a className="font-semibold text-blue-700 hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300">
+                                Click to view all comments
+                              </a>
+                            </Link>
+                          </div>
+                        </div>
+                      )}
                       <div className={"flex-grow  w-full px-2 "}>
                         <Comments comments={myReplies} depth={0} />
                         <Comments

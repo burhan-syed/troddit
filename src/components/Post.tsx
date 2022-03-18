@@ -16,13 +16,13 @@ import { findMediaInfo, secondsToTime } from "../../lib/utils";
 import Card1 from "./views/Card1";
 import Card2 from "./views/Card2";
 import Row1 from "./views/Row1";
+import CommentCard from "./views/CommentCard";
 
 // import { usePlausible } from "next-plausible";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
-  const [score, setScore] = useState("");
   const [select, setSelect] = useState(false);
   const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
@@ -32,10 +32,10 @@ const Post = ({ post, postNum = 0 }) => {
   const [margin, setMargin] = useState("m-1");
 
   useEffect(() => {
-    context.nsfw === "false" && post.over_18
+    context.nsfw === "false" && post?.data?.over_18
       ? setHideNSFW(true)
       : setHideNSFW(false);
-    post.spoiler && setHideNSFW(true);
+    post?.data.spoiler && setHideNSFW(true);
     findMedia();
     return () => {
       setHideNSFW(false);
@@ -66,16 +66,6 @@ const Post = ({ post, postNum = 0 }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
-  const calculateScore = (x: number) => {
-    if (x < 10000) {
-      return x.toString();
-    } else {
-      let y = Math.floor(x / 1000);
-      let z = (x / 1000).toFixed(1);
-      return z.toString() + "k";
-    }
-  };
-
   const handleClick = (e) => {
     e.stopPropagation();
     // plausible("postOpen");
@@ -88,7 +78,7 @@ const Post = ({ post, postNum = 0 }) => {
         // router.push("/", post.permalink);
         // console.log("FRONSORT");
         //setReturnRoute(router.asPath);
-        router.push("", post.id, { shallow: true });
+        router.push("", post?.data.id, { shallow: true });
       } else if (
         router.pathname.includes("/u/") &&
         session?.user?.name?.toUpperCase() ===
@@ -98,42 +88,43 @@ const Post = ({ post, postNum = 0 }) => {
           "",
           `/u/${router.query?.slug?.[0]}/${
             router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-          }${post.id}`,
+          }${post?.data.id}`,
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
-        if (router.query?.slug?.[1]?.toUpperCase() === "M"){
+        if (router.query?.slug?.[1]?.toUpperCase() === "M") {
           //no routing
         } else {
-          router.push("", `/u/${post.author}/p/${post.id}`, { shallow: true });
-
+          router.push("", `/u/${post?.data.author}/p/${post?.data.id}`, {
+            shallow: true,
+          });
         }
       } else {
-        router.push("", post.permalink, { shallow: true });
+        router.push("", post?.data.permalink, { shallow: true });
       }
     } else {
-      window.open(`${post.permalink}`, "_blank");
+      window.open(`${post?.data.permalink}`, "_blank");
     }
   };
 
   const findMedia = () => {
-    if (post?.preview?.reddit_video_preview) {
+    if (post?.data?.preview?.reddit_video_preview) {
       setHasMedia(true);
       return true;
-    } else if (post?.media?.reddit_video) {
+    } else if (post?.data?.media?.reddit_video) {
       setHasMedia(true);
       return true;
-    } else if (post?.media_metadata) {
+    } else if (post?.data?.media_metadata) {
       setHasMedia(true);
       return true;
-    } else if (post?.preview?.images?.[0]) {
+    } else if (post?.data?.preview?.images?.[0]) {
       setHasMedia(true);
       return true;
-    } else if (post?.url) {
+    } else if (post?.data?.url) {
       if (
-        post.url.includes(".jpg") ||
-        post.url.includes(".png") ||
-        post.url.includes(".gif")
+        post?.data.url.includes(".jpg") ||
+        post?.data.url.includes(".png") ||
+        post?.data.url.includes(".gif")
       ) {
         setHasMedia(true);
         return true;
@@ -144,33 +135,20 @@ const Post = ({ post, postNum = 0 }) => {
     }
   };
 
-  const [vote, setVote] = useState(0);
-
-  const castVote = async (e, v) => {
-    e.stopPropagation();
-    if (session) {
-      v === vote ? (v = 0) : undefined;
-      let res = await postVote(v, post.name);
-      res ? setVote(v) : undefined;
-    } else {
-      context.setLoginModal(true);
-    }
-  };
-  useEffect(() => {
-    setScore(calculateScore(post?.score ? post?.score + vote : 0));
-
-    return () => {};
-  }, [post, vote]);
-
   return (
     <div className={margin + " z-30"}>
       {select && (
         <PostModal
-          permalink={post?.permalink}
+          permalink={post?.data?.permalink}
           setSelect={setSelect}
-          returnRoute={router.query?.slug?.[1]?.toUpperCase() === "M" ? "multimode" : undefined}
-          postData={post}
+          returnRoute={
+            router.query?.slug?.[1]?.toUpperCase() === "M"
+              ? "multimode"
+              : undefined
+          }
+          postData={post?.data}
           postNum={postNum}
+          commentMode={post?.kind === "t1"}
         />
       )}
 
@@ -178,36 +156,29 @@ const Post = ({ post, postNum = 0 }) => {
       <div className="select-none" onClick={(e) => handleClick(e)}>
         {/* OG Card */}
         {/* <h1>{postNum}</h1> */}
-        {context?.cardStyle === "row1" ? (
+        {post?.kind === "t1" ? (
+          <CommentCard data={post?.data} postNum={postNum} />
+        ) : context?.cardStyle === "row1" ? (
           <Row1
-            post={post}
+            post={post?.data}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
-            score={score}
-            vote={vote}
-            castVote={castVote}
             forceMute={forceMute}
             postNum={postNum}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
-            post={post}
+            post={post?.data}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
-            score={score}
-            vote={vote}
-            castVote={castVote}
             forceMute={forceMute}
             postNum={postNum}
           />
         ) : (
           <Card1
-            post={post}
+            post={post?.data}
             hasMedia={hasMedia}
             hideNSFW={hideNSFW}
-            score={score}
-            vote={vote}
-            castVote={castVote}
             forceMute={forceMute}
             postNum={postNum}
           />

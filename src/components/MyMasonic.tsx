@@ -73,7 +73,8 @@ const MyMasonic = ({
   isSearch = false,
   filterNum = 0,
   safeSearch = false,
-  ownProfile = "",
+  userPostMode = "",
+  isSelf = false,
   session,
   //page,
 }) => {
@@ -335,15 +336,17 @@ const MyMasonic = ({
         safeSearch ? undefined : true
       );
     } else if (isUser || router?.pathname === "/u/[...slug]") {
-      if (ownProfile !== "") {
+      if (userPostMode !== "" && isSelf) {
         data = await loadUserSelf(
           context?.token,
           session ? true : false,
-          ownProfile.toLocaleLowerCase(),
+          userPostMode.toLocaleLowerCase(),
           query?.sort,
           query?.t,
           loadafter,
-          session?.user?.name
+          session?.user?.name,
+          context.userPostType === 'comments' ? 'comments' : 'links'
+
         );
         //console.log(data);
       } else if (isMulti) {
@@ -359,7 +362,7 @@ const MyMasonic = ({
           query?.slug?.[0] ?? "",
           query?.sort ?? "hot",
           query?.t ?? "",
-          loadafter
+          loadafter,undefined,userPostMode
         );
       }
     } else if (isSubFlair) {
@@ -621,7 +624,7 @@ const PostCard = (props) => {
     <div className={""}>
       {/* <span children={`${props.data.id} : ${props.data?.data?.title}`} /> */}
       {/* <p>{props.data.id}</p> */}
-      <Post post={props.data.data} postNum={props.index} />
+      <Post post={props.data} postNum={props.index} />
     </div>
   );
 };

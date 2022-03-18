@@ -14,9 +14,6 @@ const Card1 = ({
   post,
   hasMedia,
   hideNSFW,
-  score,
-  vote,
-  castVote,
   forceMute,
   postNum,
 }) => {
@@ -42,8 +39,8 @@ const Card1 = ({
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row items-start py-1 text-xs text-gray-400 truncate select-auto text-gray dark:text-gray-500">
-                <div className="flex flex-row flex-wrap items-start text-xs text-gray-400 truncate select-auto text-gray dark:text-gray-500">
+              <div className="flex flex-row items-start py-1 text-xs text-gray-400 truncate select-auto dark:text-gray-500">
+                <div className="flex flex-row flex-wrap items-start text-xs text-gray-400 truncate select-auto dark:text-gray-500">
                   <Link href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
@@ -244,7 +241,7 @@ const Card1 = ({
 
                         <div className="flex flex-row justify-between text-xs font-bold align-bottom select-none">
                           <div className="flex flex-row items-center space-x-1">
-                            <p className="">{score + " points"}</p>
+                            <p className="">{post?.score + " points"}</p>
                           </div>
                           <a
                             href={post?.permalink}

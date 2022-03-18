@@ -494,7 +494,8 @@ export const loadUserPosts = async (
   sort: string = "hot",
   range: string,
   after: string = "",
-  count: number = 0
+  count: number = 0,
+  type?
 ) => {
   //console.log(subreddits, sort, range);
   let c = 0;
@@ -505,7 +506,7 @@ export const loadUserPosts = async (
     try {
       const res = await (
         await axios.get(
-          `${REDDIT}/user/${username}/submitted.json?sort=${sort}`,
+          `${REDDIT}/user/${username}/${type ? type.toLowerCase() : ""}.json?sort=${sort}`,
           {
             params: {
               raw_json: 1,
@@ -519,7 +520,7 @@ export const loadUserPosts = async (
       //console.log(res, after);
       filtered_children = [
         ...filtered_children,
-        ...res.data.children.filter((child) => child?.kind === "t3"),
+        ...res.data.children.filter((child) => child?.kind === "t3" || true),
       ];
       //console.log(c, nextafter, filtered_children.length, res?.data?.after)
       if (filtered_children.length > 19) {
@@ -551,7 +552,8 @@ export const loadUserSelf = async (
   sort,
   range,
   after,
-  username?
+  username?,
+  type = 'links'
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -577,12 +579,13 @@ export const loadUserSelf = async (
             username: username,
             t: range,
             sort: sort,
-            given: where,
-            type: "links",
+            show: where,
+            type: type,
           },
         }
       );
       ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+   
       const data = await res.data;
 
       return {

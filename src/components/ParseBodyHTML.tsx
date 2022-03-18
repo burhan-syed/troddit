@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const ParseBodyHTML = ({ html, small = true, limitWidth = false }) => {
+const ParseBodyHTML = ({ html, small = true, card = false, limitWidth = false }) => {
   const [insertHTML, setInsertHTML] = useState("");
   useEffect(() => {
     //formatting per Teddit
@@ -59,7 +59,7 @@ const ParseBodyHTML = ({ html, small = true, limitWidth = false }) => {
     <div
       className={
         "dark:prose-invert prose prose-stone xl:prose-stone prose-headings:text-stone-700 dark:prose-headings:text-stone-300 dark:prose-strong:text-red-400  prose-strong:text-cyan-700  " +
-        (small
+        (small && card ? " prose-sm prose-p:my-0 " : small
           ? " prose-sm xl:prose-base xl:prose-p:my-0 prose-p:my-0 "
           : " 2xl:prose-lg ") +
         (limitWidth ? " max-w-2xl " : " max-w-none")

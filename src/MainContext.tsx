@@ -35,6 +35,14 @@ export const MainProvider = ({ children }) => {
   const [forceRefresh, setForceRefresh] = useState(0);
   const [fastRefresh, setFastRefresh] = useState(0);
 
+  const [userPostType, setUserPostType] = useState("links")
+  const toggleUserPostType = () => {
+    setUserPostType(p => {
+      if (p === "links") return "comments"
+      return "links"
+    })
+  }
+
   //filters in the inverse sense, true = allowed
   const [imgFilter, setImgFilter] = useState(true);
   const [vidFilter, setVidFilter] = useState(true);
@@ -422,6 +430,8 @@ export const MainProvider = ({ children }) => {
         scoreFilterNum,
         replyFocus,
         setReplyFocus,
+        userPostType,
+        toggleUserPostType
         //filterCount,
         //setFilterCount
       }}

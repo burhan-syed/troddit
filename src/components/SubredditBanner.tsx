@@ -6,12 +6,14 @@ import router, { useRouter } from "next/router";
 import SubPills from "./SubPills";
 import SubCard from "./views/SubCard";
 import Link from "next/link";
+import ToggleUserPostType from "./ToggleUserPostType";
 
 const SubredditBanner = ({
   subreddits,
   userMode,
-  ownProfile = "",
+  userPostMode = "",
   name = "",
+  isSelf = false,
 }) => {
   const router = useRouter();
   const subsContext: any = useSubsContext();
@@ -138,14 +140,14 @@ const SubredditBanner = ({
       />
 
       {name && (
-        <div className="flex flex-row w-full mt-2 md:-mb-5 md:justify-center ">
-          <div className="flex flex-row flex-wrap mx-2 space-x-4 text-xl md:w-11/12">
-            <Link href={`/u/${name}`}>
+        <div className="flex flex-row w-full mt-2 md:-mb-5 md:justify-center">
+          <div className="flex flex-row flex-wrap gap-4 mx-2 text-xl md:w-11/12">
+            <Link href={`/u/${name}/overview`}>
               <a>
                 <div
                   className={
                     " cursor-pointer font-bold" +
-                    (ownProfile === ""
+                    ((userPostMode === "" ||  userPostMode === "OVERVIEW")
                       ? " font-bold  "
                       : " opacity-50 hover:opacity-70")
                   }
@@ -159,57 +161,77 @@ const SubredditBanner = ({
                 <div
                   className={
                     " cursor-pointer font-bold" +
-                    (ownProfile === "SUBMITTED"
+                    (userPostMode === "SUBMITTED"
                       ? " font-bold  "
                       : " opacity-50 hover:opacity-70")
                   }
                 >
-                  Submitted
+                  Posts
                 </div>
               </a>
             </Link>
-            <Link href={`/u/${name}/upvoted`}>
+            <Link href={`/u/${name}/comments`}>
               <a>
                 <div
                   className={
                     " cursor-pointer font-bold" +
-                    (ownProfile === "UPVOTED"
+                    (userPostMode === "COMMENTS"
                       ? " font-bold  "
                       : " opacity-50 hover:opacity-70")
                   }
                 >
-                  Upvoted
+                  Comments
                 </div>
               </a>
             </Link>
-            <Link href={`/u/${name}/downvoted`}>
-              <a>
-                <div
-                  className={
-                    " cursor-pointer font-bold" +
-                    (ownProfile === "DOWNVOTED"
-                      ? " font-bold  "
-                      : " opacity-50 hover:opacity-70")
-                  }
-                >
-                  Downvoted
-                </div>
-              </a>
-            </Link>
-            <Link href={`/u/${name}/saved`}>
-              <a>
-                <div
-                  className={
-                    " cursor-pointer font-bold" +
-                    (ownProfile === "SAVED"
-                      ? " font-bold  "
-                      : " opacity-50 hover:opacity-70")
-                  }
-                >
-                  Saved
-                </div>
-              </a>
-            </Link>
+            {isSelf && (
+              <>
+                <Link href={`/u/${name}/upvoted`}>
+                  <a>
+                    <div
+                      className={
+                        " cursor-pointer font-bold" +
+                        (userPostMode === "UPVOTED"
+                          ? " font-bold  "
+                          : " opacity-50 hover:opacity-70")
+                      }
+                    >
+                      Upvoted
+                    </div>
+                  </a>
+                </Link>
+                <Link href={`/u/${name}/downvoted`}>
+                  <a>
+                    <div
+                      className={
+                        " cursor-pointer font-bold" +
+                        (userPostMode === "DOWNVOTED"
+                          ? " font-bold  "
+                          : " opacity-50 hover:opacity-70")
+                      }
+                    >
+                      Downvoted
+                    </div>
+                  </a>
+                </Link>
+                <Link href={`/u/${name}/saved`}>
+                  <a>
+                    <div
+                      className={
+                        " cursor-pointer font-bold" +
+                        (userPostMode === "SAVED"
+                          ? " font-bold  "
+                          : " opacity-50 hover:opacity-70")
+                      }
+                    >
+                      Saved
+                    </div>
+                  </a>
+                </Link>{" "}
+              </>
+            )}
+                      {userPostMode === "SAVED" && <div className="ml-auto text-sm"><ToggleUserPostType /></div>}
+
           </div>
         </div>
       )}
