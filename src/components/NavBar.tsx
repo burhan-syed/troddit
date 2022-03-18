@@ -119,7 +119,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               <Search id={"subreddit search main"} />
             </div>
           </div>
-          <div className="flex flex-row items-center justify-end h-full py-2 ml-2 space-x-1 justify-self-end">
+          <div className="flex flex-row items-center justify-end h-full py-2 ml-2 mr-2 space-x-1 justify-self-end">
             <div className="w-20 h-full">
               <SortMenu hide={hidden} />
             </div>
