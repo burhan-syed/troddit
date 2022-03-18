@@ -3,15 +3,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Login from "./Login";
 import DropdownPane from "./DropdownPane";
-import Sort from "./Sort";
 
 import { CgMenu } from "react-icons/cg";
 import SideNav from "./SideNav";
 import NavMenu from "./NavMenu";
-import SortMenu from "./SortMenu";
 
 import { useRouter } from "next/router";
-import SortMenu2 from "./SortMenu2";
+import SortMenu from "./SortMenu";
 
 import { useSession } from "next-auth/client";
 import { useScroll } from "../hooks/useScroll";
@@ -123,7 +121,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           </div>
           <div className="flex flex-row items-center justify-end h-full py-2 ml-2 space-x-1 justify-self-end">
             <div className="w-20 h-full">
-              <SortMenu2 hide={hidden} />
+              <SortMenu hide={hidden} />
             </div>
             <div
               className="flex flex-row items-center w-10 h-full mr-2 "

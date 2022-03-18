@@ -1,51 +1,185 @@
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import { AiOutlineFire, AiOutlineRocket } from "react-icons/ai";
+import { GoCommentDiscussion } from "react-icons/go";
 import { GrNew } from "react-icons/gr";
 import { IoMdTrendingUp } from "react-icons/io";
 import { RiBarChart2Line } from "react-icons/ri";
 import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-const SortMenu = ({ hide }) => {
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const SortMenu = ({ hide = false }) => {
   const [show, setShow] = useState(false);
   const [sort, setSort] = useState<any>("hot");
   const [range, setRange] = useState("");
-
+  const [isUser, setIsUser] = useState(false);
+  const [isUserMulti, setIsUserMulti] = useState(false);
+  const [isSubFlair, setIsSubFlair] = useState(false);
+  const [topTouch, setTopTouch] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
-    //console.log(router.query);
-    if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
-    if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
-    if (router?.query?.t ?? false) {
-      //console.log(router.query.t);
-      setRange(router.query.t.toString());
+    router?.query?.t ? setRange(router.query.t.toString()) : setRange("");
+    router.query?.sort && setSort(router.query?.sort);
+  }, [router.query]);
+
+  useEffect(() => {
+    if (router.pathname.includes("/r/") && router.query?.q?.includes("flair")) {
+      setIsSubFlair(true);
+      setSort(router.query?.sort);
+      setRange(router.query?.t?.toString());
+    } else if (router.query?.sort) {
+      setSort(router.query?.sort);
+      router.query?.t && setRange(router.query?.t?.toString());
+    } else if (router.pathname.includes("/u/")) {
+      setIsSubFlair(false);
+      if (router.query?.slug?.[1] === "m") {
+        setIsUserMulti(true);
+        router.query?.slug?.[3] && setSort(router.query.slug[3]);
+      } else {
+        setIsUserMulti(false);
+        setIsUser(true);
+      }
+    } else {
+      setIsSubFlair(false);
+      setIsUserMulti(false);
+      setIsUser(false);
+      if (router.query?.slug?.[1] ?? false) setSort(router.query.slug[1]);
+      if (router.query?.frontsort ?? false) setSort(router.query.frontsort);
+      if (router?.query?.t ?? false) {
+        //console.log(router.query.t);
+        setRange(router.query.t.toString());
+      }
     }
+
     return () => {
       setSort("hot");
-    }
-  }, [router.query]);
+    };
+  }, [router]);
 
   const updateSort = (e, s) => {
     e.preventDefault();
     setSort(s);
     if (s !== "top") {
-      //console.log(`r/${router?.query ?? "popular"}/${s}`);
-
-      if (router.query?.slug?.[0] ?? false) {
-        router.push(`/r/${router.query?.slug?.[0] ?? "popular"}/${s}`);
+      if (router.query?.sort) {
+        //console.log(router?.asPath, router?.query?.sort, s);
+        let path = router.asPath.replace(
+          `sort=${router.query.sort}`,
+          `sort=${s}`
+        );
+        if (router.query?.t) {
+          path = path.replace(`&t=${router.query.t}`, "");
+        }
+        router.push(path);
+      } else if (router.route === "/search") {
+        let q = router.query;
+        q["sort"] = s;
+        q["t"] = "";
+        //console.log(q);
+        router.push({
+          pathname: "/search",
+          query: q,
+        });
+      } else if (isUserMulti) {
+        router.push(
+          `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/${s}`
+        );
+      } else if (router.query?.slug?.[0] ?? false) {
+        if (isUser) {
+          //console.log(router.query?.slug?.[0]);
+          router.push({
+            pathname: `/u/${router.query?.slug?.[0]}${
+              router.query?.slug?.[1] ? `/${router.query?.slug?.[1]}` : ``
+            }`,
+            query: {
+              sort: s,
+            },
+          });
+        } else {
+          router.push(
+            `/${isUser ? "u" : "r"}/${router.query?.slug?.[0] ?? "hot"}/${s}${
+              router?.query?.m?.length > 0
+                ? `?m=${encodeURI(router?.query?.m?.toString())}`
+                : ""
+            }`
+          );
+        }
       } else {
         router.push(`/${s}`);
       }
     }
   };
 
-  const updateRange = (e, r) => {
+  const updateRange = (e, r, s = "top") => {
     e.preventDefault();
-    //console.log(router.query);
+    //console.log(router);
     setRange(r);
-    if (router.query?.slug?.[0] ?? false) {
-      router.push(
-        `/r/${router.query?.slug?.[0] ?? "popular"}/top/?t=${encodeURI(r)}`
+    if (router?.query?.sort) {
+      let path = router.asPath.replace(
+        `sort=${router.query?.sort}`,
+        `sort=${s}`
       );
+      if (router?.query?.t) {
+        path = path.replace(`t=${router.query?.t}`, `t=${r}`);
+      } else {
+        path = path.replace("?", `?t=${r}&`);
+      }
+      router.push(path);
+    } else if (router.pathname === "/search") {
+      let q = router.query;
+      q["sort"] = s;
+      q["t"] = r;
+      router.push({
+        pathname: "/search",
+        query: q,
+      });
+    } else if (router.route === "/") {
+      router.push({
+        pathname: "/top",
+        query: {
+          t: encodeURI(r),
+        },
+      });
+    } else if (isSubFlair) {
+      router.push(
+        `/r/${
+          router?.query?.slug?.[0]
+        }/search?sort=${s}&t=${r}&q=${encodeURIComponent(
+          router?.query?.q?.toString()
+        )}`
+      );
+    } else if (isUserMulti) {
+      router.push(
+        `/u/${router.query?.slug?.[0]}/m/${router.query?.slug?.[2]}/top/?t=${r}`
+      );
+    } else if (router.query?.slug?.[0] ?? false) {
+      if (isUser) {
+        //console.log(router.query?.slug?.[0]);
+        router.push({
+          pathname: `/u/${router.query?.slug?.[0]}${
+            router.query?.slug?.[1] ? `/${router.query?.slug?.[1]}` : ``
+          }`,
+          query: {
+            sort: s,
+            t: r,
+          },
+        });
+      } else {
+        router.push(
+          `/${isUser ? "u" : "r"}/${
+            router.query?.slug?.[0] ?? "hot"
+          }/top/?t=${encodeURI(r)}${
+            router?.query?.m?.length > 0
+              ? `&m=${encodeURI(router?.query?.m?.toString())}`
+              : ""
+          }`
+        );
+      }
     } else if (router.query.frontsort) {
       router.push({
         pathname: "/top",
@@ -55,187 +189,617 @@ const SortMenu = ({ hide }) => {
         },
       });
     } else {
-      router.push({
-        pathname: "/top",
-        query: {
-          //sort: router.query?.slug?.[1] ?? "",
-          t: encodeURI(r),
-        },
-      });
+      router.push(
+        `/r/${router.query?.slug?.[0]}/top/?t=${encodeURI(r)}${
+          router?.query?.m?.length > 0
+            ? `&m=${encodeURI(router?.query?.m?.toString())}`
+            : ""
+        }`
+      );
+      // router.push({
+      //   pathname: "/top",
+      //   query: {
+      //     //sort: router.query?.slug?.[1] ?? "",
+      //     t: encodeURI(r),
+      //     m: router?.query?.m
+      //   },
+      // });
     }
   };
 
   return (
-    <div className="flex flex-row w-full h-full select-none hover:cursor-pointer">
-      {/* Close when clicking outisde element */}
-      {/* <div
-        className={
-          (show && !hide ? "" : "w-0 h-0") +
-          "absolute  top-0 left-0 w-screen h-screen bg-transparent "
-        }
-        onClick={() => setShow((show) => !show)}
-      ></div> */}
+    <Menu
+      as="div"
+      className="relative flex flex-col items-center flex-grow w-full h-full select-none"
+    >
+      {({ open }) => (
+        <>
+          <div className="flex-grow w-full">
+            <Menu.Button
+              name="Sort Page By"
+              className="flex flex-row items-center justify-between w-full h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG"
+            >
+              <BsChevronDown
+                className={
+                  open
+                    ? "rotate-180"
+                    : "rotate-0" + "transform transition duration-200 flex-none"
+                }
+              />
 
-      <div className="flex flex-col flex-grow">
-        {/* Button Label */}
-        <div
-          className="flex flex-row items-center justify-between flex-none h-full px-2 border border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
-          onClick={() => setShow((show) => !show)}
-        >
-          <BsChevronDown
-            className={
-              show
-                ? "rotate-180"
-                : "rotate-0" + "transform transition duration-200 "
-            }
-          />
-          {sort === "best" ? (
-            <div className="flex flex-row items-center justify-between">
-              <AiOutlineRocket className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-          {sort === "hot" ? (
-            <div className="flex flex-row items-baseline justify-between">
-              <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-          {sort === "" ? (
-            <div className="flex flex-row items-baseline justify-between">
-              <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-          {sort === "top" ? (
-            <div className="flex flex-row items-baseline justify-between">
-              <RiBarChart2Line className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-          {sort === "new" ? (
-            <div className="flex flex-row items-baseline justify-between">
-              <BsCircle className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-          {sort === "rising" ? (
-            <div className="flex flex-row items-baseline justify-between">
-              <IoMdTrendingUp className="flex-none w-6 h-6 mr-1" />
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
+              {sort === "best" ? (
+                <div className="flex flex-row items-center justify-between">
+                  <AiOutlineRocket className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {sort === "hot" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {sort === "" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <AiOutlineFire className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {sort === "top" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <RiBarChart2Line className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {sort === "new" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <BsCircle className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {sort === "rising" || sort === "relevance" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <IoMdTrendingUp className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+              {router?.query?.sort === "comments" ? (
+                <div className="flex flex-row items-baseline justify-between">
+                  <GoCommentDiscussion className="flex-none w-6 h-6 mr-1" />
+                </div>
+              ) : (
+                ""
+              )}
+            </Menu.Button>
+          </div>
 
-        {/* Dropdown */}
-        <div
-          className={
-            "transform transition duration-150 ease-in-out origin-top bg-white dark:bg-darkBG " +
-            `${show && !hide ? "scale-100 block" : " scale-0"}`
-          }
-        >
-          {/* Dropdown Items */}
-          <ul className="flex-col p-0 m-0 list-none">
-            <li
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items
               className={
-                (sort === "best" ? "bg-gray-300" : "") +
-                " relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm"
+                "absolute right-0 w-40 mt-11 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder " +
+                (hide && " hidden")
               }
-              onClick={(e) => updateSort(e, "best")}
             >
-              <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
-              <span> Best </span>
-            </li>
-            <li
-              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
-              onClick={(e) => updateSort(e, "hot")}
-            >
-              <AiOutlineFire className="flex-none w-5 h-5" /> <span> Hot </span>
-            </li>
-            <li className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm group hover:bg-gray-100">
-              <RiBarChart2Line className="flex-none w-5 h-5" />{" "}
-              <span> Top </span>
-              <ul className="absolute top-0 hidden w-20 -left-20 group-hover:block">
-                <li
-                  className={
-                    (range === "hour" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "hour")}
-                >
-                  Now
-                </li>
-                <li
-                  className={
-                    (range === "day" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "day")}
-                >
-                  Today
-                </li>
-                <li
-                  className={
-                    (range === "week" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "week")}
-                >
-                  Week
-                </li>
-                <li
-                  className={
-                    (range === "month" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "month")}
-                >
-                  Month
-                </li>
-                <li
-                  className={
-                    (range === "year" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "year")}
-                >
-                  Year
-                </li>
-                <li
-                  className={
-                    (range === "all" ? `font-bold` : "") +
-                    " px-2 py-3 text-sm hover:bg-gray-100"
-                  }
-                  onClick={(e) => updateRange(e, "all")}
-                >
-                  All
-                </li>
-              </ul>
-            </li>
-
-            <li
-              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
-              onClick={(e) => updateSort(e, "rising")}
-            >
-              <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
-              <span> Rising </span>
-            </li>
-            <li
-              className="relative flex flex-row items-center justify-between px-2 py-3 text-sm rounded-sm hover:bg-gray-100"
-              onClick={(e) => updateSort(e, "new")}
-            >
-              <BsCircle className="flex-none w-5 h-5" /> <span> New </span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+              <div className="py-1">
+                {/* Best */}
+                {!isUser && (
+                  <Menu.Item disabled={isUser}>
+                    {({ active }) => (
+                      <div
+                        onTouchStart={(e) => setTopTouch(false)}
+                        onClick={(e) => updateSort(e, "best")}
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                          <AiOutlineRocket className="flex-none w-5 h-5" />{" "}
+                          <span
+                            className={sort === "best" ? " font-bold " : ""}
+                          >
+                            Best
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Menu.Item>
+                )}
+                {/* Hot */}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onTouchStart={(e) => setTopTouch(false)}
+                      onClick={(e) => updateSort(e, "hot")}
+                      className={classNames(
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        "block px-4 py-1 text-sm"
+                      )}
+                    >
+                      <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                        <AiOutlineFire className="flex-none w-5 h-5" />
+                        <span className={sort === "hot" ? " font-bold " : ""}>
+                          Hot
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </Menu.Item>
+                {/* New */}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div className="group">
+                      <div
+                        onTouchStart={(e) => setTopTouch(false)}
+                        onClick={(e) =>
+                          isSubFlair
+                            ? updateRange(e, "all", "new")
+                            : updateSort(e, "new")
+                        }
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                          <BsCircle className="flex-none w-5 h-5" />{" "}
+                          <span className={sort === "new" ? " font-bold " : ""}>
+                            New
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Menu.Item>
+                {/* Top */}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      className="group"
+                      onTouchStart={(e) => setTopTouch(true)}
+                      onClick={(e) => !topTouch && updateRange(e, "all")}
+                    >
+                      <div
+                        className={classNames(
+                          active
+                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            : "",
+                          "block px-4 py-1 text-sm"
+                        )}
+                      >
+                        <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                          <RiBarChart2Line className="flex-none w-5 h-5" />
+                          <span className={sort === "top" ? " font-bold " : ""}>
+                            Top
+                          </span>
+                        </div>
+                      </div>
+                      <ul
+                        className={
+                          (active || topTouch ? "block " : "hidden ") +
+                          (isUser ? "top-12 " : "top-24 ") +
+                          "absolute  w-32 -left-32  bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                        }
+                      >
+                        <li>
+                          <div
+                            className={
+                              (range === "hour" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "hour")}
+                          >
+                            Hour
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "day" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "day")}
+                          >
+                            24 Hours
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "week" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "week")}
+                          >
+                            Week
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "month" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "month")}
+                          >
+                            Month
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "year" && sort === "top"
+                                ? `font-bold`
+                                : "") +
+                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "year")}
+                          >
+                            Year
+                          </div>
+                        </li>
+                        <li>
+                          <div
+                            className={
+                              (range === "all" && sort === "top"
+                                ? `font-bold `
+                                : "") +
+                              " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                            }
+                            onTouchStart={(e) => setTopTouch(false)}
+                            onClick={(e) => updateRange(e, "all")}
+                          >
+                            All
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </Menu.Item>
+                {/* Relevance */}
+                {(isSubFlair ||
+                  router.route === "/search" ||
+                  router.query.q) && (
+                  <Menu.Item
+                    disabled={
+                      !(
+                        isSubFlair ||
+                        router.route === "/search" ||
+                        router.query.q
+                      )
+                    }
+                  >
+                    {({ active }) => (
+                      <div className="group">
+                        <div
+                          onClick={(e) => updateRange(e, "all", "relevance")}
+                          className={classNames(
+                            active
+                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              : "",
+                            "block px-4 py-1 text-sm"
+                          )}
+                        >
+                          <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                            <IoMdTrendingUp className="flex-none w-5 h-5" />
+                            <span
+                              className={
+                                sort === "relevance" ? " font-bold " : ""
+                              }
+                            >
+                              Relevance
+                            </span>
+                          </div>
+                        </div>
+                        {true && (
+                          <ul
+                            className={
+                              (active ? "block " : "hidden ") +
+                              (true && "top-36 ") +
+                              "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                            }
+                          >
+                            <li>
+                              <div
+                                className={
+                                  (range === "hour" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "hour", "relevance")
+                                }
+                              >
+                                Hour
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "day" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "day", "relevance")
+                                }
+                              >
+                                24 Hours
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "week" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "week", "relevance")
+                                }
+                              >
+                                Week
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "month" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "month", "relevance")
+                                }
+                              >
+                                Month
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "year" && sort === "relevance"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "year", "relevance")
+                                }
+                              >
+                                Year
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "all" && sort === "relevance"
+                                    ? `font-bold `
+                                    : "") +
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "all", "relevance")
+                                }
+                              >
+                                All
+                              </div>
+                            </li>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </Menu.Item>
+                )}
+                {/* Comments */}
+                {(router.route === "/search" || router.query.q) && (
+                  <Menu.Item
+                    disabled={!(router.route === "/search" || router.query.q)}
+                  >
+                    {({ active }) => (
+                      <div className="group">
+                        <div
+                          onClick={(e) => updateRange(e, "all", "comments")}
+                          className={classNames(
+                            active
+                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              : "",
+                            "block px-4 py-1 text-sm"
+                          )}
+                        >
+                          <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                            <GoCommentDiscussion className="flex-none w-5 h-5" />
+                            <span
+                              className={
+                                sort === "comments" ? " font-bold " : ""
+                              }
+                            >
+                              Comments
+                            </span>
+                          </div>
+                        </div>
+                        {true && (
+                          <ul
+                            className={
+                              (active ? "block " : "hidden ") +
+                              (true && "top-48 ") +
+                              "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                            }
+                          >
+                            <li>
+                              <div
+                                className={
+                                  (range === "hour" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "hour", "comments")
+                                }
+                              >
+                                Hour
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "day" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "day", "comments")
+                                }
+                              >
+                                24 Hours
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "week" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "week", "comments")
+                                }
+                              >
+                                Week
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "month" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "month", "comments")
+                                }
+                              >
+                                Month
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "year" && sort === "comments"
+                                    ? `font-bold`
+                                    : "") +
+                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "year", "comments")
+                                }
+                              >
+                                Year
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                className={
+                                  (range === "all" && sort === "comments"
+                                    ? `font-bold `
+                                    : "") +
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                }
+                                onClick={(e) =>
+                                  updateRange(e, "all", "comments")
+                                }
+                              >
+                                All
+                              </div>
+                            </li>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </Menu.Item>
+                )}
+                {/* Rising */}
+                {!isUser &&
+                  !isSubFlair &&
+                  router.route !== "/search" &&
+                  !router?.query?.q && (
+                    <Menu.Item
+                      disabled={
+                        !(
+                          !isUser &&
+                          !isSubFlair &&
+                          router.route !== "/search" &&
+                          !router?.query?.q
+                        )
+                      }
+                    >
+                      {({ active }) => (
+                        <div
+                          onClick={(e) => updateSort(e, "rising")}
+                          className={classNames(
+                            active
+                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              : "",
+                            "block px-4 py-1 text-sm "
+                          )}
+                        >
+                          <div className="flex flex-row items-center justify-between h-10 cursor-pointer">
+                            <IoMdTrendingUp className="flex-none w-5 h-5" />{" "}
+                            <span
+                              className={sort === "rising" ? " font-bold " : ""}
+                            >
+                              Rising
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </Menu.Item>
+                  )}
+              </div>
+            </Menu.Items>
+          </Transition>
+        </>
+      )}
+    </Menu>
   );
 };
 

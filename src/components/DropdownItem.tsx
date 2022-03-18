@@ -93,7 +93,7 @@ const DropdownItem = ({
   const Line = (
     <div
       className="flex flex-row items-center text-sm text-center cursor-pointer"
-      onClick={(e) => !preventNav && goTo(e)}
+      // onClick={(e) => !preventNav && goTo(e)}
     >
       {/* Image */}
       <div className="flex flex-row items-center flex-none w-6 h-6 ml-1 ">
@@ -133,21 +133,22 @@ const DropdownItem = ({
   );
 
   return (
-    <div>
-      {isMulti ? (
-        <>{Line}</>
-      ) : (
-        <Link href={`${sub?.data?.url?.replace("/user/", "/u/")}`}>
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            {Line}
-          </a>
-        </Link>
-      )}
-    </div>
+    // <div>
+    //   {isMulti ? (
+    //     <>{Line}</>
+    //   ) : (
+    //     <Link href={`${sub?.data?.url?.replace("/user/", "/u/")}`}>
+    //       <a
+    //         onClick={(e) => {
+    //           e.preventDefault();
+    //         }}
+    //       >
+    //         {Line}
+    //       </a>
+    //     </Link>
+    //   )}
+    // </div>
+    <>{Line}</>
   );
 };
 

@@ -1,18 +1,21 @@
 import Login from "./Login";
-import Sort from "./Sort";
 import DropdownPane from "./DropdownPane";
-import SortMenu2 from "./SortMenu2";
+import SortMenu from "./SortMenu";
 import Search from "./Search";
 import SideDropDown from "./SideDropDown";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useSession, signIn, signOut } from "next-auth/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import DropDownItems from "./DropDownItems";
+import { Menu } from "@headlessui/react";
+import LoginProfile from "./LoginProfile";
 
 const SideNav = ({ visible, toggle }) => {
   const [session, loading] = useSession();
   const [vis, setVis] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const buttonRef = useRef(null);
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -44,6 +47,11 @@ const SideNav = ({ visible, toggle }) => {
       document.body.style.width = `auto`;
     };
   }, [visible]);
+
+  //force open menu when visible..
+  useEffect(() => {
+    buttonRef?.current?.click();
+  }, [visible]);
   return (
     <div
       onTouchStart={(e) => handleTouchStart(e)}
@@ -61,7 +69,7 @@ const SideNav = ({ visible, toggle }) => {
             <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
               <div className="flex flex-row items-center justify-between w-full ">
                 <div className="">
-                  {!session && (
+                  {/* {!session && (
                     <>
                       <div></div>
                     </>
@@ -75,20 +83,55 @@ const SideNav = ({ visible, toggle }) => {
                         Logout
                       </button>
                     </>
-                  )}
+                  )} */}
+                  <LoginProfile />
                 </div>
                 <RiArrowGoBackLine
                   onClick={() => toggle()}
                   className="flex-none w-6 h-6 cursor-pointer "
                 />
               </div>
-
-              <div className="h-1/2">
-                <SideDropDown visible={vis} />
-              </div>
-              <div className="flex-none px-2 h-14">
+              <div
+                className="z-10 flex-none px-2 h-14"
+                onBlur={() => buttonRef?.current?.click()}
+              >
                 <Search id={"Subreddit search side nav"} />
               </div>
+              <Menu
+                as="div"
+                className="min-h-full px-2 overflow-x-hidden overflow-y-scroll outline-none "
+              >
+                {({ open }) => (
+                  <>
+                    {/* <SideDropDown visible={vis} /> */}
+                    <Menu.Button
+                      as="div"
+                      className={"hidden"}
+                      ref={buttonRef}
+                    ></Menu.Button>
+                    {open ? (
+                      <>
+                        <Menu.Items
+                          as="div"
+                          className="pb-10 outline-none"
+                          onClick={() => toggle()}
+                        >
+                          <DropDownItems show={vis} hideExtra={true} />
+                        </Menu.Items>
+                      </>
+                    ) : (
+                      <div
+                        className="flex items-center justify-center h-full select-none"
+                        onClick={() => buttonRef?.current?.click()}
+                      >
+                        <h1 className="text-gray-400 dark:text-gray-500">
+                          (click for subs)
+                        </h1>
+                      </div>
+                    )}
+                  </>
+                )}
+              </Menu>
             </div>
           </nav>
           <div

@@ -139,7 +139,7 @@ const SubredditBanner = ({
 
       {name && (
         <div className="flex flex-row w-full mt-2 md:-mb-5 md:justify-center ">
-          <div className="flex flex-row mx-2 space-x-4 text-xl md:w-11/12">
+          <div className="flex flex-row flex-wrap mx-2 space-x-4 text-xl md:w-11/12">
             <Link href={`/u/${name}`}>
               <a>
                 <div
