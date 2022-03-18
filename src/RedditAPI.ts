@@ -66,7 +66,7 @@ export const loadFront = async (
         },
       });
       let res = await res1.data;
-      ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
 
       return {
         after: res.data.after,
@@ -153,7 +153,7 @@ export const loadSubreddits = async (
         }
       );
       let res = await res1.data;
-      ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
 
       return {
         after: res.data.after,
@@ -267,7 +267,7 @@ export const getRedditSearch = async (
         });
         let res = await res1.data;
         //console.log(oathsearch, p);
-        ratelimit_remaining = res1.headers["x-ratelimit-remaining"];
+        ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
         after = res?.data?.after;
         p["after"] = after;
         before = res?.data?.before;
@@ -449,15 +449,19 @@ export const loadSubredditInfo = async (query, loaduser = false) => {
   } else return [];
 };
 
-export const getWikiContent = async(wikiquery) => {
-    try{
-      const content = await (await axios.get(`https://www.reddit.com/r/${wikiquery.join('/')}.json`, {params: {raw_json: 1}} )).data
-      
-      return content;
-    } catch (err) { return undefined}
-    
-  }
+export const getWikiContent = async (wikiquery) => {
+  try {
+    const content = await (
+      await axios.get(`https://www.reddit.com/r/${wikiquery.join("/")}.json`, {
+        params: { raw_json: 1 },
+      })
+    ).data;
 
+    return content;
+  } catch (err) {
+    return undefined;
+  }
+};
 
 export const subToSub = async (action, name) => {
   const token = await (await getToken())?.accessToken;
@@ -506,7 +510,9 @@ export const loadUserPosts = async (
     try {
       const res = await (
         await axios.get(
-          `${REDDIT}/user/${username}/${type ? type.toLowerCase() : ""}.json?sort=${sort}`,
+          `${REDDIT}/user/${username}/${
+            type ? type.toLowerCase() : ""
+          }.json?sort=${sort}`,
           {
             params: {
               raw_json: 1,
@@ -553,7 +559,7 @@ export const loadUserSelf = async (
   range,
   after,
   username?,
-  type = 'links'
+  type = "links"
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -584,8 +590,8 @@ export const loadUserSelf = async (
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
-   
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
+
       const data = await res.data;
 
       return {
@@ -621,7 +627,7 @@ export const getMySubs = async (after?, count?) => {
         }
       );
       let data = await res.data;
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       if (data?.data?.children ?? false) {
         return { after: data.data.after, children: data.data.children };
       }
@@ -656,7 +662,7 @@ export const getAllMyFollows = async () => {
           }
         );
         let data = await res.data;
-        ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+        ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
         if (data?.data?.children ?? false) {
           alldata = [...alldata, ...data.data.children];
           if (data?.data?.after ?? false) {
@@ -703,7 +709,7 @@ export const getUserMultiSubs = async (user: string, multi: string) => {
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       const data = await res.data;
       let subs = [];
       data?.data?.subreddits?.forEach((s) => {
@@ -730,7 +736,7 @@ export const getMyMultis = async () => {
       });
       //console.log(res);
       let data = await res.data;
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       return data;
     } catch (err) {
       console.log(err);
@@ -880,7 +886,7 @@ export const searchSubreddits = async (query, over18 = false) => {
         }
       );
       let data = await res.data;
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       //console.log(res);
       return data?.data?.children ?? [];
     } catch (err) {
@@ -954,7 +960,7 @@ export const loadMoreComments = async (
         },
       });
       let data = await res.data;
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       //console.log(res?.json?.data?.things);
       return data?.json?.data?.things;
     } catch (err) {
@@ -1002,7 +1008,7 @@ export const loadPost = async (
         },
       });
       let data = await res.data;
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       //console.log(data);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
@@ -1143,7 +1149,7 @@ export const getUserVotes = async () => {
           },
         }
       );
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       console.log(res);
     } catch (err) {
       console.log(err);
@@ -1173,7 +1179,7 @@ export const getMyVotes = async () => {
       );
       let data = await res.data;
       //console.log(data);
-      ratelimit_remaining = res.headers["x-ratelimit-remaining"];
+      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       if (data?.data?.children ?? false) {
         return { after: data.data.after, children: data.data.children };
       }
