@@ -21,11 +21,11 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   //checking subs
   useEffect(() => {
     let subbed = false;
-    if (session) {
-      let subs = mySubs;
-      if (userMode) subs = myFollowing;
-      subs.forEach((s) => {
-        if (s?.data?.name == sub) {
+    if (session && loadedSubs) {
+      (userMode ? myFollowing : mySubs).forEach((s) => {
+        let name = s?.data?.name
+        if (s?.data?.subreddit) name = s.data.subreddit?.name;
+        if (name == sub) {
           subbed = true;
           setSubbed(true);
           setloadAPI(false);
@@ -33,9 +33,8 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       });
       !subbed && setSubbed(false);
       setloadAPI(false);
-      //console.log("checked session subs");
     }
-  }, [session, mySubs, sub, userMode, myFollowing]);
+  }, [session, mySubs, sub, userMode, myFollowing, loadedSubs],);
   //checking local subs
   useEffect(() => {
     if (!loading && !session) {
@@ -51,7 +50,6 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       setloadAPI(false);
       //console.log("checked local subs");
     } else if (loading) {
-      //getSession(); causing loop?
     }
   }, [loading, session, myLocalSubs, sub]);
 
@@ -61,7 +59,6 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       setloadAPI(true);
       //console.log("attempting", session?.user?.name, action, sub2sub);
       let s = await subscribe(action, sub2sub, session);
-      //console.log(s);
       s && setSubbed((p) => !p);
       setloadAPI(false);
     }

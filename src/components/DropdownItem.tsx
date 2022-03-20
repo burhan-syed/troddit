@@ -1,25 +1,20 @@
 import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
-// import { usePlausible } from "next-plausible";
 import { loadSubredditInfo } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 
 const DropdownItem = ({
   sub,
-  isUser = false,
-  preventNav = false,
-  isUserLink = false,
+  isUser = false
 }) => {
   const [session, loading] = useSession();
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
   const router = useRouter();
-  // const plausible = usePlausible();
   useEffect(() => {
-    //console.log('>>',sub);
     sub?.data?.subreddits ? setisMulti(true) : setisMulti(false);
     const findThumbnail = (sub) => {
       if (sub?.data?.icon_url) {
@@ -39,7 +34,7 @@ const DropdownItem = ({
       let subinfo = await loadSubredditInfo(sub?.data?.display_name);
       findThumbnail({ data: subinfo?.data });
     };
-    if (sub?.kind == "t5") {
+    if (sub?.kind == "t5" || sub?.kind == "t2") {
       findThumbnail(sub);
     } else if (
       sub?.data?.display_name &&
@@ -57,38 +52,7 @@ const DropdownItem = ({
     return () => {};
   }, [sub]);
 
-  const goToSub = (e, suggestion) => {
-    e.preventDefault();
-    // plausible("goToSub");
-    router.push(`${suggestion}${isMulti ? `?m=${sub?.data?.name}` : ""}`);
-  };
-
-  const goToMulti = (e) => {
-    //console.log(sub);
-    if (sub.data.subreddits.length < 1) {
-      router.push(
-        `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`,
-        `www.reddit.com/user/${session?.user?.name}/m/${sub.data?.name}`
-      );
-    } else {
-      let suggestions = combineMulti(sub.data.subreddits);
-      // plausible("goToMulti");
-      goToSub(e, suggestions);
-    }
-  };
-  const combineMulti = (subs) => {
-    let suggestions = "";
-    for (let s of subs) {
-      suggestions?.length === 0
-        ? (suggestions = `/r/${s.name}`)
-        : (suggestions = suggestions + "+" + s.name);
-    }
-    return suggestions;
-  };
-
-  const goTo = (e) => {
-    isMulti ? goToMulti(e) : goToSub(e, sub.data.url.replace("/user/", "/u/"));
-  };
+  
 
   const Line = (
     <div
@@ -126,28 +90,13 @@ const DropdownItem = ({
       <h1 className="ml-2 truncate">
         {isMulti
           ? sub.data?.name
-          : sub.data?.display_name_prefixed ?? sub.data?.display_name}
+          : sub.data?.display_name_prefixed ?? sub.data?.display_name?.replace("u_","")}
         {/* {isUser && router?.query?.slug?.[0].toString()} */}
       </h1>
     </div>
   );
 
   return (
-    // <div>
-    //   {isMulti ? (
-    //     <>{Line}</>
-    //   ) : (
-    //     <Link href={`${sub?.data?.url?.replace("/user/", "/u/")}`}>
-    //       <a
-    //         onClick={(e) => {
-    //           e.preventDefault();
-    //         }}
-    //       >
-    //         {Line}
-    //       </a>
-    //     </Link>
-    //   )}
-    // </div>
     <>{Line}</>
   );
 };

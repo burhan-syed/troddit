@@ -423,7 +423,6 @@ export const loadSubInfo = async (subreddit) => {
 //search request no auth required
 export const loadSubredditInfo = async (query, loaduser = false) => {
   if (query) {
-    //console.log(query);
     try {
       const res = await (
         await axios.get(
@@ -701,13 +700,14 @@ export const getAllMyFollows = async () => {
   //split subs and users
   let users = [];
   let subs = [];
-  alldata.forEach((a) => {
-    if (a?.data?.url?.substring(0, 6) === "/user/") {
-      users.push(a);
+  for (const a of alldata){
+    if (a?.data?.display_name?.substring(0, 2) === "u_") {
+      let d = await loadSubredditInfo(a?.data?.display_name?.substring(2), true)
+      d && users.push(d);
     } else {
       subs.push(a);
     }
-  });
+  }
   return { users, subs };
 };
 

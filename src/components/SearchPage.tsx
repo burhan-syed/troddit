@@ -146,7 +146,7 @@ const SearchPage = ({ query }) => {
                       "cursor-pointer " +
                       (!searchUsers
                         ? " font-bold "
-                        : " opacity-50 hover:opacity-70")
+                        : " opacity-50 hover:opacity-70") + (expand ? " md:w-full" : "")
                     }
                     onClick={(e) => {
                       e.preventDefault();
@@ -160,7 +160,7 @@ const SearchPage = ({ query }) => {
                       "cursor-pointer " +
                       (!searchUsers
                         ? " opacity-50 hover:opacity-70 "
-                        : " font-bold ")
+                        : " font-bold ") + (expand ? " md:w-full" : "")
                     }
                     onClick={(e) => {
                       e.preventDefault();

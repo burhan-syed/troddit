@@ -180,7 +180,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         <>
           {myLocalMultis?.length > 0 && (
             <>
-              <Menu.Item>
                 <div
                   onClick={() => setExpandMultis((m) => !m)}
                   className={
@@ -198,7 +197,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                     />
                   )}
                 </div>
-              </Menu.Item>
               <div
                 className={
                   " " +
@@ -661,7 +659,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                       : "")
                                   }
                                 >
-                                  <DropdownItem sub={sub} preventNav={true} />
+                                  <DropdownItem sub={sub} />
                                 </div>
                               </MyLink>
                             )}
@@ -712,7 +710,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                         //       ?.toUpperCase()
                         //       .includes(filter.toUpperCase())
                         // )
-                        .map((sub, i) => {
+                        .map((user, i) => {
                           return (
                             <Menu.Item
                               key={`follow_${i}`}
@@ -720,10 +718,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                 !expandFollowing ||
                                 (filter !== "" &&
                                   !(
-                                    sub.data?.display_name_prefixed
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase()) ||
-                                    sub.data?.display_name
+                                    user.data?.name
                                       ?.toUpperCase()
                                       .includes(filter.toUpperCase())
                                   ))
@@ -731,10 +726,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                             >
                               {({ active }) => (
                                 <MyLink
-                                  href={sub?.data?.url?.replace(
-                                    "/user/",
-                                    "/u/"
-                                  )}
+                                  href={`/u/${user?.data?.name}`}
                                   passHref
                                 >
                                   <div
@@ -745,10 +737,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                       " px-4 py-2" +
                                       (filter !== "" &&
                                       !(
-                                        sub.data?.display_name_prefixed
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase()) ||
-                                        sub.data?.display_name
+                                        user.data?.name
                                           ?.toUpperCase()
                                           .includes(filter.toUpperCase())
                                       )
@@ -756,7 +745,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                         : "")
                                     }
                                   >
-                                    <DropdownItem sub={sub} isUserLink={true} />
+                                    <DropdownItem sub={{kind: user?.kind, data: user?.data?.subreddit}} isUser={true} />
                                   </div>
                                 </MyLink>
                               )}

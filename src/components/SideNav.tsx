@@ -99,7 +99,7 @@ const SideNav = ({ visible, toggle }) => {
               </div>
               <Menu
                 as="div"
-                className="min-h-full px-2 overflow-x-hidden overflow-y-scroll outline-none "
+                className="h-full px-2 overflow-x-hidden overflow-y-scroll outline-none "
               >
                 {({ open }) => (
                   <>

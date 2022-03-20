@@ -184,7 +184,8 @@ export const MainProvider = ({ children }) => {
     } else return false;
   };
   const addLocalSub = (sub) => {
-    if (!localSubs.includes(sub)) {
+    let found = localSubs.find(s => s?.toUpperCase() === sub?.toUpperCase())
+    if (!found){
       setLocalSubs((p) => [...p, sub]);
     }
   };

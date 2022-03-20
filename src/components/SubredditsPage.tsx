@@ -27,26 +27,58 @@ const SubredditsPage = () => {
     tryLoadAll,
   } = subsContext;
 
-  const [categories] = useState(["Mine", "Popular"]); //"New"
+  const [categories] = useState(["Mine", "Follows", "Popular"]); //"New"
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [selectedIndex]);
 
+  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
+  const [myLocalFollows, setMyLocalFollows] = useState([]);
+  useEffect(() => {
+    let subs = [];
+    let follows = [];
+    if (myLocalSubs?.length > 0) {
+      myLocalSubs.forEach((s) => {
+        if (s.data.url.substring(0, 3) === "/u/") {
+          follows.push(s);
+        } else {
+          subs.push(s);
+        }
+      });
+    }
+    setMyLocalSubsFiltered(subs);
+    setMyLocalFollows(follows);
+  }, [myLocalSubs]);
+
   //fetching info for local subs
   const [loadingLocalSubs, setLoadingLocalSubs] = useState(true);
+  const [loadingLocalFollows, setLoadingLocalFollows] = useState(true);
+
   const [localSubsInfo, setLocalSubsInfo] = useState({});
+  const [localFollowsInfo, setLocalFollowsInfo] = useState({});
   useEffect(() => {
     const fetchSubInfo = async (sub) => {
       //prevent api calls if we don't need them
-      if (!(sub?.data?.name in localSubsInfo)) {
-        let s = await loadSubredditInfo(sub?.data?.name, false);
-        setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
-        //console.log(sub, s);
+      if (
+        !(sub?.data?.name in localSubsInfo) &&
+        !(sub?.data?.name in localFollowsInfo)
+      ) {
+        let name = sub?.data?.name
+        let isUser = false;
+        if (sub?.data?.name?.substring(0,2) === "u_" && sub?.data.url.substring(0, 3) === "/u/"){
+          name = sub?.data?.name?.substring(2)
+          isUser = true;
+        }
+        let s = await loadSubredditInfo(name, isUser);
+        isUser
+          ? setLocalFollowsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }))
+          : setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
       }
     };
     if (!session && !loading && selectedIndex === 0) {
-      if (myLocalSubs.length > 0) {
+      if (myLocalSubsFiltered.length > 0) {
         myLocalSubs.forEach((sub) => {
           fetchSubInfo(sub);
         });
@@ -54,19 +86,34 @@ const SubredditsPage = () => {
         setLoadingLocalSubs(false);
       }
     }
-  }, [myLocalSubs, session, loading, selectedIndex]);
+    if (!session && !loading && selectedIndex === 1) {
+      if (myLocalFollows.length > 0) {
+        myLocalFollows.forEach((sub) => {
+          fetchSubInfo(sub);
+        });
+      } else {
+        setLoadingLocalFollows(false);
+      }
+    }
+  }, [myLocalSubsFiltered, myLocalFollows, session, loading, selectedIndex]);
 
   useEffect(() => {
     //Object.values(localSubsInfo).map((s) => console.log(s));
     Object.keys(localSubsInfo)?.length > 0 && setLoadingLocalSubs(false);
-  }, [localSubsInfo]);
+    Object.keys(localFollowsInfo)?.length > 0 && setLoadingLocalFollows(false);
+  }, [localSubsInfo, localFollowsInfo]);
 
   //to persist subs in list after unsubbing
   const [copyMySubs, setCopyMySubs] = useState([]);
+  const [copyMyFollowsing, setCopyMyFollowing] = useState([]);
   useEffect(() => {
     //update local copy if adding subs but not if removing
     mySubs.length >= copyMySubs.length && setCopyMySubs(mySubs);
   }, [mySubs, copyMySubs]);
+  useEffect(() => {
+    //update local copy if adding subs but not if removing
+    myFollowing.length >= copyMyFollowsing.length && setCopyMyFollowing(myFollowing);
+  }, [myFollowing, copyMyFollowsing]);
 
   const [subreddits, setSubreddits] = useState([]);
   const [after, setAfter] = useState("");
@@ -97,8 +144,10 @@ const SubredditsPage = () => {
       setAfterNew("");
       setSubredditsNew([]);
       setLoadingLocalSubs(true);
+      setLoadingLocalFollows(true);
     };
   }, []);
+
 
   return (
     <div className="flex flex-col justify-center gap-3 mx-4 md:gap-0 md:mx-auto md:flex-row ">
@@ -125,6 +174,8 @@ const SubredditsPage = () => {
                       ? "My Subreddits"
                       : c === "Popular"
                       ? "Popular Subreddits"
+                      : c === "Follows"
+                      ? "My Following"
                       : ""}
                   </div>
                 )}
@@ -215,7 +266,7 @@ const SubredditsPage = () => {
                   ) : (
                     session &&
                     loadedSubs && (
-                      <div className="flex flex-col items-center mt-5 md:items-start md:mt-0 ">
+                      <div className="flex flex-col items-center mt-5 md:mt-3 ">
                         <h1>{"Join subreddits to manage them here"}</h1>
                         <h1>{"Try searching or browsing the popular tab"}</h1>
                       </div>
@@ -233,19 +284,79 @@ const SubredditsPage = () => {
                     </>
                   ) : !session && !loading && loadingLocalSubs ? (
                     <>
-                      {[...Array(myLocalSubs?.length ?? 10)].map((u, i) => (
+                      {[...Array(myLocalSubsFiltered?.length ?? 10)].map(
+                        (u, i) => (
+                          <div key={i}>
+                            <SubCardPlaceHolder user={false} />
+                          </div>
+                        )
+                      )}
+                    </>
+                  ) : (
+                    !session &&
+                    !loading &&
+                    !loadingLocalSubs && (
+                      <div className="flex flex-col items-center mt-5 md:mt-3 ">
+                        <h1>{"Join subreddits to manage them here"}</h1>
+                        <h1>{"Try searching or browsing the popular tab"}</h1>
+                      </div>
+                    )
+                  )}
+                </>
+              ) : c === "Follows" ? (
+                <>
+                  {copyMyFollowsing.length > 0 ? (
+                    <>
+                      {copyMyFollowsing.map((s, i) => (
+                        <div key={i}>
+                          <SubCard data={s} />
+                        </div>
+                      ))}
+                    </>
+                  ) : session && !loadedSubs ? (
+                    <>
+                      {[...Array(10)].map((u, i) => (
                         <div key={i}>
                           <SubCardPlaceHolder user={false} />
                         </div>
                       ))}
                     </>
                   ) : (
+                    session &&
+                    loadedSubs && (
+                      <div className="flex flex-col items-center mt-5 md:mt-3 ">
+                        <h1>{"Follow users to manage them here"}</h1>
+                        <h1>{"Try searching or clicking on user profiles"}</h1>
+                      </div>
+                    )
+                  )}
+                  {Object.values(localFollowsInfo).length > 0 &&
+                  !session &&
+                  !loading ? (
+                    <>
+                      {Object.values(localFollowsInfo).map((s: any, i) => (
+                        <div key={i}>
+                          <SubCard data={s}  />
+                        </div>
+                      ))}
+                    </>
+                  ) : !session && !loading && loadingLocalFollows ? (
+                    <>
+                      {[...Array(myLocalFollows?.length ?? 10)].map(
+                        (u, i) => (
+                          <div key={i}>
+                            <SubCardPlaceHolder user={false} />
+                          </div>
+                        )
+                      )}
+                    </>
+                  ) : (
                     !session &&
                     !loading &&
-                    !loadingLocalSubs && (
-                      <div className="flex flex-col items-center mt-5 md:items-start md:mt-0 ">
-                        <h1>{"Join subreddits to manage them here"}</h1>
-                        <h1>{"Try searching or browsing the popular tab"}</h1>
+                    !loadingLocalFollows && (
+                      <div className="flex flex-col items-center mt-5 md:mt-3 ">
+                        <h1>{"Follow users to manage them here"}</h1>
+                        <h1>{"Try searching or clicking on user profiles"}</h1>
                       </div>
                     )
                   )}
