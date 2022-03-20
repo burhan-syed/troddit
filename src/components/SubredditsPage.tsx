@@ -64,7 +64,8 @@ const SubredditsPage = () => {
   //to persist subs in list after unsubbing
   const [copyMySubs, setCopyMySubs] = useState([]);
   useEffect(() => {
-    copyMySubs.length === 0 && setCopyMySubs(mySubs);
+    //update local copy if adding subs but not if removing
+    mySubs.length >= copyMySubs.length && setCopyMySubs(mySubs);
   }, [mySubs, copyMySubs]);
 
   const [subreddits, setSubreddits] = useState([]);
@@ -117,7 +118,7 @@ const SubredditsPage = () => {
                   <div
                     className={
                       (selected ? " font-bold opacity-100 " : "") +
-                      " outline-none ring-0 cursor-pointer opacity-50 hover:opacity-80"
+                      " outline-none ring-0 cursor-pointer opacity-50 hover:opacity-80 select-none"
                     }
                   >
                     {c === "Mine"
