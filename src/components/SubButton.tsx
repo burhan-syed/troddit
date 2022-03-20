@@ -8,11 +8,16 @@ import { useMainContext } from "../MainContext";
 const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
   const [subbed, setSubbed] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
   const { mySubs, myFollowing, myLocalSubs, myMultis, subscribe, loadedSubs } =
     subsContext;
-
+  //prevent spinner show when already loaded subs once
+  const [loadedOnce, setLoadedOnce] = useState(false);
+  useEffect(() => {
+    loadedSubs && setLoadedOnce(true);
+  }, [loadedSubs]);
   //checking subs
   useEffect(() => {
     let subbed = false;
@@ -73,16 +78,18 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
           startSubscribe(subbed ? "unsub" : !subbed && "sub", sub);
         }
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
         className={
           (!miniMode
             ? "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder hover:bg-lightHighlight "
             : " hover:bg-white") +
-          " rounded-md cursor-pointer dark:hover:bg-darkBorder  group"
+          " rounded-md cursor-pointer dark:hover:bg-darkBorder  "
         }
       >
-        {!loadedSubs ? (
+        {!loadedSubs && !loadedOnce ? (
           <>
             <div className={!miniMode ? "p-2" : ""}>
               <ImSpinner2 className="animate-spin" />
@@ -97,10 +104,10 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
                   <AiOutlineMinus />
                 ) : (
                   <>
-                    <span className="group-hover:hidden">
+                    <span className={hovered ? "hidden" : ""}>
                       {userMode ? "Followed" : "Joined"}
                     </span>
-                    <span className="hidden group-hover:block">
+                    <span className={hovered ? "block" : "hidden"}>
                       {userMode ? "Unfollow" : "Leave"}
                     </span>
                   </>

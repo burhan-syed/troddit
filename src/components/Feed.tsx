@@ -205,7 +205,7 @@ const Feed = ({
       setFetchPost(true);
     } else if (isUser) {
       if (userPostMode !== "" && isSelf) {
-        console.log(userPostMode);
+        //console.log(userPostMode);
         data = await loadUserSelf(
           context?.token,
           session ? true : false,

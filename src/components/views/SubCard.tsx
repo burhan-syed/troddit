@@ -30,8 +30,9 @@ const SubCard = ({
     setLoading(true);
     //console.log(data);
     let currSubInfo = data?.data;
-    if (data.kind === "t2" && data?.data?.subreddit)
+    if (data.kind === "t2" && data?.data?.subreddit) {
       currSubInfo = data.data.subreddit;
+    }
     let bannerurl = "";
     if (currSubInfo?.banner_background_image?.length > 0) {
       bannerurl = currSubInfo?.banner_background_image?.replaceAll("amp;", "");

@@ -12,11 +12,10 @@ const Sort = ({ query }) => {
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
   useEffect(() => {
-
-    const getWiki = async(wikiquery) => {
+    const getWiki = async (wikiquery) => {
       const data = await getWikiContent(wikiquery);
-      setWikiContent(data?.data?.content_html ?? "nothing found")
-    }
+      setWikiContent(data?.data?.content_html ?? "nothing found");
+    };
 
     setSubsArray(
       query?.slug?.[0]
@@ -29,7 +28,6 @@ const Sort = ({ query }) => {
         .split("+")
     );
     if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
-      
       setWikiMode(true);
       let wikiquery = query.slug;
       if (!wikiquery?.[2]) wikiquery[2] = "index";
@@ -58,18 +56,21 @@ const Sort = ({ query }) => {
         ) : (
           <div className="pt-16"></div>
         )}
-        {wikiMode ? 
-        
-      <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
-        <Link href={`/r/${subsArray[0]}/wiki`}><a><h1 className="text-lg font-bold">Wiki</h1></a></Link>
-      <ParseBodyHTML html={wikiContent}/>
-      </div>
-        
-        : 
-        <Feed
-          query={query}
-          isSubFlair={query?.slug?.[1] === "search" && query?.q}
-        />}
+        {wikiMode ? (
+          <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
+            <Link href={`/r/${subsArray[0]}/wiki`}>
+              <a>
+                <h1 className="text-lg font-bold">Wiki</h1>
+              </a>
+            </Link>
+            <ParseBodyHTML html={wikiContent} />
+          </div>
+        ) : (
+          <Feed
+            query={query}
+            isSubFlair={query?.slug?.[1] === "search" && query?.q}
+          />
+        )}
       </main>
     </div>
   );

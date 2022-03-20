@@ -608,6 +608,20 @@ export const loadUserSelf = async (
   return undefined;
 };
 
+export const getSubreddits = async (after?, type = "popular") => {
+  try {
+    let res = await axios.get(`${REDDIT}/subreddits/${type}.json`, {
+      params: { after: after, raw_json: 1, include_over_18: 1 },
+    });
+    let data = await res.data;
+    if (data?.data?.children) {
+      return { after: data?.data?.after, children: data?.data?.children };
+    }
+    return undefined;
+  } catch (err) {}
+  return undefined;
+};
+
 export const getMySubs = async (after?, count?) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {

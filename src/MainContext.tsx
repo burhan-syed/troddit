@@ -35,13 +35,13 @@ export const MainProvider = ({ children }) => {
   const [forceRefresh, setForceRefresh] = useState(0);
   const [fastRefresh, setFastRefresh] = useState(0);
 
-  const [userPostType, setUserPostType] = useState("links")
+  const [userPostType, setUserPostType] = useState("links");
   const toggleUserPostType = () => {
-    setUserPostType(p => {
-      if (p === "links") return "comments"
-      return "links"
-    })
-  }
+    setUserPostType((p) => {
+      if (p === "links") return "comments";
+      return "links";
+    });
+  };
 
   //filters in the inverse sense, true = allowed
   const [imgFilter, setImgFilter] = useState(true);
@@ -189,7 +189,9 @@ export const MainProvider = ({ children }) => {
     }
   };
   const removeLocalSub = (sub) => {
-    setLocalSubs((p) => p.filter((s) => s !== sub));
+    setLocalSubs((p) =>
+      p.filter((s) => s?.toUpperCase() !== sub?.toUpperCase())
+    );
   };
 
   const toggleAudioOnHover = () => {
@@ -431,7 +433,7 @@ export const MainProvider = ({ children }) => {
         replyFocus,
         setReplyFocus,
         userPostType,
-        toggleUserPostType
+        toggleUserPostType,
         //filterCount,
         //setFilterCount
       }}

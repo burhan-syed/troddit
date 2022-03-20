@@ -64,7 +64,8 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     forceShow();
     if (
       router.query?.slug?.[1] === "comments" ||
-      router.pathname.includes("/about")
+      router.pathname.includes("/about") ||
+      router.pathname.includes("/subreddits")
     ) {
       setallowHide(false);
     } else {
@@ -88,7 +89,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-        <nav className="flex flex-row items-center justify-between flex-grow h-full bg-white shadow-lg dark:bg-darkBG">
+        <nav className="flex flex-row items-center flex-grow h-full bg-white shadow-lg md:justify-between dark:bg-darkBG">
           <CgMenu
             className="w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
@@ -96,7 +97,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               // plausible("sidenav");
             }}
           />
-          <div className="flex flex-row items-center justify-start flex-grow h-full space-x-2 ">
+          <div className="flex flex-row items-center justify-start h-full mr-2 space-x-2">
             <Link href="/" passHref>
               <a>
                 <h1
@@ -114,12 +115,11 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             >
               <DropdownPane hide={hidden} />
             </div>
-
-            <div className="hidden w-full h-full max-w-6xl py-2 md:block">
-              <Search id={"subreddit search main"} />
-            </div>
           </div>
-          <div className="flex flex-row items-center justify-end h-full py-2 ml-2 mr-2 space-x-1 justify-self-end">
+          <div className="hidden w-full h-full py-2 max-w-7xl md:block">
+            <Search id={"subreddit search main"} />
+          </div>
+          <div className="flex flex-row items-center justify-end h-full py-2 ml-auto mr-2 space-x-1 md:ml-2">
             <div className="w-20 h-full">
               <SortMenu hide={hidden} />
             </div>

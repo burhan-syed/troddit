@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { BiRightTopArrowCircle } from "react-icons/bi";
-import { BsChevronDown } from "react-icons/bs";
-import { CgLivePhoto } from "react-icons/cg";
+import { BsChevronDown, BsList } from "react-icons/bs";
+import { CgLivePhoto, CgPlayListSearch } from "react-icons/cg";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
 import DropdownSubCard from "./DropdownSubCard";
@@ -72,7 +72,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
     }
   }, [myLocalSubs]);
 
-
   const constructMultiLink = (multi) => {
     let subs = [];
     multi?.data?.subreddits?.forEach((s) => subs.push(s?.name));
@@ -124,7 +123,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
-                  " flex flex-row items-center py-1.5 space-x-2  pl-4 cursor-pointer"
+                  " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
                 }
               >
                 <BiRightTopArrowCircle className="w-6 h-6" />
@@ -139,11 +138,26 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
-                  " flex flex-row items-center py-1.5 space-x-2  pl-4 cursor-pointer"
+                  " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
                 }
               >
                 <CgLivePhoto className="w-6 h-6" />
                 <h1>All</h1>
+              </div>
+            </MyLink>
+          )}
+        </Menu.Item>
+        <Menu.Item>
+          {({ active }) => (
+            <MyLink href="/subreddits" passHref>
+              <div
+                className={
+                  (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
+                  " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
+                }
+              >
+                <CgPlayListSearch className="w-7 h-7 -mr-0.5" />
+                <h1 className="mb-1">Subreddits</h1>
               </div>
             </MyLink>
           )}

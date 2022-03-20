@@ -5,7 +5,7 @@ import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
-import { CgLivePhoto } from "react-icons/cg";
+import { CgLivePhoto, CgPlayListSearch } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import {
   HiOutlineMinus,
@@ -39,37 +39,10 @@ const DropdownPane = ({ hide }) => {
     tryLoadAll,
   } = subsContext;
 
-  const [show, setShow] = useState(false);
   const [expand, setExpand] = useState(false);
-  const [expandMultis, setExpandMultis] = useState(true);
-  const [expandSubs, setExpandSubs] = useState(true);
-  const [expandFollowing, setExpandFollowing] = useState(true);
-  const windowHeight = useWindowHeight();
   const router = useRouter();
-  //const [location, setLocation] = useState("home");
-  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
-  const [myLocalFollows, setMyLocalFollows] = useState([]);
-  const [filter, setFilter] = useState("");
-  const filterRef = useRef(null);
-  // useEffect(() => {
-  //   let subs = [];
-  //   let follows = [];
-  //   //console.log(myLocalSubs);
-  //   if (myLocalSubs?.length > 0) {
-  //     myLocalSubs.forEach((s) => {
-  //       if (s.data.url.substring(0, 3) === "/u/") {
-  //         follows.push(s);
-  //       } else {
-  //         subs.push(s);
-  //       }
-  //     });
-  //     setMyLocalSubsFiltered(subs);
-  //     setMyLocalFollows(follows);
-  //   }
-  // }, [myLocalSubs]);
 
   const [session, loading] = useSession();
-  // const [subInfo, setSubInfo] = useState({});
 
   const handleClick = async () => {
     // !show &&
@@ -77,23 +50,11 @@ const DropdownPane = ({ hide }) => {
     tryLoadAll();
   };
 
-  // useEffect(() => {
-  //   show && filterRef.current.focus();
-  // }, [show]);
-
   return (
     <Menu
       as="div"
       className="relative flex flex-col items-center w-full h-full select-none"
     >
-      {/* Close when clicking outside element */}
-      {/* <div
-        className={
-          (show && !hide ? "" : "w-0 h-0") +
-          "absolute  top-0 left-0 w-screen h-screen bg-transparent "
-        }
-        onClick={() => setShow((show) => !show)}
-      ></div> */}
       {({ open }) => (
         <>
           {/* Main Button */}
@@ -115,6 +76,8 @@ const DropdownPane = ({ hide }) => {
                   <CgLivePhoto className="w-6 h-6" />
                 ) : currLocation === "SEARCH" ? (
                   <AiOutlineSearch className="w-6 h-6" />
+                ) : currLocation === "SUBREDDITS" ? (
+                  <CgPlayListSearch className="mt-1 -mr-1 w-7 h-7" />
                 ) : multi ? (
                   <div>
                     <DropdownItem
@@ -151,7 +114,8 @@ const DropdownPane = ({ hide }) => {
               {(currLocation == "HOME" ||
                 currLocation == "POPULAR" ||
                 currLocation == "ALL" ||
-                currLocation === "SEARCH") && (
+                currLocation === "SEARCH" ||
+                currLocation === "SUBREDDITS") && (
                 <h1 className="ml-2 capitalize truncate">
                   {currLocation.toLowerCase()}
                 </h1>

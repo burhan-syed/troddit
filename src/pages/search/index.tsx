@@ -5,12 +5,6 @@ import NavBar from "../../components/NavBar";
 import SearchPage from "../../components/SearchPage";
 
 const Search = ({ query }) => {
-  useEffect(() => {
-    //console.log(query);
-    return () => {
-      //
-    };
-  }, []);
   return (
     <div>
       <Head>

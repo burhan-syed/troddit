@@ -283,6 +283,8 @@ export const MySubsProvider = ({ children }) => {
       }
     } else if (router?.route === "/search") {
       setCurrLocation("SEARCH");
+    } else if (router?.route === "/subreddits") {
+      setCurrLocation("SUBREDDITS");
     } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
     } else if (router?.pathname === "/u/[...slug]") {
@@ -299,12 +301,11 @@ export const MySubsProvider = ({ children }) => {
 
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
-    
     if (
-      !loadedSubs && 
+      !loadedSubs &&
       (router?.pathname === "/r/[...slug]" ||
-      router?.pathname === "/u/[...slug]" ||
-      router?.pathname === "/search")
+        router?.pathname === "/u/[...slug]" ||
+        router?.pathname === "/search")
     ) {
       loadLocalSubs();
       loadAllFast();
@@ -435,7 +436,7 @@ export const MySubsProvider = ({ children }) => {
     subname,
     loggedIn = false
   ) => {
-    //console.log('subAPI', action,subname,loggedIn);
+    //console.log("subAPI", action, subname, loggedIn);
     if (session || loggedIn) {
       let status = await subToSub(action, subname);
       //console.log('session:', status);
@@ -444,8 +445,8 @@ export const MySubsProvider = ({ children }) => {
         return true;
       }
     } else if ((!session && !loading) || !loggedIn) {
-      let status = context.subToSub(action, subname);
-      //console.log('!session:', status);
+      let status = await context.subToSub(action, subname);
+      return status;
     }
   };
 
