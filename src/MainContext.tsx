@@ -347,7 +347,7 @@ export const MainProvider = ({ children }) => {
       ? setReadFilter(false)
       : setReadFilter(true);
     const saved_readPosts = localStorage.getItem("readPosts");
-    setReadPosts(JSON.parse(saved_readPosts));
+    saved_readPosts && setReadPosts(JSON.parse(saved_readPosts));
   }, []);
   useEffect(() => {
     localStorage.setItem("readFilter", JSON.stringify(readFilter));
