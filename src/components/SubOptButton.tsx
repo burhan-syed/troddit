@@ -7,7 +7,7 @@ import DropdownItem from "./DropdownItem";
 import MultiManageModal from "./MultiManageModal";
 import { useSession } from "next-auth/client";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
-import Link from 'next/link'
+import Link from "next/link";
 
 const SubOptButton = ({
   subInfo,
@@ -202,10 +202,7 @@ const SubOptButton = ({
                                       currMulti.toUpperCase()  */}
                                     {true && (
                                       <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
-                                        <DropdownItem
-                                          sub={multi}
-                                          preventNav={true}
-                                        />
+                                        <DropdownItem sub={multi} />
                                       </div>
                                     )}
                                   </div>
@@ -225,10 +222,7 @@ const SubOptButton = ({
                                       currMulti.toUpperCase() && ( */}
                                     {true && (
                                       <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
-                                        <DropdownItem
-                                          sub={multi}
-                                          preventNav={true}
-                                        />
+                                        <DropdownItem sub={multi} />
                                       </div>
                                     )}
                                   </div>
@@ -309,40 +303,41 @@ const SubOptButton = ({
                   )}
                   {openDescription && (
                     <>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={
-                            (active
-                              ? "bg-lightHighlight dark:bg-darkHighlight "
-                              : "") + " block px-4 py-1 text-sm"
-                          }
-                          onClick={openDescription}
-                        >
-                          <div className="flex flex-row justify-end cursor-pointer select-none">
-                            {`Sidebar`}
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (active
+                                ? "bg-lightHighlight dark:bg-darkHighlight "
+                                : "") + " block px-4 py-1 text-sm"
+                            }
+                            onClick={openDescription}
+                          >
+                            <div className="flex flex-row justify-end cursor-pointer select-none">
+                              {`Sidebar`}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                    {({ active }) => (
-                      <div
-                        className={
-                          (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
-                            : "") + " block px-4 py-1 text-sm cursor-pointer select-none"
-                        }
-                      >
-                        <Link href={`/r/${subInfo?.display_name}/wiki/`}>
-                          <a className="flex flex-row justify-end">
-                          {`Wiki`}
-                          </a>
-                        </Link>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  </>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className={
+                              (active
+                                ? "bg-lightHighlight dark:bg-darkHighlight "
+                                : "") +
+                              " block px-4 py-1 text-sm cursor-pointer select-none"
+                            }
+                          >
+                            <Link href={`/r/${subInfo?.display_name}/wiki/`}>
+                              <a className="flex flex-row justify-end">
+                                {`Wiki`}
+                              </a>
+                            </Link>
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </>
                   )}
                   {subArray?.length > 1 && !session && !loading && (
                     <Menu.Item>

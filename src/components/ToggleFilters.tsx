@@ -16,6 +16,9 @@ const ToggleFilters = ({ filter }) => {
     //console.log(filter, context.filters, context.filters.filter)
     let f = "";
     switch (filter) {
+      case "read":
+        f = "readFilter";
+        break;
       case "images":
         f = "imgFilter";
         break;
@@ -47,6 +50,8 @@ const ToggleFilters = ({ filter }) => {
           ? "link posts"
           : filter === "self"
           ? "self posts"
+          : filter === "read"
+          ? "read posts"
           : filter === "portrait" || filter === "landscape"
           ? `${filter} images/videos`
           : filter

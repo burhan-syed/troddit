@@ -37,7 +37,7 @@ const SubCardPlaceHolder = ({ user = false }) => {
                 " w-full h-full  text-lightText text-6xl items-center justify-center flex overflow-hidden"
               }
             >
-              {user ? "u/" : "r/"}
+              {user ? " /" : " /"}
             </div>
           </div>
           <div className="flex flex-col ">

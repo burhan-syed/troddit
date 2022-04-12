@@ -16,13 +16,10 @@ import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import SaveButton from "../SaveButton";
-const Row1 = ({
-  post,
-  hasMedia,
-  hideNSFW,
-  forceMute,
-  postNum,
-}) => {
+import { hideLink } from "../../RedditAPI";
+import HideButton from "../HideButton";
+import PostOptButton from "../PostOptButton";
+const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
   const [expand, setexpand] = useState(false);
 
   return (
@@ -252,6 +249,15 @@ const Row1 = ({
                 postindex={postNum}
               />
             </div>
+            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:cursor-pointer ">
+              <HideButton
+                id={post?.name}
+                hidden={post?.hidden}
+                row={true}
+                isPortrait={false}
+                postindex={postNum}
+              />
+            </div>
             <a
               href={`${post?.url}` ?? "https://troddit.com"}
               target="_blank"
@@ -272,6 +278,7 @@ const Row1 = ({
                 <h1 className="hidden md:block ">Original</h1>
               </div>
             </a>
+            <PostOptButton post={post} postNum={postNum} mode={"row"} />
           </div>
         </div>
         {/* Hidden Media */}

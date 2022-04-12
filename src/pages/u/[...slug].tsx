@@ -32,8 +32,12 @@ const Sort = ({ query }) => {
       if (
         (!session ||
           session?.user?.name?.toUpperCase() !== user.toUpperCase()) &&
-        (mode === "SAVED" || mode === "UPVOTED" || mode === "DOWNVOTED")
+        (mode === "SAVED" ||
+          mode === "UPVOTED" ||
+          mode === "DOWNVOTED" ||
+          mode === "HIDDEN")
       ) {
+        router.push(`/u/${user}`);
         setForbidden(true);
         return false;
       } else {
@@ -56,9 +60,10 @@ const Sort = ({ query }) => {
         query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "OVERVIEW" ||
         query?.slug?.[1]?.toUpperCase() === "SUBMITTED" ||
-        query?.slug?.[1]?.toUpperCase() === "COMMENTS"
+        query?.slug?.[1]?.toUpperCase() === "COMMENTS" ||
+        query?.slug?.[1]?.toUpperCase() === "HIDDEN"
       ) {
-        sessionLoad(query?.slug?.[0], query?.slug?.[1]);
+        sessionLoad(query?.slug?.[0], query?.slug?.[1]?.toUpperCase());
       } else {
         setIsUser(true);
         setFeedQuery(query);
@@ -119,7 +124,12 @@ const Sort = ({ query }) => {
                     <div className="flex justify-center w-full pb-2">{`Login to save this multi`}</div>
                   )}
                   {isMulti && session && (
-                    <div className="flex justify-center w-full pb-2 hover:cursor-pointer hover:font-semibold" onClick={getSubsArray}>Click to Extract Subreddits</div>
+                    <div
+                      className="flex justify-center w-full pb-2 hover:cursor-pointer hover:font-semibold"
+                      onClick={getSubsArray}
+                    >
+                      Click to Extract Subreddits
+                    </div>
                   )}
                 </div>
               ) : (

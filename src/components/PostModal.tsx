@@ -32,6 +32,7 @@ import Awardings from "./Awardings";
 import PostTitle from "./PostTitle";
 import SaveButton from "./SaveButton";
 import UserFlair from "./UserFlair";
+import PostOptButton from "./PostOptButton";
 
 const PostModal = ({
   setSelect,
@@ -298,6 +299,10 @@ const PostModal = ({
       context.setPostNum(0);
     };
   }, [postNum]);
+
+  useEffect(() => {
+    context.addReadPost(apost?.name);
+  }, [apost]);
 
   const updateComments = async (newlink) => {
     setLoadingComments(true);
@@ -744,12 +749,7 @@ const PostModal = ({
                                   className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                                 >
                                   <HiOutlineSwitchHorizontal
-                                    className={
-                                      "flex-none  " +
-                                      (usePortrait
-                                        ? " w-6 h-6 "
-                                        : " w-5 h-5 m-0.5")
-                                    }
+                                    className={"flex-none w-5 h-5  "}
                                   />
                                 </button>
                               </>
@@ -763,20 +763,20 @@ const PostModal = ({
                                 {imgFull ? (
                                   <>
                                     <BiCollapse
-                                      className={"flex-none w-6 h-6 "}
+                                      className={"flex-none w-5 h-5 "}
                                     />
                                   </>
                                 ) : (
                                   <>
                                     <BiExpand
-                                      className={"flex-none w-6 h-6 "}
+                                      className={"flex-none w-5 h-5 "}
                                     />
                                   </>
                                 )}
                               </button>
                             )}
                           </div>
-                          <div className="flex flex-row items-center justify-end space-x-1">
+                          <div className="flex flex-row items-center justify-end gap-1 text-sm">
                             <div>
                               <button
                                 onClick={(e) => {
@@ -789,8 +789,8 @@ const PostModal = ({
                               >
                                 <BsReply
                                   className={
-                                    "flex-none w-6 h-6 scale-x-[-1] " +
-                                    (!usePortrait && " md:pr-1")
+                                    "flex-none w-5 h-5 scale-x-[-1] " +
+                                    (!usePortrait && " md:mr-1")
                                   }
                                 />
                                 <h1
@@ -824,8 +824,8 @@ const PostModal = ({
                               <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                                 <BiExit
                                   className={
-                                    "flex-none w-6 h-6 " +
-                                    (!usePortrait && " md:pr-2")
+                                    "flex-none w-5 h-5 " +
+                                    (!usePortrait && " md:mr-2")
                                   }
                                 />
                                 <h1
@@ -847,8 +847,8 @@ const PostModal = ({
                               <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                                 <ImReddit
                                   className={
-                                    "flex-none w-6 h-6 " +
-                                    (!usePortrait && " md:pr-2")
+                                    "flex-none w-5 h-5 " +
+                                    (!usePortrait && " md:mr-2")
                                   }
                                 />
                                 <h1
@@ -860,6 +860,13 @@ const PostModal = ({
                                 </h1>
                               </div>
                             </a>
+                            <div className="ml-0.5">
+                              <PostOptButton
+                                post={apost}
+                                postNum={postNum}
+                                mode="post"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>

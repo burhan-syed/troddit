@@ -700,9 +700,12 @@ export const getAllMyFollows = async () => {
   //split subs and users
   let users = [];
   let subs = [];
-  for (const a of alldata){
+  for (const a of alldata) {
     if (a?.data?.display_name?.substring(0, 2) === "u_") {
-      let d = await loadSubredditInfo(a?.data?.display_name?.substring(2), true)
+      let d = await loadSubredditInfo(
+        a?.data?.display_name?.substring(2),
+        true
+      );
       d && users.push(d);
     } else {
       subs.push(a);
@@ -1084,8 +1087,34 @@ export const saveLink = async (category, id, isSaved) => {
           body: `id=${id}`, //&category=${category}
         }
       );
+      if (res?.ok) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+};
 
-      if (res) {
+export const hideLink = async (id, isHidden) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch(
+        `https://oauth.reddit.com/api/${isHidden ? "unhide" : "hide"}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `bearer ${token}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `id=${id}`, //&category=${category}
+        }
+      );
+      if (res?.ok) {
         return true;
       } else {
         return false;

@@ -21,7 +21,7 @@ import LoginModal from "./LoginModal";
 import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
-import { findMediaInfo } from "../../lib/utils";
+import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 
 const Feed = ({
@@ -41,6 +41,7 @@ const Feed = ({
   const [fetchPost, setFetchPost] = useState(false);
   const context: any = useMainContext();
   let {
+    readFilter,
     imgFilter,
     vidFilter,
     selfFilter,
@@ -278,94 +279,24 @@ const Feed = ({
     data?.token && context.setToken(data?.token);
     setAfter(data?.after);
     data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
-    if (
-      !imgFilter ||
-      !vidFilter ||
-      !selfFilter ||
-      !galFilter ||
-      !linkFilter ||
-      !imgPortraitFilter ||
-      !imgLandscapeFilter
-    ) {
-      data.children = await filterChildren(data.children);
-    }
-    setPosts(data.children);
+    let { filtered, filtercount } = await filterPosts(
+      data?.children,
+      {
+        readFilter,
+        imgFilter,
+        vidFilter,
+        selfFilter,
+        galFilter,
+        linkFilter,
+        imgPortraitFilter,
+        imgLandscapeFilter,
+      },
+      context?.readPosts
+    );
+    setPosts(filtered);
+    setFilterCount((n) => n + filtercount);
     setNumPosts((n) => n + data.children.length);
     updateLoading(false);
-  };
-
-  const filterChildren = async (data: Array<any>) => {
-    async function filter(arr, callback) {
-      const fail = Symbol();
-      return (
-        await Promise.all(
-          arr.map(async (item) => ((await callback(item)) ? item : fail))
-        )
-      ).filter((i) => i !== fail);
-    }
-
-    const filterCheck = async (d) => {
-      let quick = true;
-      //need to get all resolution data if filtering out orientations
-      if (!imgPortraitFilter || !imgLandscapeFilter) {
-        quick = false;
-      }
-      let mediaInfo = await findMediaInfo(d, quick);
-      //orientation check
-      if (!imgPortraitFilter || !imgLandscapeFilter) {
-        //only check on videos or images (galleries consider images)
-        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
-          //hide portrait if they are portrait, square is considered portrait
-
-          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
-            setFilterCount((n) => n + 1);
-
-            return false;
-          }
-          //hide landscape if not portrait (are landscape)
-          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
-            setFilterCount((n) => n + 1);
-
-            return false;
-          }
-        }
-      }
-
-      if (!vidFilter && mediaInfo.isVideo) {
-        //if video is not in self post, filter out
-        if (!(selfFilter && mediaInfo.isSelf)) {
-          setFilterCount((n) => n + 1);
-          return false;
-        }
-      } else if (!imgFilter && mediaInfo.isImage) {
-        //if image is not in self post, filter out
-        if (!(selfFilter && mediaInfo.isSelf)) {
-          setFilterCount((n) => n + 1);
-          return false;
-        }
-      } else if (!linkFilter && mediaInfo.isLink) {
-        setFilterCount((n) => n + 1);
-        return false;
-      }
-      //if self post, filter out
-      else if (!selfFilter && mediaInfo.isSelf) {
-        setFilterCount((n) => n + 1);
-        return false;
-      } else if (!galFilter && mediaInfo.isGallery) {
-        setFilterCount((n) => n + 1);
-
-        return false;
-      } else {
-        return true;
-      }
-    };
-
-    let f = await filter(data, async (d) => {
-      let r = await filterCheck(d.data);
-      //console.log(d, r);
-      return r;
-    });
-    return f;
   };
 
   //const [errored, setErrored] = useState(false);
