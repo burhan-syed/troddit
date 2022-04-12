@@ -358,3 +358,117 @@ export const findMediaInfo = async (post, quick = false) => {
 
   return loadInfo(post, quick);
 };
+
+export const filterPosts = async (posts, filters, read) => {
+  let {
+    readFilter,
+    imgFilter,
+    vidFilter,
+    selfFilter,
+    galFilter,
+    linkFilter,
+    imgPortraitFilter,
+    imgLandscapeFilter,
+    userPostType,
+  } = filters;
+
+  let filtercount = 0;
+
+  const filterChildren = async (data: Array<any>) => {
+    async function filter(arr, callback) {
+      const fail = Symbol();
+      return (
+        await Promise.all(
+          arr.map(async (item) => ((await callback(item)) ? item : fail))
+        )
+      ).filter((i) => i !== fail);
+    }
+
+    const filterCheck = async (d) => {
+      //if filtering read, no need for other content checks
+      if (!readFilter && read?.[d?.name] == 1) {
+        filtercount += 1;
+        return false;
+      }
+
+      let quick = true;
+      //need to get all resolution data if filtering out orientations
+      if (!imgPortraitFilter || !imgLandscapeFilter) {
+        quick = false;
+      }
+      let mediaInfo = await findMediaInfo(d, quick);
+      //orientation check
+      if (!imgPortraitFilter || !imgLandscapeFilter) {
+        //only check on videos or images (galleries consider images)
+        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
+          //hide portrait if they are portrait, square is considered portrait
+
+          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
+            filtercount += 1;
+
+            return false;
+          }
+          //hide landscape if not portrait (are landscape)
+          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
+            filtercount += 1;
+
+            return false;
+          }
+        }
+      }
+
+      if (!vidFilter && mediaInfo.isVideo) {
+        //if video is not in self post, filter out
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          filtercount += 1;
+          return false;
+        }
+      } else if (!imgFilter && mediaInfo.isImage) {
+        //if image is not in self post, filter out
+        if (!(selfFilter && mediaInfo.isSelf)) {
+          filtercount += 1;
+          return false;
+        }
+      } else if (!linkFilter && mediaInfo.isLink) {
+        filtercount += 1;
+        return false;
+      }
+      //if self post, filter out
+      else if (!selfFilter && mediaInfo.isSelf) {
+        filtercount += 1;
+        return false;
+      } else if (!galFilter && mediaInfo.isGallery) {
+        filtercount += 1;
+
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    let f = await filter(data, async (d) => {
+      let r = await filterCheck(d.data);
+      //console.log(d, r);
+      return r;
+    });
+    return f;
+  };
+
+  let filtered = posts;
+  if (
+    !readFilter ||
+    !imgFilter ||
+    !vidFilter ||
+    !selfFilter ||
+    !galFilter ||
+    !linkFilter ||
+    !imgPortraitFilter ||
+    !imgLandscapeFilter
+  ) {
+    filtered = await filterChildren(posts);
+  }
+  return {
+    filtered: filtered,
+    filtercount: filtercount,
+  };
+};

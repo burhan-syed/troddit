@@ -58,7 +58,7 @@ const FilterModal = ({ toOpen }) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl select-none dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="relative px-4 pt-5 pb-4 overflow-visible bg-white dark:bg-darkBG sm:p-6 sm:pb-4">
                 <div
                   className="absolute flex items-center justify-center w-8 h-8 ml-auto text-gray-500 top-2 right-2 hover:text-gray-900 dark:hover:text-gray-200 hover:cursor-pointer"
@@ -68,9 +68,10 @@ const FilterModal = ({ toOpen }) => {
                 >
                   <RiArrowGoBackLine className="w-8 h-8 " />
                 </div>
-                <div className="flex-col mt-2 ">
+                <div className="flex-col mt-2 mb-1 ">
                   {/* //sm:flex sm:items-start "> */}
                   <div className="min-w-full py-1 ">
+                    <h1 className="py-1 ">Content Filters</h1>
                     {filters.map((f, i) => (
                       <div key={i}>
                         <div className={"block px-4  text-sm "}>
@@ -78,16 +79,13 @@ const FilterModal = ({ toOpen }) => {
                         </div>
                       </div>
                     ))}
+                    <h1 className="py-1 ">Other Filters</h1>
+                    <div>
+                      <div className={"block px-4  text-sm "}>
+                        <ToggleFilters filter={"read"} />
+                      </div>
+                    </div>
                   </div>
-                  {/* <h1 className="pl-6 text-xs">Advanced</h1> */}
-                  {/* <div className="">
-                    <div className={"block px-4  text-sm "}>
-                      <ToggleFilters filter={"portrait"} />
-                    </div>
-                    <div className={"block px-4  text-sm "}>
-                      <ToggleFilters filter={"landscape"} />
-                    </div>
-                  </div> */}
                 </div>
                 <button
                   className="flex items-center justify-center px-4 py-1.5 ml-auto mr-4 text-center border-2 dark:border dark:border-lightBorder hover:bg-lightHighlight rounded-md cursor-pointer dark:hover:bg-darkBorder "

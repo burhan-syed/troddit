@@ -300,6 +300,10 @@ const PostModal = ({
     };
   }, [postNum]);
 
+  useEffect(() => {
+    context.addReadPost(apost?.name);
+  }, [apost]);
+
   const updateComments = async (newlink) => {
     setLoadingComments(true);
     const { post, comments } = await loadPost(newlink, sort);

@@ -24,6 +24,7 @@ const FilterMenu = ({ hide = false }) => {
   const [degIntervalID, setDegIntervalID] = useState<any>();
   useEffect(() => {
     let {
+      readFilter,
       imgFilter,
       vidFilter,
       selfFilter,
@@ -33,6 +34,7 @@ const FilterMenu = ({ hide = false }) => {
       imgLandscapeFilter,
     } = context;
     if (
+      !readFilter ||
       !imgFilter ||
       !vidFilter ||
       !selfFilter ||

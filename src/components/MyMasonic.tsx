@@ -33,7 +33,7 @@ import Post from "./Post";
 import { useMainContext } from "../MainContext";
 import { CgEnter } from "react-icons/cg";
 // import { usePlausible } from "next-plausible";
-import { findMediaInfo } from "../../lib/utils";
+import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { useRouter } from "next/router";
 
 const randInt = (min = 200, max = 500) =>
@@ -81,6 +81,7 @@ const MyMasonic = ({
   const router = useRouter();
   const context: any = useMainContext();
   let {
+    readFilter,
     imgFilter,
     vidFilter,
     selfFilter,
@@ -345,8 +346,7 @@ const MyMasonic = ({
           query?.t,
           loadafter,
           session?.user?.name,
-          context.userPostType === 'comments' ? 'comments' : 'links'
-
+          context.userPostType === "comments" ? "comments" : "links"
         );
         //console.log(data);
       } else if (isMulti) {
@@ -362,7 +362,9 @@ const MyMasonic = ({
           query?.slug?.[0] ?? "",
           query?.sort ?? "hot",
           query?.t ?? "",
-          loadafter,undefined,userPostMode
+          loadafter,
+          undefined,
+          userPostMode
         );
       }
     } else if (isSubFlair) {
@@ -419,18 +421,22 @@ const MyMasonic = ({
         setCount((c) => c + 1);
         currAfter.current = data?.after;
         setAfter(data?.after);
-        if (
-          !imgFilter ||
-          !vidFilter ||
-          !selfFilter ||
-          !galFilter ||
-          !linkFilter ||
-          !imgPortraitFilter ||
-          !imgLandscapeFilter
-        ) {
-          data.children = await filterChildren(data.children);
-        }
-        return { data: { posts: data?.children, after: data?.after } };
+        let { filtered, filtercount } = await filterPosts(
+          data?.children,
+          {
+            readFilter,
+            imgFilter,
+            vidFilter,
+            selfFilter,
+            galFilter,
+            linkFilter,
+            imgPortraitFilter,
+            imgLandscapeFilter,
+          },
+          context?.readPosts
+        );
+        setFilterCount((n) => n + filtercount);
+        return { data: { posts: filtered, after: data?.after } };
       } else {
         //console.log("reject");
         return { data: { posts: [], after: "NONE" } };
@@ -477,71 +483,6 @@ const MyMasonic = ({
     allowload = true;
     block.current = false;
     return { payload, lastafter };
-  };
-  const filterChildren = async (data: Array<any>) => {
-    async function filter(arr, callback) {
-      const fail = Symbol();
-      return (
-        await Promise.all(
-          arr.map(async (item) => ((await callback(item)) ? item : fail))
-        )
-      ).filter((i) => i !== fail);
-    }
-
-    const filterCheck = async (d) => {
-      let quick = true;
-      //need to get all resolution data if filtering out orientations
-      if (!imgPortraitFilter || !imgLandscapeFilter) quick = false;
-      let mediaInfo = await findMediaInfo(d, quick);
-      //orientation check
-      if (!imgPortraitFilter || !imgLandscapeFilter) {
-        //only check on videos or images (galleries a subset of images)
-        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
-          //hide portrait if they are portrait, square is considered portrait
-          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
-            setFilterCount((n) => n + 1);
-
-            return false;
-          }
-          //hide landscape if not portrait (are landscape)
-          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
-            setFilterCount((n) => n + 1);
-
-            return false;
-          }
-        }
-      }
-      if (!vidFilter && mediaInfo.isVideo) {
-        if (!(selfFilter && mediaInfo.isSelf)) {
-          setFilterCount((n) => n + 1);
-          return false;
-        }
-      } else if (!imgFilter && mediaInfo.isImage) {
-        if (!(selfFilter && mediaInfo.isSelf)) {
-          setFilterCount((n) => n + 1);
-          return false;
-        }
-      } else if (!linkFilter && mediaInfo.isLink) {
-        setFilterCount((n) => n + 1);
-        return false;
-      } else if (!selfFilter && mediaInfo.isSelf) {
-        setFilterCount((n) => n + 1);
-        return false;
-      } else if (!galFilter && mediaInfo.isGallery) {
-        setFilterCount((n) => n + 1);
-
-        return false;
-      } else {
-        return true;
-      }
-    };
-
-    let f = await filter(data, async (d) => {
-      let r = await filterCheck(d.data);
-      //console.log(d, r);
-      return r;
-    });
-    return f;
   };
 
   const getFakePosts = async (start = 0, end = 32) => {

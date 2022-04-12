@@ -1,5 +1,5 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { BiUser, BiLink } from "react-icons/bi";
+import { BiUser, BiLink, BiX } from "react-icons/bi";
 import { AiOutlineTag } from "react-icons/ai";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import SaveButton from "./SaveButton";
 import HideButton from "./HideButton";
+import { useMainContext } from "../MainContext";
 
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
@@ -18,6 +19,7 @@ const MyLink = (props) => {
 };
 
 const PostOptButton = ({ post, postNum, mode = "" }) => {
+  const context: any = useMainContext();
   return (
     <>
       <Menu as="div" className={" relative"}>
@@ -188,6 +190,29 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     )}
                   </Menu.Item>
                 )}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        context?.toggleReadPost(post?.name);
+                      }}
+                      className={
+                        (active
+                          ? "bg-lightHighlight dark:bg-darkHighlight "
+                          : "") +
+                        " px-2 py-1 text-sm flex flex-row items-center hover:cursor-pointer"
+                      }
+                    >
+                      <BiX className="flex-none w-4 h-4 mr-2 mt-0.5 scale-125" />
+                      <h1>
+                        {context?.readPosts?.[post?.name] == 1
+                          ? "Mark Unread"
+                          : "Mark Read"}
+                      </h1>
+                    </div>
+                  )}
+                </Menu.Item>
                 {/* <Menu.Item>{({ active }) => <div>Mark Unread</div>}</Menu.Item>
                 <Menu.Item>{({ active }) => <div>Filter..</div>}</Menu.Item> */}
               </Menu.Items>

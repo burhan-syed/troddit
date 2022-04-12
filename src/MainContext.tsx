@@ -34,7 +34,7 @@ export const MainProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [forceRefresh, setForceRefresh] = useState(0);
   const [fastRefresh, setFastRefresh] = useState(0);
-
+  //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
   const toggleUserPostType = () => {
     setUserPostType((p) => {
@@ -43,7 +43,35 @@ export const MainProvider = ({ children }) => {
     });
   };
 
+  const [readPosts, setReadPosts] = useState({});
+  const addReadPost = (postid) => {
+    setReadPosts((read) => {
+      if (Object.keys(read).length < 1000) {
+        read[postid] = 1;
+        localStorage.setItem("readPosts", JSON.stringify(read));
+        return read;
+      }
+      //resetting object if space becomes too large
+      let newread = {};
+      newread[postid] = 1;
+      localStorage.setItem("readPosts", JSON.stringify(newread));
+      return newread;
+    });
+  };
+  const toggleReadPost = (postid) => {
+    setReadPosts((read) => {
+      if (read?.[postid] == 1) {
+        delete read[postid];
+      } else {
+        read[postid] = 1;
+      }
+      localStorage.setItem("readPosts", JSON.stringify(read));
+      return read;
+    });
+  };
+
   //filters in the inverse sense, true = allowed
+  const [readFilter, setReadFilter] = useState(true);
   const [imgFilter, setImgFilter] = useState(true);
   const [vidFilter, setVidFilter] = useState(true);
   const [galFilter, setGalFilter] = useState(true);
@@ -66,6 +94,9 @@ export const MainProvider = ({ children }) => {
 
   const toggleFilter = (filter) => {
     switch (filter) {
+      case "read":
+        setReadFilter((r) => !r);
+        break;
       case "images":
         //toggle off orientation filters if no videos and images
         if (imgFilter === true && vidFilter === false) {
@@ -311,8 +342,16 @@ export const MainProvider = ({ children }) => {
     saved_selfFilter?.includes("false")
       ? setSelfFilter(false)
       : setSelfFilter(true);
+    const saved_readFilter = localStorage.getItem("readFilter");
+    saved_readFilter?.includes("false")
+      ? setReadFilter(false)
+      : setReadFilter(true);
+    const saved_readPosts = localStorage.getItem("readPosts");
+    setReadPosts(JSON.parse(saved_readPosts));
   }, []);
-
+  useEffect(() => {
+    localStorage.setItem("readFilter", JSON.stringify(readFilter));
+  }, [readFilter]);
   useEffect(() => {
     localStorage.setItem("imgFilter", JSON.stringify(imgFilter));
   }, [imgFilter]);
@@ -429,6 +468,7 @@ export const MainProvider = ({ children }) => {
         loading,
         setLoading,
         toggleFilter,
+        readFilter,
         imgFilter,
         vidFilter,
         galFilter,
@@ -447,8 +487,9 @@ export const MainProvider = ({ children }) => {
         setReplyFocus,
         userPostType,
         toggleUserPostType,
-        //filterCount,
-        //setFilterCount
+        readPosts,
+        addReadPost,
+        toggleReadPost,
       }}
     >
       {children}
