@@ -214,6 +214,20 @@ const SubredditBanner = ({
                     </div>
                   </a>
                 </Link>
+                <Link href={`/u/${name}/hidden`}>
+                  <a>
+                    <div
+                      className={
+                        " cursor-pointer font-bold" +
+                        (userPostMode === "HIDDEN"
+                          ? " font-bold  "
+                          : " opacity-50 hover:opacity-70")
+                      }
+                    >
+                      Hidden
+                    </div>
+                  </a>
+                </Link>
                 <Link href={`/u/${name}/saved`}>
                   <a>
                     <div
@@ -227,7 +241,7 @@ const SubredditBanner = ({
                       Saved
                     </div>
                   </a>
-                </Link>{" "}
+                </Link>
               </>
             )}
             {userPostMode === "SAVED" && (

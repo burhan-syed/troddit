@@ -8,15 +8,10 @@ import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
+import PostOptButton from "../PostOptButton";
 
 //og card
-const Card1 = ({
-  post,
-  hasMedia,
-  hideNSFW,
-  forceMute,
-  postNum,
-}) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
   const context: any = useMainContext();
   const [allowIFrame, setallowIFrame] = useState(false);
   useEffect(() => {
@@ -284,7 +279,7 @@ const Card1 = ({
           )}
 
           {(!context.mediaOnly || !hasMedia) && (
-            <div className="flex flex-row justify-between py-1 pt-1 text-sm font-semibold align-bottom select-none">
+            <div className="flex flex-row flex-wrap py-1 pt-1 text-sm font-semibold align-bottom select-none">
               <div className="flex flex-row items-center space-x-1 ">
                 <Vote
                   name={post?.name}
@@ -294,18 +289,21 @@ const Card1 = ({
                   postindex={postNum}
                 />
               </div>
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <h1
-                  className={
-                    "cursor-pointer hover:underline" +
-                    " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
-                  }
-                >
-                  {`${numToString(post.num_comments, 1000)} ${
-                    post.num_comments === 1 ? "comment" : "comments"
-                  }`}
-                </h1>
-              </a>
+              <div className="flex flex-row items-center justify-end gap-2 ml-auto">
+                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <h1
+                    className={
+                      "cursor-pointer hover:underline" +
+                      " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
+                    }
+                  >
+                    {`${numToString(post.num_comments, 1000)} ${
+                      post.num_comments === 1 ? "comment" : "comments"
+                    }`}
+                  </h1>
+                </a>
+                <PostOptButton post={post} postNum={postNum} />
+              </div>
             </div>
           )}
         </div>

@@ -7,15 +7,10 @@ import Vote from "../Vote";
 import MediaWrapper from "./MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
+import PostOptButton from "../PostOptButton";
 
 //og card
-const Card1 = ({
-  post,
-  hasMedia,
-  hideNSFW,
-  forceMute,
-  postNum,
-}) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
   const context: any = useMainContext();
   return (
     <div>
@@ -56,7 +51,7 @@ const Card1 = ({
                   <PostTitle post={post} />
                 </a>
 
-                <span className="text-sm">
+                <span className="text-xs">
                   <TitleFlair post={post} />
                 </span>
               </h1>
@@ -132,7 +127,7 @@ const Card1 = ({
                   </a>
                 </div>
               </div>
-              <div className="flex flex-row justify-between py-1 pt-1 text-sm align-bottom select-none">
+              <div className="flex flex-row flex-wrap items-center py-1 pt-1 text-sm select-none">
                 <div className="flex flex-row items-center space-x-1 font-semibold">
                   <Vote
                     name={post?.name}
@@ -142,18 +137,21 @@ const Card1 = ({
                     postindex={postNum}
                   />
                 </div>
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                  <h1
-                    className={
-                      "cursor-pointer hover:underline font-semibold " +
-                      " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
-                    }
-                  >
-                    {`${numToString(post.num_comments, 1000)} ${
-                      post.num_comments === 1 ? "comment" : "comments"
-                    }`}
-                  </h1>
-                </a>
+                <div className="flex flex-row items-center gap-2 ml-auto">
+                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                    <h1
+                      className={
+                        "cursor-pointer hover:underline font-semibold " +
+                        " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
+                      }
+                    >
+                      {`${numToString(post.num_comments, 1000)} ${
+                        post.num_comments === 1 ? "comment" : "comments"
+                      }`}
+                    </h1>
+                  </a>
+                  <PostOptButton post={post} postNum={postNum} />
+                </div>
               </div>
             </div>
           )}

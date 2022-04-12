@@ -1,70 +1,70 @@
 import { useSession } from "next-auth/client";
 import { useEffect, useState } from "react";
-import { BsBookmarks } from "react-icons/bs";
+import { BiHide } from "react-icons/bi";
 import { useMainContext } from "../MainContext";
-import { saveLink } from "../RedditAPI";
+import { hideLink } from "../RedditAPI";
 
-const SaveButton = ({
+const HideButton = ({
   id,
-  saved,
+  hidden,
   post = false,
   isPortrait = false,
   row = false,
   category = "",
-  children = <></>,
   postindex = undefined,
   menu = false,
 }) => {
   const [session, loading] = useSession();
   const context: any = useMainContext();
-  const [isSaved, setIsSaved] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   useEffect(() => {
-    saved && setIsSaved(true);
+    hidden && setIsHidden(true);
     return () => {
-      setIsSaved(false);
+      setIsHidden(false);
     };
-  }, [saved]);
+  }, [hidden]);
 
-  const save = async () => {
+  const hide = async () => {
     if (session) {
-      let pstatus = isSaved;
-      setIsSaved((s) => !s);
-      const res = await saveLink(category, id, isSaved);
+      let pstatus = isHidden;
+      setIsHidden((s) => !s);
+      const res = await hideLink(id, isHidden);
       if (res) {
-        context.updateSaves(postindex, !pstatus);
+        context.updateHidden(postindex, !pstatus);
       } else {
-        setIsSaved(pstatus);
+        setIsHidden(pstatus);
       }
     } else if (!loading) {
       context.setLoginModal(true);
     }
   };
+
   return (
     <div
       className={
-        "flex flex-row items-center " +
-        (menu ? " pl-2 pr-4 py-1 " : " space-x-1 ")
+        "flex flex-row items-center  " +
+        (menu ? " pr-4 pl-2 py-1 " : " space-x-1 ")
       }
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        save();
+        hide();
       }}
     >
       {(post || row || menu) && (
-        <BsBookmarks
+        <BiHide
           className={
             "flex-none   " +
-            (row || menu ? " w-4 h-4 " : " w-5 h-5 ") +
+            (row || menu ? " w-4 h-4 " : " w-6 h-6 ") +
             (!isPortrait && !row ? " md:mr-2 " : row ? "  " : " ") +
-            (isSaved ? " dark:text-yellow-300 text-yellow-600 " : " ")
+            (isHidden ? " dark:text-red-500 text-red-400 " : " ")
           }
         />
       )}
 
       {!isPortrait && (
         <h1 className={post && "hidden " + (!isPortrait && " md:block ")}>
-          {isSaved ? "Unsave" : "Save"}
+          {isHidden ? "Unhide" : "Hide"}
           {menu ? " Post" : ""}
         </h1>
       )}
@@ -72,4 +72,4 @@ const SaveButton = ({
   );
 };
 
-export default SaveButton;
+export default HideButton;

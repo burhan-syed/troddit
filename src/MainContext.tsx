@@ -158,19 +158,30 @@ export const MainProvider = ({ children }) => {
   // }, [imgFilter, vidFilter, galFilter, selfFilter, linkFilter])
 
   const updateLikes = (i, like) => {
-    let p = posts;
-    if (p?.[i]?.data) {
-      p[i].data.likes = like;
+    if (posts?.[i]?.data) {
+      setPosts((p) => {
+        p[i].data.likes = like;
+        return p;
+      });
     }
-    setPosts(p);
   };
 
   const updateSaves = (i, save) => {
+    if (posts?.[i]?.data) {
+      setPosts((p) => {
+        p[i].data.saved = save;
+        return p;
+      });
+    }
+  };
+  const updateHidden = (i, hidden) => {
     let p = posts;
     if (p?.[i]?.data) {
-      p[i].data.saved = save;
+      setPosts((p) => {
+        p[i].data.hidden = hidden;
+        return p;
+      });
     }
-    setPosts(p);
   };
 
   const [localSubs, setLocalSubs] = useState([]);
@@ -184,8 +195,8 @@ export const MainProvider = ({ children }) => {
     } else return false;
   };
   const addLocalSub = (sub) => {
-    let found = localSubs.find(s => s?.toUpperCase() === sub?.toUpperCase())
-    if (!found){
+    let found = localSubs.find((s) => s?.toUpperCase() === sub?.toUpperCase());
+    if (!found) {
       setLocalSubs((p) => [...p, sub]);
     }
   };
@@ -410,6 +421,7 @@ export const MainProvider = ({ children }) => {
         setToken,
         updateLikes,
         updateSaves,
+        updateHidden,
         forceRefresh,
         setForceRefresh,
         fastRefresh,
