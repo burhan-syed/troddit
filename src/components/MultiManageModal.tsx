@@ -182,7 +182,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
                           />
                           <button
                             onClick={createMultiButton}
-                            className="flex-shrink-0 px-2 py-1 text-sm border rounded-lg hover:ring-2"
+                            className="flex-shrink-0 px-2 py-1 bg-white border rounded-md border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
                             type="button"
                           >
                             {`Create`}

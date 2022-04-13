@@ -147,7 +147,7 @@ const SubCard = ({
                   " w-full h-full  text-lightText text-6xl overflow-hidden items-center justify-center flex "
                 }
               >
-                {data?.kind === "t2" ? "u/" : "r/"}
+                {data?.kind === "t2" ? "u/" : data?.kind === "t5" ? "r/" : " "}
                 {hideNSFW && (
                   <span className="absolute ml-16 text-xs opacity-70 ">
                     {"18+"}
@@ -272,7 +272,7 @@ const SubCard = ({
             {isSelf ? (
               <div
                 className={
-                  "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder hover:bg-lightHighlight p-1 rounded-md cursor-pointer dark:hover:bg-darkBorder"
+                  "w-24 text-center flex justify-center items-center rounded-md bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG p-1"
                 }
               >
                 <Login />
@@ -291,7 +291,7 @@ const SubCard = ({
                 userMode={data?.kind === "t2"}
               />
             )}
-            {data?.kind !== "t2" && !link && (
+            {data?.kind == "t5" && !link && (
               <SubOptButton
                 subInfo={subInfo}
                 currMulti={currMulti}
@@ -309,7 +309,13 @@ const SubCard = ({
             }
           >
             {isSelf ? (
-              <Login />
+              <div
+                className={
+                  "mx-auto w-24 text-center flex justify-center items-center rounded-md bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG p-1"
+                }
+              >
+                <Login />
+              </div>
             ) : (
               <SubButton
                 sub={
@@ -324,7 +330,7 @@ const SubCard = ({
                 userMode={data?.kind === "t2"}
               />
             )}
-            {data?.kind !== "t2" && !link && (
+            {data?.kind == "t5" && !link && (
               <SubOptButton
                 subInfo={subInfo}
                 currMulti={currMulti}

@@ -118,8 +118,8 @@ const SubredditBanner = ({
     <div
       className={
         "w-full h-full -mt-2 relative  " +
-        (subArray.length === 1 && multi === ""
-          ? " mb-2  md:mb-4 lg:mb-6"
+        (subArray.length === 1 && multi === "" && !name
+          ? " mb-2  md:mb-4 lg:mb-6 "
           : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")
       }
     >
@@ -140,7 +140,7 @@ const SubredditBanner = ({
       />
 
       {name && (
-        <div className="flex flex-row w-full mt-2 md:-mb-5 md:justify-center">
+        <div className="flex flex-row w-full mt-2 mb-2 md:justify-center ">
           <div className="flex flex-row flex-wrap gap-4 mx-2 text-xl md:w-11/12">
             <Link href={`/u/${name}/overview`}>
               <a>

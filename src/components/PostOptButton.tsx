@@ -34,10 +34,10 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
             >
               <Menu.Button
                 className={
-                  " flex justify-center items-center  border-2 dark:border   rounded-md cursor-pointer  border-gray-300  dark:border-trueGray-700 hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
-                  //   (mode !== "post"
-                  //     ? " dark:hover:bg-darkBorder hover:bg-lightHighlight "
-                  //     : " hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")
+                  " flex justify-center items-center  border rounded-md  " +
+                  (mode == "row"
+                    ? " border-transparent hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                    : " border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")
                 }
               >
                 <BsThreeDotsVertical
@@ -56,8 +56,8 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
             >
               <Menu.Items
                 className={
-                  "absolute translate-x-[-13.4rem] z-50  w-52 bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  border-2 border-gray-300   dark:border-trueGray-700  py-1" +
-                  (mode == "post"
+                  "absolute translate-x-[-13.4rem] z-50  w-52 bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer  py-1" +
+                  (mode == "post" || mode == "row"
                     ? " top-0 origin-top-right"
                     : " bottom-0 origin-bottom-right")
                 }
