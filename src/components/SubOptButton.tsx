@@ -137,7 +137,7 @@ const SubOptButton = ({
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
-                  "w-6 flex justify-center items-center  border-2 dark:border dark:border-lightBorder  rounded-md cursor-pointer dark:hover:bg-darkBorder hover:bg-lightHighlight"
+                  "w-6 flex justify-center items-center  bg-white border border-lightBorder hover:border-lightBorderHighlight rounded-md dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
                 }
               >
                 <BsThreeDotsVertical className="w-5 h-8" />
@@ -155,7 +155,7 @@ const SubOptButton = ({
             >
               <Menu.Items
                 className={
-                  "absolute right-0  w-40 mt-2 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  border-2 dark:border dark:border-lightBorder "
+                  "absolute right-0  w-40 mt-2 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer "
                 }
               >
                 <div className="py-1 ">
@@ -173,7 +173,7 @@ const SubOptButton = ({
                         </div>
                         <div
                           className={
-                            "absolute top-[-2px] left-[-160px] w-40 max-h-96 overflow-y-scroll  bg-white border-2 rounded-md py-1 shadow-lg dark:bg-darkBG ring-1 ring-black ring-opacity-5 focus:outline-none dark:border dark:border-lightBorder scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800" +
+                            "absolute top-0 -left-[10rem] w-40 max-h-96 overflow-y-scroll  bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer py-1 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800" +
                             (active ? "  " : " hidden ")
                           }
                         >

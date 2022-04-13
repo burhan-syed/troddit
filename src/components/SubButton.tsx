@@ -23,7 +23,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
     let subbed = false;
     if (session && loadedSubs) {
       (userMode ? myFollowing : mySubs).forEach((s) => {
-        let name = s?.data?.name
+        let name = s?.data?.name;
         if (s?.data?.subreddit) name = s.data.subreddit?.name;
         if (name == sub) {
           subbed = true;
@@ -34,7 +34,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       !subbed && setSubbed(false);
       setloadAPI(false);
     }
-  }, [session, mySubs, sub, userMode, myFollowing, loadedSubs],);
+  }, [session, mySubs, sub, userMode, myFollowing, loadedSubs]);
   //checking local subs
   useEffect(() => {
     if (!loading && !session) {
@@ -81,7 +81,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       <div
         className={
           (!miniMode
-            ? "w-24 text-center flex justify-center items-center dark:border border-2 dark:border-lightBorder hover:bg-lightHighlight "
+            ? "w-24 text-center flex justify-center items-center bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG "
             : " hover:bg-white") +
           " rounded-md cursor-pointer dark:hover:bg-darkBorder  "
         }

@@ -56,7 +56,8 @@ const HideButton = ({
           className={
             "flex-none   " +
             (row || menu ? " w-4 h-4 " : " w-6 h-6 ") +
-            (!isPortrait && !row ? " md:mr-2 " : row ? "  " : " ") +
+            (!isPortrait && !row ? " md:mr-2 " : " ") +
+            (menu ? " mr-2 " : "") +
             (isHidden ? " dark:text-red-500 text-red-400 " : " ")
           }
         />
