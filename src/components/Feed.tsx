@@ -52,12 +52,6 @@ const Feed = ({
     userPostType,
   } = context;
   const [filterCount, setFilterCount] = useState(0);
-  // const breakpointColumnsObj = {
-  //   default: 4,
-  //   2560: 3,
-  //   1280: 2,
-  //   767: 1,
-  // };
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
@@ -72,6 +66,7 @@ const Feed = ({
     context.setLoading(b);
   };
 
+  //monitors query to change sort/range
   useEffect(() => {
     //console.log(query);
     if (query?.slug?.[1] === "comments" && !userPostMode) {
@@ -102,15 +97,155 @@ const Feed = ({
     } else {
       setSort(query?.frontsort ?? query?.sort ?? "hot");
       setRange(query?.t ?? "");
-
-      //causing client side errors
-      //!sessloading && fetchFront();
     }
 
     return () => {};
   }, [query, sessloading]);
 
   useEffect(() => {
+    let asynccheck = true;
+
+    const fetchFront = async () => {
+      let data: any = await loadFront(
+        session ? true : false,
+        context?.token,
+        query?.frontsort ?? "hot",
+        query?.t ?? "",
+        "",
+        undefined,
+        context?.localSubs
+      );
+      if (data?.children) {
+        await manageData(data);
+      } else {
+        updateLoading(false);
+        setError(true);
+      }
+    };
+
+    const fetchSearch = async () => {
+      let data = await getRedditSearch(
+        query,
+        "",
+        query?.sort,
+        session ? true : false,
+        undefined,
+        query?.t,
+        context?.token,
+        safeSearch ? undefined : true
+      );
+      if (data?.children) {
+        await manageData(data);
+      } else {
+        setError(true);
+        updateLoading(false);
+      }
+    };
+
+    const fetchSubs = async () => {
+      let data: any;
+      let subs = query?.slug?.[0]
+        .split(" ")
+        .join("+")
+        .split(",")
+        .join("+")
+        .split("%20")
+        .join("+");
+      if (query?.slug?.[1] === "comments" && !userPostMode) {
+        setFetchPost(true);
+      } else if (isUser) {
+        if (userPostMode !== "" && isSelf) {
+          //console.log(userPostMode);
+          data = await loadUserSelf(
+            context?.token,
+            session ? true : false,
+            userPostMode.toLocaleLowerCase(),
+            query?.sort,
+            query?.t,
+            "",
+            session?.user?.name,
+            userPostType === "comments" ? "comments" : "links"
+          );
+          //console.log(data);
+        } else if (isMulti) {
+          data = await getUserMultiPosts(
+            query?.slug?.[0],
+            query?.slug?.[2],
+            query?.slug?.[3],
+            query?.t
+          );
+        } else {
+          data = await loadUserPosts(
+            query?.slug?.[0] ?? "",
+            query?.sort ?? "hot",
+            query?.t ?? "",
+            "",
+            undefined,
+            userPostMode
+          );
+        }
+      } else if (isSubFlair) {
+        data = await getRedditSearch(
+          query,
+          "",
+          query?.sort,
+          session ? true : false,
+          subs?.split("+")?.[0] ?? "all",
+          query?.t,
+          context?.token,
+          safeSearch ? undefined : true
+        );
+      } else {
+        setSubsArray(subs.split("+"));
+        //console.log(subs);
+        data = await loadSubreddits(
+          session ? true : false,
+          context?.token,
+          subs ?? "",
+          query?.slug?.[1] ?? "hot",
+          query?.t ?? ""
+        );
+      }
+      if (data?.children) {
+        setIsSubreddit(true);
+        await manageData(data);
+      } else if (data) {
+        setNothingHere(true);
+        updateLoading(false);
+      } else {
+        setError(true);
+        updateLoading(false);
+      }
+    };
+
+    const manageData = async (data) => {
+      if (asynccheck) {
+        data?.token && context.setToken(data?.token);
+        setAfter(data?.after);
+        data?.children?.length < 1
+          ? setNothingHere(true)
+          : setNothingHere(false);
+        let { filtered, filtercount } = await filterPosts(
+          data?.children,
+          {
+            readFilter,
+            imgFilter,
+            vidFilter,
+            selfFilter,
+            galFilter,
+            linkFilter,
+            imgPortraitFilter,
+            imgLandscapeFilter,
+          },
+          context?.readPosts
+        );
+        setPosts(filtered);
+        setFilterCount((n) => n + filtercount);
+        setNumPosts((n) => n + data.children.length);
+        updateLoading(false);
+      }
+    };
+
     setFilterCount(0);
     if (query?.slug?.[1] === "comments" && !userPostMode) {
       setFetchPost(true);
@@ -135,7 +270,9 @@ const Feed = ({
     } else {
       !sessloading && fetchFront();
     }
+
     return () => {
+      asynccheck = false;
       setPosts([]);
       setAfter("");
       setNumPosts(0);
@@ -155,149 +292,6 @@ const Feed = ({
     userPostType,
     context.forceRefresh,
   ]);
-
-  const fetchFront = async () => {
-    let data: any = await loadFront(
-      session ? true : false,
-      context?.token,
-      query?.frontsort ?? "hot",
-      query?.t ?? "",
-      "",
-      undefined,
-      context?.localSubs
-    );
-    if (data?.children) {
-      await manageData(data);
-    } else {
-      updateLoading(false);
-      setError(true);
-    }
-  };
-
-  const fetchSearch = async () => {
-    let data = await getRedditSearch(
-      query,
-      "",
-      query?.sort,
-      session ? true : false,
-      undefined,
-      query?.t,
-      context?.token,
-      safeSearch ? undefined : true
-    );
-    if (data?.children) {
-      await manageData(data);
-    } else {
-      setError(true);
-      updateLoading(false);
-    }
-  };
-
-  const fetchSubs = async () => {
-    let data: any;
-    let subs = query?.slug?.[0]
-      .split(" ")
-      .join("+")
-      .split(",")
-      .join("+")
-      .split("%20")
-      .join("+");
-    if (query?.slug?.[1] === "comments" && !userPostMode) {
-      setFetchPost(true);
-    } else if (isUser) {
-      if (userPostMode !== "" && isSelf) {
-        //console.log(userPostMode);
-        data = await loadUserSelf(
-          context?.token,
-          session ? true : false,
-          userPostMode.toLocaleLowerCase(),
-          query?.sort,
-          query?.t,
-          "",
-          session?.user?.name,
-          userPostType === "comments" ? "comments" : "links"
-        );
-        //console.log(data);
-      } else if (isMulti) {
-        data = await getUserMultiPosts(
-          query?.slug?.[0],
-          query?.slug?.[2],
-          query?.slug?.[3],
-          query?.t
-        );
-      } else {
-        data = await loadUserPosts(
-          query?.slug?.[0] ?? "",
-          query?.sort ?? "hot",
-          query?.t ?? "",
-          "",
-          undefined,
-          userPostMode
-        );
-      }
-    } else if (isSubFlair) {
-      // data = await loadSubFlairPosts(
-      //   query.slug[0],
-      //   query?.q,
-      //   query?.sort,
-      //   query?.t
-      // );
-      data = await getRedditSearch(
-        query,
-        "",
-        query?.sort,
-        session ? true : false,
-        subs?.split("+")?.[0] ?? "all",
-        query?.t,
-        context?.token,
-        safeSearch ? undefined : true
-      );
-    } else {
-      setSubsArray(subs.split("+"));
-      //console.log(subs);
-      data = await loadSubreddits(
-        session ? true : false,
-        context?.token,
-        subs ?? "",
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? ""
-      );
-    }
-    if (data?.children) {
-      setIsSubreddit(true);
-      await manageData(data);
-    } else if (data) {
-      setNothingHere(true);
-      updateLoading(false);
-    } else {
-      setError(true);
-      updateLoading(false);
-    }
-  };
-
-  const manageData = async (data) => {
-    data?.token && context.setToken(data?.token);
-    setAfter(data?.after);
-    data?.children?.length < 1 ? setNothingHere(true) : setNothingHere(false);
-    let { filtered, filtercount } = await filterPosts(
-      data?.children,
-      {
-        readFilter,
-        imgFilter,
-        vidFilter,
-        selfFilter,
-        galFilter,
-        linkFilter,
-        imgPortraitFilter,
-        imgLandscapeFilter,
-      },
-      context?.readPosts
-    );
-    setPosts(filtered);
-    setFilterCount((n) => n + filtercount);
-    setNumPosts((n) => n + data.children.length);
-    updateLoading(false);
-  };
 
   //const [errored, setErrored] = useState(false);
 

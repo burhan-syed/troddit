@@ -1005,8 +1005,7 @@ export const loadPost = async (
   }
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
-      //console.log(permalink.split('/'));
-      let res = await axios.get(`https://oauth.reddit.com/${permalink}`, {
+      let res = await axios.get(`https://oauth.reddit.com${permalink}`, {
         headers: {
           authorization: `bearer ${accessToken}`,
         },
@@ -1026,7 +1025,6 @@ export const loadPost = async (
       });
       let data = await res.data;
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      //console.log(data);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
         comments: data?.[1]?.data?.children,

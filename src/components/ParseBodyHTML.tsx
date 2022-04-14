@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 
-const ParseBodyHTML = ({ html, small = true, card = false, limitWidth = false }) => {
-  const [insertHTML, setInsertHTML] = useState("");
+const ParseBodyHTML = ({
+  html,
+  small = true,
+  card = false,
+  limitWidth = false,
+}) => {
+  const [insertHTML, setInsertHTML] = useState(html);
   useEffect(() => {
     //formatting per Teddit
     const unescape = (s) => {
@@ -38,20 +43,18 @@ const ParseBodyHTML = ({ html, small = true, card = false, limitWidth = false })
 
     const replaceUserDomains = (str: String) => {
       let redditRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))/gm;
-      //excluding poll links for now
-      let pollRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/poll\/)/gm;
+      let matchRegex1 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/[ru]\/)/gm;
+      let matchRegex2 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/user\/)/gm;
       // let youtubeRegex = /([A-z.]+\.)?youtu(be\.com|\.be)/gm;
       // let twitterRegex = /([A-z.]+\.)?twitter\.com/gm;
       // let instagramRegex = /([A-z.]+\.)?instagram.com/gm;
-      if (!str.match(pollRegex)) {
+      if (str.match(matchRegex1) || str.match(matchRegex2)) {
         str = str.replace(redditRegex, "troddit.com");
       }
       return str;
     };
 
     let unescaped = unescape(html);
-    //let unescapedHTML = splitSpans(unescaped);
-    //console.log(unescaped);
     setInsertHTML(unescaped);
   }, [html]);
 
@@ -59,7 +62,9 @@ const ParseBodyHTML = ({ html, small = true, card = false, limitWidth = false })
     <div
       className={
         "dark:prose-invert prose prose-stone xl:prose-stone prose-headings:text-stone-700 dark:prose-headings:text-stone-300 dark:prose-strong:text-red-400  prose-strong:text-cyan-700  " +
-        (small && card ? " prose-sm prose-p:my-0 " : small
+        (small && card
+          ? " prose-sm prose-p:my-0 "
+          : small
           ? " prose-sm xl:prose-base xl:prose-p:my-0 prose-p:my-0 "
           : " 2xl:prose-lg ") +
         (limitWidth ? " max-w-2xl " : " max-w-none")

@@ -31,51 +31,10 @@ export const MySubsProvider = ({ children }) => {
   const [session, loading] = useSession();
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
-  const [currLocationPic, setcurrLocationPic] = useState("");
   const [currLocation, setCurrLocation] = useState("");
   const [currSubs, setCurrSubs] = useState([]);
   const [currSubInfo, setCurrSubInfo] = useState({});
-  //   {
-  //   submit_text_html: "",
-  //   display_name: "",
-  //   header_img: "",
-  //   title: "",
-  //   icon_size: [256, 256],
-  //   primary_color: "",
-  //   active_user_count: 0,
-  //   icon_img: "",
-  //   display_name_prefixed: "",
-  //   accounts_active: 0,
-  //   public_traffic: false,
-  //   subscribers: 0,
-  //   user_flair_richtext: [],
-  //   name: "",
-  //   quarantine: false,
-  //   hide_ads: false,
-  //   public_description: "",
-  //   community_icon: "",
-  //   banner_background_image: "",
-  //   submit_text: "",
-  //   description_html: "",
-  //   spoilers_enabled: true,
-  //   key_color: "",
-  //   created: 0,
-  //   wls: 6,
-  //   submission_type: "",
-  //   public_description_html: "",
-  //   banner_img: "",
-  //   banner_background_color: "",
-  //   id: "",
-  //   over18: false,
-  //   description: "",
-  //   lang: "",
-  //   whitelist_status: "",
-  //   url: "",
-  //   created_utc: 0,
-  //   banner_size: 0,
-  //   mobile_banner_image: "",
-  // });
-
+  const [subInfoCache, setSubInfoCache] = useState({});
   const [multi, setMulti] = useState("");
   const defaultMultis = [
     {
@@ -255,7 +214,30 @@ export const MySubsProvider = ({ children }) => {
   }, [router?.query, currSubs]);
 
   useEffect(() => {
-    //console.log(router);
+    let asynccheck = true;
+    const loadCurrSubInfo = async (sub, isUser = false) => {
+      if (subInfoCache?.[sub]) {
+        asynccheck && setCurrSubInfo(subInfoCache?.[sub]);
+        //return subInfoCache?.[sub]
+      }
+      let info = await loadSubredditInfo(sub, isUser);
+      if (info) {
+        //console.log(info);
+
+        asynccheck && setCurrSubInfo(info);
+        setSubInfoCache((s) => {
+          //limit cache to 50 subs
+          if (Object.keys(s).length > 50) {
+            let keys = Object.keys(s);
+            delete s[keys[0]];
+          }
+          s[sub] = info;
+          return s;
+        });
+        return info;
+      }
+    };
+
     if (router?.pathname === "/r/[...slug]" && router?.query?.slug?.[0]) {
       let loc = router?.query?.slug?.[0]
         .split(" ")
@@ -295,6 +277,7 @@ export const MySubsProvider = ({ children }) => {
       setCurrSubInfo({});
     }
     return () => {
+      asynccheck = false;
       setCurrSubInfo({});
     };
   }, [router?.query?.slug?.[0], router.route]);
@@ -337,16 +320,6 @@ export const MySubsProvider = ({ children }) => {
       setloadedSubs(true);
     }
   }, [session, loading]);
-
-  const loadCurrSubInfo = async (sub, isUser = false) => {
-    let info = await loadSubredditInfo(sub, isUser);
-    if (info) {
-      //console.log(info);
-
-      setCurrSubInfo(info);
-      return info;
-    }
-  };
 
   const loadLocalSubs = () => {
     let localsubs = [];
@@ -486,7 +459,6 @@ export const MySubsProvider = ({ children }) => {
         subscribe,
         subscribeAll,
         error,
-        loadCurrSubInfo,
         currSubInfo,
         currLocation,
         currSubs,
