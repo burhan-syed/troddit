@@ -27,7 +27,7 @@ import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 // import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
-import MediaWrapper from "./views/MediaWrapper";
+import MediaWrapper from "./MediaWrapper";
 import Awardings from "./Awardings";
 import PostTitle from "./PostTitle";
 import SaveButton from "./SaveButton";

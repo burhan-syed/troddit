@@ -1,4 +1,4 @@
-import Media from "../Media";
+import Media from "./Media";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
 import { useState, useEffect } from "react";
 

@@ -5,7 +5,7 @@ import Media from "../Media";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
-import MediaWrapper from "./MediaWrapper";
+import MediaWrapper from "../MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
