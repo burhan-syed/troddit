@@ -27,7 +27,7 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
     <div
       className={
         (postNum === 0 ? " border-t rounded-t-md " : " ") +
-        "flex flex-row items-start py-1 pb-2 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover hover:border-l hover:border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  "
+        "flex flex-row items-start py-1 pb-2 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover border-l border-r border-transparent  dark:hover:border-trueGray-500 hover:border-gray-500  "
       }
     >
       {/* Votes */}
