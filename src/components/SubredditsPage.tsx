@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useSubsContext } from "../MySubs";
 import { getSubreddits, loadSubredditInfo } from "../RedditAPI";
-import SubCard from "./views/SubCard";
-import SubCardPlaceHolder from "./views/SubCardPlaceHolder";
+import SubCard from "./cards/SubCard";
+import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
 
 import { Tab } from "@headlessui/react";
 import { useSession } from "next-auth/client";

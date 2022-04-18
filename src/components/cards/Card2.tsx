@@ -4,10 +4,11 @@ import Media from "../Media";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
-import MediaWrapper from "./MediaWrapper";
+import MediaWrapper from "../MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
+import { GoRepoForked } from "react-icons/go";
 
 //og card
 const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
@@ -70,7 +71,14 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                       </h2>
                     </a>
                   </Link>
-                  <p>•</p>
+                  {post?.crosspost_parent_list?.[0] ? (
+                    <div className="flex flex-row gap-1">
+                      <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
+                      <span className="italic font-semibold">crosspost by</span>
+                    </div>
+                  ) : (
+                    <p>•</p>
+                  )}
                   <Link href={`/u/${post?.author}`}>
                     <a
                       onClick={(e) => {

@@ -12,13 +12,14 @@ import { AiOutlineLink } from "react-icons/ai";
 import { CgArrowsExpandDownRight, CgArrowsExpandUpLeft } from "react-icons/cg";
 import TitleFlair from "../TitleFlair";
 import Vote from "../Vote";
-import MediaWrapper from "./MediaWrapper";
+import MediaWrapper from "../MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import SaveButton from "../SaveButton";
 import { hideLink } from "../../RedditAPI";
 import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
+import { GoRepoForked } from "react-icons/go";
 const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
   const [expand, setexpand] = useState(false);
 
@@ -144,7 +145,14 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
               <h2 className="hover:underline">r/{post?.subreddit ?? "ERR"}</h2>
             </a>
           </Link>
-          <p>•</p>
+          {post?.crosspost_parent_list?.[0] ? (
+            <div className="flex flex-row gap-1">
+              <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
+              <span className="italic font-semibold">crosspost by</span>
+            </div>
+          ) : (
+            <p>•</p>
+          )}
           <Link href={`/u/${post?.author}`}>
             <a
               onClick={(e) => {

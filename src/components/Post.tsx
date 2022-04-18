@@ -13,10 +13,10 @@ import Media from "./Media";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import { findMediaInfo, secondsToTime } from "../../lib/utils";
-import Card1 from "./views/Card1";
-import Card2 from "./views/Card2";
-import Row1 from "./views/Row1";
-import CommentCard from "./views/CommentCard";
+import Card1 from "./cards/Card1";
+import Card2 from "./cards/Card2";
+import Row1 from "./cards/Row1";
+import CommentCard from "./cards/CommentCard";
 
 // import { usePlausible } from "next-plausible";
 

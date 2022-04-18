@@ -27,12 +27,13 @@ import { findMediaInfo } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 // import { usePlausible } from "next-plausible";
 import Vote from "./Vote";
-import MediaWrapper from "./views/MediaWrapper";
+import MediaWrapper from "./MediaWrapper";
 import Awardings from "./Awardings";
 import PostTitle from "./PostTitle";
 import SaveButton from "./SaveButton";
 import UserFlair from "./UserFlair";
 import PostOptButton from "./PostOptButton";
+import { GoRepoForked } from "react-icons/go";
 
 const PostModal = ({
   setSelect,
@@ -610,6 +611,14 @@ const PostModal = ({
                         {/* Title etc*/}
                         <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
                           <div className="flex flex-row flex-wrap items-start group">
+                            {apost?.crosspost_parent_list?.[0] && (
+                              <div className="flex flex-row items-start gap-1 ">
+                                <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
+                                <span className="-translate-y-0.5 italic font-semibold">
+                                  crosspost by
+                                </span>
+                              </div>
+                            ) }
                             <Link href={`/u/${apost?.author}`}>
                               <a
                                 title={`see u/${apost?.author}'s posts`}
