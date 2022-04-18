@@ -5,8 +5,8 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { useMainContext } from "../MainContext";
 import { getRedditSearch } from "../RedditAPI";
 import Feed from "./Feed";
-import SubCard from "./views/SubCard";
-import SubCardPlaceHolder from "./views/SubCardPlaceHolder";
+import SubCard from "./cards/SubCard";
+import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
 
 const SearchPage = ({ query }) => {
   const router = useRouter();

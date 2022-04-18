@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
 import SubPills from "./SubPills";
-import SubCard from "./views/SubCard";
+import SubCard from "./cards/SubCard";
 import Link from "next/link";
 import ToggleUserPostType from "./ToggleUserPostType";
 
