@@ -36,7 +36,6 @@ const MediaWrapper = ({
   }, [post]);
   useEffect(() => {
     if (post?.crosspost_parent_list?.[0]) {
-      console.log("crosspost>>", post);
       setIsXPost(true);
       setPostData(post.crosspost_parent_list[0]);
     } else {
