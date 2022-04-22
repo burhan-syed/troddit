@@ -604,7 +604,7 @@ export const MySubsProvider = ({ children }) => {
       }
     } else if (router?.route === "/search") {
       setCurrLocation("SEARCH");
-    } else if (router?.route === "/subreddits") {
+    } else if (router?.pathname?.includes("/subreddits")) {
       setCurrLocation("SUBREDDITS");
     } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
       setCurrLocation("HOME");
@@ -899,6 +899,13 @@ export const MySubsProvider = ({ children }) => {
   };
 
   const subscribeAll = async (subs: string[]) => {
+    const toastId = toast.custom((t) => (
+      <ToastCustom
+        t={t}
+        message={`Joining ${subs.length} subs`}
+        mode={"loading"}
+      />
+    ));
     subs.forEach((sub) => {
       if (!session && !loading) {
         context.subToSub("sub", sub);
@@ -906,6 +913,16 @@ export const MySubsProvider = ({ children }) => {
         subscribe("sub", sub, true);
       }
     });
+    toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Joined ${subs.length} subs`}
+          mode={"Success"}
+        />
+      ),
+      { id: toastId, duration: 500 }
+    );
   };
 
   // return {

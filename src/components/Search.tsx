@@ -143,9 +143,16 @@ const Search = ({ id }) => {
         },
       },
     ];
-    let data = [];
+
     setLoading(true);
-    data = await searchSubreddits(value.value, context.nsfw);
+    let res: any = await searchSubreddits(
+      value.value,
+      context.nsfw,
+      !!session,
+      context?.token
+    );
+    let data = res?.data;
+    data?.token && context.setToken(data?.token);
     //console.log(data);
     if (data?.length > 0) {
       let match = false;

@@ -3,8 +3,6 @@ import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useSubsContext } from "../../MySubs";
 import { useSession } from "next-auth/client";
-import { addToMulti, createMulti, deleteFromMulti } from "../../RedditAPI";
-import Link from "next/link";
 import DropdownItem from "../DropdownItem";
 import MultiManageModal from "../MultiManageModal";
 
@@ -18,75 +16,23 @@ const CollectionOptions = ({
   const {
     myMultis,
     myLocalMultis,
-    loadedMultis,
     subscribeAll,
-    createLocalMulti,
     deleteLocalMulti,
-    addToLocalMulti,
     addAllToLocalMulti,
-    removeFromLocalMulti,
     removeAllFromLocalMulti,
     addToRedditMulti,
     removeFromRedditMulti,
     deleteRedditMulti,
   } = subsContext;
-  const [currMultiExist, setcurrMultiExist] = useState(false);
-  const [subInMulti, setSubInMulti] = useState(false);
   const [deleteCheck, setDeleteCheck] = useState(false);
   const [removeCheck, setRemoveCheck] = useState(false);
 
   const [openMulti, setopenMulti] = useState(0);
 
-  //   useEffect(() => {
-  //     const findIfMultiExist = () => {
-  //       let found = false;
-  //       if (session && myMultis?.length > 0) {
-  //         myMultis.forEach((m) => {
-  //           if (m?.data?.display_name?.toUpperCase() === currMulti.toUpperCase())
-  //             found = true;
-  //         });
-  //       } else if (myLocalMultis?.length > 0) {
-  //         myLocalMultis.forEach((m) => {
-  //           if (m?.data?.display_name?.toUpperCase() === currMulti.toUpperCase())
-  //             found = true;
-  //         });
-  //       }
-  //       return found;
-  //     };
-  //     currMulti && setcurrMultiExist(findIfMultiExist());
-  //   }, [session, myLocalMultis, myMultis, currMulti]);
-
-  //   useEffect(() => {
-  //     currMulti && setSubInMulti(findIfSubInMulti());
-  //   }, [subInfo, session, myLocalMultis, myMultis, currMulti]);
-
-  //   const findIfSubInMulti = () => {
-  //     let found = false;
-  //     if (session && myMultis?.length > 0) {
-  //       myMultis.forEach((m) => {
-  //         if (m?.data?.display_name?.toUpperCase() === currMulti.toUpperCase())
-  //           m?.data?.subreddits.forEach((s) => {
-  //             if (s?.name?.toUpperCase() === subInfo?.display_name?.toUpperCase())
-  //               found = true;
-  //           });
-  //       });
-  //     } else if (myLocalMultis?.length > 0) {
-  //       myLocalMultis.forEach((m) => {
-  //         if (m?.data?.display_name?.toUpperCase() === currMulti.toUpperCase())
-  //           m?.data?.subreddits.forEach((s) => {
-  //             if (s?.name?.toUpperCase() === subInfo?.display_name?.toUpperCase())
-  //               found = true;
-  //           });
-  //       });
-  //     }
-  //     return found;
-  //   };
-
   const JoinAll = () => {
     subscribeAll(subArray);
   };
   const tryAddToMulti = (multi) => {
-    //console.log(session?.user?.name, multi, subInfo?.display_name);
     if (!session && !loading) {
       addAllToLocalMulti(multi, subArray);
     } else if (session) {
@@ -99,19 +45,13 @@ const CollectionOptions = ({
     setopenMulti((n) => n + 1);
   };
   const removeFromMulti = () => {
-    //console.log(session);
-
     if (session) {
       subArray.forEach((sub) => {
         removeFromRedditMulti(currMulti, session?.user?.name, sub);
       });
     } else if (!loading) {
       removeAllFromLocalMulti(currMulti, subArray);
-      // subArray.forEach((sub) => {
-      //   removeFromLocalMulti(currMulti, sub);
-      // });
     }
-    // setSubInMulti(findIfSubInMulti());
   };
   const toggleDeleteCheck = () => {
     setDeleteCheck((s) => !s);
@@ -120,8 +60,6 @@ const CollectionOptions = ({
     setRemoveCheck((s) => !s);
   };
   const deleteMulti = () => {
-    //console.log(session);
-
     if (session) {
       deleteRedditMulti(currMulti, session.user.name);
     } else if (!loading) {

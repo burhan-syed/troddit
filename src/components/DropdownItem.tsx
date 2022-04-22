@@ -5,10 +5,7 @@ import { loadSubredditInfo } from "../RedditAPI";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 
-const DropdownItem = ({
-  sub,
-  isUser = false
-}) => {
+const DropdownItem = ({ sub, isUser = false }) => {
   const [session, loading] = useSession();
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
@@ -52,8 +49,6 @@ const DropdownItem = ({
     return () => {};
   }, [sub]);
 
-  
-
   const Line = (
     <div
       className="flex flex-row items-center text-sm text-center cursor-pointer"
@@ -90,15 +85,14 @@ const DropdownItem = ({
       <h1 className="ml-2 truncate">
         {isMulti
           ? sub.data?.name
-          : sub.data?.display_name_prefixed ?? sub.data?.display_name?.replace("u_","")}
+          : sub.data?.display_name_prefixed ??
+            sub.data?.display_name?.replace("u_", "")}
         {/* {isUser && router?.query?.slug?.[0].toString()} */}
       </h1>
     </div>
   );
 
-  return (
-    <>{Line}</>
-  );
+  return <>{Line}</>;
 };
 
 export default DropdownItem;

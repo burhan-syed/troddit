@@ -880,15 +880,29 @@ export const deleteMulti = async (multiname, username) => {
   }
 };
 
-export const searchSubreddits = async (query, over18 = false) => {
-  const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+export const searchSubreddits = async (
+  query,
+  over18 = false,
+  loggedIn = false,
+  token?
+) => {
+  //const token = await (await getToken())?.accessToken;
+  let accessToken = token?.accessToken;
+  let returnToken = token;
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
+    returnToken = await getToken();
+    accessToken = await returnToken?.accessToken;
+  }
+  if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       let res = await axios.get(
         "https://oauth.reddit.com/api/subreddit_autocomplete_v2",
         {
           headers: {
-            authorization: `bearer ${token}`,
+            authorization: `bearer ${accessToken}`,
           },
           params: {
             include_over_18: over18,
@@ -901,7 +915,7 @@ export const searchSubreddits = async (query, over18 = false) => {
       let data = await res.data;
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       //console.log(res);
-      return data?.data?.children ?? [];
+      return { data: data?.data?.children, token: returnToken };
     } catch (err) {
       console.log(err);
       return [];
@@ -915,14 +929,14 @@ export const searchSubreddits = async (query, over18 = false) => {
           },
         })
       ).data;
-      return res?.data?.children?.slice(0, 4);
+      return { data: res?.data?.children?.slice(0, 4), token: returnToken };
     } catch (err) {
       console.log(err);
-      return [];
+      return undefined;
     }
-    return [];
+    return undefined;
   }
-  return [];
+  return undefined;
 };
 
 const loadAll = async (func) => {

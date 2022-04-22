@@ -1,12 +1,7 @@
 import { ImSpinner2 } from "react-icons/im";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { Transition } from "@headlessui/react";
-import { useEffect, useState } from "react";
 const ToastCustom = ({ t, message, mode = "" }) => {
-  useEffect(() => {
-    console.log(t);
-  }, [t]);
-
   return (
     <>
       <div

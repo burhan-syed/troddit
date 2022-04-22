@@ -1,15 +1,12 @@
 import { useSession } from "next-auth/client";
-import { useEffect, useState } from "react";
 import { useSubsContext } from "../../MySubs";
 import Collection from "./Collection";
-import { MyCollectionsProvider } from "./CollectionContext";
-import SelectedSubs from "./SelectedSubs";
 
 const MyMultiCollections = () => {
   const mySubs: any = useSubsContext();
   const [session, loading] = useSession();
   let { myMultis, myLocalMultis, myLocalMultiRender } = mySubs;
-  if (session) {
+  if (session && myMultis?.length > 0) {
     return (
       <>
         {myMultis?.map((multi, i) => (
@@ -27,7 +24,7 @@ const MyMultiCollections = () => {
       </>
     );
   }
-  if (!loading) {
+  if (!loading && myLocalMultis?.length > 0) {
     return (
       <>
         {myLocalMultis?.map((multi, i) => (
@@ -46,7 +43,12 @@ const MyMultiCollections = () => {
     );
   }
 
-  return <></>;
+  return (
+    <div className="mt-3 text-center">
+      No multis or subreddit collections found<br></br>Try using the search to
+      add subs and create a multi
+    </div>
+  );
 };
 
 export default MyMultiCollections;

@@ -221,9 +221,8 @@ const SortMenu = ({ hide = false }) => {
             >
               <BsChevronDown
                 className={
-                  open
-                    ? "rotate-180"
-                    : "rotate-0" + "transform transition duration-200 flex-none"
+                  (open ? "rotate-180" : "rotate-0") +
+                  " transform transition duration-200 flex-none"
                 }
               />
 
