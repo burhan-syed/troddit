@@ -137,7 +137,7 @@ const SubOptButton = ({
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
-                  "w-6 flex justify-center items-center  bg-white border border-lightBorder hover:border-lightBorderHighlight rounded-md dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
+                  "w-6 h-9 flex justify-center items-center  bg-white border border-lightBorder hover:border-lightBorderHighlight rounded-md dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
                 }
               >
                 <BsThreeDotsVertical className="w-5 h-8" />

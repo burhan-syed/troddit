@@ -104,7 +104,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           )}
         <Menu.Item>
           {({ active }) => (
-            <MyLink href="/" passHref>
+            <MyLink href="/">
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
@@ -119,7 +119,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         </Menu.Item>
         <Menu.Item>
           {({ active }) => (
-            <MyLink href="/r/popular" passHref>
+            <MyLink href="/r/popular">
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
@@ -134,7 +134,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         </Menu.Item>
         <Menu.Item>
           {({ active }) => (
-            <MyLink href="/r/all" passHref>
+            <MyLink href="/r/all">
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
@@ -149,7 +149,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         </Menu.Item>
         <Menu.Item>
           {({ active }) => (
-            <MyLink href="/subreddits" passHref>
+            <MyLink href="/subreddits">
               <div
                 className={
                   (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
@@ -180,23 +180,23 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         <>
           {myLocalMultis?.length > 0 && (
             <>
-                <div
-                  onClick={() => setExpandMultis((m) => !m)}
-                  className={
-                    "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
-                    (expandMultis ? " " : " mb-2")
-                  }
-                >
-                  <p>multis</p>
-                  {!hideExtra && (
-                    <BsChevronDown
-                      className={
-                        (expandMultis ? "-rotate-180 " : "rotate-0 ") +
-                        "transform transition duration-200"
-                      }
-                    />
-                  )}
-                </div>
+              <div
+                onClick={() => setExpandMultis((m) => !m)}
+                className={
+                  "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+                  (expandMultis ? " " : " mb-2")
+                }
+              >
+                <p>multis</p>
+                {!hideExtra && (
+                  <BsChevronDown
+                    className={
+                      (expandMultis ? "-rotate-180 " : "rotate-0 ") +
+                      "transform transition duration-200"
+                    }
+                  />
+                )}
+              </div>
               <div
                 className={
                   " " +
@@ -234,10 +234,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                               }
                             >
                               {({ active }) => (
-                                <MyLink
-                                  href={constructMultiLink(multi)}
-                                  passHref
-                                >
+                                <MyLink href={constructMultiLink(multi)}>
                                   <div
                                     className={
                                       (active
@@ -325,7 +322,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                               }
                             >
                               {({ active }) => (
-                                <MyLink href={sub?.data?.url} passHref>
+                                <MyLink href={sub?.data?.url}>
                                   <div
                                     className={
                                       (active
@@ -407,7 +404,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                       "/user/",
                                       "/u/"
                                     )}
-                                    passHref
                                   >
                                     <div
                                       className={
@@ -531,10 +527,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                               }
                             >
                               {({ active }) => (
-                                <MyLink
-                                  href={constructMultiLink(multi)}
-                                  passHref
-                                >
+                                <MyLink href={constructMultiLink(multi)}>
                                   <div
                                     className={
                                       (active
@@ -639,7 +632,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                             }
                           >
                             {({ active }) => (
-                              <MyLink href={sub?.data?.url} passHref>
+                              <MyLink href={sub?.data?.url}>
                                 <div
                                   className={
                                     (active
@@ -717,18 +710,13 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                               disabled={
                                 !expandFollowing ||
                                 (filter !== "" &&
-                                  !(
-                                    user.data?.name
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase())
-                                  ))
+                                  !user.data?.name
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase()))
                               }
                             >
                               {({ active }) => (
-                                <MyLink
-                                  href={`/u/${user?.data?.name}`}
-                                  passHref
-                                >
+                                <MyLink href={`/u/${user?.data?.name}`}>
                                   <div
                                     className={
                                       (active
@@ -736,16 +724,20 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                         : " ") +
                                       " px-4 py-2" +
                                       (filter !== "" &&
-                                      !(
-                                        user.data?.name
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase())
-                                      )
+                                      !user.data?.name
+                                        ?.toUpperCase()
+                                        .includes(filter.toUpperCase())
                                         ? " hidden "
                                         : "")
                                     }
                                   >
-                                    <DropdownItem sub={{kind: user?.kind, data: user?.data?.subreddit}} isUser={true} />
+                                    <DropdownItem
+                                      sub={{
+                                        kind: user?.kind,
+                                        data: user?.data?.subreddit,
+                                      }}
+                                      isUser={true}
+                                    />
                                   </div>
                                 </MyLink>
                               )}

@@ -218,20 +218,20 @@ export const MainProvider = ({ children }) => {
   const [localSubs, setLocalSubs] = useState([]);
   const subToSub = async (action, sub) => {
     if (action == "sub") {
-      addLocalSub(sub);
+      await addLocalSub(sub);
       return true;
     } else if (action == "unsub") {
-      removeLocalSub(sub);
+      await removeLocalSub(sub);
       return true;
     } else return false;
   };
-  const addLocalSub = (sub) => {
+  const addLocalSub = async (sub) => {
     let found = localSubs.find((s) => s?.toUpperCase() === sub?.toUpperCase());
     if (!found) {
       setLocalSubs((p) => [...p, sub]);
     }
   };
-  const removeLocalSub = (sub) => {
+  const removeLocalSub = async (sub) => {
     setLocalSubs((p) =>
       p.filter((s) => s?.toUpperCase() !== sub?.toUpperCase())
     );

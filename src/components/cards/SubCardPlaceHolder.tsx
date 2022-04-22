@@ -65,7 +65,9 @@ const SubCardPlaceHolder = ({ user = false }) => {
               e.stopPropagation();
             }}
           >
-            <SubButton sub={undefined} userMode={false} />
+            <div className="flex-none w-24 h-full">
+              <SubButton sub={undefined} userMode={false} />
+            </div>
             {/* {data?.kind === "t5" && (
               <div className="z-50">
                 <SubOptButton
