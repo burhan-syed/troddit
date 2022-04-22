@@ -10,11 +10,16 @@ import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
 // import { usePlausible } from "next-plausible";
 
-import { AiOutlinePlus, AiOutlineSearch, AiOutlineCheck } from "react-icons/ai";
+import {
+  AiOutlinePlus,
+  AiOutlineSearch,
+  AiOutlineCheck,
+  AiOutlineMinus,
+} from "react-icons/ai";
+import { useCollectionContext } from "./collections/CollectionContext";
 
 const Search = ({ id }) => {
   const router = useRouter();
-  const [query, setQuery] = useState("");
   const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
   const [placeHolder, setPlaceHolder] = useState("search");
@@ -28,7 +33,11 @@ const Search = ({ id }) => {
   const [updated, setUpdated] = useState(false);
   const [srRestrict, setSrRestrict] = useState(false);
   const [currSub, setCurrSub] = useState("");
+  const [addMode, setAddMode] = useState("");
   // const plausible = usePlausible();
+
+  const myCollections: any = useCollectionContext();
+  const { toggleSelected, selected } = myCollections;
 
   useEffect(() => {
     //console.log("f", updated);
@@ -63,14 +72,20 @@ const Search = ({ id }) => {
         .join("+")
         ?.split("+")?.[0];
       setCurrSub(sub);
-      //this is annoying
-      //setSrRestrict(true);
+      setAddMode("subs");
     } else {
       setCurrSub("");
       setSrRestrict(false);
+      if (router.asPath === "/subreddits/multis") {
+        setAddMode("multis");
+      } else {
+        setAddMode("");
+      }
     }
+
     return () => {
       setCurrSub("");
+      setAddMode("");
       setSrRestrict(false);
     };
   }, [router]);
@@ -163,18 +178,6 @@ const Search = ({ id }) => {
         // return {};
       }
     }
-    // else {
-    //   //fallback to local search
-    //   session && seterror(true);
-    //   let localsearch = localSearch(value.value);
-    //   if (localsearch?.length > 0) {
-    //     suggestions = [...suggestions, ...localsearch];
-    //   }
-    //   setlastsuggestion(
-    //     suggestions[suggestions.length - 1]?.data?.display_name_prefixed
-    //   );
-    //   setmorethanonesuggestion(suggestions.length > 1);
-    //   return [...suggestions, search];
     // }
     return [];
   };
@@ -389,15 +392,34 @@ const Search = ({ id }) => {
                   )}
                 </div>
               </div>
-              {currSub && (
+              {addMode && (
                 <div
                   title={`add r/${suggestion?.data?.display_name} to current feed`}
                   className="flex flex-row items-center ml-auto space-x-2 group"
                   onClick={(e) => addSub(e, suggestion?.data?.display_name)}
                 >
-                  <span className="hidden text-xs lg:block">Multi Browse</span>
+                  <span className="hidden text-xs lg:block">
+                    {addMode == "subs"
+                      ? "Multi Browse"
+                      : selected.find(
+                          (s) =>
+                            s?.toUpperCase() ===
+                            suggestion?.data?.display_name?.toUpperCase()
+                        )
+                      ? "Remove"
+                      : "Add"}
+                  </span>
                   <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 dark:text-lightText group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder">
-                    <AiOutlinePlus className="" />
+                    {addMode == "multis" &&
+                    selected.find(
+                      (s) =>
+                        s?.toUpperCase() ===
+                        suggestion?.data?.display_name?.toUpperCase()
+                    ) ? (
+                      <AiOutlineMinus />
+                    ) : (
+                      <AiOutlinePlus className="" />
+                    )}
                   </div>
                 </div>
               )}
@@ -428,27 +450,31 @@ const Search = ({ id }) => {
   const addSub = (e, sub) => {
     e.preventDefault();
     e.stopPropagation();
-    if (router.route === "/r/[...slug]") {
-      let curr = router?.query?.slug?.[0];
-      let alreadyadded = false;
-      curr
-        .split(" ")
-        .join("+")
-        .split(",")
-        .join("+")
-        .split("%2b")
-        .join("+")
-        .split("%2B")
-        .join("+")
-        .split("+")
-        .forEach((s) => {
-          if (s.toUpperCase() === sub.toUpperCase()) alreadyadded = true;
-        });
-      !alreadyadded && router.push(`${sub}+${curr}`);
+    if (addMode == "subs") {
+      if (router.route === "/r/[...slug]") {
+        let curr = router?.query?.slug?.[0];
+        let alreadyadded = false;
+        curr
+          .split(" ")
+          .join("+")
+          .split(",")
+          .join("+")
+          .split("%2b")
+          .join("+")
+          .split("%2B")
+          .join("+")
+          .split("+")
+          .forEach((s) => {
+            if (s.toUpperCase() === sub.toUpperCase()) alreadyadded = true;
+          });
+        !alreadyadded && router.push(`${sub}+${curr}`);
+      } else {
+        goToSub(e, sub);
+      }
+      setValue("");
     } else {
-      goToSub(e, sub);
+      toggleSelected(sub);
     }
-    setValue("");
   };
 
   const goToSub = (e, suggestion) => {

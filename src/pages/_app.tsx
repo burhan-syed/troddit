@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 // import * as gtag from "../../lib/gtag";
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { MyCollectionsProvider } from "../components/collections/CollectionContext";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -67,9 +68,11 @@ function MyApp({ Component, pageProps }) {
       <ThemeProvider attribute="class" defaultTheme="system">
         <MainProvider>
           <MySubsProvider>
-            <Provider session={pageProps.session}>
-              <Component {...pageProps} />
-            </Provider>
+            <MyCollectionsProvider>
+              <Provider session={pageProps.session}>
+                <Component {...pageProps} />
+              </Provider>
+            </MyCollectionsProvider>
           </MySubsProvider>
         </MainProvider>
       </ThemeProvider>

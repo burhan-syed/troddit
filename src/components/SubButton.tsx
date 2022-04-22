@@ -4,6 +4,7 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
 import { useSubsContext } from "../MySubs";
 import { useMainContext } from "../MainContext";
+import { loadSubredditInfo } from "../RedditAPI";
 
 const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
@@ -11,8 +12,16 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [hovered, setHovered] = useState(false);
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
-  const { mySubs, myFollowing, myLocalSubs, myMultis, subscribe, loadedSubs } =
-    subsContext;
+  const {
+    mySubs,
+    myFollowing,
+    myLocalSubs,
+    myMultis,
+    subscribe,
+    loadedSubs,
+    subInfoCache,
+    addToSubCache,
+  } = subsContext;
   //prevent spinner show when already loaded subs once
   const [loadedOnce, setLoadedOnce] = useState(false);
   useEffect(() => {
@@ -24,8 +33,13 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
     if (session && loadedSubs) {
       (userMode ? myFollowing : mySubs).forEach((s) => {
         let name = s?.data?.name;
-        if (s?.data?.subreddit) name = s.data.subreddit?.name;
-        if (name == sub) {
+        let subname = s?.data?.display_name;
+        if (s?.data?.subreddit) {
+          name = s.data.subreddit?.name;
+          subname = s.data.subreddit?.display_name;
+        }
+        //console.log(sub, subname);
+        if (subname?.toUpperCase() == sub?.toUpperCase()) {
           subbed = true;
           setSubbed(true);
           setloadAPI(false);
@@ -58,6 +72,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
     if (sub2sub && !loading) {
       setloadAPI(true);
       //console.log("attempting", session?.user?.name, action, sub2sub);
+
       let s = await subscribe(action, sub2sub, session);
       s && setSubbed((p) => !p);
       setloadAPI(false);
@@ -66,8 +81,22 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
 
   return (
     <div
-      title={subbed ? "unsubscribe" : "subscribe"}
-      className="relative select-none"
+      title={
+        subbed
+          ? userMode
+            ? "unfollow"
+            : "unsubscribe"
+          : userMode
+          ? "follow"
+          : "subscribe"
+      }
+      className={
+        "relative select-none flex-none " +
+        (!miniMode
+          ? " h-9 text-center flex justify-center items-center bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG "
+          : " hover:bg-white flex items-center justify-center h-full") +
+        " rounded-md cursor-pointer dark:hover:bg-darkBorder  "
+      }
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -78,60 +107,51 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div
-        className={
-          (!miniMode
-            ? "w-24 text-center flex justify-center items-center bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG "
-            : " hover:bg-white") +
-          " rounded-md cursor-pointer dark:hover:bg-darkBorder  "
-        }
-      >
-        {!loadedSubs && !loadedOnce ? (
-          <>
+      {!loadedSubs && !loadedOnce ? (
+        <>
+          <div className={!miniMode ? "p-2" : ""}>
+            <ImSpinner2 className="animate-spin" />
+            {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
+          </div>
+        </>
+      ) : (
+        <>
+          {subbed && !loadAPI ? (
+            <div className="flex items-center space-x-1 group">
+              {miniMode ? (
+                <AiOutlineMinus />
+              ) : (
+                <>
+                  <span className={hovered ? "hidden" : ""}>
+                    {userMode ? "Followed" : "Joined"}
+                  </span>
+                  <span className={hovered ? "block" : "hidden"}>
+                    {userMode ? "Unfollow" : "Leave"}
+                  </span>
+                </>
+              )}
+            </div>
+          ) : !subbed && !loadAPI ? (
+            <div className="flex items-center space-x-1">
+              {miniMode ? (
+                <AiOutlinePlus />
+              ) : (
+                <span>{userMode ? "Follow" : "Join"}</span>
+              )}
+            </div>
+          ) : loadAPI ? (
             <div className={!miniMode ? "p-2" : ""}>
               <ImSpinner2 className="animate-spin" />
               {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
             </div>
-          </>
-        ) : (
-          <>
-            {subbed && !loadAPI ? (
-              <div className="flex items-center p-1 space-x-1 group">
-                {miniMode ? (
-                  <AiOutlineMinus />
-                ) : (
-                  <>
-                    <span className={hovered ? "hidden" : ""}>
-                      {userMode ? "Followed" : "Joined"}
-                    </span>
-                    <span className={hovered ? "block" : "hidden"}>
-                      {userMode ? "Unfollow" : "Leave"}
-                    </span>
-                  </>
-                )}
-              </div>
-            ) : !subbed && !loadAPI ? (
-              <div className="flex items-center p-1 space-x-1">
-                {miniMode ? (
-                  <AiOutlinePlus />
-                ) : (
-                  <span>{userMode ? "Follow" : "Join"}</span>
-                )}
-              </div>
-            ) : loadAPI ? (
-              <div className={!miniMode ? "p-2" : ""}>
-                <ImSpinner2 className="animate-spin" />
-                {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
-              </div>
-            ) : (
-              <div className={!miniMode ? "p-2" : ""}>
-                <ImSpinner2 className="animate-spin" />
-                {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          ) : (
+            <div className={!miniMode ? "p-2" : ""}>
+              <ImSpinner2 className="animate-spin" />
+              {/* {subbed ? <span>Unfollow</span> : <span>Follow</span>} */}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

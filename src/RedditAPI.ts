@@ -768,11 +768,7 @@ export const addToMulti = async (
   user: string,
   srname: string
 ) => {
-  //console.log(multi, user, srname);
   const token = await (await getToken())?.accessToken;
-  //console.log(
-  //   `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`
-  // );
   if (token && ratelimit_remaining > 1) {
     try {
       const res = await fetch(

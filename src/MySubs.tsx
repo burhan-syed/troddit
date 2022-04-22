@@ -66,17 +66,19 @@ export const MySubsProvider = ({ children }) => {
       },
     },
   ];
-  const [myLocalMultis, setMyLocalMultis] = useState<any[]>(defaultMultis);
+  const [myLocalMultis, setMyLocalMultis] = useState<any[]>([]);
+  const [myLocalMultiRender, setMyLocalMultiRender] = useState(0);
 
   useEffect(() => {
     if (myLocalMultis.length > 0) {
       localStorage.setItem("localMultis", JSON.stringify(myLocalMultis));
     }
-  }, [myLocalMultis]);
+  }, [myLocalMultis, myLocalMultiRender]);
   useEffect(() => {
     const local_localMultis = localStorage.getItem("localMultis");
-    local_localMultis?.length > 0 &&
-      setMyLocalMultis(JSON.parse(local_localMultis));
+    local_localMultis?.length > 0
+      ? setMyLocalMultis(JSON.parse(local_localMultis))
+      : setMyLocalMultis(defaultMultis);
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
     let found = false;
@@ -96,6 +98,7 @@ export const MySubsProvider = ({ children }) => {
           },
         },
       ]);
+      setMyLocalMultiRender((r) => r + 1);
       return true;
     }
     return false;
@@ -111,7 +114,7 @@ export const MySubsProvider = ({ children }) => {
       localStorage.setItem("localMultis", JSON.stringify(afterdelete));
     }
   };
-  const addToLocalMulti = (multi, sub) => {
+  const addToLocalMulti = (multi: String, sub) => {
     let localMultisCopy = myLocalMultis;
     let found = false;
     localMultisCopy.forEach((m, i) => {
@@ -128,7 +131,31 @@ export const MySubsProvider = ({ children }) => {
       }
     });
     //console.log(localMultisCopy);
+    setMyLocalMultiRender((r) => r + 1);
     setMyLocalMultis(localMultisCopy);
+  };
+  const addAllToLocalMulti = (multi, subs: [String]) => {
+    setMyLocalMultis((multis) => {
+      let localMultisCopy = multis;
+      subs.forEach((sub) => {
+        let found = false;
+        localMultisCopy.forEach((m, i) => {
+          if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) {
+            m?.data?.subreddits?.forEach((s, j) => {
+              if (s?.name?.toUpperCase() === sub.toUpperCase()) found = true;
+            });
+            if (!found) {
+              localMultisCopy[i].data.subreddits = [
+                ...localMultisCopy[i].data.subreddits,
+                { name: sub },
+              ];
+            }
+          }
+        });
+      });
+      setMyLocalMultiRender((r) => r + 1);
+      return localMultisCopy;
+    });
   };
   const removeFromLocalMulti = (multi, sub) => {
     let localMultisCopy = myLocalMultis;
@@ -150,8 +177,40 @@ export const MySubsProvider = ({ children }) => {
       if (localMultisCopy[multi_index].data.subreddits?.length === 0) {
         deleteLocalMulti(localMultisCopy[multi_index].data.name);
       } else {
+        setMyLocalMultiRender((r) => r + 1);
         setMyLocalMultis(localMultisCopy);
       }
+    }
+  };
+
+  const removeAllFromLocalMulti = (multi: String, subs: [String]) => {
+    let localMultisCopy = myLocalMultis;
+    let deleted = false;
+    subs.forEach((sub) => {
+      let multi_index = -1;
+      localMultisCopy.forEach((m, i) => {
+        //console.log(m?.data?.name?.toUpperCase());
+        if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) {
+          multi_index = i;
+          let subreddits = m.data?.subreddits?.filter(
+            (s) => s?.name?.toUpperCase() !== sub.toUpperCase()
+          );
+          //console.log(multi_index, subreddits);
+          localMultisCopy[multi_index].data.subreddits = subreddits;
+        }
+      });
+      if (multi_index > -1) {
+        //console.log(localMultisCopy);
+        //handle no more subs in multi
+        if (localMultisCopy[multi_index].data.subreddits?.length === 0) {
+          deleteLocalMulti(localMultisCopy[multi_index].data.name);
+          deleted = true;
+        }
+      }
+    });
+    if (!deleted) {
+      setMyLocalMultiRender((r) => r + 1);
+      setMyLocalMultis(localMultisCopy);
     }
   };
 
@@ -204,6 +263,41 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
+  const addToSubCache = (subInfo) => {
+    let sub = subInfo?.data?.display_name?.toUpperCase();
+    let subInfoLess = {
+      kind: subInfo.kind,
+      data: {
+        banner_background_color: subInfo?.data?.banner_background_color,
+        banner_background_image: subInfo?.data?.banner_background_image,
+        banner_img: subInfo?.data?.banner_img,
+        community_icon: subInfo?.data?.community_icon,
+        display_name: subInfo?.data?.display_name,
+        display_name_prefixed: subInfo?.data?.display_name_prefixed,
+        header_img: subInfo?.data?.header_img,
+        icon_img: subInfo?.data?.icon_img,
+        key_color: subInfo?.data?.key_color,
+        name: subInfo?.data?.name,
+        over18: subInfo?.data?.over18,
+        primary_color: subInfo?.data?.primary_color,
+        public_description: subInfo?.data?.public_description,
+        subscribers: subInfo?.data?.subscribers,
+        title: subInfo?.data?.title,
+        url: subInfo?.data?.url,
+      },
+    };
+
+    setSubInfoCache((s) => {
+      //limit cache to 50 subs
+      if (Object.keys(s).length > 500) {
+        let keys = Object.keys(s);
+        delete s[keys[0]];
+      }
+      s[sub] = subInfoLess;
+      return s;
+    });
+  };
+
   useEffect(() => {
     //console.log(currSubs);
     router?.query?.m
@@ -218,22 +312,12 @@ export const MySubsProvider = ({ children }) => {
     const loadCurrSubInfo = async (sub, isUser = false) => {
       if (subInfoCache?.[sub]) {
         asynccheck && setCurrSubInfo(subInfoCache?.[sub]);
-        //return subInfoCache?.[sub]
       }
       let info = await loadSubredditInfo(sub, isUser);
       if (info) {
-        //console.log(info);
-
+        addToSubCache(info);
         asynccheck && setCurrSubInfo(info);
-        setSubInfoCache((s) => {
-          //limit cache to 50 subs
-          if (Object.keys(s).length > 50) {
-            let keys = Object.keys(s);
-            delete s[keys[0]];
-          }
-          s[sub] = info;
-          return s;
-        });
+
         return info;
       }
     };
@@ -320,6 +404,14 @@ export const MySubsProvider = ({ children }) => {
       setloadedSubs(true);
     }
   }, [session, loading]);
+
+  useEffect(() => {
+    mySubs.forEach((sub) => {
+      if (!subInfoCache?.[sub?.data?.display_name]) {
+        addToSubCache(sub);
+      }
+    });
+  }, [mySubs]);
 
   const loadLocalSubs = () => {
     let localsubs = [];
@@ -411,7 +503,18 @@ export const MySubsProvider = ({ children }) => {
   ) => {
     //console.log("subAPI", action, subname, loggedIn);
     if (session || loggedIn) {
-      let status = await subToSub(action, subname);
+      let sub = subname;
+      if (subInfoCache?.[sub?.toUpperCase()]) {
+        sub = subInfoCache[sub?.toUpperCase()]?.data?.name;
+      } else {
+        let isUser = sub?.substring(0, 2) == "u_";
+        if (isUser) sub = sub.substring(2);
+        let subInfo = await loadSubredditInfo(sub, isUser);
+        subInfo && addToSubCache(subInfo);
+        sub = isUser ? subInfo?.data?.subreddit?.name : subInfo?.data?.name;
+      }
+
+      let status = await subToSub(action, sub);
       //console.log('session:', status);
       if (status) {
         loadAllSubs(loggedIn);
@@ -424,8 +527,12 @@ export const MySubsProvider = ({ children }) => {
   };
 
   const subscribeAll = async (subs: string[]) => {
-    subs.forEach((s) => {
-      context.subToSub("sub", s);
+    subs.forEach((sub) => {
+      if (!session && !loading) {
+        context.subToSub("sub", sub);
+      } else if (session) {
+        subscribe("sub", sub, true);
+      }
     });
   };
 
@@ -446,10 +553,13 @@ export const MySubsProvider = ({ children }) => {
         myFollowing,
         myMultis,
         myLocalMultis,
+        myLocalMultiRender,
         createLocalMulti,
         deleteLocalMulti,
         addToLocalMulti,
+        addAllToLocalMulti,
         removeFromLocalMulti,
+        removeAllFromLocalMulti,
         createRedditMulti,
         addToRedditMulti,
         removeFromRedditMulti,
@@ -464,6 +574,8 @@ export const MySubsProvider = ({ children }) => {
         currSubs,
         multi,
         tryLoadAll,
+        subInfoCache,
+        addToSubCache,
       }}
     >
       {children}

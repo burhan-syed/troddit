@@ -1,10 +1,8 @@
 import Head from "next/head";
-import React from "react";
-import { MyCollectionsProvider } from "../../components/collections/CollectionContext";
 import NavBar from "../../components/NavBar";
 import SubredditsPage from "../../components/SubredditsPage";
 
-const Subreddits = () => {
+const Subs = ({ query }) => {
   return (
     <div>
       <Head>
@@ -14,11 +12,15 @@ const Subreddits = () => {
       <main>
         <NavBar />
         <div className="mt-16">
-          <SubredditsPage />
+          <SubredditsPage query={query} />
         </div>
       </main>
     </div>
   );
 };
 
-export default Subreddits;
+Subs.getInitialProps = ({ query }) => {
+  return { query };
+};
+
+export default Subs;

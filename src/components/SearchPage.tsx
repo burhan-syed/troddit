@@ -141,34 +141,31 @@ const SearchPage = ({ query }) => {
                     (expand ? " md:flex-col md:items-start  " : " font-bold ")
                   }
                 >
-                  <div
-                    className={
-                      "cursor-pointer " +
-                      (!searchUsers
-                        ? " font-bold "
-                        : " opacity-50 hover:opacity-70") + (expand ? " md:w-full" : "")
-                    }
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSearchUsers((p) => !p);
-                    }}
-                  >
-                    Subreddits
-                  </div>
-                  <div
-                    className={
-                      "cursor-pointer " +
-                      (!searchUsers
-                        ? " opacity-50 hover:opacity-70 "
-                        : " font-bold ") + (expand ? " md:w-full" : "")
-                    }
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSearchUsers((p) => !p);
-                    }}
-                  >
-                    Users
-                  </div>
+                  {["Subreddits", "Users"].map((sel) => (
+                    <div
+                      key={sel}
+                      className={
+                        "cursor-pointer " +
+                        ((searchUsers && sel == "Users") ||
+                        (!searchUsers && sel == "Subreddits")
+                          ? " font-bold "
+                          : " opacity-50 hover:opacity-70") +
+                        (expand
+                          ? " md:w-full flex flex-col-reverse md:-ml-2 -mb-2 md:mb-0 items-center md:flex-row flex-grow"
+                          : "")
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSearchUsers((p) => !p);
+                      }}
+                    >
+                      {expand && (
+                        <div className="w-full h-1 mt-1 md:w-1 md:h-8 md:mr-2 md:mt-0 dark:bg-darkScroll bg-lightScroll"></div>
+                      )}
+
+                      {sel}
+                    </div>
+                  ))}
 
                   <div
                     onClick={(e) => {

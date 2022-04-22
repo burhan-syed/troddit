@@ -88,7 +88,6 @@ const DropdownPane = ({ hide }) => {
                           subreddits: ["", ""],
                         },
                       }}
-                      preventNav={true}
                     />
                   </div>
                 ) : currSubInfo ? (
@@ -99,7 +98,6 @@ const DropdownPane = ({ hide }) => {
                         data: currSubInfo?.data?.subreddit ?? currSubInfo?.data,
                       }}
                       isUser={router.pathname.includes("/u/")}
-                      preventNav={true}
                     />
                   </div>
                 ) : (

@@ -5,7 +5,7 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { useSession } from "next-auth/client";
 import { useSubsContext } from "../MySubs";
 
-const MultiManageModal = ({ toOpen, subreddits, multiname, mode }) => {
+const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
   const [session, loading] = useSession();
   const subsContext: any = useSubsContext();
   const { createLocalMulti, createRedditMulti } = subsContext;

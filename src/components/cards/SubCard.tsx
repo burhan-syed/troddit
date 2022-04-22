@@ -161,7 +161,7 @@ const SubCard = ({
               className={
                 "z-10 flex flex-row mx-auto    space-x-2  pl-auto dark:bg-darkBG bg-lightPost " +
                 (tall
-                  ? " md:border-t md:border-r md:pt-[6px] md:pb-[-3px] items-end md:mt-[10px] md:rounded-tr-md md:pl-5 md:pr-2  md:-ml-3.5 md:mx-0"
+                  ? " md:border-t  md:border-r md:pt-[6px] md:pb-[-3px] items-end mt-4 md:mt-[10px] md:rounded-tr-md md:pl-5 md:pr-2  md:-ml-3.5 md:mx-0"
                   : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2 rounded-tr-md pl-5 pr-2  -ml-3.5")
               }
             >
@@ -278,18 +278,16 @@ const SubCard = ({
                 <Login />
               </div>
             ) : (
-              <SubButton
-                sub={
-                  data?.kind == "t5"
-                    ? session
-                      ? data?.data?.name
-                      : data?.data?.display_name
-                    : session
-                    ? data?.data?.subreddit?.name
-                    : data?.data?.subreddit?.display_name
-                }
-                userMode={data?.kind === "t2"}
-              />
+              <div className="flex-none w-24 h-full ml-2">
+                <SubButton
+                  sub={
+                    data?.kind == "t5"
+                      ? data?.data?.display_name
+                      : data?.data?.subreddit?.display_name
+                  }
+                  userMode={data?.kind === "t2"}
+                />
+              </div>
             )}
             {data?.kind == "t5" && !link && (
               <SubOptButton
@@ -317,18 +315,16 @@ const SubCard = ({
                 <Login />
               </div>
             ) : (
-              <SubButton
-                sub={
-                  data?.kind == "t5"
-                    ? session
-                      ? data?.data?.name
-                      : data?.data?.display_name
-                    : session
-                    ? data?.data?.subreddit?.name
-                    : data?.data?.subreddit?.display_name
-                }
-                userMode={data?.kind === "t2"}
-              />
+              <div className="w-full">
+                <SubButton
+                  sub={
+                    data?.kind == "t5"
+                      ? data?.data?.display_name
+                      : data?.data?.subreddit?.display_name
+                  }
+                  userMode={data?.kind === "t2"}
+                />
+              </div>
             )}
             {data?.kind == "t5" && !link && (
               <SubOptButton
