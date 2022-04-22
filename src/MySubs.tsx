@@ -14,6 +14,9 @@ import {
   subToSub,
 } from "./RedditAPI";
 import { useRouter } from "next/dist/client/router";
+import toast from "react-hot-toast";
+
+import ToastCustom from "./components/toast/ToastCustom";
 
 export const SubsContext: any = React.createContext({});
 export const useSubsContext = () => {
@@ -81,6 +84,12 @@ export const MySubsProvider = ({ children }) => {
       : setMyLocalMultis(defaultMultis);
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Creating ${multi}`} mode={"loading"} />
+      ),
+      { position: "bottom-center" }
+    );
     let found = false;
     myLocalMultis.forEach((m) => {
       if (m?.data?.name?.toUpperCase() === multi.toUpperCase()) found = true;
@@ -99,11 +108,29 @@ export const MySubsProvider = ({ children }) => {
         },
       ]);
       setMyLocalMultiRender((r) => r + 1);
+      toast.custom(
+        (t) => (
+          <ToastCustom t={t} message={`Created ${multi}`} mode={"success"} />
+        ),
+        { id: toastId, duration: 500 }
+      );
       return true;
     }
+    toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Error creating ${multi}`} mode={"error"} />
+      ),
+      { id: toastId, duration: 500 }
+    );
     return false;
   };
   const deleteLocalMulti = (multi) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Deleting ${multi}`} mode={"loading"} />
+      ),
+      { position: "bottom-center" }
+    );
     let afterdelete = myLocalMultis.filter(
       (m) => m?.data?.name?.toUpperCase() !== multi.toUpperCase()
     );
@@ -113,8 +140,24 @@ export const MySubsProvider = ({ children }) => {
     if (afterdelete.length === 0) {
       localStorage.setItem("localMultis", JSON.stringify(afterdelete));
     }
+    toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Deleted ${multi}`} mode={"success"} />
+      ),
+      { id: toastId, duration: 500 }
+    );
   };
   const addToLocalMulti = (multi: String, sub) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Adding ${sub} to ${multi}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     let localMultisCopy = myLocalMultis;
     let found = false;
     localMultisCopy.forEach((m, i) => {
@@ -130,12 +173,31 @@ export const MySubsProvider = ({ children }) => {
         }
       }
     });
-    //console.log(localMultisCopy);
     setMyLocalMultiRender((r) => r + 1);
     setMyLocalMultis(localMultisCopy);
+    toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Added ${sub} to ${multi}`}
+          mode={"success"}
+        />
+      ),
+      { id: toastId, duration: 500 }
+    );
   };
   const addAllToLocalMulti = (multi, subs: [String]) => {
     setMyLocalMultis((multis) => {
+      const toastId = toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Adding ${subs.length} subs to ${multi}`}
+            mode={"loading"}
+          />
+        ),
+        { position: "bottom-center" }
+      );
       let localMultisCopy = multis;
       subs.forEach((sub) => {
         let found = false;
@@ -154,10 +216,30 @@ export const MySubsProvider = ({ children }) => {
         });
       });
       setMyLocalMultiRender((r) => r + 1);
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Added ${subs.length} subs to ${multi}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
       return localMultisCopy;
     });
   };
   const removeFromLocalMulti = (multi, sub) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Removing ${sub} from ${multi}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     let localMultisCopy = myLocalMultis;
     let multi_index = -1;
     localMultisCopy.forEach((m, i) => {
@@ -175,15 +257,52 @@ export const MySubsProvider = ({ children }) => {
       //console.log(localMultisCopy);
       //handle no more subs in multi
       if (localMultisCopy[multi_index].data.subreddits?.length === 0) {
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`No more subs in multi ${multi}, deleting`}
+              mode={"error"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
         deleteLocalMulti(localMultisCopy[multi_index].data.name);
       } else {
         setMyLocalMultiRender((r) => r + 1);
         setMyLocalMultis(localMultisCopy);
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Removed ${sub} from ${multi}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
       }
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom t={t} message={`Something went wrong`} mode={"error"} />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
 
   const removeAllFromLocalMulti = (multi: String, subs: [String]) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Removing ${subs.length} subs from ${multi}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     let localMultisCopy = myLocalMultis;
     let deleted = false;
     subs.forEach((sub) => {
@@ -203,6 +322,16 @@ export const MySubsProvider = ({ children }) => {
         //console.log(localMultisCopy);
         //handle no more subs in multi
         if (localMultisCopy[multi_index].data.subreddits?.length === 0) {
+          toast.custom(
+            (t) => (
+              <ToastCustom
+                t={t}
+                message={`No more subs in ${multi}, deleting`}
+                mode={"error"}
+              />
+            ),
+            { id: toastId, duration: 500 }
+          );
           deleteLocalMulti(localMultisCopy[multi_index].data.name);
           deleted = true;
         }
@@ -211,6 +340,16 @@ export const MySubsProvider = ({ children }) => {
     if (!deleted) {
       setMyLocalMultiRender((r) => r + 1);
       setMyLocalMultis(localMultisCopy);
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Removed ${subs.length} subs from ${multi}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
 
@@ -219,9 +358,15 @@ export const MySubsProvider = ({ children }) => {
     subreddits: string[],
     username: string
   ) => {
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Creating ${multiname}`} mode={"loading"} />
+      ),
+      { position: "bottom-center" }
+    );
     let found = false;
+
     myMultis.forEach((m) => {
-      //console.log(m?.data?.name);
       if (m?.data?.name?.toUpperCase() === multiname.toUpperCase())
         found = true;
     });
@@ -229,37 +374,147 @@ export const MySubsProvider = ({ children }) => {
       let res = await createMulti(multiname, username, subreddits);
       if (res?.ok) {
         loadAllMultis();
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Created ${multiname}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
+      } else {
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Error creating ${multiname}`}
+              mode={"error"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
       }
-      //console.log("res", res);
       return res;
     } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Error creating ${multiname}`}
+            mode={"error"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
       return false;
     }
   };
   const addToRedditMulti = async (multi, username, subname) => {
-    //console.log("addtomulti");
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Adding ${subname} to ${multi}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     let res = await addToMulti(multi, username, subname);
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Added ${subname} to ${multi}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Error adding ${subname} to ${multi}`}
+            mode={"error"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
   const removeFromRedditMulti = async (multi, username, subname) => {
-    //console.log("removefrommulti");
-
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`Removing ${subname} from ${multi}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     let res = await deleteFromMulti(multi, username, subname);
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Removed ${subname} from ${multi}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Error removing ${subname} from ${multi}`}
+            mode={"error"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
   const deleteRedditMulti = async (multi, username) => {
-    //console.log("deletefrommulti");
-
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom t={t} message={`Deleting ${multi}`} mode={"loading"} />
+      ),
+      { position: "bottom-center" }
+    );
     let res = await deleteMulti(multi, username);
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
+      toast.custom(
+        (t) => (
+          <ToastCustom t={t} message={`Deleted ${multi}`} mode={"success"} />
+        ),
+        { id: toastId, duration: 500 }
+      );
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Error deleting ${multi}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
 
@@ -502,12 +757,31 @@ export const MySubsProvider = ({ children }) => {
     loggedIn = false
   ) => {
     //console.log("subAPI", action, subname, loggedIn);
+    let isUser = subname?.substring(0, 2) == "u_";
+
+    const toastId = toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`${
+            isUser
+              ? action == "sub"
+                ? "Following"
+                : "Unfollowing"
+              : action == "sub"
+              ? "Joining"
+              : "Leaving"
+          } ${isUser ? subname.substring(2) : subname}`}
+          mode={"loading"}
+        />
+      ),
+      { position: "bottom-center" }
+    );
     if (session || loggedIn) {
       let sub = subname;
       if (subInfoCache?.[sub?.toUpperCase()]) {
         sub = subInfoCache[sub?.toUpperCase()]?.data?.name;
       } else {
-        let isUser = sub?.substring(0, 2) == "u_";
         if (isUser) sub = sub.substring(2);
         let subInfo = await loadSubredditInfo(sub, isUser);
         subInfo && addToSubCache(subInfo);
@@ -518,11 +792,109 @@ export const MySubsProvider = ({ children }) => {
       //console.log('session:', status);
       if (status) {
         loadAllSubs(loggedIn);
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${
+                isUser
+                  ? action == "sub"
+                    ? "Followed"
+                    : "Unfollowed"
+                  : action == "sub"
+                  ? "Joined"
+                  : "Left"
+              } ${isUser ? subname.substring(2) : subname}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
         return true;
+      } else {
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Error ${
+                isUser
+                  ? action == "sub"
+                    ? "Following"
+                    : "Unfollowing"
+                  : action == "sub"
+                  ? "Joining"
+                  : "Leaving"
+              } ${isUser ? subname.substring(2) : subname}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
+        // toast.dismiss(toastId);
+
+        return false;
       }
     } else if ((!session && !loading) || !loggedIn) {
       let status = await context.subToSub(action, subname);
+      if (status) {
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${
+                isUser
+                  ? action == "sub"
+                    ? "Followed"
+                    : "Unfollowed"
+                  : action == "sub"
+                  ? "Joined"
+                  : "Left"
+              } ${isUser ? subname.substring(2) : subname}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
+      } else {
+        toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Error ${
+                isUser
+                  ? action == "sub"
+                    ? "Following"
+                    : "Unfollowing"
+                  : action == "sub"
+                  ? "Joining"
+                  : "Leaving"
+              } ${isUser ? subname.substring(2) : subname}`}
+              mode={"success"}
+            />
+          ),
+          { id: toastId, duration: 500 }
+        );
+      }
       return status;
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Error ${
+              isUser
+                ? action == "sub"
+                  ? "Following"
+                  : "Unfollowing"
+                : action == "sub"
+                ? "Joining"
+                : "Leaving"
+            } ${isUser ? subname.substring(2) : subname}`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 500 }
+      );
     }
   };
 

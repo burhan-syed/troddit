@@ -24,6 +24,8 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
     toOpen > 0 && setOpen(true);
     return () => {
       setInput("");
+      setWaiting(false);
+      setErr("");
     };
   }, [toOpen]);
 
@@ -48,7 +50,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
       setErr("Enter Multi Name");
     } else if (input.length > 50) {
       setErr("Max Name Length is 50 Characters");
-    } else {
+    } else if (!waiting) {
       setErr("");
       if (subsForMulti.length > 0) {
         if (session) {
@@ -182,7 +184,12 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                           />
                           <button
                             onClick={createMultiButton}
-                            className="flex-shrink-0 px-2 py-1 bg-white border rounded-md border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
+                            className={
+                              (waiting
+                                ? " opacity-50 "
+                                : " hover:border-lightBorderHighlight dark:hover:border-lightBorder ") +
+                              " flex-shrink-0 px-2 py-1 bg-white border rounded-md border-lightBorder  dark:border-darkBorder  focus:outline-none dark:bg-darkBG"
+                            }
                             type="button"
                           >
                             {`Create`}

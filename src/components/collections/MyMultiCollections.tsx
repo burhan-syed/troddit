@@ -9,13 +9,6 @@ const MyMultiCollections = () => {
   const mySubs: any = useSubsContext();
   const [session, loading] = useSession();
   let { myMultis, myLocalMultis, myLocalMultiRender } = mySubs;
-  //   const [localMultiRender, setLocalMultiRender] = useState(0);
-  //   useEffect(() => {
-  //     console.log(myLocalMultis);
-  //     //setMyLocalMultisCopy(myLocalMultis);
-  //     setLocalMultiRender((r) => r + 1);
-  //     return () => {};
-  //   }, [myLocalMultis, myLocalMultiRender]);
   if (session) {
     return (
       <>
