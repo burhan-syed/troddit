@@ -112,7 +112,7 @@ export const MySubsProvider = ({ children }) => {
         (t) => (
           <ToastCustom t={t} message={`Created ${multi}`} mode={"success"} />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
       return true;
     }
@@ -120,7 +120,7 @@ export const MySubsProvider = ({ children }) => {
       (t) => (
         <ToastCustom t={t} message={`Error creating ${multi}`} mode={"error"} />
       ),
-      { id: toastId, duration: 500 }
+      { id: toastId, duration: 1500 }
     );
     return false;
   };
@@ -144,7 +144,7 @@ export const MySubsProvider = ({ children }) => {
       (t) => (
         <ToastCustom t={t} message={`Deleted ${multi}`} mode={"success"} />
       ),
-      { id: toastId, duration: 500 }
+      { id: toastId, duration: 1500 }
     );
   };
   const addToLocalMulti = (multi: String, sub) => {
@@ -183,7 +183,7 @@ export const MySubsProvider = ({ children }) => {
           mode={"success"}
         />
       ),
-      { id: toastId, duration: 500 }
+      { id: toastId, duration: 1500 }
     );
   };
   const addAllToLocalMulti = (multi, subs: [String]) => {
@@ -224,7 +224,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
       return localMultisCopy;
     });
@@ -265,7 +265,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"error"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
         deleteLocalMulti(localMultisCopy[multi_index].data.name);
       } else {
@@ -279,7 +279,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
       }
     } else {
@@ -287,7 +287,7 @@ export const MySubsProvider = ({ children }) => {
         (t) => (
           <ToastCustom t={t} message={`Something went wrong`} mode={"error"} />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -330,7 +330,7 @@ export const MySubsProvider = ({ children }) => {
                 mode={"error"}
               />
             ),
-            { id: toastId, duration: 500 }
+            { id: toastId, duration: 1500 }
           );
           deleteLocalMulti(localMultisCopy[multi_index].data.name);
           deleted = true;
@@ -348,7 +348,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -382,7 +382,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
       } else {
         toast.custom(
@@ -393,7 +393,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"error"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
       }
       return res;
@@ -406,7 +406,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"error"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
       return false;
     }
@@ -434,7 +434,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     } else {
       toast.custom(
@@ -445,7 +445,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"error"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -472,7 +472,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     } else {
       toast.custom(
@@ -483,7 +483,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"error"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -502,7 +502,7 @@ export const MySubsProvider = ({ children }) => {
         (t) => (
           <ToastCustom t={t} message={`Deleted ${multi}`} mode={"success"} />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     } else {
       toast.custom(
@@ -513,7 +513,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -808,7 +808,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
         return true;
       } else {
@@ -828,7 +828,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
         // toast.dismiss(toastId);
 
@@ -853,7 +853,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
       } else {
         toast.custom(
@@ -872,7 +872,7 @@ export const MySubsProvider = ({ children }) => {
               mode={"success"}
             />
           ),
-          { id: toastId, duration: 500 }
+          { id: toastId, duration: 1500 }
         );
       }
       return status;
@@ -893,7 +893,7 @@ export const MySubsProvider = ({ children }) => {
             mode={"success"}
           />
         ),
-        { id: toastId, duration: 500 }
+        { id: toastId, duration: 1500 }
       );
     }
   };
@@ -906,23 +906,38 @@ export const MySubsProvider = ({ children }) => {
         mode={"loading"}
       />
     ));
-    subs.forEach((sub) => {
-      if (!session && !loading) {
-        context.subToSub("sub", sub);
+    let issues = 0;
+    for (let sub of subs){
+      if (!session ) {
+        let status = await context.subToSub("sub", sub);
+        if (!status){issues+=1}
       } else if (session) {
         subscribe("sub", sub, true);
       }
-    });
-    toast.custom(
-      (t) => (
-        <ToastCustom
-          t={t}
-          message={`Joined ${subs.length} subs`}
-          mode={"Success"}
-        />
-      ),
-      { id: toastId, duration: 500 }
-    );
+    }
+    if (issues == 0){
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Joined ${subs.length} subs`}
+            mode={"success"}
+          />
+        ),
+        { id: toastId, duration: 1500 }
+      );
+    } else {
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Unable to join ${issues} subs`}
+            mode={"error"}
+          />
+        ),
+        { id: toastId, duration: 1500 });
+    }
+    
   };
 
   // return {

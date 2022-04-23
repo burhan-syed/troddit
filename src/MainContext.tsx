@@ -218,23 +218,24 @@ export const MainProvider = ({ children }) => {
   const [localSubs, setLocalSubs] = useState([]);
   const subToSub = async (action, sub) => {
     if (action == "sub") {
-      await addLocalSub(sub);
-      return true;
+      return await addLocalSub(sub);
     } else if (action == "unsub") {
-      await removeLocalSub(sub);
-      return true;
+      return await removeLocalSub(sub);
+       
     } else return false;
   };
   const addLocalSub = async (sub) => {
     let found = localSubs.find((s) => s?.toUpperCase() === sub?.toUpperCase());
     if (!found) {
       setLocalSubs((p) => [...p, sub]);
-    }
+    } 
+    return true;
   };
   const removeLocalSub = async (sub) => {
     setLocalSubs((p) =>
       p.filter((s) => s?.toUpperCase() !== sub?.toUpperCase())
     );
+    return true;
   };
 
   const toggleAudioOnHover = () => {
