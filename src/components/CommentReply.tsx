@@ -2,12 +2,10 @@ import React, { Component, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js";
-import draftToMarkdown from "draftjs-to-markdown";
 import { runMain } from "module";
 import { useSession } from "../../node_modules/next-auth/client";
 import { postComment } from "../RedditAPI";
-
-// import { usePlausible } from "next-plausible";
+import { draftToMarkdown } from "markdown-draft-js"; // import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import { ImSpinner2 } from "react-icons/im";
 
@@ -15,10 +13,6 @@ const Editor: any = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
 );
-// const draftToMarkdown: any = dynamic(
-//   () => import('draftjs-to-markdown'),//.then((mod) => mod.draftToMarkdown),
-//   {ssr: false}
-// )
 
 const editor = {
   options: ["inline", "blockType", "list", "link"],
@@ -60,11 +54,11 @@ const editor = {
   },
 };
 
-const CommentReply = ({ parent, getHtml }) => {
+const CommentReply = ({ parent, getResponse }) => {
   const maincontext: any = useMainContext();
   const { replyFocus, setReplyFocus } = maincontext;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [html, setHtml] = useState("");
+  //const [html, setHtml] = useState("");
   const [session] = useSession();
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -79,12 +73,17 @@ const CommentReply = ({ parent, getHtml }) => {
     e.preventDefault();
     const run = async () => {
       setLoading(true);
-      const draftToMarkdown: any = (await import("draftjs-to-markdown"))
-        .default;
-      const rawContentState = await convertToRaw(
-        editorState.getCurrentContent()
-      );
-      const markup = draftToMarkdown(rawContentState);
+      let rawContentState = await convertToRaw(editorState.getCurrentContent());
+      for (let i = 0; i < rawContentState?.blocks?.length ?? 0; i++) {
+        if (rawContentState.blocks[i]?.text) {
+          rawContentState.blocks[i].text = rawContentState.blocks[
+            i
+          ].text.replaceAll("\n", "  \n");
+        }
+      }
+      const markup = draftToMarkdown(rawContentState, {
+        styleItems: {},
+      });
       if (!(markup?.length > 1)) {
         setErr(true);
         setLoading(false);
@@ -92,10 +91,7 @@ const CommentReply = ({ parent, getHtml }) => {
         const res = await postComment(parent, markup);
         setLoading(false);
         if (res) {
-          const draftToHtml: any = (await import("draftjs-to-html")).default;
-          const html = draftToHtml(rawContentState);
-          setHtml(html);
-          getHtml(html);
+          getResponse(res);
           setErr(false);
           // plausible("comment");
           setEditorState(EditorState.createEmpty());

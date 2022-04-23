@@ -42,20 +42,21 @@ const ChildComments = ({
 
   const [myReplies, setmyReplies] = useState([]);
   const [openReply, setopenReply] = useState(false);
-  const updateMyReplies = (html) => {
+  const updateMyReplies = (resdata) => {
     const newreply = {
       myreply: true,
       kind: "t1",
-      data: {
-        author: session?.user?.name,
-        body_html: html,
-        created_utc: Math.floor(Date.now() / 1000),
-        depth: comment?.depth + 1,
-        parent_id: comment?.name,
-        score: 1,
-      },
+      data: resdata,
+      // {
+      //   author: session?.user?.name,
+      //   body_html: html,
+      //   created_utc: Math.floor(Date.now() / 1000),
+      //   depth: comment?.depth + 1,
+      //   parent_id: comment?.name,
+      //   score: 1,
+      // },
     };
-    setmyReplies((replies) => [newreply, ...myReplies]);
+    setmyReplies((replies) => [newreply, ...replies]);
     setopenReply(false);
   };
 
@@ -380,7 +381,7 @@ const ChildComments = ({
               >
                 <CommentReply
                   parent={comment?.data?.name}
-                  getHtml={updateMyReplies}
+                  getResponse={updateMyReplies}
                 />
               </div>
 

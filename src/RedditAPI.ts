@@ -1171,9 +1171,9 @@ export const postComment = async (parent, text) => {
         },
         body: `api_type=${"json"}&return_rtjson=${true}&text=${text}&thing_id=${parent}`,
       });
-      console.log(res);
+      const data = await res.json();
       if (res.ok) {
-        return true;
+        return data;
       } else {
         return false;
       }

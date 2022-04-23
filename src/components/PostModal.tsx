@@ -157,20 +157,21 @@ const PostModal = ({
     }
   }, [commentsRef?.current, commentsDirect]);
 
-  const updateMyReplies = (html) => {
+  const updateMyReplies = (resdata) => {
     const newreply = {
       myreply: true,
       kind: "t1",
-      data: {
-        author: session?.user?.name,
-        body_html: html,
-        created_utc: Math.floor(Date.now() / 1000),
-        depth: 0,
-        parent_id: apost?.name,
-        score: 1,
-      },
+      data: resdata,
+      // data: {
+      //   author: session?.user?.name,
+      //   body_html: html,
+      //   created_utc: Math.floor(Date.now() / 1000),
+      //   depth: 0,
+      //   parent_id: apost?.name,
+      //   score: 1,
+      // },
     };
-    setmyReplies((replies) => [newreply, ...myReplies]);
+    setmyReplies((replies) => [newreply, ...replies]);
     setopenReply(false);
   };
 
@@ -618,7 +619,7 @@ const PostModal = ({
                                   crosspost by
                                 </span>
                               </div>
-                            ) }
+                            )}
                             <Link href={`/u/${apost?.author}`}>
                               <a
                                 title={`see u/${apost?.author}'s posts`}
@@ -880,7 +881,7 @@ const PostModal = ({
                 >
                   <CommentReply
                     parent={apost?.name}
-                    getHtml={updateMyReplies}
+                    getResponse={updateMyReplies}
                   />
                 </div>
 
