@@ -1,10 +1,11 @@
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useSubsContext } from "../../MySubs";
 import Collection from "./Collection";
 
 const MyMultiCollections = () => {
   const mySubs: any = useSubsContext();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   let { myMultis, myLocalMultis, myLocalMultiRender } = mySubs;
   if (session && myMultis?.length > 0) {
     return (

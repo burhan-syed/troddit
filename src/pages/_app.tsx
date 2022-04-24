@@ -1,5 +1,5 @@
 import "../../styles/globals.css";
-import { Provider } from "next-auth/client";
+import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { MainProvider } from "../MainContext";
 import { MySubsProvider } from "../MySubs";
@@ -34,18 +34,18 @@ function MyApp({ Component, pageProps }) {
         />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
-      <ThemeProvider attribute="class" defaultTheme="system">
-        <MainProvider>
-          <MySubsProvider>
-            <MyCollectionsProvider>
-              <Provider session={pageProps.session}>
+      <SessionProvider session={pageProps.session}>
+        <ThemeProvider attribute="class" defaultTheme="system">
+          <MainProvider>
+            <MySubsProvider>
+              <MyCollectionsProvider>
                 <Component {...pageProps} />
                 <Toaster position="bottom-center" />
-              </Provider>
-            </MyCollectionsProvider>
-          </MySubsProvider>
-        </MainProvider>
-      </ThemeProvider>
+              </MyCollectionsProvider>
+            </MySubsProvider>
+          </MainProvider>
+        </ThemeProvider>
+      </SessionProvider>
     </>
   );
 }

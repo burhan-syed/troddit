@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { BiHide } from "react-icons/bi";
 import { useMainContext } from "../MainContext";
@@ -14,7 +14,8 @@ const HideButton = ({
   postindex = undefined,
   menu = false,
 }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const context: any = useMainContext();
   const [isHidden, setIsHidden] = useState(false);
   useEffect(() => {

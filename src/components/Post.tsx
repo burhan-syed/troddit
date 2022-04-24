@@ -11,7 +11,7 @@ import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
 import Media from "./Media";
 import { postVote } from "../RedditAPI";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { findMediaInfo, secondsToTime } from "../../lib/utils";
 import Card1 from "./cards/Card1";
 import Card2 from "./cards/Card2";
@@ -26,7 +26,7 @@ const Post = ({ post, postNum = 0 }) => {
   const [select, setSelect] = useState(false);
   const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
   // const plausible = usePlausible();
   const [margin, setMargin] = useState("m-1");

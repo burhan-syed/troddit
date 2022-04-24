@@ -2,11 +2,8 @@ import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
 import { useState, useEffect } from "react";
 import { loadSubredditInfo } from "../RedditAPI";
-import { useSession } from "next-auth/client";
-import Link from "next/link";
 
 const DropdownItem = ({ sub, isUser = false }) => {
-  const [session, loading] = useSession();
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);

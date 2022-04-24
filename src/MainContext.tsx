@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import React, { useState, useContext, useEffect, useReducer } from "react";
 
 export const MainContext: any = React.createContext({});
@@ -221,14 +221,13 @@ export const MainProvider = ({ children }) => {
       return await addLocalSub(sub);
     } else if (action == "unsub") {
       return await removeLocalSub(sub);
-       
     } else return false;
   };
   const addLocalSub = async (sub) => {
     let found = localSubs.find((s) => s?.toUpperCase() === sub?.toUpperCase());
     if (!found) {
       setLocalSubs((p) => [...p, sub]);
-    } 
+    }
     return true;
   };
   const removeLocalSub = async (sub) => {
