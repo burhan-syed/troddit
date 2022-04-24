@@ -2,11 +2,11 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useSubsContext } from "../MySubs";
 
 const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const subsContext: any = useSubsContext();
   const { createLocalMulti, createRedditMulti } = subsContext;
   const [open, setOpen] = useState(false);

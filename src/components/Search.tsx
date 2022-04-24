@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
-import { useSession, signIn } from "next-auth/client";
+import { useSession, signIn } from "next-auth/react";
 import Image from "next/dist/client/image";
 import AllSubs from "../../public/subs.json";
 // import { usePlausible } from "next-plausible";
@@ -24,7 +24,7 @@ const Search = ({ id }) => {
   const [value, setValue] = useState("");
   const [placeHolder, setPlaceHolder] = useState("search");
   const [suggestions, setSuggestions] = useState<any>([]);
-  const [session] = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [lastsuggestion, setlastsuggestion] = useState("");
   const [morethanonesuggestion, setmorethanonesuggestion] = useState(false);

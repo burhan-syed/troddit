@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
@@ -27,7 +27,7 @@ const ChildComments = ({
   const [color, setColor] = useState(100);
   const [hideChildren, setHideChildren] = useState(false);
   const [vote, setVote] = useState(0);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const context: any = useMainContext();
   const parentRef = useRef(null);
   const executeScroll = () => {
@@ -47,14 +47,6 @@ const ChildComments = ({
       myreply: true,
       kind: "t1",
       data: resdata,
-      // {
-      //   author: session?.user?.name,
-      //   body_html: html,
-      //   created_utc: Math.floor(Date.now() / 1000),
-      //   depth: comment?.depth + 1,
-      //   parent_id: comment?.name,
-      //   score: 1,
-      // },
     };
     setmyReplies((replies) => [newreply, ...replies]);
     setopenReply(false);

@@ -1,52 +1,25 @@
-import axios from "axios";
-import router, { useRouter } from "next/router";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useRouter } from "next/router";
+import { useState, Fragment } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
 import { CgLivePhoto, CgPlayListSearch } from "react-icons/cg";
 import { BiRightTopArrowCircle } from "react-icons/bi";
-import {
-  HiOutlineMinus,
-  HiOutlinePlusSm,
-  HiOutlineMinusSm,
-} from "react-icons/hi";
-// import InfiniteScroll from "react-infinite-scroll-component";
-import Link from "next/link";
-import { signIn, useSession } from "next-auth/client";
+import { HiOutlineMinus } from "react-icons/hi";
 import DropdownItem from "./DropdownItem";
-import DropdownSubCard from "./DropdownSubCard";
 import { useSubsContext } from "../MySubs";
-import { useWindowHeight } from "@react-hook/window-size";
 import DropDownItems from "./DropDownItems";
 import { Menu, Transition } from "@headlessui/react";
 
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
-  const {
-    mySubs,
-    myFollowing,
-    myLocalSubs,
-    myLocalMultis,
-    myMultis,
-    multi,
-    loadedSubs,
-    loadedMultis,
-    error,
-    currSubInfo,
-    currLocation,
-    tryLoadAll,
-  } = subsContext;
+  const { multi, currSubInfo, currLocation, tryLoadAll } = subsContext;
 
   const [expand, setExpand] = useState(false);
   const router = useRouter();
 
-  const [session, loading] = useSession();
-
   const handleClick = async () => {
-    // !show &&
-    // setShow((show) => !show);
     tryLoadAll();
   };
 

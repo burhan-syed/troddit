@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { BsBookmarks } from "react-icons/bs";
 import { useMainContext } from "../MainContext";
@@ -15,7 +15,8 @@ const SaveButton = ({
   postindex = undefined,
   menu = false,
 }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const context: any = useMainContext();
   const [isSaved, setIsSaved] = useState(false);
   useEffect(() => {

@@ -3,7 +3,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { MdErrorOutline } from "react-icons/md";
 import { useMainContext } from "../MainContext";
-import { signIn } from "next-auth/client";
+import { signIn } from "next-auth/react";
 import { usePlausible } from "next-plausible";
 
 const Login = () => {

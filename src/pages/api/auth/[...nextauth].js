@@ -1,6 +1,4 @@
 import NextAuth from "next-auth";
-import Providers from "next-auth/providers";
-
 function b2a(a) {
   var c,
     d,
@@ -37,7 +35,6 @@ function b2a(a) {
 
 async function refreshAccessToken(token) {
   let refresh = true;
-
   let refreshtoken = "";
   if (token?.reddit?.refreshToken) {
     refreshtoken = token?.reddit?.refreshToken;
@@ -47,11 +44,10 @@ async function refreshAccessToken(token) {
     refreshtoken = token.refresh_token;
   } else {
     refresh = false;
-    //console.log("FAILED TO FIND REFRESH TOKEN");
   }
   if (refresh) {
     const authvalue = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
-
+    //console.log(authvalue, refreshtoken);
     try {
       const url =
         "https://www.reddit.com/api/v1/access_token?" +
@@ -84,8 +80,6 @@ async function refreshAccessToken(token) {
         expires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
       };
     } catch (error) {
-      //console.log(error);
-      //console.log("errored");
       return {
         ...token,
         error: "RefreshAccessTokenError",
@@ -95,28 +89,24 @@ async function refreshAccessToken(token) {
   return token;
 }
 
+const redditScope =
+  "identity mysubreddits read vote submit report save subscribe history"; //Check Reddit API Documentation for more. The identity scope is required.
+
 export default NextAuth({
   // Configure one or more authentication providers
   providers: [
-    //Providers.Reddit({
-    //   clientId: process.env.CLIENT_ID,
-    //   clientSecret: process.env.CLIENT_SECRET,
-    // }),
-    //...add more providers here
     {
       id: "reddit",
       name: "Reddit",
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      scope:
-        "identity mysubreddits read vote submit report save subscribe history", //Check Reddit API Documentation for more. The identity scope is required.
       type: "oauth",
       version: "2.0",
-      params: { grant_type: "authorization_code" },
+      token: " https://www.reddit.com/api/v1/access_token",
       accessTokenUrl: " https://www.reddit.com/api/v1/access_token",
-      authorizationUrl:
-        "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent",
-      profileUrl: "https://oauth.reddit.com/api/v1/me",
+      authorization:
+        "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=identity mysubreddits read vote submit report save subscribe history",
+      userinfo: "https://oauth.reddit.com/api/v1/me",
       profile: (profile) => {
         return {
           id: profile.id,
@@ -134,26 +124,30 @@ export default NextAuth({
   },
 
   callbacks: {
-    async jwt(token, user, account = {}, profile, isNewUser) {
-      // console.log("JWT CALLBACK", token, user, account, profile, isNewUser);
+    async jwt({ token, user, account, profile, isNewUser }) {
+      //console.log("JWT CALLBACK", token, account);
       // console.log(Math.floor(Date.now() / 1000));
       // console.log(token.expires);
       // console.log(Math.floor(Date.now() / 1000) - token?.expires);
-      if (!token.expires || Math.floor(Date.now() / 1000) > token.expires) {
-        token = await refreshAccessToken(token);
-        //console.log(token);
-      }
 
-      if (account.provider && !token[account.provider]) {
+      if (account?.provider && !token[account?.provider]) {
         token[account.provider] = {};
       }
 
-      if (account.accessToken) {
-        token[account.provider].accessToken = account.accessToken;
+      if (account?.access_token) {
+        token[account.provider].accessToken = account.access_token;
       }
 
-      if (account.refreshToken) {
-        token[account.provider].refreshToken = account.refreshToken;
+      if (account?.refresh_token) {
+        token[account.provider].refreshToken = account.refresh_token;
+      }
+      if (account?.expires_at) {
+        token[account.provider].expires = account.expires_at;
+      }
+
+      if (!token.expires || Math.floor(Date.now() / 1000) > token.expires) {
+        token = await refreshAccessToken(token);
+        //console.log(token);
       }
 
       return token;

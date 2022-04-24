@@ -1,9 +1,9 @@
-import { signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function LoginProfile() {
-  const [session, loading] = useSession();
-
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   if (loading) return <div className="w-full h-full"></div>;
   if (!session && !loading)
     return (

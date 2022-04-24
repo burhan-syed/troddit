@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js";
 import { runMain } from "module";
-import { useSession } from "../../node_modules/next-auth/client";
+import { useSession } from "../../node_modules/next-auth/react";
 import { postComment } from "../RedditAPI";
 import { draftToMarkdown } from "markdown-draft-js"; // import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
@@ -59,7 +59,7 @@ const CommentReply = ({ parent, getResponse }) => {
   const { replyFocus, setReplyFocus } = maincontext;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   //const [html, setHtml] = useState("");
-  const [session] = useSession();
+  const { data: session, status } = useSession();
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
 
