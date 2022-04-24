@@ -68,7 +68,7 @@ const SubCard = ({
   }, [data, link]);
 
   useEffect(() => {
-    if (data?.data?.over18 && context.nsfw !== "true") {
+    if (data?.data?.over18 && context.nsfw !== true) {
       setHideNSFW(true);
     } else {
       setHideNSFW(false);

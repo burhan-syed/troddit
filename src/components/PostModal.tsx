@@ -177,7 +177,7 @@ const PostModal = ({
 
   const [hideNSFW, setHideNSFW] = useState(false);
   useEffect(() => {
-    context.nsfw === "false" && apost?.over_18
+    context.nsfw === false && apost?.over_18
       ? setHideNSFW(true)
       : apost?.spoiler
       ? setHideNSFW(true)

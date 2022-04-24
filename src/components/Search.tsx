@@ -159,7 +159,7 @@ const Search = ({ id }) => {
       if (lastRequest.current === value.value) {
         seterror(false);
         let filtered = data.filter((sub) => {
-          if (context.nsfw === "true" || sub?.data?.over18 !== true) {
+          if (context.nsfw === true || sub?.data?.over18 !== true) {
             if (
               sub?.data?.display_name?.toLowerCase() ===
               value.value.toLowerCase()
@@ -196,7 +196,7 @@ const Search = ({ id }) => {
     let suggestions = [];
     try {
       let data = AllSubs.SFW;
-      if (context.nsfw === "true") data = [...data, ...AllSubs.NSFW];
+      if (context.nsfw === true) data = [...data, ...AllSubs.NSFW];
       const search = data
         .filter((item) => {
           return item.toLowerCase().indexOf(value.toLowerCase()) > -1;

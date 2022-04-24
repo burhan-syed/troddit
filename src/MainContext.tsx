@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import localForage from "localforage";
 import React, { useState, useContext, useEffect, useReducer } from "react";
 
 export const MainContext: any = React.createContext({});
@@ -9,7 +8,7 @@ export const useMainContext = () => {
 };
 
 export const MainProvider = ({ children }) => {
-  const [nsfw, setNSFW] = useState("false");
+  const [nsfw, setNSFW] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
@@ -262,9 +261,7 @@ export const MainProvider = ({ children }) => {
   }, [wideUI]);
 
   const toggleNSFW = () => {
-    setNSFW((prevNSFW) => {
-      return prevNSFW === "false" ? "true" : "false";
-    });
+    setNSFW((prevNSFW) => !prevNSFW);
   };
   const toggleHoverPlay = () => {
     setHoverPlay((a) => !a);
@@ -278,7 +275,7 @@ export const MainProvider = ({ children }) => {
 
   useEffect(() => {
     const saved_nsfw = localStorage.getItem("nsfw");
-    saved_nsfw?.includes("true") ? setNSFW("true") : setNSFW("false");
+    saved_nsfw?.includes("true") ? setNSFW(true) : setNSFW(false);
     const saved_autoplay = localStorage.getItem("autoplay");
     saved_autoplay?.includes("true") ? setAutoplay(true) : setAutoplay(false);
     const saved_hoverplay = localStorage.getItem("hoverplay");
