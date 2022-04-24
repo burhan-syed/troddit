@@ -1,4 +1,4 @@
-import { signIn, useSession } from "next-auth/client";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -26,7 +26,7 @@ const SideDropDown = ({ visible = false }) => {
 
   const router = useRouter();
 
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     if (!loadedSubs && visible) {

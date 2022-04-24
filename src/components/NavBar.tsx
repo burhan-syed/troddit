@@ -11,7 +11,7 @@ import NavMenu from "./NavMenu";
 import { useRouter } from "next/router";
 import SortMenu from "./SortMenu";
 
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useScroll } from "../hooks/useScroll";
 
 import { usePlausible } from "next-plausible";
@@ -24,7 +24,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const { setForceRefresh } = context;
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
-  const session = useSession();
+  const { data: session, status } = useSession();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const router = useRouter();
   const [prevScrollpos, setScrollpos] = useState(0);
@@ -131,11 +131,9 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </div>
             <div
               className={
-                !session
-                  ? "hidden"
-                  : "hidden w-20 h-full border border-white dark:hover:border-darkBorder hover:border-lightBorder dark:border-darkBG rounded-md md:block"
+                "hidden w-20 h-full border border-white dark:hover:border-darkBorder hover:border-lightBorder dark:border-darkBG rounded-md md:block"
               }
-              onClick={() => plausible("login")}
+              //onClick={() => plausible("login")}
             >
               <LoginProfile />
             </div>

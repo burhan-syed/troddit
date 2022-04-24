@@ -4,14 +4,14 @@ import SortMenu from "./SortMenu";
 import Search from "./Search";
 import SideDropDown from "./SideDropDown";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useSession, signIn, signOut } from "next-auth/client";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import DropDownItems from "./DropDownItems";
 import { Menu } from "@headlessui/react";
 import LoginProfile from "./LoginProfile";
 
 const SideNav = ({ visible, toggle }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const [vis, setVis] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);

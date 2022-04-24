@@ -1,7 +1,7 @@
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 import { useState, useEffect } from "react";
 import { postVote } from "../RedditAPI";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import { useKeyPress } from "../hooks/KeyPress";
 
@@ -24,7 +24,7 @@ const Vote = ({
   postindex = undefined,
   postMode = false,
 }) => {
-  const [session] = useSession();
+  const { data: session, status } = useSession();
   const context: any = useMainContext();
   const aPress = useKeyPress("a");
   const zPress = useKeyPress("z");
@@ -90,7 +90,7 @@ const Vote = ({
       strokeWidth="0"
       viewBox="0 0 24 24"
       className={
-        (liked ? " text-upvote "  : "") +
+        (liked ? " text-upvote " : "") +
         ` flex-none cursor-pointer w-${size} h-${size} hover:text-upvote scale-110 hover:scale-100`
       }
       xmlns="http://www.w3.org/2000/svg"
@@ -153,8 +153,10 @@ const Vote = ({
         <BiDownvote
           title={`downvote ${postMode ? "(v)" : ""}`}
           onClick={(e) => castVote(e, false)}
-          className={            (liked  ? " opacity-50 " : "") +
-          ` flex-none cursor-pointer w-${size} h-${size} hover:text-downvote hover:scale-110 hover:opacity-100`}
+          className={
+            (liked ? " opacity-50 " : "") +
+            ` flex-none cursor-pointer w-${size} h-${size} hover:text-downvote hover:scale-110 hover:opacity-100`
+          }
         />
       )}
     </>

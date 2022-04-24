@@ -17,7 +17,7 @@ import { ImReddit } from "react-icons/im";
 import { BsReply } from "react-icons/bs";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentSort from "./CommentSort";
 import CommentReply from "./CommentReply";
@@ -55,7 +55,7 @@ const PostModal = ({
   const [sort, setSort] = useState("top");
   const [myReplies, setmyReplies] = useState([]);
   const [openReply, setopenReply] = useState(false);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const context: any = useMainContext();
   const [imgFull, setimgFull] = useState(false);
   const [windowWidth, windowHeight] = useWindowSize();

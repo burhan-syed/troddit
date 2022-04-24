@@ -2,7 +2,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useSubsContext } from "../../MySubs";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import DropdownItem from "../DropdownItem";
 import MultiManageModal from "../MultiManageModal";
 
@@ -11,7 +11,8 @@ const CollectionOptions = ({
   subArray,
   currMulti = "",
 }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const subsContext: any = useSubsContext();
   const {
     myMultis,

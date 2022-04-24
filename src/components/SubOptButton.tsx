@@ -5,7 +5,7 @@ import SubMultiButton from "./SubMultiButton";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
 import MultiManageModal from "./MultiManageModal";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
 import Link from "next/link";
 
@@ -15,7 +15,8 @@ const SubOptButton = ({
   currMulti,
   openDescription = undefined,
 }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const subsContext: any = useSubsContext();
   const {
     myMultis,
