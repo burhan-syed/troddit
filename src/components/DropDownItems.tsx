@@ -1,5 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
-import { signIn, useSession } from "next-auth/client";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -37,7 +37,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
     tryLoadAll,
   } = subsContext;
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
   const [filter, setFilter] = useState("");
   const filterRef = useRef(null);
   const [expand, setExpand] = useState(false);

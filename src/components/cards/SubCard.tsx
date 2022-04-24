@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/client";
 import Image from "next/image";
 import Link from "next/dist/client/link";
 import router from "next/router";
@@ -24,7 +23,6 @@ const SubCard = ({
   const [thumbURL, setThumbURL] = useState("");
   const [subBanner, setBanner] = useState<any>({});
   const [hideNSFW, setHideNSFW] = useState(false);
-  const [session, sessloading] = useSession();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);

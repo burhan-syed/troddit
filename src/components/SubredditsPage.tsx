@@ -5,7 +5,7 @@ import SubCard from "./cards/SubCard";
 import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
 
 import { Tab } from "@headlessui/react";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import Collection from "./collections/Collection";
@@ -14,7 +14,8 @@ import SelectedSubs from "./collections/SelectedSubs";
 import { MyCollectionsProvider } from "./collections/CollectionContext";
 
 const SubredditsPage = ({ query = undefined }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [waiting, setWaiting] = useState(false);
   const router = useRouter();
   const context: any = useMainContext();

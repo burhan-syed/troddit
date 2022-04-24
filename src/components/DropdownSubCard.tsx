@@ -1,8 +1,8 @@
 import DropdownItem from "./DropdownItem";
 import SubButton from "./SubButton";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 const DropdownSubCard = ({ sub, userMode = false }) => {
-  const [session] = useSession();
+  const { data: session, status } = useSession();
   return (
     <div className="flex flex-row items-center justify-between">
       <DropdownItem sub={sub} />

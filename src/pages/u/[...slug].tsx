@@ -6,9 +6,10 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import SubredditBanner from "../../components/SubredditBanner";
 import { getUserMultiSubs } from "../../RedditAPI";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 const Sort = ({ query }) => {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [loaded, setLoaded] = useState(false);
   const [isUser, setIsUser] = useState(false);
   const [forbidden, setForbidden] = useState(false);

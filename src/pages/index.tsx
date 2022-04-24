@@ -5,7 +5,7 @@ import Head from "next/head";
 import Feed from "../components/Feed";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 
 export const index = ({ session, query }) => {
   return (
