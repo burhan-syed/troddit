@@ -1,4 +1,4 @@
-import { getSession, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
@@ -10,7 +10,8 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
   const [subbed, setSubbed] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const subsContext: any = useSubsContext();
   const {
     mySubs,

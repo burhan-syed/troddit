@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { getSession, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/react";
 import { useMainContext } from "./MainContext";
 import {
   addToMulti,
@@ -31,7 +31,8 @@ export const MySubsProvider = ({ children }) => {
   const [myFollowing, setMyFollowing] = useState([]);
   const [myLocalSubs, setMyLocalSubs] = useState([]);
   const [myMultis, setMyMultis] = useState([]);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
   const [currLocation, setCurrLocation] = useState("");
@@ -907,15 +908,17 @@ export const MySubsProvider = ({ children }) => {
       />
     ));
     let issues = 0;
-    for (let sub of subs){
-      if (!session ) {
+    for (let sub of subs) {
+      if (!session) {
         let status = await context.subToSub("sub", sub);
-        if (!status){issues+=1}
+        if (!status) {
+          issues += 1;
+        }
       } else if (session) {
         subscribe("sub", sub, true);
       }
     }
-    if (issues == 0){
+    if (issues == 0) {
       toast.custom(
         (t) => (
           <ToastCustom
@@ -935,9 +938,9 @@ export const MySubsProvider = ({ children }) => {
             mode={"error"}
           />
         ),
-        { id: toastId, duration: 1500 });
+        { id: toastId, duration: 1500 }
+      );
     }
-    
   };
 
   // return {

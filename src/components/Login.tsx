@@ -1,8 +1,8 @@
-import { signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Login() {
-  const [session, loading] = useSession();
-
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   return (
     <>
       <div className="flex flex-row items-center w-full h-full">

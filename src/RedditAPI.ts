@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 import { json } from "stream/consumers";
 
 // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;

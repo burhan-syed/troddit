@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Post from "./Post";
-//import Masonry from "react-masonry-css";
 import {
   loadFront,
   loadPost,
@@ -15,10 +13,9 @@ import {
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
-import { getSession, useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
-import SubredditBanner from "./SubredditBanner";
 
 import MyMasonic from "./MyMasonic";
 import { filterPosts, findMediaInfo } from "../../lib/utils";
@@ -34,7 +31,8 @@ const Feed = ({
   userPostMode = "",
   isSelf = false,
 }) => {
-  const [session, sessloading] = useSession();
+  const { data: session, status } = useSession();
+  const sessloading = status === "loading";
   const [loading, setLoading] = useState(true);
   const [nothingHere, setNothingHere] = useState(false);
   const [error, setError] = useState(false);
