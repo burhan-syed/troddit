@@ -230,7 +230,7 @@ const Feed = ({
             imgFilter,
             vidFilter,
             selfFilter,
-            galFilter,
+            // galFilter,
             linkFilter,
             imgPortraitFilter,
             imgLandscapeFilter,
@@ -243,30 +243,31 @@ const Feed = ({
         updateLoading(false);
       }
     };
-
-    setFilterCount(0);
-    if (query?.slug?.[1] === "comments" && !userPostMode) {
-      setFetchPost(true);
-      updateLoading(false);
-    } else if (isSearch) {
-      !sessloading && fetchSearch();
-    } else if (query.frontsort) {
-      if (
-        query?.frontsort == "" ||
-        query?.frontsort?.includes("best") ||
-        query?.frontsort?.includes("top") ||
-        query?.frontsort?.includes("hot") ||
-        query?.frontsort?.includes("new") ||
-        query?.frontsort?.includes("rising")
-      ) {
-        !sessloading && fetchFront();
-      } else {
+    if (context.ready) {
+      setFilterCount(0);
+      if (query?.slug?.[1] === "comments" && !userPostMode) {
         setFetchPost(true);
+        updateLoading(false);
+      } else if (isSearch) {
+        !sessloading && fetchSearch();
+      } else if (query.frontsort) {
+        if (
+          query?.frontsort == "" ||
+          query?.frontsort?.includes("best") ||
+          query?.frontsort?.includes("top") ||
+          query?.frontsort?.includes("hot") ||
+          query?.frontsort?.includes("new") ||
+          query?.frontsort?.includes("rising")
+        ) {
+          !sessloading && fetchFront();
+        } else {
+          setFetchPost(true);
+        }
+      } else if (query.slug) {
+        !sessloading && fetchSubs();
+      } else {
+        !sessloading && fetchFront();
       }
-    } else if (query.slug) {
-      !sessloading && fetchSubs();
-    } else {
-      !sessloading && fetchFront();
     }
 
     return () => {
@@ -289,6 +290,7 @@ const Feed = ({
     userPostMode,
     userPostType,
     context.forceRefresh,
+    context.ready,
   ]);
 
   //const [errored, setErrored] = useState(false);

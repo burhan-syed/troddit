@@ -1,3 +1,4 @@
+import localForage from "localforage";
 import React, { useState, useEffect, useContext } from "react";
 import { getSession, useSession } from "next-auth/react";
 import { useMainContext } from "./MainContext";
@@ -75,14 +76,21 @@ export const MySubsProvider = ({ children }) => {
 
   useEffect(() => {
     if (myLocalMultis.length > 0) {
-      localStorage.setItem("localMultis", JSON.stringify(myLocalMultis));
+      //localStorage.setItem("localMultis", JSON.stringify(myLocalMultis));
+      localForage.setItem("myLocalMultis", myLocalMultis);
     }
   }, [myLocalMultis, myLocalMultiRender]);
   useEffect(() => {
-    const local_localMultis = localStorage.getItem("localMultis");
-    local_localMultis?.length > 0
-      ? setMyLocalMultis(JSON.parse(local_localMultis))
-      : setMyLocalMultis(defaultMultis);
+    const loadMultis = async () => {
+      let local_localMultis: [] = await localForage.getItem("localMultis");
+      if (local_localMultis == undefined) {
+        local_localMultis = JSON.parse(localStorage.getItem("localMultis"));
+      }
+      local_localMultis?.length > 0
+        ? setMyLocalMultis(local_localMultis)
+        : setMyLocalMultis(defaultMultis);
+    };
+    loadMultis();
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
     const toastId = toast.custom(
@@ -139,7 +147,8 @@ export const MySubsProvider = ({ children }) => {
 
     //update localstroage if no more multis
     if (afterdelete.length === 0) {
-      localStorage.setItem("localMultis", JSON.stringify(afterdelete));
+      //localStorage.setItem("localMultis", JSON.stringify(afterdelete));
+      localForage.setItem("myLocalMultis", afterdelete);
     }
     toast.custom(
       (t) => (
@@ -943,15 +952,6 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
-  // return {
-  //   myLocalSubs,
-  //   mySubs,
-  //   myMultis,
-  //   loadedSubs,
-  //   loadedMultis,
-  //   subscribe,
-  //   error
-  // }
   return (
     <SubsContext.Provider
       value={{

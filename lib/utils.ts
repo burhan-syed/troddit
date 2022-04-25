@@ -1,3 +1,5 @@
+import { localRead } from "../src/MainContext";
+
 const TWITCH_PARENT = "www.troddit.com";
 export const secondsToTime = (
   seconds,
@@ -163,8 +165,7 @@ export const findMediaInfo = async (post, quick = false) => {
   const checkURL = (url) => {
     const placeholder =
       "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"; //"http://goo.gl/ijai22";
-    if (!url) return placeholder;
-    if (!url.includes("http")) return placeholder;
+    if (!url?.includes("https://")) return placeholder;
     return url;
   };
 
@@ -173,7 +174,7 @@ export const findMediaInfo = async (post, quick = false) => {
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
         videoInfo = {
-          url: post.preview.reddit_video_preview.fallback_url,
+          url: checkURL(post.preview.reddit_video_preview.fallback_url),
           height: post.preview.reddit_video_preview.height,
           width: post.preview.reddit_video_preview.width,
         };
@@ -213,7 +214,7 @@ export const findMediaInfo = async (post, quick = false) => {
     if (post.media) {
       if (post.media.reddit_video) {
         videoInfo = {
-          url: post.media.reddit_video.fallback_url,
+          url: checkURL(post.media.reddit_video.fallback_url),
           height: post.media.reddit_video.height,
           width: post.media.reddit_video.width,
         };
@@ -365,13 +366,12 @@ export const filterPosts = async (posts, filters, read) => {
     imgFilter,
     vidFilter,
     selfFilter,
-    galFilter,
+    //galFilter,
     linkFilter,
     imgPortraitFilter,
     imgLandscapeFilter,
     userPostType,
   } = filters;
-
   let filtercount = 0;
 
   const filterChildren = async (data: Array<any>) => {
@@ -386,7 +386,7 @@ export const filterPosts = async (posts, filters, read) => {
 
     const filterCheck = async (d) => {
       //if filtering read, no need for other content checks
-      if (!readFilter && read?.[d?.name] == 1) {
+      if (!readFilter && (await localRead.getItem(d?.name))) {
         filtercount += 1;
         return false;
       }
@@ -437,11 +437,12 @@ export const filterPosts = async (posts, filters, read) => {
       else if (!selfFilter && mediaInfo.isSelf) {
         filtercount += 1;
         return false;
-      } else if (!galFilter && mediaInfo.isGallery) {
-        filtercount += 1;
-
-        return false;
-      } else {
+      }
+      // else if (!galFilter && mediaInfo.isGallery) {
+      // filtercount += 1;
+      //   return false;
+      // }
+      else {
         return true;
       }
     };
@@ -460,7 +461,7 @@ export const filterPosts = async (posts, filters, read) => {
     !imgFilter ||
     !vidFilter ||
     !selfFilter ||
-    !galFilter ||
+    // !galFilter ||
     !linkFilter ||
     !imgPortraitFilter ||
     !imgLandscapeFilter

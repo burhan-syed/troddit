@@ -7,7 +7,7 @@ import Link from "next/link";
 
 import SaveButton from "./SaveButton";
 import HideButton from "./HideButton";
-import { useMainContext } from "../MainContext";
+import { useMainContext, localRead } from "../MainContext";
 
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
@@ -20,6 +20,19 @@ const MyLink = (props) => {
 
 const PostOptButton = ({ post, postNum, mode = "" }) => {
   const context: any = useMainContext();
+  //check store if read and update context
+  useEffect(() => {
+    const checkRead = async () => {
+      let read = await localRead.getItem(post?.name);
+      read && context.addReadPost(post?.name);
+    };
+    checkRead();
+  }, []);
+
+  const toggleRead = async () => {
+    context?.toggleReadPost(post?.name);
+  };
+
   return (
     <>
       <Menu as="div" className={" relative"}>
@@ -194,8 +207,9 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                   {({ active }) => (
                     <div
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
-                        context?.toggleReadPost(post?.name);
+                        toggleRead();
                       }}
                       className={
                         (active
@@ -206,7 +220,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     >
                       <BiX className="flex-none w-4 h-4 mr-2 mt-0.5 scale-125" />
                       <h1>
-                        {context?.readPosts?.[post?.name] == 1
+                        {context?.readPosts?.[post?.name]
                           ? "Mark Unread"
                           : "Mark Read"}
                       </h1>

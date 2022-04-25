@@ -428,7 +428,7 @@ const MyMasonic = ({
             imgFilter,
             vidFilter,
             selfFilter,
-            galFilter,
+            // galFilter,
             linkFilter,
             imgPortraitFilter,
             imgLandscapeFilter,
