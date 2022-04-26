@@ -32,6 +32,23 @@ const getToken = async () => {
   }
 };
 
+//to reduce serverless calls to refresh token
+const checkToken = async (loggedIn: boolean, token) => {
+  let accessToken = token?.accessToken;
+  let returnToken = token;
+  if (
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  ) {
+    returnToken = await getToken();
+    accessToken = await returnToken?.accessToken;
+  }
+  return {
+    returnToken,
+    accessToken,
+  };
+};
+
 export const loadFront = async (
   loggedIn = false,
   token?,
@@ -42,15 +59,16 @@ export const loadFront = async (
   localSubs?: [string]
 ) => {
   //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
-  let accessToken = token?.accessToken;
-  let returnToken = token;
-  if (
-    loggedIn &&
-    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
-  ) {
-    returnToken = await getToken();
-    accessToken = await returnToken?.accessToken;
-  }
+  // let accessToken = token?.accessToken;
+  // let returnToken = token;
+  // if (
+  //   loggedIn &&
+  //   (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+  // ) {
+  //   returnToken = await getToken();
+  //   accessToken = await returnToken?.accessToken;
+  // }
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
@@ -966,16 +984,20 @@ export const loadComments = async (permalink, sort = "top") => {
 export const loadMoreComments = async (
   children,
   link_id,
+  permalink?,
+  loggedIn = false,
+  token?,
   sort = "top",
   depth?,
   id?
 ) => {
-  const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+  //const token = await (await getToken())?.accessToken;
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
+  if (accessToken && ratelimit_remaining > 1) {
     try {
       const res = await axios.get("https://oauth.reddit.com/api/morechildren", {
         headers: {
-          authorization: `bearer ${token}`,
+          authorization: `bearer ${accessToken}`,
         },
         params: {
           api_type: "json",
@@ -984,16 +1006,23 @@ export const loadMoreComments = async (
           sort: sort,
           limit_children: false,
           raw_json: 1,
+          profile_img: true,
         },
       });
       let data = await res.data;
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      //console.log(res?.json?.data?.things);
-      return data?.json?.data?.things;
+      return { data: data?.json?.data?.things, token: returnToken };
     } catch (err) {
       console.log(err);
-      return [];
+      return undefined;
     }
+  } else {
+    const res = await (
+      await axios.get(`${REDDIT}${permalink}.json`, {
+        params: { raw_json: 1, profile_img: true },
+      })
+    ).data;
+    return { data: res?.[1]?.data?.children, token: returnToken };
   }
 };
 
@@ -1031,6 +1060,7 @@ export const loadPost = async (
           theme: "default",
           threaded: true,
           truncate: true,
+          profile_img: true,
         },
       });
       let data = await res.data;
@@ -1048,7 +1078,7 @@ export const loadPost = async (
     try {
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-          params: { raw_json: 1 },
+          params: { raw_json: 1, profile_img: true },
         })
       ).data;
       //console.log(res);

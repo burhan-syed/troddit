@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,7 @@ import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
+import Image from "next/image";
 
 const ChildComments = ({
   comment,
@@ -23,10 +24,7 @@ const ChildComments = ({
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
-  const [score, setScore] = useState("");
-  const [color, setColor] = useState(100);
   const [hideChildren, setHideChildren] = useState(false);
-  const [vote, setVote] = useState(0);
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const parentRef = useRef(null);
@@ -39,7 +37,6 @@ const ChildComments = ({
     }
   };
   const [childcomments, setchildcomments] = useState([]);
-
   const [myReplies, setmyReplies] = useState([]);
   const [openReply, setopenReply] = useState(false);
   const updateMyReplies = (resdata) => {
@@ -77,47 +74,7 @@ const ChildComments = ({
     }
   }, [myReplies]);
 
-  const castVote = async (e, v) => {
-    e.stopPropagation();
-    if (session) {
-      v === vote ? (v = 0) : undefined;
-      let res = await postVote(v, comment?.data?.name);
-      res ? setVote(v) : undefined;
-    } else {
-      context.setLoginModal(true);
-    }
-  };
-  useEffect(() => {
-    setScore(
-      calculateScore(comment?.data?.score ? comment.data.score + vote : 0)
-    );
-    //console.log(comment);
-    return () => {
-      setScore("0");
-    };
-  }, [comment, depth, vote]);
-
-  const calculateScore = (x: number) => {
-    if (x < 10000) {
-      return x.toString();
-    } else {
-      let y = Math.floor(x / 1000);
-      let z = (x / 1000).toFixed(1);
-      return z.toString() + "k";
-    }
-  };
-
-  const loadChildComments = async (children, link_id) => {
-    let childrenstring = children.join();
-    //console.log(childrenstring);
-    //console.log(link_id);
-    const morecomments = await loadMoreComments(childrenstring, link_id);
-    setMoreComments(await fixformat(morecomments));
-    setMoreLoaded(true);
-    setLoadingComments(false);
-  };
-
-  const fixformat = async (comments) => {
+  const fixformat = useCallback(async (comments) => {
     if (comments?.length > 0) {
       let basedepth = comments[0].data.depth;
 
@@ -125,11 +82,8 @@ const ChildComments = ({
       comments.forEach((comment) => {
         idIndex.set(`t1_${comment.data.id}`, comment);
       });
-      //console.log(idIndex);
       await comments.forEach((comment, i) => {
-        //console.log(comment.data.parent_id);
         let c = idIndex.get(comment.data.parent_id);
-        //!c && console.log(comment.data.body);
         if (c && c.data.replies?.data?.children) {
           c.data.replies.data.children.push(comment);
         } else if (c) {
@@ -148,15 +102,37 @@ const ChildComments = ({
         if (comment?.data?.depth === basedepth) {
           fixedcomments.push(comment);
         } else {
-          //console.log(i, comment.data.parent_id, comment.data.body);
         }
       });
-
-      //console.log(fixedcomments);
       return fixedcomments;
     }
     return comments;
-  };
+  }, []);
+
+  const loadChildComments = useCallback(
+    async (children, link_id) => {
+      let childrenstring = children.join();
+      //console.log(childrenstring);
+      //console.log(link_id);
+      const data = await loadMoreComments(
+        childrenstring,
+        link_id,
+        comment?.data?.permalink,
+        session ? true : false,
+        context?.token
+      );
+      data?.token && context?.setToken(data?.token);
+      let morecomments = data?.data;
+      if (morecomments?.[0]?.data?.replies?.data?.children) {
+        setMoreComments(morecomments?.[0]?.data?.replies?.data?.children);
+      } else {
+        setMoreComments(await fixformat(morecomments));
+      }
+      setMoreLoaded(true);
+      setLoadingComments(false);
+    },
+    [comment?.data?.permalink, session, context, fixformat]
+  );
 
   return (
     <div
@@ -210,17 +186,36 @@ const ChildComments = ({
             executeScroll();
           }}
         >
-          {/* Author and comment data*/}
-          <div className="flex flex-row flex-wrap items-center justify-between pl-3 space-x-1 text-sm text-gray-400 md:pl-0 dark:text-gray-500">
-            {/* <h1 className="">{`${comment?.data?.author}`}</h1> */}
-            <div className="flex flex-row items-center space-x-1 group">
+          {/* comment metadata*/}
+          <div className="flex flex-row items-start justify-between ml-3 space-x-1 text-sm text-gray-400 md:ml-0 dark:text-gray-500">
+            {/* Author */}
+            <div className="flex flex-row flex-wrap items-center gap-1 ">
               <Link href={`/u/${comment?.data?.author}`}>
                 <a
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
+                  className={
+                    "flex items-center group justify-start group gap-1"
+                  }
                 >
-                  <h1 className="hover:underline">
+                  {comment?.data?.profile_img?.includes("http") ? (
+                    <div className="w-8 h-8 rounded-full overflow-clip">
+                      <Image
+                        src={comment.data.profile_img}
+                        height={"256"}
+                        width={"256"}
+                        alt={""}
+                        unoptimized={true}
+                        className={"w-8 h-8"}
+                      ></Image>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center w-8 h-8 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
+                      <h4 className="text-2xl ml-0.5 mb-1 text-white">u/</h4>
+                    </div>
+                  )}
+                  <h1 className="group-hover:underline">
                     {comment?.data?.author ?? ""}
                     {comment?.data?.author_flair_text?.length > 0 && (
                       <span className="ml-2 mr-0.5 text-xs">
@@ -252,22 +247,6 @@ const ChildComments = ({
                   </p>
                 </>
               )}
-              {/* {!portraitMode && (
-              <div className="flex-row hidden space-x-1 md:flex ">
-                <p>•</p>
-                <h1
-                  className={
-                    vote === 1 || comment?.myreply || comment?.likes
-                      ? "text-upvote"
-                      : vote === -1 || comment?.likes === false
-                      ? "text-downvote"
-                      : "" + " "
-                  }
-                >
-                  {score ?? "0"} pts
-                </h1>
-              </div>
-            )} */}
 
               <p>•</p>
               <p className="">
@@ -282,16 +261,18 @@ const ChildComments = ({
               </p>
 
               {comment?.data?.all_awardings?.length > 0 && (
-                <div className="flex flex-row flex-wrap items-center justify-start pl-1 space-x-1 truncate">
+                <>
+                  <div className="ml-0.5"></div>
                   <Awardings
                     all_awardings={comment?.data?.all_awardings}
                     truncate={false}
+                    styles={"flex flex-row items-center -mb-0.5 "}
                   />
-                </div>
+                </>
               )}
             </div>
             {comment?.data?.edited && (
-              <p className="pr-2 text-xs italic ">
+              <p className="pr-2 mt-2 text-xs italic ">
                 edited{" "}
                 {secondsToTime(comment?.data?.edited, [
                   "s ago",
@@ -317,22 +298,23 @@ const ChildComments = ({
                     e.stopPropagation();
                   if (cellText?.type === "Range") e.stopPropagation();
                 }}
-                className="py-1 pl-3 mr-1 md:pl-0"
+                className="py-2 ml-4 mr-4 md:ml-4 "
               >
                 <ParseBodyHTML html={comment?.data?.body_html} />
               </div>
 
-              {/* Vote */}
+              {/* Buttom Row */}
               <div
                 className={
-                  (portraitMode ? "flex " : "flex ") +
-                  " flex-row items-center justify-start flex-none text-gray-400 dark:text-gray-500 space-x-1 "
+                  (portraitMode ? " " : " ml-3 md:ml-1") +
+                  " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-gray-400 dark:text-gray-500  "
                 }
               >
+                {/* Vote */}
                 <div
                   className={
-                    (!portraitMode && "ml-1.5 md:ml-0") +
-                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0  space-x-1 border border-transparent rounded-md "
+                    (!portraitMode && " ") + //ml-1.5 md:ml-0
+                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-md "
                   }
                 >
                   <Vote
@@ -367,15 +349,17 @@ const ChildComments = ({
               </div>
 
               {/* Comment Reply */}
-              <div
-                className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <CommentReply
-                  parent={comment?.data?.name}
-                  getResponse={updateMyReplies}
-                />
-              </div>
+              {openReply && (
+                <div
+                  className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CommentReply
+                    parent={comment?.data?.name}
+                    getResponse={updateMyReplies}
+                  />
+                </div>
+              )}
 
               {/* Children */}
               <div className="min-w-full py-2">
@@ -387,37 +371,33 @@ const ChildComments = ({
                           <div className={hideChildren ? "hidden" : " "}>
                             {!moreLoaded ? (
                               <>
-                                <div
-                                  className={
-                                    (portraitMode ? "" : "") +
-                                    (loadingComments && " animate-pulse ") +
-                                    " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none text-sm"
-                                  }
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-
-                                    if (session) {
-                                      setLoadingComments(true);
-                                      loadChildComments(
-                                        childcomment?.data?.children,
-                                        comment?.data?.link_id
-                                      );
-                                    } else {
-                                      context.setLoginModal(true);
+                                {childcomment.data?.count > 0 ? (
+                                  <div
+                                    className={
+                                      (portraitMode ? "" : "") +
+                                      (loadingComments && " animate-pulse ") +
+                                      " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none text-sm"
                                     }
-                                  }}
-                                >
-                                  {"Load More... " +
-                                    `(${childcomment.data?.count})`}
-                                </div>
-                                {/* {loadingComments && (
-                                  
-                                  <div className="animate-spin">
-                                    <ImSpinner2 />
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+
+                                      if (true) {
+                                        setLoadingComments(true);
+                                        loadChildComments(
+                                          childcomment?.data?.children,
+                                          comment?.data?.link_id
+                                        );
+                                      } else {
+                                        context.setLoginModal(true);
+                                      }
+                                    }}
+                                  >
+                                    {`Load ${childcomment.data?.count} More... `}
                                   </div>
-                                
-                              )} */}
+                                ) : (
+                                  <></>
+                                )}
                               </>
                             ) : (
                               moreComments?.map((morecomment, i) => (

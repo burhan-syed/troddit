@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js";
@@ -62,6 +62,7 @@ const CommentReply = ({ parent, getResponse }) => {
   const { data: session, status } = useSession();
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
+  const EditorRef = useRef(null);
 
   // const plausible = usePlausible();
 
@@ -104,6 +105,10 @@ const CommentReply = ({ parent, getResponse }) => {
   };
 
   useEffect(() => {
+    EditorRef?.current?.focus();
+  }, [EditorRef?.current]);
+
+  useEffect(() => {
     return () => {
       setReplyFocus(false);
     };
@@ -122,6 +127,7 @@ const CommentReply = ({ parent, getResponse }) => {
             )}
           </div>
           <Editor
+            editorRef={(ref) => (EditorRef.current = ref)}
             onFocus={() => {
               setReplyFocus(true);
             }}

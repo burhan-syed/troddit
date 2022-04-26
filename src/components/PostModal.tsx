@@ -246,8 +246,14 @@ const PostModal = ({
     e.preventDefault();
     setLoadingComments(true);
     setSort(sort);
-    const newcomments = await loadComments(permalink, sort);
-    setComments(newcomments);
+    const { token, post, comments } = await loadPost(
+      permalink,
+      sort,
+      session ? true : false,
+      context?.token
+    );
+    setComments(comments);
+    token && context.setToken(token);
     setLoadingComments(false);
   };
 
@@ -678,6 +684,7 @@ const PostModal = ({
                               <Awardings
                                 all_awardings={apost?.all_awardings}
                                 truncate={false}
+                                styles={"mr-0.5 mt-0.5"}
                               />
                             )}
                           </div>
@@ -872,19 +879,19 @@ const PostModal = ({
                 )}
 
                 {/* post reply */}
-
-                <div
-                  className={
-                    (openReply ? "block " : "hidden ") +
-                    "bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG p-2 mb-3"
-                  }
-                >
-                  <CommentReply
-                    parent={apost?.name}
-                    getResponse={updateMyReplies}
-                  />
-                </div>
-
+                {openReply && (
+                  <div
+                    className={
+                      (openReply ? "block " : "hidden ") +
+                      "bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG p-2 mb-3"
+                    }
+                  >
+                    <CommentReply
+                      parent={apost?.name}
+                      getResponse={updateMyReplies}
+                    />
+                  </div>
+                )}
                 {/* comments */}
                 <div
                   className={

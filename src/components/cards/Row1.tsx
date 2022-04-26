@@ -194,9 +194,13 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
           )}
           <div className="mx-0.5"></div>
           {post?.all_awardings?.length > 0 && (
-            <div className="flex flex-row flex-wrap items-center justify-start truncate">
-              <Awardings all_awardings={post?.all_awardings} />
-            </div>
+            <>
+              <div className="ml-0.5"></div>
+              <Awardings
+                all_awardings={post?.all_awardings}
+                styles="mr-0.5 -mb-0.5"
+              />
+            </>
           )}
           <span className="ml-auto text-xs font-xs hover:underline">
             <a
@@ -286,6 +290,7 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                 <h1 className="hidden md:block ">Original</h1>
               </div>
             </a>
+            <div className="flex-grow md:flex-grow-0"></div>
             <PostOptButton post={post} postNum={postNum} mode={"row"} />
           </div>
         </div>

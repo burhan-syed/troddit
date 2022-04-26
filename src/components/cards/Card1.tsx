@@ -104,6 +104,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     <Awardings
                       all_awardings={post?.all_awardings}
                       truncate={false}
+                      styles={"mr-0.5 mt-0.5"}
                     />
                   )}
                 </div>
@@ -231,7 +232,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                           <div className="mx-0.5"></div>
                           {post?.all_awardings?.length > 0 && (
                             <div className="flex flex-row flex-wrap items-center justify-start truncate">
-                              <Awardings all_awardings={post?.all_awardings} />
+                              <Awardings
+                                all_awardings={post?.all_awardings}
+                                styles="mt-0.5 mr-0.5"
+                              />
                             </div>
                           )}
                           <div className="ml-auto">
