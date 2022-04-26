@@ -236,9 +236,14 @@ export const MainProvider = ({ children }) => {
     return true;
   };
   const removeLocalSub = async (sub) => {
-    setLocalSubs((p) =>
-      p.filter((s) => s?.toUpperCase() !== sub?.toUpperCase())
-    );
+    setLocalSubs((p) => {
+      let filtered = p.filter((s) => s?.toUpperCase() !== sub?.toUpperCase());
+      if (!(filtered.length > 0)) {
+        localStorage.removeItem("localSubs");
+        localForage.setItem("localSubs", []);
+      }
+      return filtered;
+    });
     return true;
   };
 
@@ -286,6 +291,7 @@ export const MainProvider = ({ children }) => {
       let saved_nsfw = await localForage.getItem("nsfw");
       if (saved_nsfw !== null) {
         saved_nsfw === true ? setNSFW(true) : setNSFW(false);
+        localStorage.removeItem("nsfw");
       } else {
         fallback = true;
         let local_nsfw = localStorage.getItem("nsfw");
@@ -295,6 +301,7 @@ export const MainProvider = ({ children }) => {
       let saved_autoplay = await localForage.getItem("autoplay");
       if (saved_autoplay !== null) {
         saved_autoplay === true ? setAutoplay(true) : setAutoplay(false);
+        localStorage.removeItem("autoplay");
       } else {
         fallback = true;
         let local_autoplay = localStorage.getItem("autoplay");
@@ -306,6 +313,7 @@ export const MainProvider = ({ children }) => {
       let saved_hoverplay = await localForage.getItem("hoverplay");
       if (saved_hoverplay !== null) {
         saved_hoverplay === true ? setHoverPlay(true) : setHoverPlay(false);
+        localStorage.removeItem("hoverplay");
       } else {
         fallback = true;
         let local_hoverplay = localStorage.getItem("hoverplay");
@@ -317,6 +325,7 @@ export const MainProvider = ({ children }) => {
       let saved_mediaOnly: boolean = await localForage.getItem("mediaOnly");
       if (saved_mediaOnly !== null) {
         saved_mediaOnly === true ? setMediaOnly(true) : setMediaOnly(false);
+        localStorage.removeItem("mediaOnly");
       } else {
         fallback = true;
         let local_mediaOnly = localStorage.getItem("mediaOnly");
@@ -330,6 +339,7 @@ export const MainProvider = ({ children }) => {
         saved_audioOnHover === true
           ? setaudioOnHover(true)
           : setaudioOnHover(false);
+        localStorage.removeItem("audioOnHover");
       } else {
         fallback = true;
         let local_audioOnHover = localStorage.getItem("audioOnHover");
@@ -345,6 +355,7 @@ export const MainProvider = ({ children }) => {
         saved_columnOverride > 0
           ? setColumnOverride(saved_columnOverride)
           : setColumnOverride(0);
+        localStorage.removeItem("columnOverride");
       } else {
         fallback = true;
         let local_columnOverride = parseInt(
@@ -358,6 +369,7 @@ export const MainProvider = ({ children }) => {
       let saved_saveWideUI = await localForage.getItem("saveWideUI");
       if (saved_saveWideUI !== null) {
         saved_saveWideUI === false ? setSaveWideUI(false) : setSaveWideUI(true);
+        localStorage.removeItem("saveWideUI");
       } else {
         fallback = true;
         let local_saveWideUI = localStorage.getItem("saveWideUI");
@@ -369,6 +381,7 @@ export const MainProvider = ({ children }) => {
       let saved_syncWideUI = await localForage.getItem("syncWideUI");
       if (saved_syncWideUI !== null) {
         saved_syncWideUI === false ? setSyncWideUI(false) : setSyncWideUI(true);
+        localStorage.removeItem("syncWideUI");
       } else {
         fallback = true;
         let local_syncWideUI = localStorage.getItem("syncWideUI");
@@ -380,6 +393,7 @@ export const MainProvider = ({ children }) => {
       let saved_postWideUI = await localForage.getItem("postWideUI");
       if (saved_postWideUI !== null) {
         saved_postWideUI === false ? setPostWideUI(false) : setPostWideUI(true);
+        localStorage.removeItem("postWideUI");
       } else {
         fallback = true;
         let local_postWideUI = localStorage.getItem("postWideUI");
@@ -391,6 +405,7 @@ export const MainProvider = ({ children }) => {
       let saved_wideUI = await localForage.getItem("wideUI");
       if (saved_wideUI !== null) {
         saved_wideUI === false ? setWideUI(false) : setWideUI(true);
+        localStorage.removeItem("wideUI");
       } else {
         fallback = true;
         let local_wideUI = localStorage.getItem("wideUI");
@@ -400,6 +415,7 @@ export const MainProvider = ({ children }) => {
       let saved_cardStyle: string = await localForage.getItem("cardStyle");
       if (saved_cardStyle !== null) {
         saved_cardStyle && setCardStyle(saved_cardStyle);
+        localStorage.removeItem("cardStyle");
       } else {
         fallback = true;
         let local_cardStyle = localStorage.getItem("cardStyle");
@@ -411,6 +427,7 @@ export const MainProvider = ({ children }) => {
       let saved_localSubs: [] = await localForage.getItem("localSubs");
       if (saved_localSubs !== null) {
         saved_localSubs && setLocalSubs(saved_localSubs);
+        localStorage.removeItem("localSubs");
       } else {
         fallback = true;
         let local_localSubs = JSON.parse(localStorage.getItem("localSubs"));
@@ -420,6 +437,7 @@ export const MainProvider = ({ children }) => {
       let saved_imgFilter = await localForage.getItem("imgFilter");
       if (saved_imgFilter !== null) {
         saved_imgFilter === false ? setImgFilter(false) : setImgFilter(true);
+        localStorage.removeItem("imgFilter");
       } else {
         fallback = true;
         let local_imgFilter = localStorage.getItem("imgFilter");
@@ -435,6 +453,7 @@ export const MainProvider = ({ children }) => {
         saved_imgPortraitFilter === false
           ? setImgPortraitFilter(false)
           : setImgPortraitFilter(true);
+        localStorage.removeItem("imgPortraitFilter");
       } else {
         fallback = true;
         let local_imgPortraitFilter = localStorage.getItem("imgPortraitFilter");
@@ -450,6 +469,7 @@ export const MainProvider = ({ children }) => {
         saved_imgLandscapeFilter === false
           ? setImgLandScapeFilter(false)
           : setImgLandScapeFilter(true);
+        localStorage.removeItem("imgLandscapeFilter");
       } else {
         fallback = true;
         let local_imgLandscapeFilter =
@@ -462,6 +482,7 @@ export const MainProvider = ({ children }) => {
       let saved_vidFilter = await localForage.getItem("vidFilter");
       if (saved_vidFilter !== null) {
         saved_vidFilter === false ? setVidFilter(false) : setVidFilter(true);
+        localStorage.removeItem("vidFilter");
       } else {
         fallback = true;
         let local_vidFilter = localStorage.getItem("vidFilter");
@@ -473,6 +494,7 @@ export const MainProvider = ({ children }) => {
       let saved_linkFilter = await localForage.getItem("linkFilter");
       if (saved_linkFilter !== null) {
         saved_linkFilter === false ? setLinkFilter(false) : setLinkFilter(true);
+        localStorage.removeItem("linkFilter");
       } else {
         fallback = true;
         let local_linkFilter = localStorage.getItem("linkFilter");
@@ -484,6 +506,7 @@ export const MainProvider = ({ children }) => {
       let saved_selfFilter = await localForage.getItem("selfFilter");
       if (saved_selfFilter !== null) {
         saved_selfFilter === false ? setSelfFilter(false) : setSelfFilter(true);
+        localStorage.removeItem("selfFilter");
       } else {
         fallback = true;
         let local_selfFilter = localStorage.getItem("selfFilter");
@@ -495,6 +518,7 @@ export const MainProvider = ({ children }) => {
       let saved_readFilter = await localForage.getItem("readFilter");
       if (saved_readFilter !== null) {
         saved_readFilter === false ? setReadFilter(false) : setReadFilter(true);
+        localStorage.removeItem("readFilter");
       } else {
         fallback = true;
         let local_readFilter = localStorage.getItem("readFilter");

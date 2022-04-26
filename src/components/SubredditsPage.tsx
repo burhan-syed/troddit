@@ -101,6 +101,22 @@ const SubredditsPage = ({ query = undefined }) => {
           isUser = true;
         }
         let s = await loadSubredditInfo(name, isUser);
+
+        //handle if sub is banned..
+        if (!s) {
+          s = {
+            kind: "t5",
+            data: {
+              name: name,
+              url: `/r/${name}`,
+              display_name: name,
+              display_name_prefixed: `r/${name}`,
+              public_description:
+                "**Unable to pull information, this sub may be banned or quarantined**",
+            },
+          };
+        }
+
         isUser
           ? setLocalFollowsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }))
           : setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
@@ -289,7 +305,7 @@ const SubredditsPage = ({ query = undefined }) => {
                     {copyMySubs.length > 0 ? (
                       <>
                         {copyMySubs.map((s, i) => (
-                          <div key={i}>
+                          <div key={s?.data?.name}>
                             <SubCard data={s} />
                           </div>
                         ))}
@@ -316,8 +332,8 @@ const SubredditsPage = ({ query = undefined }) => {
                     !loading ? (
                       <>
                         {Object.values(localSubsInfo).map((s: any, i) => (
-                          <div key={i}>
-                            <SubCard data={s} />
+                          <div key={s?.data?.name ?? i}>
+                            {s?.data && <SubCard data={s} />}
                           </div>
                         ))}
                       </>

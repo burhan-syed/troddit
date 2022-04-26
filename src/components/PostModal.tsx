@@ -34,6 +34,7 @@ import SaveButton from "./SaveButton";
 import UserFlair from "./UserFlair";
 import PostOptButton from "./PostOptButton";
 import { GoRepoForked } from "react-icons/go";
+import SubIcon from "./SubIcon";
 
 const PostModal = ({
   setSelect,
@@ -47,6 +48,7 @@ const PostModal = ({
 }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
+  const [sr_detail, setSR_Detail] = useState({});
   const [wait, setWait] = useState(true);
   const [usePortrait, setUsePortrait] = useState(false);
   const [post_comments, setComments] = useState([]);
@@ -162,14 +164,6 @@ const PostModal = ({
       myreply: true,
       kind: "t1",
       data: resdata,
-      // data: {
-      //   author: session?.user?.name,
-      //   body_html: html,
-      //   created_utc: Math.floor(Date.now() / 1000),
-      //   depth: 0,
-      //   parent_id: apost?.name,
-      //   score: 1,
-      // },
     };
     setmyReplies((replies) => [newreply, ...replies]);
     setopenReply(false);
@@ -227,6 +221,7 @@ const PostModal = ({
             setError(true);
           }
         }
+        post?.sr_detail && setSR_Detail(post.sr_detail);
         setComments(comments);
         setLoadingComments(false);
       }
@@ -266,7 +261,6 @@ const PostModal = ({
 
   const handleBack = () => {
     setSelect(false);
-    //for handling returning to [frontsort] routes, only clicking in the app works... browser back button kicks to front page
     if (returnRoute === "multimode") {
       //do nothing
     } else if (returnRoute) {
@@ -302,6 +296,7 @@ const PostModal = ({
       if (asyncheck) {
         setComments(comments);
         setLoadingComments(false);
+        post?.sr_detail ? setSR_Detail(post.sr_detail) : setSR_Detail({});
         token && context.setToken(token);
       }
     };
@@ -318,6 +313,10 @@ const PostModal = ({
       //console.log(postNum, context.postNum, context.posts.length);
       if (context.posts?.[context.postNum + 1]?.data) {
         //console.log(router, returnRoute);
+        apost?.subreddit !==
+          context.posts[context.postNum + 1].data?.subreddit &&
+          setSR_Detail({});
+
         setPost(context.posts[context.postNum + 1].data);
         setNewLink(context.posts[context.postNum + 1]?.data?.permalink);
         if (
@@ -353,6 +352,8 @@ const PostModal = ({
     } else if (move === -1 && (context.postNum > 0 || postNum > 0)) {
       if (context.posts?.[context.postNum - 1]?.data) {
         //console.log("moveback");
+        apost?.subreddit !==
+          context.post[context.postNum - 1].data?.subreddit && setSR_Detail({});
         setPost(context.posts[context.postNum - 1].data);
         setNewLink(context.posts[context.postNum - 1]?.data?.permalink);
         if (

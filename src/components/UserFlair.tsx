@@ -16,16 +16,18 @@ const UserFlair = ({ post }) => {
         className={`px-1 rounded-lg inline-block select-none ${
           post?.author_flair_text_color == "light"
             ? " text-lightText "
-            : // : resolvedTheme === "dark"
-              // ? "text-lightText"
-              "text-black"
+            : post?.author_flair_text_color == "dark"
+            ? "text-darkPostHover"
+            : resolvedTheme === "dark"
+            ? "text-lightText"
+            : "text-black"
         }`}
         style={{
           backgroundColor: `${
             post?.author_flair_background_color
               ? post?.author_flair_background_color
               : resolvedTheme === "dark"
-              ? " "
+              ? " #bbbb "
               : ""
           }`,
         }}

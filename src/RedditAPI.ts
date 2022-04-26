@@ -58,16 +58,6 @@ export const loadFront = async (
   count?: number,
   localSubs?: [string]
 ) => {
-  //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
-  // let accessToken = token?.accessToken;
-  // let returnToken = token;
-  // if (
-  //   loggedIn &&
-  //   (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
-  // ) {
-  //   returnToken = await getToken();
-  //   accessToken = await returnToken?.accessToken;
-  // }
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
@@ -81,6 +71,7 @@ export const loadFront = async (
           t: range,
           after: after,
           count: count,
+          sr_detail: true,
         },
       });
       let res = await res1.data;
@@ -105,7 +96,8 @@ export const loadFront = async (
         sort,
         range,
         after,
-        count
+        count,
+        true
       );
     } else {
       try {
@@ -117,6 +109,7 @@ export const loadFront = async (
               t: range,
               after: after,
               count: count,
+              sr_detail: true,
             },
           })
         ).data;
@@ -141,7 +134,8 @@ export const loadSubreddits = async (
   sort: string,
   range: string,
   after: string = "",
-  count: number = 0
+  count: number = 0,
+  sr_detail = false
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -152,6 +146,12 @@ export const loadSubreddits = async (
     returnToken = await getToken();
     accessToken = await returnToken?.accessToken;
   }
+
+  let getSRDetail =
+    sr_detail ||
+    subreddits?.split("+")?.length > 1 ||
+    subreddits?.toUpperCase()?.includes("POPULAR") ||
+    subreddits?.toUpperCase()?.includes("ALL");
 
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
@@ -167,6 +167,7 @@ export const loadSubreddits = async (
             t: range,
             after: after,
             count: count,
+            sr_detail: getSRDetail,
           },
         }
       );
@@ -191,6 +192,7 @@ export const loadSubreddits = async (
             t: range,
             after: after,
             count: count,
+            sr_detail: getSRDetail,
           },
         })
       ).data;
@@ -223,6 +225,7 @@ export const getRedditSearch = async (
     sort: sort,
     t: range,
     raw_json: 1,
+    sr_detail: true,
   };
   let oathsearch = `https://oauth.reddit.com/search`;
   let noauthsearch = `${REDDIT}/search.json`;
@@ -461,9 +464,9 @@ export const loadSubredditInfo = async (query, loaduser = false) => {
       return res;
     } catch (err) {
       console.log(err);
-      return [];
+      return undefined;
     }
-  } else return [];
+  } else return undefined;
 };
 
 export const getWikiContent = async (wikiquery) => {
@@ -536,6 +539,7 @@ export const loadUserPosts = async (
               t: range,
               after: nextafter,
               count: count,
+              sr_detail: true,
             },
           }
         )
@@ -604,6 +608,7 @@ export const loadUserSelf = async (
             sort: sort,
             show: where,
             type: type,
+            sr_detail: true,
           },
         }
       );
@@ -1061,6 +1066,7 @@ export const loadPost = async (
           threaded: true,
           truncate: true,
           profile_img: true,
+          sr_detail: true,
         },
       });
       let data = await res.data;
@@ -1078,7 +1084,7 @@ export const loadPost = async (
     try {
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-          params: { raw_json: 1, profile_img: true },
+          params: { raw_json: 1, profile_img: true, sr_detail: true },
         })
       ).data;
       //console.log(res);

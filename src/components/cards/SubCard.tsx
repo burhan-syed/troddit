@@ -344,7 +344,7 @@ const SubCard = ({
         href={
           data?.kind === "t5"
             ? data?.data?.url
-            : data?.data?.subreddit?.url?.replace("/user/", "/u/")
+            : data?.data?.subreddit?.url?.replace("/user/", "/u/") ?? "/"
         }
       >
         <a>{main}</a>

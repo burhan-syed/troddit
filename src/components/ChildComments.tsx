@@ -200,7 +200,7 @@ const ChildComments = ({
                   }
                 >
                   {comment?.data?.profile_img?.includes("http") ? (
-                    <div className="w-8 h-8 rounded-full overflow-clip">
+                    <div className="w-6 h-6 rounded-full overflow-clip mr-0.5">
                       <Image
                         src={comment.data.profile_img}
                         height={"256"}
@@ -211,7 +211,7 @@ const ChildComments = ({
                       ></Image>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center w-8 h-8 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
+                    <div className="flex items-center mr-0.5 justify-center w-8 h-8 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
                       <h4 className="text-2xl ml-0.5 mb-1 text-white">u/</h4>
                     </div>
                   )}
@@ -272,7 +272,7 @@ const ChildComments = ({
               )}
             </div>
             {comment?.data?.edited && (
-              <p className="pr-2 mt-2 text-xs italic ">
+              <p className="pr-2 mt-1 text-xs italic ">
                 edited{" "}
                 {secondsToTime(comment?.data?.edited, [
                   "s ago",
