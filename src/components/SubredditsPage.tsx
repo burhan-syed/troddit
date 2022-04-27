@@ -7,7 +7,7 @@ import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
 import { Tab } from "@headlessui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useMainContext } from "../MainContext";
+import { useMainContext, localSubInfoCache } from "../MainContext";
 import Collection from "./collections/Collection";
 import MyMultiCollections from "./collections/MyMultiCollections";
 import SelectedSubs from "./collections/SelectedSubs";
@@ -33,9 +33,10 @@ const SubredditsPage = ({ query = undefined }) => {
     currSubInfo,
     currLocation,
     tryLoadAll,
+    addToSubCache,
   } = subsContext;
 
-  const [categories] = useState(["mine", "follows", "multis", "popular"]); //"New"
+  const [categories] = useState(["mine", "follows", "feeds", "popular"]); //"New"
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
@@ -101,6 +102,24 @@ const SubredditsPage = ({ query = undefined }) => {
           isUser = true;
         }
         let s = await loadSubredditInfo(name, isUser);
+
+        //handle if sub is banned..
+        if (!s) {
+          s = {
+            kind: "t5",
+            data: {
+              name: name,
+              url: `/r/${name}`,
+              display_name: name,
+              display_name_prefixed: `r/${name}`,
+              public_description:
+                "**Unable to pull information, this sub may be banned or quarantined**",
+            },
+          };
+        } else {
+          addToSubCache(s);
+        }
+
         isUser
           ? setLocalFollowsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }))
           : setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
@@ -212,8 +231,8 @@ const SubredditsPage = ({ query = undefined }) => {
                           ? "Popular Subreddits"
                           : c === "follows"
                           ? "My Following"
-                          : c === "multis"
-                          ? "My Multis"
+                          : c === "feeds"
+                          ? "My Feeds"
                           : ""}
                       </h1>
                     </div>
@@ -289,7 +308,7 @@ const SubredditsPage = ({ query = undefined }) => {
                     {copyMySubs.length > 0 ? (
                       <>
                         {copyMySubs.map((s, i) => (
-                          <div key={i}>
+                          <div key={s?.data?.name}>
                             <SubCard data={s} />
                           </div>
                         ))}
@@ -316,8 +335,8 @@ const SubredditsPage = ({ query = undefined }) => {
                     !loading ? (
                       <>
                         {Object.values(localSubsInfo).map((s: any, i) => (
-                          <div key={i}>
-                            <SubCard data={s} />
+                          <div key={s?.data?.name ?? i}>
+                            {s?.data && <SubCard data={s} />}
                           </div>
                         ))}
                       </>
@@ -404,7 +423,7 @@ const SubredditsPage = ({ query = undefined }) => {
                       )
                     )}
                   </>
-                ) : c === "multis" ? (
+                ) : c === "feeds" ? (
                   <>
                     <MyMultiCollections />
                   </>
@@ -422,7 +441,7 @@ const SubredditsPage = ({ query = undefined }) => {
           </Tab.Panels>
         </Tab.Group>
       </div>
-      {categories[selectedIndex] === "multis" && (
+      {categories[selectedIndex] === "feeds" && (
         <div className="fixed w-full bottom-[2%] z-50">
           <div className="mx-2 md:mx-auto md:w-[48rem] lg:w-[64rem] xl:w-[70rem] 2xl:w-[76rem] shadow-2xl">
             <SelectedSubs />

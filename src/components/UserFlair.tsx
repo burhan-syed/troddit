@@ -3,8 +3,6 @@ import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 
-
-
 const UserFlair = ({ post }) => {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -18,6 +16,8 @@ const UserFlair = ({ post }) => {
         className={`px-1 rounded-lg inline-block select-none ${
           post?.author_flair_text_color == "light"
             ? " text-lightText "
+            : post?.author_flair_text_color == "dark"
+            ? "text-darkPostHover"
             : resolvedTheme === "dark"
             ? "text-lightText"
             : "text-black"
@@ -27,8 +27,8 @@ const UserFlair = ({ post }) => {
             post?.author_flair_background_color
               ? post?.author_flair_background_color
               : resolvedTheme === "dark"
-              ? " "
-              : " "
+              ? " #bbbb "
+              : ""
           }`,
         }}
       >
@@ -47,9 +47,7 @@ const UserFlair = ({ post }) => {
                     className="translate-y-0.5"
                   />
                 )}
-                {e?.e == "text" && (
-                  <h1 className="px-0.5 hidden group-hover:block   ">{e?.t}</h1>
-                )}
+                {e?.e == "text" && <h1 className="">{e?.t}</h1>}
               </div>
             ))}
           </div>

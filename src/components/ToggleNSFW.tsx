@@ -20,7 +20,7 @@ const ToggleNSFW = () => {
 
         <ReactSwitch
           onChange={() => context.toggleNSFW()}
-          checked={context.nsfw !== "false"}
+          checked={context.nsfw !== false}
           checkedHandleIcon={<div></div>}
           checkedIcon={
             <div className="flex items-center justify-center h-full text-sm font-white dark:font-darkBG">

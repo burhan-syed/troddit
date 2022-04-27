@@ -58,6 +58,7 @@ const Feed = ({
   const [isSubreddit, setIsSubreddit] = useState(false);
   const [sort, setSort] = useState("");
   const [range, setRange] = useState("");
+  const [filterSubs, setFilterSubs] = useState(false);
 
   const updateLoading = (b) => {
     setLoading(b);
@@ -66,7 +67,22 @@ const Feed = ({
 
   //monitors query to change sort/range
   useEffect(() => {
-    //console.log(query);
+    if (
+      (query?.slug?.[0]
+        ?.split(" ")
+        ?.join("+")
+        ?.split(",")
+        ?.join("+")
+        ?.split("%20")
+        ?.join("+")
+        ?.split("+")?.length > 1 ||
+        !query?.slug ||
+        query?.slug?.[0]?.toUpperCase() == "ALL" ||
+        query?.slug?.[0]?.toUpperCase() == "POPULAR") &&
+      !isUser
+    ) {
+      setFilterSubs(true);
+    }
     if (query?.slug?.[1] === "comments" && !userPostMode) {
       setFetchPost(true);
       updateLoading(false);
@@ -97,7 +113,9 @@ const Feed = ({
       setRange(query?.t ?? "");
     }
 
-    return () => {};
+    return () => {
+      setFilterSubs(false);
+    };
   }, [query, sessloading]);
 
   useEffect(() => {
@@ -194,8 +212,8 @@ const Feed = ({
           safeSearch ? undefined : true
         );
       } else {
-        setSubsArray(subs.split("+"));
-        //console.log(subs);
+        let subArray: [string] = subs.split("+");
+        setSubsArray(subArray);
         data = await loadSubreddits(
           session ? true : false,
           context?.token,
@@ -230,12 +248,13 @@ const Feed = ({
             imgFilter,
             vidFilter,
             selfFilter,
-            galFilter,
+            // galFilter,
             linkFilter,
             imgPortraitFilter,
             imgLandscapeFilter,
           },
-          context?.readPosts
+          filterSubs,
+          isUser ? false : true
         );
         setPosts(filtered);
         setFilterCount((n) => n + filtercount);
@@ -243,30 +262,31 @@ const Feed = ({
         updateLoading(false);
       }
     };
-
-    setFilterCount(0);
-    if (query?.slug?.[1] === "comments" && !userPostMode) {
-      setFetchPost(true);
-      updateLoading(false);
-    } else if (isSearch) {
-      !sessloading && fetchSearch();
-    } else if (query.frontsort) {
-      if (
-        query?.frontsort == "" ||
-        query?.frontsort?.includes("best") ||
-        query?.frontsort?.includes("top") ||
-        query?.frontsort?.includes("hot") ||
-        query?.frontsort?.includes("new") ||
-        query?.frontsort?.includes("rising")
-      ) {
-        !sessloading && fetchFront();
-      } else {
+    if (context.ready) {
+      setFilterCount(0);
+      if (query?.slug?.[1] === "comments" && !userPostMode) {
         setFetchPost(true);
+        updateLoading(false);
+      } else if (isSearch) {
+        !sessloading && fetchSearch();
+      } else if (query.frontsort) {
+        if (
+          query?.frontsort == "" ||
+          query?.frontsort?.includes("best") ||
+          query?.frontsort?.includes("top") ||
+          query?.frontsort?.includes("hot") ||
+          query?.frontsort?.includes("new") ||
+          query?.frontsort?.includes("rising")
+        ) {
+          !sessloading && fetchFront();
+        } else {
+          setFetchPost(true);
+        }
+      } else if (query.slug) {
+        !sessloading && fetchSubs();
+      } else {
+        !sessloading && fetchFront();
       }
-    } else if (query.slug) {
-      !sessloading && fetchSubs();
-    } else {
-      !sessloading && fetchFront();
     }
 
     return () => {
@@ -289,6 +309,7 @@ const Feed = ({
     userPostMode,
     userPostType,
     context.forceRefresh,
+    context.ready,
   ]);
 
   //const [errored, setErrored] = useState(false);
@@ -365,6 +386,7 @@ const Feed = ({
                 //page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
                 query={query}
                 initItems={posts}
+                filterSubs={filterSubs}
                 initAfter={after}
                 isUser={isUser}
                 userPostMode={userPostMode}

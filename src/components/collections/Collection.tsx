@@ -96,10 +96,10 @@ const Collection = ({
               <div
                 className={
                   "rounded-full bg-red-400 " +
-                  " w-full h-full  text-lightText text-6xl items-center justify-center flex overflow-hidden"
+                  " w-full h-full  text-lightText text-6xl items-center font-semibold  justify-center flex overflow-hidden"
                 }
               >
-                {" m/"}
+                {"f/"}
               </div>
             )}
           </div>

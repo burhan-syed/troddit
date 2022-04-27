@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
 import { useSubsContext } from "../MySubs";
-import { useMainContext } from "../MainContext";
+import { localSubInfoCache } from "../MainContext";
 import { loadSubredditInfo } from "../RedditAPI";
 
 const SubButton = ({ sub, miniMode = false, userMode = false }) => {
@@ -20,7 +20,6 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
     myMultis,
     subscribe,
     loadedSubs,
-    subInfoCache,
     addToSubCache,
   } = subsContext;
   //prevent spinner show when already loaded subs once

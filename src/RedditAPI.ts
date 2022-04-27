@@ -32,16 +32,8 @@ const getToken = async () => {
   }
 };
 
-export const loadFront = async (
-  loggedIn = false,
-  token?,
-  sort: string = "best",
-  range?: string,
-  after?: string,
-  count?: number,
-  localSubs?: [string]
-) => {
-  //console.log('loadfront api', Math.floor(Date.now() / 1000) > token?.expires, Math.floor(Date.now() / 1000) , token?.expires)
+//to reduce serverless calls to refresh token
+const checkToken = async (loggedIn: boolean, token) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
@@ -51,6 +43,22 @@ export const loadFront = async (
     returnToken = await getToken();
     accessToken = await returnToken?.accessToken;
   }
+  return {
+    returnToken,
+    accessToken,
+  };
+};
+
+export const loadFront = async (
+  loggedIn = false,
+  token?,
+  sort: string = "best",
+  range?: string,
+  after?: string,
+  count?: number,
+  localSubs?: [string]
+) => {
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       //console.log("WITH LOGIN", token);
@@ -63,6 +71,7 @@ export const loadFront = async (
           t: range,
           after: after,
           count: count,
+          sr_detail: true,
         },
       });
       let res = await res1.data;
@@ -87,7 +96,8 @@ export const loadFront = async (
         sort,
         range,
         after,
-        count
+        count,
+        true
       );
     } else {
       try {
@@ -99,6 +109,7 @@ export const loadFront = async (
               t: range,
               after: after,
               count: count,
+              sr_detail: true,
             },
           })
         ).data;
@@ -123,7 +134,8 @@ export const loadSubreddits = async (
   sort: string,
   range: string,
   after: string = "",
-  count: number = 0
+  count: number = 0,
+  sr_detail = false
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -134,6 +146,12 @@ export const loadSubreddits = async (
     returnToken = await getToken();
     accessToken = await returnToken?.accessToken;
   }
+
+  let getSRDetail =
+    sr_detail ||
+    subreddits?.split("+")?.length > 1 ||
+    subreddits?.toUpperCase()?.includes("POPULAR") ||
+    subreddits?.toUpperCase()?.includes("ALL");
 
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
@@ -149,6 +167,7 @@ export const loadSubreddits = async (
             t: range,
             after: after,
             count: count,
+            sr_detail: getSRDetail,
           },
         }
       );
@@ -173,6 +192,7 @@ export const loadSubreddits = async (
             t: range,
             after: after,
             count: count,
+            sr_detail: getSRDetail,
           },
         })
       ).data;
@@ -205,6 +225,7 @@ export const getRedditSearch = async (
     sort: sort,
     t: range,
     raw_json: 1,
+    sr_detail: true,
   };
   let oathsearch = `https://oauth.reddit.com/search`;
   let noauthsearch = `${REDDIT}/search.json`;
@@ -443,9 +464,9 @@ export const loadSubredditInfo = async (query, loaduser = false) => {
       return res;
     } catch (err) {
       console.log(err);
-      return [];
+      return undefined;
     }
-  } else return [];
+  } else return undefined;
 };
 
 export const getWikiContent = async (wikiquery) => {
@@ -518,6 +539,7 @@ export const loadUserPosts = async (
               t: range,
               after: nextafter,
               count: count,
+              sr_detail: true,
             },
           }
         )
@@ -586,6 +608,7 @@ export const loadUserSelf = async (
             sort: sort,
             show: where,
             type: type,
+            sr_detail: true,
           },
         }
       );
@@ -966,16 +989,20 @@ export const loadComments = async (permalink, sort = "top") => {
 export const loadMoreComments = async (
   children,
   link_id,
+  permalink?,
+  loggedIn = false,
+  token?,
   sort = "top",
   depth?,
   id?
 ) => {
-  const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+  //const token = await (await getToken())?.accessToken;
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
+  if (accessToken && ratelimit_remaining > 1) {
     try {
       const res = await axios.get("https://oauth.reddit.com/api/morechildren", {
         headers: {
-          authorization: `bearer ${token}`,
+          authorization: `bearer ${accessToken}`,
         },
         params: {
           api_type: "json",
@@ -984,16 +1011,23 @@ export const loadMoreComments = async (
           sort: sort,
           limit_children: false,
           raw_json: 1,
+          profile_img: true,
         },
       });
       let data = await res.data;
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      //console.log(res?.json?.data?.things);
-      return data?.json?.data?.things;
+      return { data: data?.json?.data?.things, token: returnToken };
     } catch (err) {
       console.log(err);
-      return [];
+      return undefined;
     }
+  } else {
+    const res = await (
+      await axios.get(`${REDDIT}${permalink}.json`, {
+        params: { raw_json: 1, profile_img: true },
+      })
+    ).data;
+    return { data: res?.[1]?.data?.children, token: returnToken };
   }
 };
 
@@ -1031,6 +1065,8 @@ export const loadPost = async (
           theme: "default",
           threaded: true,
           truncate: true,
+          profile_img: true,
+          sr_detail: true,
         },
       });
       let data = await res.data;
@@ -1048,7 +1084,7 @@ export const loadPost = async (
     try {
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-          params: { raw_json: 1 },
+          params: { raw_json: 1, profile_img: true, sr_detail: true },
         })
       ).data;
       //console.log(res);

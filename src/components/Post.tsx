@@ -32,7 +32,7 @@ const Post = ({ post, postNum = 0 }) => {
   const [margin, setMargin] = useState("m-1");
 
   useEffect(() => {
-    context.nsfw === "false" && post?.data?.over_18
+    context.nsfw === false && post?.data?.over_18
       ? setHideNSFW(true)
       : setHideNSFW(false);
     post?.data.spoiler && setHideNSFW(true);

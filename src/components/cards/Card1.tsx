@@ -10,6 +10,7 @@ import MediaWrapper from "../MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
+import SubIcon from "../SubIcon";
 
 //og card
 const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
@@ -35,19 +36,24 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row items-start py-1 text-xs text-gray-400 truncate select-auto dark:text-gray-500">
-                <div className="flex flex-row flex-wrap items-start text-xs text-gray-400 truncate select-auto dark:text-gray-500">
+              <div className="flex flex-row items-center py-1 text-xs text-gray-400 truncate select-auto dark:text-gray-500">
+                <div className="flex flex-row flex-wrap items-center text-xs text-gray-400 truncate select-auto dark:text-gray-500">
                   <Link href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
-                      className="mr-1"
+                      className="flex flex-row items-center mr-1 font-semibold text-black hover:underline dark:text-lightText"
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
                     >
-                      <h2 className="font-semibold text-black hover:underline dark:text-lightText ">
-                        r/{post?.subreddit ?? ""}
-                      </h2>
+                      {/* Only getting sr_detail form api if on multis/front/all/popular/user account*/}
+                      {post?.sr_detail && (
+                        <div className="w-6 h-6 mr-1 rounded-full ">
+                          <SubIcon subInfo={post?.sr_detail} />
+                        </div>
+                      )}
+
+                      <h2 className="">r/{post?.subreddit ?? ""}</h2>
                     </a>
                   </Link>
 
@@ -104,10 +110,11 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     <Awardings
                       all_awardings={post?.all_awardings}
                       truncate={false}
+                      styles={"mr-0.5 mt-0.5"}
                     />
                   )}
                 </div>
-                <div className="flex flex-row flex-none ml-auto hover:underline">
+                <div className="flex flex-row flex-none mt-1 mb-auto ml-auto hover:underline">
                   <a
                     title="open source"
                     href={`${post.url}`}
@@ -231,7 +238,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                           <div className="mx-0.5"></div>
                           {post?.all_awardings?.length > 0 && (
                             <div className="flex flex-row flex-wrap items-center justify-start truncate">
-                              <Awardings all_awardings={post?.all_awardings} />
+                              <Awardings
+                                all_awardings={post?.all_awardings}
+                                styles="mt-0.5 mr-0.5"
+                              />
                             </div>
                           )}
                           <div className="ml-auto">
@@ -321,7 +331,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     }`}
                   </h1>
                 </a>
-                <PostOptButton post={post} postNum={postNum} />
+                <PostOptButton post={post} postNum={postNum} mode="" />
               </div>
             </div>
           )}

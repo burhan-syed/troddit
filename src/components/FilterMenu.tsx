@@ -38,7 +38,7 @@ const FilterMenu = ({ hide = false }) => {
       !imgFilter ||
       !vidFilter ||
       !selfFilter ||
-      !galFilter ||
+      // !galFilter ||
       !linkFilter ||
       !imgPortraitFilter ||
       !imgLandscapeFilter
