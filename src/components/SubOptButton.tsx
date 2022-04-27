@@ -8,6 +8,7 @@ import MultiManageModal from "./MultiManageModal";
 import { useSession } from "next-auth/react";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
 import Link from "next/link";
+import useFilterSubs from "../hooks/useFilterSubs";
 
 const SubOptButton = ({
   subInfo,
@@ -31,6 +32,7 @@ const SubOptButton = ({
     removeFromRedditMulti,
     deleteRedditMulti,
   } = subsContext;
+  const { addSubFilter } = useFilterSubs();
   const [openMulti, setopenMulti] = useState(0);
   const [currMultiExist, setcurrMultiExist] = useState(false);
   const [subInMulti, setSubInMulti] = useState(false);
@@ -170,7 +172,7 @@ const SubOptButton = ({
                         }
                       >
                         <div className="relative flex flex-row justify-end py-0.5 cursor-pointer select-none">
-                          Add to Multi
+                          Add to Feed
                         </div>
                         <div
                           className={
@@ -246,7 +248,7 @@ const SubOptButton = ({
                           onClick={removeFromMulti}
                         >
                           <div className="flex flex-row justify-end text-right cursor-pointer select-none">
-                            {`Remove from m/${currMulti}`}
+                            {`Remove from f/${currMulti}`}
                           </div>
                         </div>
                       )}
@@ -295,13 +297,29 @@ const SubOptButton = ({
                                   e.stopPropagation();
                                   toggleDeleteCheck();
                                 }}
-                              >{`Delete m/${currMulti}`}</div>
+                              >{`Delete f/${currMulti}`}</div>
                             )}
                           </div>
                         </div>
                       )}
                     </Menu.Item>
                   )}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        className={
+                          (active
+                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            : "") + " block px-4 py-1 text-sm"
+                        }
+                        onClick={() => addSubFilter(subInfo?.display_name)}
+                      >
+                        <div className="flex flex-row justify-end cursor-pointer select-none">
+                          {`Filter Subreddit`}
+                        </div>
+                      </div>
+                    )}
+                  </Menu.Item>
                   {openDescription && (
                     <>
                       <Menu.Item>

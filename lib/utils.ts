@@ -1,4 +1,4 @@
-import { localRead } from "../src/MainContext";
+import { localRead, subredditFilters, userFilters } from "../src/MainContext";
 
 const TWITCH_PARENT = "www.troddit.com";
 export const secondsToTime = (
@@ -360,7 +360,12 @@ export const findMediaInfo = async (post, quick = false) => {
   return loadInfo(post, quick);
 };
 
-export const filterPosts = async (posts, filters, read) => {
+export const filterPosts = async (
+  posts,
+  filters,
+  checkSubs = false,
+  checkUsers = true
+) => {
   let {
     readFilter,
     imgFilter,
@@ -385,6 +390,17 @@ export const filterPosts = async (posts, filters, read) => {
     }
 
     const filterCheck = async (d) => {
+      //check subs / users. Done in background without increasing filter count
+      if (checkUsers && (await userFilters.getItem(d?.author?.toUpperCase()))) {
+        return false;
+      }
+      if (
+        checkSubs &&
+        (await subredditFilters.getItem(d?.subreddit?.toUpperCase()))
+      ) {
+        return false;
+      }
+
       //if filtering read, no need for other content checks
       if (!readFilter && (await localRead.getItem(d?.name))) {
         filtercount += 1;
@@ -457,6 +473,8 @@ export const filterPosts = async (posts, filters, read) => {
 
   let filtered = posts;
   if (
+    checkUsers ||
+    checkSubs ||
     !readFilter ||
     !imgFilter ||
     !vidFilter ||

@@ -331,7 +331,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     }`}
                   </h1>
                 </a>
-                <PostOptButton post={post} postNum={postNum} />
+                <PostOptButton post={post} postNum={postNum} mode="" />
               </div>
             </div>
           )}

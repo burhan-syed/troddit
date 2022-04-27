@@ -47,7 +47,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
 
   const createMultiButton = async () => {
     if (input.length === 0) {
-      setErr("Enter Multi Name");
+      setErr("Enter Feed Name");
     } else if (input.length > 50) {
       setErr("Max Name Length is 50 Characters");
     } else if (!waiting) {
@@ -60,7 +60,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
             subsForMulti,
             session.user.name
           );
-          if (!res) setErr("Multi Already Exists");
+          if (!res) setErr("Feed Already Exists");
           else {
             setWaiting(false);
             setOpen(false);
@@ -71,7 +71,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
           if (res) setOpen(false);
           else {
             setWaiting(false);
-            setErr("Multi Already Exists");
+            setErr("Feed Already Exists");
           }
         }
       }
@@ -179,8 +179,8 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="New Multi Name"
-                            aria-label="Multi name"
+                            placeholder="New Feed Name"
+                            aria-label="Feed name"
                           />
                           <button
                             onClick={createMultiButton}
@@ -202,7 +202,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                             {"Select 1 Sub Minimum"}
                           </h1>
                         ) : subsForMulti.length > 1 ? (
-                          <h1>{`Creating multi with ${subsForMulti.length} sub${
+                          <h1>{`Creating feed with ${subsForMulti.length} sub${
                             subsForMulti.length > 1 ? "s" : ""
                           }`}</h1>
                         ) : (

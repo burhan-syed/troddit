@@ -120,7 +120,7 @@ const CollectionOptions = ({
                         }
                       >
                         <div className="relative flex flex-row justify-end py-0.5 cursor-pointer select-none">
-                          Add {subArray.length} to Multi
+                          Add {subArray.length} to Feed
                         </div>
                         <div
                           className={
@@ -283,7 +283,7 @@ const CollectionOptions = ({
                                 e.stopPropagation();
                                 toggleDeleteCheck();
                               }}
-                            >{`Delete m/${currMulti}`}</div>
+                            >{`Delete f/${currMulti}`}</div>
                           )}
                         </div>
                       </div>

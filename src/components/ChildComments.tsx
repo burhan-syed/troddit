@@ -298,7 +298,7 @@ const ChildComments = ({
                     e.stopPropagation();
                   if (cellText?.type === "Range") e.stopPropagation();
                 }}
-                className="py-2 ml-4 mr-4 md:ml-4 "
+                className="py-2 ml-2 mr-4 "
               >
                 <ParseBodyHTML html={comment?.data?.body_html} />
               </div>
@@ -306,7 +306,7 @@ const ChildComments = ({
               {/* Buttom Row */}
               <div
                 className={
-                  (portraitMode ? " " : " ml-3 md:ml-1") +
+                  (portraitMode ? " ml-1 " : " ml-2 ") +
                   " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-gray-400 dark:text-gray-500  "
                 }
               >
@@ -314,7 +314,7 @@ const ChildComments = ({
                 <div
                   className={
                     (!portraitMode && " ") + //ml-1.5 md:ml-0
-                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-md "
+                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
                   }
                 >
                   <Vote

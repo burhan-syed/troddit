@@ -187,7 +187,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                   (expandMultis ? " " : " mb-2")
                 }
               >
-                <p>multis</p>
+                <p>feeds</p>
                 {!hideExtra && (
                   <BsChevronDown
                     className={
@@ -275,7 +275,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                   (expandSubs ? " " : " mb-2")
                 }
               >
-                <p>local subs</p>
+                <p>subs</p>
                 {!hideExtra && (
                   <BsChevronDown
                     className={
@@ -464,7 +464,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               (expandMultis ? " " : " mb-2")
             }
           >
-            <p>multis</p>
+            <p>feeds</p>
             {!hideExtra && (
               <BsChevronDown
                 className={

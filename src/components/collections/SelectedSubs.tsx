@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCollectionContext } from "./CollectionContext";
 import CollectionOptions from "./CollectionOptions";
-import { MdClear } from "react-icons/md";
 import { BsArrowRight } from "react-icons/bs";
-import { AiOutlinePlus } from "react-icons/ai";
+import { MdOutlineClear } from "react-icons/md";
 
 const SelectedSubs = () => {
   const myCollections: any = useCollectionContext();
@@ -26,7 +25,7 @@ const SelectedSubs = () => {
           className="flex items-center justify-center w-10 border rounded-md h-9 dark:hover:bg-darkPostHover dark:border-darkBorder dark:hover:border-darkBorderHighlight hover:border-lightBorderHighlight hover:bg-lightHighlight "
           onClick={clearAll}
         >
-          <MdClear className="flex-none w-4 h-4" />
+          <MdOutlineClear className="flex-none w-4 h-4" />
         </button>
         <CollectionOptions subArray={selected} />
 
@@ -59,7 +58,7 @@ const SelectedSubs = () => {
               onClick={() => toggleSelected(s)}
             >
               <div className="  rounded-full p-0.5 dark:group-border-darkPostHover dark:group-hover:bg-trueGray-900  ">
-                <AiOutlinePlus className="flex-none w-4 h-4 transition rotate-45 group-hover:scale-125 " />
+                <MdOutlineClear className="flex-none w-4 h-4 transition group-hover:scale-125 " />
               </div>
               <h1 className="mr-1 -mt-0.5">{s}</h1>
             </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { MdOutlineClear } from "react-icons/md";
 import { BsChevronDown } from "react-icons/bs";
 
 const SubPills = ({
@@ -32,7 +32,7 @@ const SubPills = ({
     <div
       onClick={(e) => goToMulti(e)}
       className="flex-none"
-      title={`show all ${subArray.length} subreddits in this multi`}
+      title={`show all ${subArray.length} subreddits in this feed`}
     >
       <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
         <div
@@ -41,7 +41,7 @@ const SubPills = ({
             (multiSub === "" && "  ring-2")
           }
         >
-          {`${currMulti ? `${currMulti}` : "Multi"} (${subArray.length})`}
+          {`${currMulti ? `${currMulti}` : "Feed"} (${subArray.length})`}
         </div>
       </a>
     </div>
@@ -92,7 +92,7 @@ const SubPills = ({
                 }}
                 className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1 "
               >
-                <AiOutlinePlus className="flex-none w-4 h-4 rotate-45 " />
+                <MdOutlineClear className="flex-none w-4 h-4 " />
               </button>
             </div>
           </a>

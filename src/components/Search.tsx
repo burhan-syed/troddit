@@ -76,8 +76,8 @@ const Search = ({ id }) => {
     } else {
       setCurrSub("");
       setSrRestrict(false);
-      if (router.asPath === "/subreddits/multis") {
-        setAddMode("multis");
+      if (router.asPath === "/subreddits/feeds") {
+        setAddMode("feeds");
       } else {
         setAddMode("");
       }
@@ -413,11 +413,11 @@ const Search = ({ id }) => {
                             s?.toUpperCase() ===
                             suggestion?.data?.display_name?.toUpperCase()
                         )
-                      ? "Remove"
-                      : "Add"}
+                      ? "Remove Selected"
+                      : "Add to Selected"}
                   </span>
                   <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 dark:text-lightText group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder">
-                    {addMode == "multis" &&
+                    {addMode == "feeds" &&
                     selected.find(
                       (s) =>
                         s?.toUpperCase() ===

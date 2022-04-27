@@ -47,7 +47,7 @@ const SubIcon = ({ subname = "", subInfo = {}, isUser = false, size = 6 }) => {
         <div
           className={
             "rounded-full bg-lightScroll dark:bg-darkScroll " +
-            " w-full h-full  text-lightText  overflow-hidden items-center justify-center flex !no-underline " +
+            " w-full h-full  text-lightText  overflow-hidden items-center justify-center flex !no-underline border-2 " +
             (hideNSFW ? " text-md " : " text-xl")
           }
         >

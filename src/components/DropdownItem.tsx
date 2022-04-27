@@ -69,11 +69,15 @@ const DropdownItem = ({ sub, isUser = false }) => {
           loaded && (
             <div
               className={
-                (isMulti ? "rounded bg-red-400" : "rounded-full bg-blue-700") +
-                " w-6 h-6 text-center text-lightText"
+                (isMulti
+                  ? "rounded bg-red-400"
+                  : "rounded-full bg-lightScroll dark:bg-darkScroll border-2 ") +
+                " w-6 h-6 text-center text-lightText overflow-clip flex items-center justify-center  text-lg"
               }
             >
-              {isUser ? "u/" : isMulti ? "m" : "r/"}
+              <h4 className={isMulti ? "" : "" + "mb-0.5"}>
+                {isUser ? "u/" : isMulti ? "f/" : "r/"}
+              </h4>
             </div>
           )
         )}

@@ -5,6 +5,8 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { useSession } from "next-auth/react";
 import ToggleFilters from "./ToggleFilters";
 import { useMainContext } from "../MainContext";
+import FilterSubs from "./FilterSubs";
+import { BsChevronDown } from "react-icons/bs";
 
 const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
@@ -13,7 +15,7 @@ const FilterModal = ({ toOpen }) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
-
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   useEffect(() => {
     toOpen > 0 && setOpen(true);
     return () => {
@@ -58,7 +60,7 @@ const FilterModal = ({ toOpen }) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl select-none dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl select-none dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg">
               <div className="relative px-4 pt-5 pb-4 overflow-visible bg-white dark:bg-darkBG sm:p-6 sm:pb-4">
                 <div
                   className="absolute flex items-center justify-center w-8 h-8 ml-auto text-gray-500 top-2 right-2 hover:text-gray-900 dark:hover:text-gray-200 hover:cursor-pointer"
@@ -85,10 +87,43 @@ const FilterModal = ({ toOpen }) => {
                         <ToggleFilters filter={"read"} />
                       </div>
                     </div>
+                    <div
+                      className="flex flex-row items-center justify-between py-1 mr-4 rounded-md cursor-pointer dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+                      onClick={() => setAdvancedOpen((o) => !o)}
+                    >
+                      <h1>Advanced</h1>
+
+                      <BsChevronDown
+                        className={
+                          (advancedOpen ? "-rotate-180" : "rotate-0") +
+                          " transform transition duration-400 mr-4"
+                        }
+                      />
+                    </div>
+                    {advancedOpen && (
+                      <div className={"flex flex-col gap-4 px-4"}>
+                        <div className="flex flex-col px-2">
+                          <h2>Subreddit Filters</h2>
+                          <h4 className="mb-1 text-xs opacity-70">
+                            Hide posts from specific subreddits except when
+                            directly viewing
+                          </h4>
+                          <FilterSubs mode="subs" />
+                        </div>
+                        <div className="flex flex-col px-2">
+                          <h2>User Filters</h2>
+                          <h4 className="mb-1 text-xs opacity-70">
+                            Hide posts from specific users everywhere except
+                            their user profile
+                          </h4>
+                          <FilterSubs mode="users" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <button
-                  className="flex items-center justify-center px-4 py-1.5 ml-auto mr-4 text-center border-2 dark:border dark:border-lightBorder hover:bg-lightHighlight rounded-md cursor-pointer dark:hover:bg-darkBorder "
+                  className="flex items-center justify-center px-4 py-1.5 ml-auto mr-4 text-center border-2 dark:border dark:border-lightBorder hover:bg-lightHighlight hover:border-lightBorderHighlight rounded-md cursor-pointer dark:hover:bg-darkBorder "
                   onClick={(e) => {
                     e.preventDefault();
                     context.setForceRefresh((f) => f + 1);

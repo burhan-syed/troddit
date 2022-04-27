@@ -1,7 +1,7 @@
 import localForage from "localforage";
 import React, { useState, useEffect, useContext } from "react";
 import { getSession, useSession } from "next-auth/react";
-import { useMainContext } from "./MainContext";
+import { useMainContext, localSubInfoCache } from "./MainContext";
 import {
   addToMulti,
   createMulti,
@@ -39,7 +39,7 @@ export const MySubsProvider = ({ children }) => {
   const [currLocation, setCurrLocation] = useState("");
   const [currSubs, setCurrSubs] = useState([]);
   const [currSubInfo, setCurrSubInfo] = useState({});
-  const [subInfoCache, setSubInfoCache] = useState({});
+  //const [subInfoCache, setSubInfoCache] = useState({});
   const [multi, setMulti] = useState("");
   const defaultMultis = [
     {
@@ -85,6 +85,8 @@ export const MySubsProvider = ({ children }) => {
       let local_localMultis: [] = await localForage.getItem("localMultis");
       if (local_localMultis == undefined) {
         local_localMultis = JSON.parse(localStorage.getItem("localMultis"));
+      } else {
+        localStorage.removeItem("localMultis");
       }
       local_localMultis?.length > 0
         ? setMyLocalMultis(local_localMultis)
@@ -528,38 +530,47 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
-  const addToSubCache = (subInfo) => {
-    let sub = subInfo?.data?.display_name?.toUpperCase();
+  const checkSubCache = async (sub_displayName) => {
+    let cached = await localSubInfoCache.getItem(
+      sub_displayName?.toUpperCase()
+    );
+    return cached;
+  };
+
+  const addToSubCache = (data) => {
+    let subInfo = data?.data?.subreddit ?? data?.data;
+    //using display name as this is the only info we have immediately..
+    let sub = subInfo?.display_name?.toUpperCase();
     let subInfoLess = {
-      kind: subInfo.kind,
       data: {
-        banner_background_color: subInfo?.data?.banner_background_color,
-        banner_background_image: subInfo?.data?.banner_background_image,
-        banner_img: subInfo?.data?.banner_img,
-        community_icon: subInfo?.data?.community_icon,
-        display_name: subInfo?.data?.display_name,
-        display_name_prefixed: subInfo?.data?.display_name_prefixed,
-        header_img: subInfo?.data?.header_img,
-        icon_img: subInfo?.data?.icon_img,
-        key_color: subInfo?.data?.key_color,
-        name: subInfo?.data?.name,
-        over18: subInfo?.data?.over18,
-        primary_color: subInfo?.data?.primary_color,
-        public_description: subInfo?.data?.public_description,
-        subscribers: subInfo?.data?.subscribers,
-        title: subInfo?.data?.title,
-        url: subInfo?.data?.url,
+        banner_background_color: subInfo?.banner_background_color,
+        banner_background_image: subInfo?.banner_background_image,
+        banner_img: subInfo?.banner_img,
+        community_icon: subInfo?.community_icon,
+        display_name: subInfo?.display_name,
+        display_name_prefixed: subInfo?.display_name_prefixed,
+        header_img: subInfo?.header_img,
+        icon_img: subInfo?.icon_img,
+        key_color: subInfo?.key_color,
+        name: subInfo?.name,
+        over18: subInfo?.over18,
+        primary_color: subInfo?.primary_color,
+        public_description: subInfo?.public_description,
+        subscribers: subInfo?.subscribers,
+        title: subInfo?.title,
+        url: subInfo?.url,
       },
     };
 
-    setSubInfoCache((s) => {
-      //limit cache to 50 subs
-      if (Object.keys(s).length > 500) {
-        let keys = Object.keys(s);
-        delete s[keys[0]];
+    localSubInfoCache.setItem(sub, subInfoLess);
+
+    //keep local storage in check
+    localSubInfoCache.length().then((len) => {
+      if (len > 100) {
+        localSubInfoCache.key(1).then((key) => {
+          localSubInfoCache.removeItem(key);
+        });
       }
-      s[sub] = subInfoLess;
-      return s;
     });
   };
 
@@ -568,15 +579,16 @@ export const MySubsProvider = ({ children }) => {
     router?.query?.m
       ? setMulti(router?.query?.m?.toString())
       : currSubs?.length > 1
-      ? setMulti(`Multi`)
+      ? setMulti(`Feed`)
       : setMulti("");
   }, [router?.query, currSubs]);
 
   useEffect(() => {
     let asynccheck = true;
     const loadCurrSubInfo = async (sub, isUser = false) => {
-      if (subInfoCache?.[sub]) {
-        asynccheck && setCurrSubInfo(subInfoCache?.[sub]);
+      let cachedInfo = checkSubCache(sub);
+      if (cachedInfo) {
+        asynccheck && setCurrSubInfo(cachedInfo);
       }
       let info = await loadSubredditInfo(sub, isUser);
       if (info) {
@@ -672,9 +684,7 @@ export const MySubsProvider = ({ children }) => {
 
   useEffect(() => {
     mySubs.forEach((sub) => {
-      if (!subInfoCache?.[sub?.data?.display_name]) {
-        addToSubCache(sub);
-      }
+      addToSubCache(sub);
     });
   }, [mySubs]);
 
@@ -789,14 +799,15 @@ export const MySubsProvider = ({ children }) => {
     );
     if (session || loggedIn) {
       let sub = subname;
-      if (subInfoCache?.[sub?.toUpperCase()]) {
-        sub = subInfoCache[sub?.toUpperCase()]?.data?.name;
-      } else {
-        if (isUser) sub = sub.substring(2);
-        let subInfo = await loadSubredditInfo(sub, isUser);
-        subInfo && addToSubCache(subInfo);
-        sub = isUser ? subInfo?.data?.subreddit?.name : subInfo?.data?.name;
-      }
+      // let cachedInfo: any = await checkSubCache(sub);
+      // if (cachedInfo) {
+      //   sub = cachedInfo?.data?.name;
+      // } else {
+      if (isUser) sub = sub.substring(2);
+      let subInfo = await loadSubredditInfo(sub, isUser);
+      subInfo && addToSubCache(subInfo);
+      sub = isUser ? subInfo?.data?.subreddit?.name : subInfo?.data?.name;
+      //}
 
       let status = await subToSub(action, sub);
       //console.log('session:', status);
@@ -835,7 +846,7 @@ export const MySubsProvider = ({ children }) => {
                   ? "Joining"
                   : "Leaving"
               } ${isUser ? subname.substring(2) : subname}`}
-              mode={"success"}
+              mode={"error"}
             />
           ),
           { id: toastId, duration: 1500 }
@@ -879,7 +890,7 @@ export const MySubsProvider = ({ children }) => {
                   ? "Joining"
                   : "Leaving"
               } ${isUser ? subname.substring(2) : subname}`}
-              mode={"success"}
+              mode={"error"}
             />
           ),
           { id: toastId, duration: 1500 }
@@ -900,7 +911,7 @@ export const MySubsProvider = ({ children }) => {
                 ? "Joining"
                 : "Leaving"
             } ${isUser ? subname.substring(2) : subname}`}
-            mode={"success"}
+            mode={"error"}
           />
         ),
         { id: toastId, duration: 1500 }
@@ -981,7 +992,6 @@ export const MySubsProvider = ({ children }) => {
         currSubs,
         multi,
         tryLoadAll,
-        subInfoCache,
         addToSubCache,
       }}
     >

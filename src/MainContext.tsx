@@ -2,6 +2,15 @@ import localForage from "localforage";
 import React, { useState, useContext, useEffect, useReducer } from "react";
 
 export const localRead = localForage.createInstance({ storeName: "readPosts" });
+export const localSubInfoCache = localForage.createInstance({
+  storeName: "subInfoCache",
+});
+export const subredditFilters = localForage.createInstance({
+  storeName: "subredditFilters",
+});
+export const userFilters = localForage.createInstance({
+  storeName: "userFilters",
+});
 
 export const MainContext: any = React.createContext({});
 
@@ -527,20 +536,18 @@ export const MainProvider = ({ children }) => {
           : setReadFilter(true);
       }
 
-      //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
-      // let saved_readPosts = await localForage.getItem("readPosts");
-      // if (saved_readPosts !== null) {
-      //   saved_readPosts && setReadPosts(saved_readPosts);
-      // } else {
+      let saved_readPosts = await localForage.getItem("readPosts");
+      if (saved_readPosts !== null) {
+        //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
+        //saved_readPosts && setReadPosts(saved_readPosts);
+        localStorage.removeItem("readPosts");
+      }
+      // else {
       //   fallback = true;
       //   let local_readPosts = JSON.parse(localStorage.getItem("readPosts"));
       //   local_readPosts && setReadPosts(saved_readPosts);
       // }
       setReady(true);
-      if (!fallback) {
-        //don't do this, local storage may be needed to load multis from MySubs.tsx
-        //localStorage.clear();
-      }
     };
 
     getSettings();

@@ -67,6 +67,7 @@ const MyMasonic = ({
   query,
   initItems,
   initAfter,
+  filterSubs,
   isUser = false,
   isMulti = false,
   isSubFlair = false,
@@ -433,7 +434,8 @@ const MyMasonic = ({
             imgPortraitFilter,
             imgLandscapeFilter,
           },
-          context?.readPosts
+          filterSubs,
+          isUser ? false : true
         );
         setFilterCount((n) => n + filtercount);
         return { data: { posts: filtered, after: data?.after } };

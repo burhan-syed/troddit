@@ -8,6 +8,7 @@ import SubButton from "../SubButton";
 import SubOptButton from "../SubOptButton";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
 import Login from "../Login";
+import SubIcon from "../SubIcon";
 
 const SubCard = ({
   data,
@@ -121,7 +122,7 @@ const SubCard = ({
         >
           <div
             className={
-              "z-20 flex-none  border-2 hover:cursor-pointer rounded-full dark:bg-darkBG bg-lightPost" +
+              "z-20 flex-none  border-4 hover:cursor-pointer rounded-full dark:bg-darkBG bg-lightPost" +
               (tall ? " -mt-2 w-24 h-24 mx-auto md:mx-0" : " w-16 h-16")
             }
             onClick={() => {
@@ -141,7 +142,7 @@ const SubCard = ({
             ) : (
               <div
                 className={
-                  "rounded-full bg-blue-700" +
+                  "rounded-full bg-lightScroll dark:bg-darkScroll " +
                   " w-full h-full  text-lightText text-6xl overflow-hidden items-center justify-center flex "
                 }
               >
