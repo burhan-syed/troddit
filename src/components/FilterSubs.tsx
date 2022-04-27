@@ -114,7 +114,7 @@ const FilterSubs = ({ mode = "subs" }) => {
           />
           <button
             onClick={(e) => handleSubmit(e)}
-            className="flex items-center justify-center ml-2 border rounded-md w-9 h-9 dark:border-darkBorder hover:dark:border-darkBorderHighlight border-lightBorder hover:border-lightBorderHighlight hover:bg-lightHighlight"
+            className="flex items-center justify-center ml-2 border rounded-md w-9 h-9 dark:border-darkBorder hover:dark:border-darkBorderHighlight border-lightBorder hover:dark:bg-darkBG hover:border-lightBorderHighlight hover:bg-lightHighlight"
           >
             <AiOutlinePlus className="w-5 h-5" />
           </button>
