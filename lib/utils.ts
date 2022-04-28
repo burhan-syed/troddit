@@ -357,7 +357,7 @@ export const findMediaInfo = async (post, quick = false) => {
     return false;
   };
 
-  return loadInfo(post, quick);
+  return loadInfo(post?.crosspost_parent_list?.[0] ?? post, quick);
 };
 
 export const filterPosts = async (

@@ -353,7 +353,7 @@ const PostModal = ({
       if (context.posts?.[context.postNum - 1]?.data) {
         //console.log("moveback");
         apost?.subreddit !==
-          context.post[context.postNum - 1].data?.subreddit && setSR_Detail({});
+          context.posts[context.postNum - 1].data?.subreddit && setSR_Detail({});
         setPost(context.posts[context.postNum - 1].data);
         setNewLink(context.posts[context.postNum - 1]?.data?.permalink);
         if (

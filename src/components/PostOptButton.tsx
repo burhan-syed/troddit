@@ -49,7 +49,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
 
   return (
     <>
-      <Menu as="div" className={" relative"}>
+      <Menu as="div" className={" relative font-normal"}>
         {({ open }) => (
           <>
             <div
@@ -276,7 +276,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
           </>
         )}
       </Menu>
-      <Menu as={"div"} className={"relative"}>
+      <Menu as={"div"} className={"relative font-normal"}>
         <Menu.Button ref={filterMenuRef} className="hidden"></Menu.Button>
         <Transition
           as={Fragment}
