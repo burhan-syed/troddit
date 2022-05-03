@@ -665,8 +665,8 @@ const VideoHandler = ({
           }
         >
           <Image
-            className={!containerDims?.[1] ? "absolute bottom-0 left-0" : " "} //!postMode ?
-            src={placeholder.url}
+            className={(!containerDims?.[1] ? "absolute bottom-0 left-0" : " ") + (placeholder?.url?.includes('http') ? " " : " blur-2xl ")} //!postMode ?
+            src={placeholder?.url?.includes('http') ? placeholder.url : thumbnail.url}
             height={vidHeight}
             width={vidWidth}
             alt="placeholder"
@@ -676,6 +676,7 @@ const VideoHandler = ({
               setUseFallback(true);
             }}
             draggable={false}
+            
           />
         </div>
 
