@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useInView } from "react-intersection-observer";
 import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
@@ -11,7 +12,7 @@ const VideoHandler = ({
   placeholder,
   videoInfo,
   maxHeight = {},
-  maxHeightNum = 6000,
+  maxHeightNum = -1,
   imgFull = false,
   postMode = false,
   audio,
@@ -20,7 +21,7 @@ const VideoHandler = ({
   const context: any = useMainContext();
   const video: any = useRef();
   const audioRef: any = useRef();
-  const volRef: any = useRef();
+  const fullWidthRef: any = useRef();
   const seekRef: any = useRef();
   // const [audioSrc, setaudioSrc] = useState("");
   // const [mounted, setMounted] = useState(false);
@@ -43,6 +44,29 @@ const VideoHandler = ({
   const [buffering, setBuffering] = useState(false);
   const [mouseIn, setMouseIn] = useState(false);
   const [focused, setFocused] = useState(postMode);
+  const [show, setShow] = useState(postMode ? true : false);
+  const [left, setLeft] = useState(false);
+  const { ref } = useInView({
+    threshold: [0, 0.7, 0.8, 0.9, 1],
+    onChange: (inView, entry) => {
+      if (!postMode) {
+        entry.intersectionRatio == 0
+          ? setShow(false)
+          : entry.intersectionRatio >= 0.8 && setShow(true);
+        show && !postMode && entry.intersectionRatio < 1
+          ? setLeft(true)
+          : entry.intersectionRatio == 1 && setLeft(false);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (videoLoaded && show) {
+      playVideo();
+    } else if (!show && videoPlaying) {
+      pauseVideo();
+    }
+  }, [videoLoaded, show]);
 
   const onLoadedData = () => {
     setVideoDuration(video?.current?.duration);
@@ -53,16 +77,26 @@ const VideoHandler = ({
     sethasAudio(true);
   };
 
-  const [imgheight, setheight] = useState({});
-  const [maxheight, setmaxheight] = useState({});
-  const [maxheightnum, setmaxheightnum] = useState<Number>();
+  // const [imgheight, setheight] = useState({});
+  // const [maxheight, setmaxheight] = useState({});
+  // const [maxheightnum, setmaxheightnum] = useState<Number>();
 
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
-    // console.log(maxHeight, imgFull);
-    if (postMode && containerDims) {
-      //console.log(containerDims);
+    const maximizeWidth = () => {
+      let r = fullWidthRef?.current?.clientWidth / videoInfo.width;
+      setVidWidth(Math.floor(r * videoInfo.width));
+      setVidHeight(Math.floor(r * videoInfo.height));
+    };
+    //if imgFull maximize the video to take full width
+    if (imgFull && !containerDims) {
+      maximizeWidth();
+      // setVidHeight(videoInfo.height);
+      // setVidWidth(videoInfo.width);
+    }
+    //if postMode with portrait container (containerDims) fill it
+    else if (postMode && containerDims) {
       let ry = containerDims?.[1] / videoInfo?.height;
       let rx = containerDims?.[0] / videoInfo?.width;
       if (Math.abs(ry - rx) < 0.05) {
@@ -80,38 +114,45 @@ const VideoHandler = ({
           Math.floor(videoInfo.height * (containerDims?.[0] / videoInfo?.width))
         );
       }
-    } else if (!imgFull || (context.columnOverride == 1 && !postMode)) {
-      if (videoInfo?.height && maxHeightNum) {
-        let r = maxHeightNum / videoInfo.height;
-        setVidHeight(Math.floor(videoInfo.height * r));
-        setVidWidth(Math.floor(videoInfo.width * r));
-      }
+    }
+    //
+    //in single column or in a post we will scale video so height is within window. By default maxHeightNum is x * windowHeight (set in Media component)
+    else if ((context.columns == 1 || postMode) && maxHeightNum > 0) {
+      let r2 = maxHeightNum / videoInfo.height;
+      setVidHeight(Math.floor(videoInfo.height * r2));
+      setVidWidth(Math.floor(videoInfo.width * r2));
+    }
+    //otherwise fill the available width to minimize letterboxing
+    else {
+      maximizeWidth();
     }
 
     return () => {
+      //by default native video height/width
       setVidHeight(videoInfo.height);
       setVidWidth(videoInfo.width);
     };
   }, [
     imgFull,
     maxHeightNum,
+    fullWidthRef?.current?.clientWidth,
     videoInfo,
     context.columnOverride,
     postMode,
     containerDims,
   ]);
 
-  useEffect(() => {
-    setheight({
-      height: `${videoInfo.height}px`,
-      maxHeight: `${Math.floor(screen.height * 0.75)}px`,
-    });
-    setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
-    setmaxheightnum(Math.floor(screen.height * 0.75));
-  }, [videoInfo]);
+  // useEffect(() => {
+  //   setheight({
+  //     height: `${videoInfo.height}px`,
+  //     maxHeight: `${Math.floor(screen.height * 0.75)}px`,
+  //   });
+  //   setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
+  //   setmaxheightnum(Math.floor(screen.height * 0.75));
+  // }, [videoInfo]);
 
   useEffect(() => {
-    if (context?.autoplay && !videoPlaying && !context.pauseAll) {
+    if (context?.autoplay && !videoPlaying && !context.pauseAll && show) {
       video?.current?.play().catch((e) => console.log(e));
     } else if (!context?.autoplay && videoPlaying) {
       video?.current?.pause()?.catch((e) => console.log(e));
@@ -126,6 +167,7 @@ const VideoHandler = ({
 
   //main control for play/pause button
   const playControl = (e?, manual = false) => {
+    setShow(true);
     e?.preventDefault();
     e?.stopPropagation();
     if (true) {
@@ -214,6 +256,7 @@ const VideoHandler = ({
   };
 
   const handleMouseIn = (e) => {
+    setShow(true);
     setMouseIn(true);
     if (
       !context.mediaOnly &&
@@ -247,7 +290,12 @@ const VideoHandler = ({
       }
     }
     //also mute if not manually unmuted manipulation
-    if (!manualAudio && !postMode && context.audioOnHover) {
+    if (
+      !manualAudio &&
+      !postMode &&
+      context.audioOnHover &&
+      context.columns !== 1
+    ) {
       setMuted(true);
     }
   };
@@ -305,14 +353,26 @@ const VideoHandler = ({
     }
   };
 
+  // useEffect(() => {
+  //   if (postMode) {
+  //     setMuted(!context?.audioOnHover);
+  //   }
+  //   return () => {
+  //     //
+  //   };
+  // }, [context?.audioOnHover]);
+
   useEffect(() => {
-    if (postMode) {
-      setMuted(!context?.audioOnHover);
+    if ((!show || !context?.audioOnHover || left) && !postMode) {
+      setMuted(true);
+    } else if (
+      context?.audioOnHover &&
+      (postMode || context?.columns == 1) &&
+      !left
+    ) {
+      setMuted(false);
     }
-    return () => {
-      //
-    };
-  }, [context?.audioOnHover]);
+  }, [show, context?.audioOnHover, context?.columns, left]);
 
   useEffect(() => {
     if (audioRef?.current) {
@@ -390,7 +450,6 @@ const VideoHandler = ({
         playControl(e, true);
       }}
       onMouseEnter={(e) => {
-        // console.log("mouseenter");
         setFocused(true);
         handleMouseIn(e);
       }}
@@ -398,11 +457,16 @@ const VideoHandler = ({
         !postMode && setFocused(false);
         handleMouseOut();
       }}
+      ref={ref}
+      style={postMode || context.columns == 1 ? {} : { height: `${vidHeight}px` }}
     >
       {/* Background Span Image */}
-      <div className="absolute top-0 z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 ">
+      <div
+        className="absolute  z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 "
+        ref={fullWidthRef}
+        >
         <Image
-          className={"scale-110 blur-md  "}
+          className={"scale-110 blur-md "}
           src={thumbnail.url}
           alt=""
           layout="fill"
@@ -411,6 +475,7 @@ const VideoHandler = ({
           onError={() => {
             setUseFallback(true);
           }}
+          
         />
       </div>
       {/* Controls */}
@@ -418,7 +483,6 @@ const VideoHandler = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={(e) => {
-              //console.log("innerclick");
               playControl(e, true);
             }}
             className={
@@ -451,16 +515,17 @@ const VideoHandler = ({
               e.stopPropagation();
             }}
           >
-            {/* vol container */}
             <div
+              //vol container
+              title="vol container"
               className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
             >
-              {/* slider container */}
               <div
+                //slider container
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -471,29 +536,27 @@ const VideoHandler = ({
                 className={
                   "relative bottom-0 left-0  justify-center w-full h-32 bg-black bg-opacity-40 rounded-md " +
                   (showVolSlider ? " hidden md:flex " : " hidden ")
-                  // limiting to post mode currently becuase of slider drag issues
                 }
               >
-                {/* Slide range */}
                 <div
+                  //slide range
                   className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
                 >
-                  {/* Range controls */}
                   <div
+                    //range controls
                     className="absolute z-30 w-full h-full"
                     onClick={(e) => updateVolume(e)}
-                    //onMouseLeave={() => setVolMouseDown(false)}
                     onMouseMove={(e) => {
                       updateVolumeDrag(e);
                     }}
                   ></div>
                   <div className="absolute bottom-0 w-2 h-full">
-                    {/* Control Circle  */}
                     <div
+                      //control circle
                       className="absolute z-20 w-4 h-4 bg-white border rounded-full -left-1 "
                       style={
                         muted || volume === 0
@@ -507,8 +570,8 @@ const VideoHandler = ({
                       onMouseDown={() => setVolMouseDown(true)}
                       onMouseUp={() => setVolMouseDown(false)}
                     ></div>
-                    {/* Vol indicator */}
                     <div
+                      //vol container
                       className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-lightScroll dark:bg-darkScroll"
                       style={{ height: `${muted ? 0 : volume * 100}%` }}
                     ></div>
@@ -517,8 +580,8 @@ const VideoHandler = ({
                 </div>
               </div>
             </div>
-            {/* mute/unmute button */}
             <button
+              //mute unmute button
               onClick={(e) => audioControl(e, true)}
               onMouseEnter={() => setShowVol(true)}
               onMouseLeave={() => setShowVol(false)}
@@ -532,8 +595,9 @@ const VideoHandler = ({
             </button>
           </div>
         )}
-        {/* Progress Bar Container*/}
         <div
+          // Progress Bar Container
+
           id={"progressBarConainer"}
           ref={seekRef}
           className={
@@ -552,20 +616,13 @@ const VideoHandler = ({
                     ? seekTargetLength - 48
                     : seekLeftOfset - 24
                 }px`,
-                // transform: `translateX(${
-                //   seekLeftOfset / seekTargetLength < 0.2
-                //     ? 20
-                //     : seekLeftOfset / seekTargetLength > 0.9
-                //     ? -80
-                //     : -20
-                // }px)`,
               }}
             >
               {seekTime}
             </div>
           )}
-          {/* Video Duration */}
           <div
+            //video duration
             className="absolute bottom-0 left-0 h-1 origin-left bg-blue-400 dark:bg-red-800 "
             style={{ width: `${progressPerc * 100}%` }}
           ></div>
@@ -582,7 +639,7 @@ const VideoHandler = ({
 
       {/* Video */}
       <div
-        className={"relative overflow-hidden flex   "}
+        className={"relative overflow-hidden flex  object-fill   "}
         style={containerDims?.[1] && { height: `${containerDims[1]}px` }}
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
@@ -590,6 +647,7 @@ const VideoHandler = ({
         )}
 
         <div
+        //high res placeholder image
           className={
             `  ` +
             `${
@@ -625,13 +683,11 @@ const VideoHandler = ({
           ref={video}
           className={
             (videoLoaded ? "opacity-100 " : " opacity-0") +
-            (!containerDims?.[1] ? " absolute top-0 left-0 " : " ") //!postMode
+            (!containerDims?.[1] ? " absolute top-0 left-0 " : "  ") //!postMode
           }
           width={`${vidWidth}`}
           height={`${vidHeight}`}
-          autoPlay={
-            context?.autoplay || postMode || context.cardStyle === "row1"
-          }
+          autoPlay={false}
           muted
           loop
           preload={context?.autoplay || postMode ? "auto" : "none"}
@@ -661,7 +717,7 @@ const VideoHandler = ({
             type="video/mp4"
           />
         </video>
-
+        
         <video
           autoPlay={false}
           controls={false}

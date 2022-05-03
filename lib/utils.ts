@@ -412,7 +412,8 @@ export const filterPosts = async (
       if (!imgPortraitFilter || !imgLandscapeFilter) {
         quick = false;
       }
-      let mediaInfo = await findMediaInfo(d, quick);
+
+      let mediaInfo = d?.mediaInfo ?? await findMediaInfo(d, quick);
       //orientation check
       if (!imgPortraitFilter || !imgLandscapeFilter) {
         //only check on videos or images (galleries consider images)
@@ -464,6 +465,8 @@ export const filterPosts = async (
     };
 
     let f = await filter(data, async (d) => {
+      let mediaInfo = await findMediaInfo(d.data);
+      d.data['mediaInfo'] = mediaInfo;
       let r = await filterCheck(d.data);
       //console.log(d, r);
       return r;
@@ -473,16 +476,7 @@ export const filterPosts = async (
 
   let filtered = posts;
   if (
-    checkUsers ||
-    checkSubs ||
-    !readFilter ||
-    !imgFilter ||
-    !vidFilter ||
-    !selfFilter ||
-    // !galFilter ||
-    !linkFilter ||
-    !imgPortraitFilter ||
-    !imgLandscapeFilter
+    true //always going to do this to get mediaInfo initally, additional filter steps decided in filterCheck()
   ) {
     filtered = await filterChildren(posts);
   }

@@ -1,11 +1,7 @@
 import Image from "next/dist/client/image";
-//import MyImage from './Image';
-import LazyLoad from "react-lazyload";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
-import ImageHandler from "./ImageHandler";
-import { forceCheck } from "react-lazyload";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
@@ -13,7 +9,6 @@ import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
-const TWITCH_PARENT = "www.troddit.com"; //'localhost'
 
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
@@ -21,11 +16,11 @@ async function fileExists(url) {
   // let http = new XMLHttpRequest();
   // http.open('HEAD', url, false);
   // http.send();
-  // // console.log(http.status);
+  // //console.log(http.status);
   // return http.status != (403 || 404);
 
   // } catch (e) {
-  //   console.log('err',e)
+  //   //console.log('err',e)
   //   return false;
   // }
   return true;
@@ -42,7 +37,7 @@ const Media = ({
 }) => {
   const context: any = useMainContext();
   const [windowWidth, windowHeight] = useWindowSize();
-
+  const mediaRef = useRef(null);
   const [isPortrait, setIsPortrait] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
@@ -92,19 +87,22 @@ const Media = ({
     };
 
     const initialize = async () => {
-      if (!post.mediaInfo) {
+      if (!post?.["mediaInfo"]) {
         let m = await findMediaInfo(post);
         post["mediaInfo"] = m;
       }
       let a, b, c;
-      b = await findVideo();
-      if (!b) {
+      if (post["mediaInfo"].isVideo) {
+        b = await findVideo();
+      } else if (
+        !b &&
+        (context.columns == 1 || allowIFrame) &&
+        post["mediaInfo"].isIframe
+      ) {
+        c = await findIframe();
+      } else if (!b && !c) {
         a = await findImage();
       }
-      if (context.columnOverride == 1 || allowIFrame) {
-        c = await findIframe();
-      }
-      //console.log(a,b,c)
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
     };
 
@@ -132,8 +130,8 @@ const Media = ({
     const checkURL = (url) => {
       const placeholder =
         "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"; //"http://goo.gl/ijai22";
-      if (!url) return placeholder;
-      if (!url.includes("http")) return placeholder;
+      //if (!url) return placeholder;
+      if (!url?.includes("http")) return placeholder;
       return url;
     };
 
@@ -221,7 +219,7 @@ const Media = ({
           setisYTVid(true);
         }
         setIFrame(post.mediaInfo.iFrameHTML);
-        (context.columnOverride === 1 || allowIFrame) && setIsIFrame(true);
+        (context.columns === 1 || allowIFrame) && setIsIFrame(true);
         return true;
       } else {
         return false;
@@ -292,7 +290,6 @@ const Media = ({
       setToLoad(true);
     } else {
     }
-    forceCheck();
     return () => {
       setIsGallery(false);
       setGalleryInfo([]);
@@ -307,72 +304,33 @@ const Media = ({
       setLoaded(false);
       setToLoad(false);
     };
-  }, [post, allowIFrame, context?.columnOverride, imgFull]);
+  }, [post, allowIFrame, context?.columns, imgFull]);
 
-  const [imgheight, setimgheight] = useState({});
-  const [maxheight, setmaxheight] = useState({});
-  const [maxheightnum, setmaxheightnum] = useState<number>();
+  //scale media
+  const [imgheight, setimgheight] = useState({}); //sets style height for image
+  const [maxheight, setmaxheight] = useState({}); //sets maxheight style
+  const [maxheightnum, setmaxheightnum] = useState<number>(); //maxheight set in style
   useEffect(() => {
-    let cropamount = 0.77;
-    // if (portraitMode) {
-    //   cropamount = containerDims?.[1]
-    //     ? containerDims?.[1] / windowHeight
-    //     : 0.93;
-    // }
+    //console.log(postMode, context.columns, imgFull)
+    let cropamount = 0.95;
+    if (postMode || (context?.columns == 1 && !imgFull)) {
+      cropamount = 0.75;
+    }
     let imgheight = imageInfo.height;
-    // if (
-    //   context?.columnOverride == 1 &&
-    //   !imgFull &&
-    //   imgheight > Math.floor(windowHeight * 0.75)
-    // ) {
-    //   imgheight = windowHeight * 0.75;
-    // }
     containerDims?.[1]
       ? setimgheight({
           height: `${imgheight}px`,
           maxHeight: `${Math.floor(containerDims?.[1])}px`,
         })
-      : context.columnOverride === 1 && !postMode
+      : context.columns === 1 && !postMode
       ? setimgheight({ maxHeight: Math.floor(windowHeight * 0.75) })
       : "";
-
-    // !post?.mediaInfo?.isPortrait
-    //   ? setimgheight({
-    //       //height: `${imgheight}px`,
-    //       maxHeight: `${Math.floor(
-    //         windowHeight *
-    //           (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-    //       )}px`,
-    //     })
-    //   : setimgheight({
-    //       height: `${imgheight}px`,
-    //       maxHeight: `${
-    //         containerDims?.[1]
-    //           ? containerDims?.[1]
-    //           : Math.floor(
-    //               windowHeight *
-    //                 (postMode
-    //                   ? 0.5
-    //                   : context?.columnOverride == 1 && !imgFull
-    //                   ? 0.75
-    //                   : cropamount)
-    //             )
-    //       }px`,
-    //     });
     setmaxheight({
-      maxHeight: `${Math.floor(
-        windowHeight *
-          (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-      )}px`,
+      maxHeight: `${Math.floor(windowHeight * cropamount)}px`,
     });
     containerDims?.[1]
       ? setmaxheightnum(containerDims?.[1])
-      : setmaxheightnum(
-          Math.floor(
-            windowHeight *
-              (context?.columnOverride == 1 && !imgFull ? 0.75 : cropamount)
-          )
-        );
+      : setmaxheightnum(Math.floor(windowHeight * cropamount));
     return () => {
       setimgheight({});
       setmaxheight({});
@@ -380,18 +338,27 @@ const Media = ({
     };
   }, [
     imageInfo,
-    context?.columnOverride,
+    context?.columns,
     imgFull,
     portraitMode,
     windowHeight,
     containerDims,
   ]);
+  //scale images
+  const [imgWidthHeight, setImageWidthHeight] = useState([imageInfo.width, imageInfo.height])
+  useEffect(() => {
+    if (mediaRef.current.clientWidth && imageInfo.height && imageInfo.width){
+      let r = mediaRef.current.clientWidth / imageInfo.width;
+      let height = r * imageInfo.height;
+      setImageWidthHeight([mediaRef.current.clientWidth,height])
+    }
+  }, [imageInfo, mediaRef?.current?.clientWidth])
 
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
   return (
-    <div className="block select-none group">
-      {loaded && (
+    <div className="block select-none group" ref={mediaRef}>
+      {loaded ? (
         <>
           {isTweet && (
             <div
@@ -422,7 +389,7 @@ const Media = ({
               />
             </div>
           )}
-          {isIFrame && (allowIFrame || context?.columnOverride === 1) ? (
+          {isIFrame && (allowIFrame || context?.columns === 1) ? (
             <div
               className="relative"
               //filling IFrames in postmode portrait pane or aproximating a 16:9 ratio elsewhere
@@ -456,20 +423,15 @@ const Media = ({
           {isGallery ? (
             <div
               className="flex flex-col items-center"
-              // style={
-              //   imgFull || (context?.columnOverride == 1 && !postMode)
-              //     ? maxheight
-              //     : {}
-              // }
             >
               <Gallery
                 images={galleryInfo}
                 maxheight={
-                  imgFull ? 0 : maxheightnum // postMode && imgFull
-                  // ? // || (context.columnOverride == 1 && !postMode)
-                  //   maxheightnum
-                  // : 0
+                  imgFull ? 0 : maxheightnum 
                 }
+                postMode={postMode}
+                mediaRef={mediaRef}
+                uniformHeight={containerDims ? false : true}
               />
             </div>
           ) : (
@@ -477,67 +439,64 @@ const Media = ({
           )}
 
           {isImage && !isIFrame && !isMP4 && !isTweet && (
-            // <ImageHandler placeholder={placeholderInfo} imageInfo={imageInfo} />
             <div
               className={
                 "relative  " +
-                (imgFull ? " block" : " flex items-center justify-center ") +
+              (imgFull || !postMode && context.columns !== 1 && !post?.mediaInfo?.isTweet ? " block " : " flex items-center justify-center ") +
                 (post?.mediaInfo?.isTweet ? " py-14 " : " ")
               } //flex items-center justify-center "}
               style={
                 (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
-                (context.columnOverride === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
-                (postMode && !imgFull) //to prevent iamges from being greater than 75% of window height in post mode w/oimgfull
-                  ? imgheight
-                  : {}
+                (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
+                (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
+                  ? imgheight :
+                  !post?.mediaInfo?.isTweet 
+                  ? {height : `${imgWidthHeight[1]}px`} : {}
               }
             >
               {!mediaLoaded && (
                 <div className="absolute w-8 h-8 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
               )}
               {post?.mediaInfo?.isTweet && (
-                <div className="absolute flex w-full h-full   bg-[#1A8CD8] rounded-lg  ">
+                <div className="absolute flex w-full h-full bg-[#1A8CD8] rounded-lg  ">
                   <AiOutlineTwitter className="absolute right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
                 </div>
               )}
               <Image
                 src={imageInfo.url}
                 height={
-                  (context?.columnOverride === 1 || (postMode && !imgFull)) &&
-                  imageInfo.height > maxheightnum &&
+                  post?.mediaInfo?.isTweet ? imageInfo.height :
+                  (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
+                  imageInfo.height > maxheightnum && //scale down image to fit in window
                   !imgFull
                     ? maxheightnum
-                    : imageInfo.height
+                    : imgWidthHeight[1]
                 }
                 width={
-                  (context?.columnOverride === 1 || (postMode && !imgFull)) &&
-                  imageInfo.height > maxheightnum &&
+                  post?.mediaInfo?.isTweet ? imageInfo.width :
+                  (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
+                  imageInfo.height > maxheightnum && //scale down image to fit in window
                   !imgFull
                     ? Math.floor(
                         imageInfo.width * (maxheightnum / imageInfo.height)
                       )
-                    : imageInfo.width
+                    : imgWidthHeight[0]
                 }
                 alt=""
                 layout={
-                  // (imgFull && !(context?.cardStyle === "row1")) ||
-                  // context?.columnOverride == 1 ||
-                  // (postMode && !imgFull) || // && post?.mediaInfo?.isPortrait
-                  // imageInfo.url === "spoiler"
-                  //   ? "fixed" //"fill" //fitting image to above container
-                  imgFull ? "responsive" : "intrinsic" //"responsive"
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet ? "fill" : imgFull  ? "responsive" : "intrinsic" 
+                 
                 }
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  imgFull || context?.columnOverride == 1
+                  imgFull || context?.columns == 1 
                     ? "contain"
-                    : "contain"
+                    : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
-                // placeholder="blur"
-                // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkKF5YDwADJAGVKdervwAAAABJRU5ErkJggg=="
+                className={post?.mediaInfo?.isTweet ? "rounded-lg object-contain" : ""}
               />
             </div>
           )}
@@ -548,15 +507,9 @@ const Media = ({
                 className="flex flex-col items-center flex-none "
                 style={
                   //imgFull ||
-                  context?.columnOverride == 1 && !postMode ? maxheight : {}
+                  context?.columns == 1 && !postMode ? maxheight : {}
                 }
               >
-                {/* <LazyLoad
-                  height={videoInfo.height}
-                  once={true}
-                  offset={2000}
-                  unmountIfInvisible={false}
-                > */}
                 <VideoHandler
                   thumbnail={placeholderInfo}
                   placeholder={imageInfo} //{placeholderInfo}
@@ -568,7 +521,6 @@ const Media = ({
                   postMode={postMode}
                   containerDims={containerDims}
                 />
-                {/* </LazyLoad> */}
               </div>
             ) : (
               ""
@@ -577,9 +529,9 @@ const Media = ({
             ""
           )}
 
-          {post?.selftext_html &&
-          (!context.mediaOnly || imgFull) &&
-          (context.cardStyle !== "card2" || imgFull) ? (
+          {post?.selftext_html && (
+          (!context.mediaOnly ) &&
+          (context.cardStyle !== "card2" ) || postMode) ? (
             <div
               className={
                 "p-1 overflow-y-auto select-text  overscroll-auto scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll" +
@@ -601,7 +553,15 @@ const Media = ({
             ""
           )}
         </>
+      ) : (
+        post?.mediaInfo?.dimensions?.[1] ? (
+          <div
+            className=""
+            style={{ height: `${post.mediaInfo.dimensions[1]}px` }}
+          ></div>
+        ) : <div></div>
       )}
+      
     </div>
   );
 };

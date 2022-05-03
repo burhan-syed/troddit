@@ -129,9 +129,7 @@ const SearchPage = ({ query }) => {
                 className={
                   (expand
                     ? "md:sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 md:flex-none  p-2 md:mr-4  bg-lightPost  border   border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 " +
-                      (context?.cardStyle === "card2" || context?.mediaOnly
-                        ? ""
-                        : " rounded-md ")
+                      ( " rounded-lg ")
                     : "flex flex-row justify-between select-none  ") + " "
                 }
               >
@@ -345,11 +343,7 @@ const SearchPage = ({ query }) => {
                       <div
                         className={
                           "absolute top-0 flex flex-col items-center justify-center w-full h-full text-center border border-gray-300 bg-lightPost group dark:bg-darkBG dark:border-trueGray-700 " +
-                          (context?.cardStyle === "row1" ||
-                          context?.cardStyle === "card2" ||
-                          context?.mediaOnly
-                            ? "  "
-                            : " rounded-md ")
+                          ( " rounded-lg ")
                         }
                       >
                         <h1>{`Didn't find any ${

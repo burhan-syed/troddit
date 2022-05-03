@@ -71,7 +71,7 @@ const Collection = ({
   return (
     <div
       className={
-        "relative  transition-colors bg-contain border border-gray-300 shadow-md bg-lightPost  dark:bg-darkBG dark:border-trueGray-700  rounded-md select-none dark:hover:border-trueGray-500 hover:border-gray-400"
+        "relative  transition-colors bg-contain border border-gray-300 shadow-md bg-lightPost  dark:bg-darkBG dark:border-trueGray-700  rounded-lg select-none dark:hover:border-trueGray-500 hover:border-gray-400"
       }
     >
       <div

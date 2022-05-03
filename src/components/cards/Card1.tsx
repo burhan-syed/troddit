@@ -28,9 +28,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
     <div>
       <div
         className={
-          (!context.mediaOnly || !hasMedia ? "px-3 pt-3 pb-2 " : "  ") +
-          (!context.mediaOnly && " rounded-md ") +
-          " text-sm bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border  group hover:cursor-pointer border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400"
+          (!context.mediaOnly || !hasMedia ? "px-3 pt-3 pb-2 " : "  ") 
+          + " rounded-lg overflow-clip " +
+          (context.mediaOnly ? " border-transparent " : " border-gray-300 dark:border-trueGray-700 bg-lightPost hover:bg-lightPostHover dark:bg-darkBG dark:hover:bg-darkPostHover ") +
+          " text-sm   hover:shadow-2xl transition-colors border  group hover:cursor-pointer  shadow-md   dark:hover:border-trueGray-500 hover:border-gray-400"
         }
       >
         <div className="">
