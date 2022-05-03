@@ -355,7 +355,6 @@ const Media = ({
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
   }, [imageInfo, mediaRef?.current?.clientWidth]);
-
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
   return (
@@ -427,6 +426,7 @@ const Media = ({
               <Gallery
                 images={galleryInfo}
                 maxheight={imgFull ? 0 : maxheightnum}
+
                 postMode={postMode}
                 mediaRef={mediaRef}
                 uniformHeight={containerDims ? false : true}
@@ -574,6 +574,7 @@ const Media = ({
       ) : (
         <div></div>
       )}
+      
     </div>
   );
 };
