@@ -344,10 +344,6 @@ const Media = ({
     containerDims,
   ]);
   //scale images
-  const [imgWidthHeight, setImageWidthHeight] = useState([
-    imageInfo.width,
-    imageInfo.height,
-  ]);
   useEffect(() => {
     if (mediaRef.current.clientWidth && imageInfo.height && imageInfo.width) {
       let r = mediaRef.current.clientWidth / imageInfo.width;
@@ -427,6 +423,7 @@ const Media = ({
               <Gallery
                 images={galleryInfo}
                 maxheight={imgFull ? 0 : maxheightnum}
+
                 postMode={postMode}
                 mediaRef={mediaRef}
                 uniformHeight={containerDims ? false : true}
@@ -574,6 +571,7 @@ const Media = ({
       ) : (
         <div></div>
       )}
+      
     </div>
   );
 };
