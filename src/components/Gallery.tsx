@@ -163,7 +163,7 @@ const Gallery = ({
                       : " hidden "
                   }`}
                   style={
-                    uniformHeight
+                    uniformHeight && imgtall 
                       ? postMode || context.columns == 1
                         ? {
                             height: `${
@@ -181,7 +181,7 @@ const Gallery = ({
                           }
                         : {
                             height: `${
-                              mediaRef?.current?.clientWidth
+                              (mediaRef?.current?.clientWidth && imgwide?.width)
                                 ? imgtall.height *
                                   (mediaRef.current.clientWidth / imgwide.width)
                                 : image.height
