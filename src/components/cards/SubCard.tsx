@@ -80,11 +80,9 @@ const SubCard = ({
     <div
       className={
         "relative  transition-colors bg-contain border shadow-md bg-lightPost    dark:bg-darkBG   " +
-        (context?.cardStyle === "card2" || context?.mediaOnly
+        (tall
           ? "  "
-          : tall
-          ? "  "
-          : " rounded-md ") +
+          : " rounded-lg ") +
         (tall
           ? " border-transparent dark:border-b-trueGray-700 border-b-gray-300 "
           : " group dark:border-trueGray-700 border-gray-300   dark:hover:border-trueGray-500 hover:shadow-2xl hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:cursor-pointer hover:border-gray-400")
@@ -93,11 +91,9 @@ const SubCard = ({
       <div
         className={
           ` absolute  w-full  bg-cover bg-center  ` +
-          (context?.cardStyle === "card2" || context?.mediaOnly
-            ? "  "
-            : tall
+          ( tall
             ? " "
-            : " rounded-t-md ") +
+            : " rounded-t-lg ") +
           (tall ? " h-[121px] border-b " : " h-16") +
           (hideNSFW ||
           (subBanner?.backgroundImage?.length < 9 &&

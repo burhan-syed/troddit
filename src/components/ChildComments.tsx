@@ -211,8 +211,8 @@ const ChildComments = ({
                       ></Image>
                     </div>
                   ) : (
-                    <div className="flex items-center mr-0.5 justify-center w-8 h-8 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
-                      <h4 className="text-2xl ml-0.5 mb-1 text-white">u/</h4>
+                    <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
+                      <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
                     </div>
                   )}
                   <h1 className="group-hover:underline">

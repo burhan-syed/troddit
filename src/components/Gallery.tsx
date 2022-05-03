@@ -1,16 +1,33 @@
 /* eslint-disable @next/next/no-img-element */
+import { Transition } from "@headlessui/react";
 import Image from "next/dist/client/image";
 import { useState, useEffect, createRef } from "react";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
+import { isContext } from "vm";
+import { useMainContext } from "../MainContext";
 
-const Gallery = ({ images, maxheight = 0 }) => {
+const Gallery = ({
+  images,
+  maxheight = 0,
+  postMode,
+  mediaRef,
+  uniformHeight = false,
+}) => {
+  const context: any = useMainContext();
   const [loaded, setLoaded] = useState(false);
   const [index, setIndex] = useState(0);
-  const [imgtall, setimgtall] = useState(0);
-  const [imgwidth, setimgwidth] = useState(0);
-  const [style, setStyle] = useState({});
+  const [imgtall, setimgtall] = useState<{
+    url: string;
+    height: number;
+    width: number;
+  }>();
+  const [imgwide, setimgwide] = useState<{
+    url: string;
+    height: number;
+    width: number;
+  }>();
   const [imagesRender, setImagesRender] = useState(images);
-
+  const [prevIndex, setPrevIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const handleTouchStart = (e) => {
@@ -31,14 +48,11 @@ const Gallery = ({ images, maxheight = 0 }) => {
 
   useEffect(() => {
     let ratio = 1;
-    let tallest = 0;
-    let widest = 0;
+    let tallest = images[0];
+    let widest = images[0];
     if (images.length > 0) {
-      //console.log(images, "gallery");
-
       if (maxheight > 0) {
         let newimages = [];
-        //console.log(maxheight);
         images.forEach((img, i) => {
           if (img.height > maxheight) {
             ratio = maxheight / img.height;
@@ -54,17 +68,16 @@ const Gallery = ({ images, maxheight = 0 }) => {
               width: img.width,
             });
           }
-          if (images[i].height > tallest) {
-            tallest = images[i].height;
+          if (images[i].height > images?.[tallest]?.height) {
+            tallest = images[i];
           }
-          if (images[i].width > widest) {
-            widest = images[i].width;
+          if (images[i].width > images?.[widest]?.width) {
+            widest = images[i];
           }
         });
         setImagesRender(newimages);
         setimgtall(tallest);
-        setimgwidth(widest);
-        setStyle({ height: `${tallest}px`, width: `${widest}px` });
+        setimgwide(widest);
       } else {
         setImagesRender(images);
       }
@@ -80,6 +93,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
     e.preventDefault();
     e.stopPropagation();
     if (index < images.length - 1) {
+      setPrevIndex(index);
       setIndex(index + 1);
     }
   };
@@ -87,6 +101,7 @@ const Gallery = ({ images, maxheight = 0 }) => {
     e.preventDefault();
     e.stopPropagation();
     if (index > 0) {
+      setPrevIndex(index);
       setIndex(index - 1);
     }
   };
@@ -95,9 +110,6 @@ const Gallery = ({ images, maxheight = 0 }) => {
   const arrowStyle =
     "absolute text-lightText text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center bg-opacity-50";
 
-  // Let's create dynamic buttons. It can be either left or right. Using
-  // isLeft boolean we can determine which side we'll be rendering our button
-  // as well as change its position and content.
   const sliderControl = (isLeft) => (
     <>
       {images.length > 1 && (
@@ -136,55 +148,79 @@ const Gallery = ({ images, maxheight = 0 }) => {
           </div>
         )}
 
-        {/* <div className="block border-2 opacity-100 border-upvote">
-          <Image
-            className=""
-            src={images[0].url}
-            height={imgtall}
-            width={imgwidth}
-            alt=""
-            layout="intrinsic"
-            priority={false}
-            unoptimized={true}
-          ></Image>
-        </div> */}
         {sliderControl(true)}
         <div className="">
           {imagesRender.map((image, i) => {
             if (i < index + 3 || i > index - 3) {
               return (
                 <div
-                  key={i + image.url}
-                  className={`${i === index ? " block " : " hidden "}`}
+                  key={image.url}
+                  className={`${
+                    i === index
+                      ? postMode || context.columns == 1
+                        ? " flex items-center "
+                        : " block "
+                      : " hidden "
+                  }`}
+                  style={
+                    uniformHeight && imgtall 
+                      ? postMode || context.columns == 1
+                        ? {
+                            height: `${
+                              maxheight >
+                              imgtall.height *
+                                ((mediaRef?.current?.clientWidth ??
+                                  imgtall.width) /
+                                  imgtall.width)
+                                ? imgtall.height *
+                                  ((mediaRef?.current?.clientWidth ??
+                                    imgtall.width) /
+                                    imgtall.width)
+                                : maxheight
+                            }px`,
+                          }
+                        : {
+                            height: `${
+                              (mediaRef?.current?.clientWidth && imgwide?.width)
+                                ? imgtall.height *
+                                  (mediaRef.current.clientWidth / imgwide.width)
+                                : image.height
+                            }px`,
+                          }
+                      : {}
+                  }
                 >
+                  {/* <Transition
+                   show={i === index}
+                   enter="transition ease-in-out duration-300 transform"
+                   enterFrom={index > prevIndex ? "translate-x-full" : "-translate-x-full"}
+                   enterTo={index > prevIndex ? "translate-x-0" : ""}
+                   leave="transition ease-in-out duration-300 transform"
+                   leaveFrom={"translate-x-0"}
+                   leaveTo={"translate-x-full"}
+                  > */}
                   <Image
                     src={image.url}
                     height={image.height}
                     width={image.width}
                     alt=""
-                    layout={image.url === "spoiler" ? "fill" : "intrinsic"}
+                    //layout={image.url === "spoiler" ? "fill" : "intrinsic"}
+                    layout={
+                      image.url === "spoiler" ||
+                      (!postMode && context.columns !== 1)
+                        ? "fill"
+                        : "intrinsic"
+                    }
+                    objectFit="cover"
                     priority={true}
                     unoptimized={true}
                   ></Image>
+                  {/* </Transition> */}
                 </div>
               );
             }
           })}
         </div>
-
-        {/* <Image
-          src={images[index].url}
-          height={images[index].height}
-          width={images[index].width}
-          alt="thumbnail"
-          layout="intrinsic"
-        ></Image> */}
-        {/* <button
-          className={index === images.length - 1 ? "opacity-0" : ""}
-          onClick={(e) => advance(e)}
-        >
-          {">"}
-        </button> */}
         {sliderControl(false)}
       </div>
     );

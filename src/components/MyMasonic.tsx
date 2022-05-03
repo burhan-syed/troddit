@@ -36,32 +36,10 @@ import { CgEnter } from "react-icons/cg";
 import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { useRouter } from "next/router";
 
-const randInt = (min = 200, max = 500) =>
-  Math.floor(Math.random() * (max - min)) + min;
-// const getFakeItems = (cur = 0) => {
-//   const fakeItems = [];
-//   for (let i = 5000 * cur; i < cur * 5000 + 5000; i++)
-//     fakeItems.push({ id: i, height: randInt() });
-//   return fakeItems;
-// };
-
-const getFakeItems = (start = 0, end = 32) => {
-  const fakeItems = [];
-  for (let i = start; i < end + 10; i++)
-    fakeItems.push({ id: i, height: randInt() });
-  return fakeItems;
-};
-
-const getFakeItemsPromise = (start, end) =>
-  Promise.resolve(getFakeItems(start, end));
 
 let allowload = false;
 let lastload = "";
 let loadonce = 0;
-interface ColumnContext {
-  columns: number;
-  setColumns: Function;
-}
 
 const MyMasonic = ({
   query,
@@ -95,7 +73,6 @@ const MyMasonic = ({
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
   const [after, setAfter] = useState("");
-  const [subreddits, setSubreddits] = useState("");
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -104,8 +81,7 @@ const MyMasonic = ({
   const [items, setItems] = useState([]);
   const [end, setEnd] = useState(false);
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
-  const [sort, setSort] = useState("");
-  const [range, setRange] = useState("");
+
   // const plausible = usePlausible();
   const prevAfter = useRef(null);
   const prevAfters = useRef({});
@@ -119,15 +95,6 @@ const MyMasonic = ({
     block.current = false;
     allowload = true;
     loadonce = 0;
-    if (query.frontsort) {
-      setSort(query?.frontsort ?? "hot");
-      setRange(query?.t ?? "");
-    }
-    if (query.slug) {
-      setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "hot");
-      setRange(query?.t ?? "");
-    }
     lastload = initAfter;
     setFilterCount(filterNum);
     setAfter(initAfter);
@@ -143,8 +110,6 @@ const MyMasonic = ({
       setError(false);
       setItems([]);
       setAfter("");
-      setRange("");
-      setSubreddits("");
       setLoading(true);
       setCount(0);
     };
@@ -152,20 +117,6 @@ const MyMasonic = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initItems, initAfter]);
 
-  useEffect(() => {
-    if (query.frontsort) {
-      setSort(query?.frontsort ?? "hot");
-      setRange(query?.t ?? "");
-    }
-    if (query.slug) {
-      setSubreddits(query?.slug?.[0] ?? "");
-      setSort(query?.slug?.[1] ?? "hot");
-      setRange(query?.t ?? "");
-    }
-    return () => {
-      ("");
-    };
-  }, [query]);
 
   const getPostsPromise = (start, end) => Promise.resolve(getPosts(start, end));
 
@@ -175,74 +126,46 @@ const MyMasonic = ({
     windowWidth,
     windowHeight,
   ]);
-  const positioner = usePositioner(
-    {
-      width,
-      columnGutter: 0,
-      columnWidth: windowWidth / 3,
-    },
-    [items]
-  );
 
   useEffect(() => {
-    // const breakpointColumnsObj = {
-    //   default: 4,
-    //   2560: 3,
-    //   1280: 2,
-    //   767: 1,
-    // };
-
-    //console.log(windowWidth);
-    //console.log(context.columns, context.columnOverride, context.cardStyle);
-
     if (context.cardStyle == "row1") {
       setItemHeightEstimate(80);
       setCols(1);
     } else if (context?.columnOverride !== 0) {
       if (context?.columnOverride === 1) {
-        setItemHeightEstimate(Math.floor(windowHeight * 0.75));
+        setItemHeightEstimate(Math.floor(windowHeight * 0.8));
       } else {
         setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
       }
       setCols(context.columnOverride);
-      context.setColumns(context.columnOverride);
-    } else {
+      //context.setColumns(context.columnOverride);
+    } else if (!context.postOpen){ //prevent layout shift when resize with post open
       if (windowWidth > 2560) {
         setItemHeightEstimate(500);
         setCols(4);
-        context.setColumns(4);
+        //context.setColumns(4);
       } else if (windowWidth > 1280) {
         setItemHeightEstimate(600);
         setCols(3);
-        context.setColumns(3);
+        //context.setColumns(3);
       } else if (windowWidth > 767) {
         setItemHeightEstimate(900);
         setCols(2);
-        context.setColumns(2);
+        //context.setColumns(2);
       } else {
         setItemHeightEstimate(1200);
         setCols(1);
-        context.setColumns(1);
+        //context.setColumns(1);
       }
     }
     return () => {};
-  }, [windowWidth, context, windowHeight]);
+  }, [windowWidth, context.columnOverride, context.cardStyle, windowHeight, context.postOpen]);
 
-  // useEffect(() => {
-  //   context.setColumnOverride(0);
-  // }, [windowWidth])
+  useEffect(() => {
+    context.setColumns(cols);
 
-  const maybeLoadMore = useInfiniteLoader(
-    async (startIndex, stopIndex, currentItems) => {
-      const nextItems = await getFakeItemsPromise(startIndex, stopIndex);
-      setItems((current) => [...current, ...nextItems]);
-    },
-    {
-      isItemLoaded: (index, items) => !!items[index],
-      minimumBatchSize: 10,
-      threshold: 3,
-    }
-  );
+  }, [cols])
+
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     //console.log("try..", block.current, currAfter.current);
@@ -287,12 +210,6 @@ const MyMasonic = ({
     }
   );
 
-  const scrollToIndex = useScrollToIndex(positioner, {
-    align: "center",
-    offset: offset,
-    height: windowHeight,
-    element: containerRef,
-  });
 
   //load posts for slideshow functionality
   useEffect(() => {
@@ -369,13 +286,6 @@ const MyMasonic = ({
         );
       }
     } else if (isSubFlair) {
-      // data = await loadSubFlairPosts(
-      //   query.slug[0],
-      //   query?.q,
-      //   query?.sort,
-      //   query?.t,
-      //   loadafter
-      // );
       data = await getRedditSearch(
         query,
         loadafter,
@@ -451,17 +361,12 @@ const MyMasonic = ({
     //setPosts((prevposts) => [...prevposts, ...data.children]);
   };
   const getPosts = async (start = 0, end = 24) => {
-    //console.log("getpost call");
-
     allowload = false;
     let caughtup = false;
     let n = numposts;
     let payload = [];
     let lastafter = "";
-    //let fastafter = after;
     while (payload.length < end - start && !caughtup) {
-      //console.log("loop", after);
-      //let data = await (await loadmore(after)).data;
       let data = await (await loadmore(currAfter.current)).data;
       if (data?.after === "NONE") {
         //ignore
@@ -474,9 +379,6 @@ const MyMasonic = ({
           lastafter = data.after;
           return { payload, lastafter };
         }
-        //fastafter = data?.after;
-        //lastload = fastafter;
-        //console.log(data.posts);
         lastafter = data.after;
         payload = [...payload, ...data.posts];
       }
@@ -487,20 +389,6 @@ const MyMasonic = ({
     return { payload, lastafter };
   };
 
-  const getFakePosts = async (start = 0, end = 32) => {
-    const fakeItems = [];
-    for (let i = start; i < end + 10; i++)
-      fakeItems.push({ id: i, height: randInt() });
-    //return fakeItems;
-    setItems(fakeItems);
-  };
-
-  // useEffect(() => {
-  //   const i = fetchFront();
-  //   //setItems(i);
-  //   //const items = getFakeItems();
-  //   //setItems(items);
-  // }, []);
 
   const loadInfo = (
     <>
@@ -530,7 +418,7 @@ const MyMasonic = ({
             } //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
             overscanBy={2}
             render={PostCard}
-            className=""
+            className="outline-none"
             ssrWidth={500}
           />
           {!end && loadingMore && (
@@ -548,14 +436,6 @@ const MyMasonic = ({
       )}
 
       {loadInfo}
-      {/* {error && (
-        <div className="flex flex-col items-center justify-center text-center ">
-        
-        <div>
-          {"Expect more? Please refresh and assure you're not blocking content from Reddit."}
-        </div>
-      </div>
-      )} */}
     </div>
   );
 };

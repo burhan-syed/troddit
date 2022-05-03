@@ -206,9 +206,7 @@ const SubredditsPage = ({ query = undefined }) => {
             <div
               className={
                 " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden  bg-lightPost transition-colors border   border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 " +
-                (context?.cardStyle === "card2" || context?.mediaOnly
-                  ? ""
-                  : " rounded-md ")
+                ( " rounded-lg ")
               }
             >
               {categories.map((c) => (

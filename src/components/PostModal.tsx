@@ -199,6 +199,15 @@ const PostModal = ({
   }, []);
 
   useEffect(() => {
+    context.setPostOpen(true);
+  
+    return () => {
+      context.setPostOpen(false);
+    }
+  }, [])
+  
+
+  useEffect(() => {
     let asynccheck = true;
     const fetchPost = async () => {
       if (Object.keys(postData).length > 0 && !commentMode) {
