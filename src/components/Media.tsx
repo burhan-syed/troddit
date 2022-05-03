@@ -267,7 +267,6 @@ const Media = ({
         });
         let imgheight = post.mediaInfo.imageInfo[num].height;
         let imgwidth = post.mediaInfo.imageInfo[num].width;
-        //console.log('img',post.mediaInfo)
         setImageInfo({
           url: checkURL(post.mediaInfo.imageInfo[num].url.replace("amp;", "")),
           height: imgheight,
@@ -345,15 +344,17 @@ const Media = ({
     containerDims,
   ]);
   //scale images
-  const [imgWidthHeight, setImageWidthHeight] = useState([imageInfo.width, imageInfo.height])
+  const [imgWidthHeight, setImageWidthHeight] = useState([
+    imageInfo.width,
+    imageInfo.height,
+  ]);
   useEffect(() => {
-    if (mediaRef.current.clientWidth && imageInfo.height && imageInfo.width){
+    if (mediaRef.current.clientWidth && imageInfo.height && imageInfo.width) {
       let r = mediaRef.current.clientWidth / imageInfo.width;
       let height = r * imageInfo.height;
-      setImageWidthHeight([mediaRef.current.clientWidth,height])
+      setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
-  }, [imageInfo, mediaRef?.current?.clientWidth])
-
+  }, [imageInfo, mediaRef?.current?.clientWidth]);
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
   return (
@@ -421,14 +422,11 @@ const Media = ({
           )}
 
           {isGallery ? (
-            <div
-              className="flex flex-col items-center"
-            >
+            <div className="flex flex-col items-center">
               <Gallery
                 images={galleryInfo}
-                maxheight={
-                  imgFull ? 0 : maxheightnum 
-                }
+                maxheight={imgFull ? 0 : maxheightnum}
+
                 postMode={postMode}
                 mediaRef={mediaRef}
                 uniformHeight={containerDims ? false : true}
@@ -442,16 +440,22 @@ const Media = ({
             <div
               className={
                 "relative  " +
-              (imgFull || !postMode && context.columns !== 1 && !post?.mediaInfo?.isTweet ? " block " : " flex items-center justify-center ") +
+                (imgFull ||
+                (!postMode &&
+                  context.columns !== 1 &&
+                  !post?.mediaInfo?.isTweet)
+                  ? " block "
+                  : " flex items-center justify-center ") +
                 (post?.mediaInfo?.isTweet ? " py-14 " : " ")
               } //flex items-center justify-center "}
               style={
                 (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
                 (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
                 (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
-                  ? imgheight :
-                  !post?.mediaInfo?.isTweet 
-                  ? {height : `${imgWidthHeight[1]}px`} : {}
+                  ? imgheight
+                  : !post?.mediaInfo?.isTweet
+                  ? { height: `${imgWidthHeight[1]}px` }
+                  : {}
               }
             >
               {!mediaLoaded && (
@@ -465,18 +469,24 @@ const Media = ({
               <Image
                 src={imageInfo.url}
                 height={
-                  post?.mediaInfo?.isTweet ? imageInfo.height :
-                  (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                  imageInfo.height > maxheightnum && //scale down image to fit in window
-                  !imgFull
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet //layout in fill mode, no height needed
+                    ? undefined
+                    : post?.mediaInfo?.isTweet //set height normally for tweet images
+                    ? imageInfo.height
+                    : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
+                      (imageInfo.height * (mediaRef.current.clientWidth/imageInfo.width)) > maxheightnum && //scale down image to fit in window
+                      !imgFull
                     ? maxheightnum
-                    : imgWidthHeight[1]
+                    : imgWidthHeight[1] //scaled height to eliminate letterboxing
                 }
                 width={
-                  post?.mediaInfo?.isTweet ? imageInfo.width :
-                  (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                  imageInfo.height > maxheightnum && //scale down image to fit in window
-                  !imgFull
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                    ? undefined
+                    : post?.mediaInfo?.isTweet
+                    ? imageInfo.width
+                    : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
+                    (imageInfo.height * (mediaRef.current.clientWidth/imageInfo.width)) > maxheightnum && //scale down image to fit in window
+                      !imgFull
                     ? Math.floor(
                         imageInfo.width * (maxheightnum / imageInfo.height)
                       )
@@ -484,19 +494,22 @@ const Media = ({
                 }
                 alt=""
                 layout={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet ? "fill" : imgFull  ? "responsive" : "intrinsic" 
-                 
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                    ? "fill"
+                    : imgFull
+                    ? "responsive"
+                    : "intrinsic"
                 }
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  imgFull || context?.columns == 1 
-                    ? "contain"
-                    : "fill"
+                  imgFull || context?.columns == 1 ? "contain" : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
-                className={post?.mediaInfo?.isTweet ? "rounded-lg object-contain" : ""}
+                className={
+                  post?.mediaInfo?.isTweet ? "rounded-lg object-contain" : ""
+                }
               />
             </div>
           )}
@@ -529,9 +542,9 @@ const Media = ({
             ""
           )}
 
-          {post?.selftext_html && (
-          (!context.mediaOnly ) &&
-          (context.cardStyle !== "card2" ) || postMode) ? (
+          {post?.selftext_html &&
+          ((!context.mediaOnly && context.cardStyle !== "card2") ||
+            postMode) ? (
             <div
               className={
                 "p-1 overflow-y-auto select-text  overscroll-auto scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll" +
@@ -553,13 +566,13 @@ const Media = ({
             ""
           )}
         </>
+      ) : post?.mediaInfo?.dimensions?.[1] ? (
+        <div
+          className=""
+          style={{ height: `${post.mediaInfo.dimensions[1]}px` }}
+        ></div>
       ) : (
-        post?.mediaInfo?.dimensions?.[1] ? (
-          <div
-            className=""
-            style={{ height: `${post.mediaInfo.dimensions[1]}px` }}
-          ></div>
-        ) : <div></div>
+        <div></div>
       )}
       
     </div>
