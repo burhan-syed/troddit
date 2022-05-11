@@ -297,255 +297,341 @@ export const MainProvider = ({ children }) => {
     const getSettings = async () => {
       //fall back to localstorage for legacy settings
       let fallback = false;
-      let saved_nsfw = await localForage.getItem("nsfw");
-      if (saved_nsfw !== null) {
-        saved_nsfw === true ? setNSFW(true) : setNSFW(false);
-        localStorage.removeItem("nsfw");
-      } else {
-        fallback = true;
-        let local_nsfw = localStorage.getItem("nsfw");
-        local_nsfw?.includes("true") ? setNSFW(true) : setNSFW(false);
-      }
+      const loadNSFW = async () => {
+        let saved_nsfw = await localForage.getItem("nsfw");
+        if (saved_nsfw !== null) {
+          saved_nsfw === true ? setNSFW(true) : setNSFW(false);
+          localStorage.removeItem("nsfw");
+        } else {
+          fallback = true;
+          let local_nsfw = localStorage.getItem("nsfw");
+          local_nsfw?.includes("true") ? setNSFW(true) : setNSFW(false);
+        }
+      };
 
-      let saved_autoplay = await localForage.getItem("autoplay");
-      if (saved_autoplay !== null) {
-        saved_autoplay === true ? setAutoplay(true) : setAutoplay(false);
-        localStorage.removeItem("autoplay");
-      } else {
-        fallback = true;
-        let local_autoplay = localStorage.getItem("autoplay");
-        local_autoplay?.includes("true")
-          ? setAutoplay(true)
-          : setAutoplay(false);
-      }
+      const loadAutoplay = async () => {
+        let saved_autoplay = await localForage.getItem("autoplay");
+        if (saved_autoplay !== null) {
+          saved_autoplay === true ? setAutoplay(true) : setAutoplay(false);
+          localStorage.removeItem("autoplay");
+        } else {
+          fallback = true;
+          let local_autoplay = localStorage.getItem("autoplay");
+          local_autoplay?.includes("true")
+            ? setAutoplay(true)
+            : setAutoplay(false);
+        }
+      };
 
-      let saved_hoverplay = await localForage.getItem("hoverplay");
-      if (saved_hoverplay !== null) {
-        saved_hoverplay === true ? setHoverPlay(true) : setHoverPlay(false);
-        localStorage.removeItem("hoverplay");
-      } else {
-        fallback = true;
-        let local_hoverplay = localStorage.getItem("hoverplay");
-        local_hoverplay?.includes("true")
-          ? setHoverPlay(true)
-          : setHoverPlay(false);
-      }
+      const loadHoverPlay = async () => {
+        let saved_hoverplay = await localForage.getItem("hoverplay");
+        if (saved_hoverplay !== null) {
+          saved_hoverplay === true ? setHoverPlay(true) : setHoverPlay(false);
+          localStorage.removeItem("hoverplay");
+        } else {
+          fallback = true;
+          let local_hoverplay = localStorage.getItem("hoverplay");
+          local_hoverplay?.includes("true")
+            ? setHoverPlay(true)
+            : setHoverPlay(false);
+        }
+      };
 
-      let saved_mediaOnly: boolean = await localForage.getItem("mediaOnly");
-      if (saved_mediaOnly !== null) {
-        saved_mediaOnly === true ? setMediaOnly(true) : setMediaOnly(false);
-        localStorage.removeItem("mediaOnly");
-      } else {
-        fallback = true;
-        let local_mediaOnly = localStorage.getItem("mediaOnly");
-        local_mediaOnly?.includes("true")
-          ? setMediaOnly(true)
-          : setMediaOnly(false);
-      }
+      const loadMediaOnly = async () => {
+        let saved_mediaOnly: boolean = await localForage.getItem("mediaOnly");
+        if (saved_mediaOnly !== null) {
+          saved_mediaOnly === true ? setMediaOnly(true) : setMediaOnly(false);
+          localStorage.removeItem("mediaOnly");
+        } else {
+          fallback = true;
+          let local_mediaOnly = localStorage.getItem("mediaOnly");
+          local_mediaOnly?.includes("true")
+            ? setMediaOnly(true)
+            : setMediaOnly(false);
+        }
+      };
 
-      let saved_audioOnHover = await localForage.getItem("audioOnHover");
-      if (saved_audioOnHover !== null) {
-        saved_audioOnHover === true
-          ? setaudioOnHover(true)
-          : setaudioOnHover(false);
-        localStorage.removeItem("audioOnHover");
-      } else {
-        fallback = true;
-        let local_audioOnHover = localStorage.getItem("audioOnHover");
-        local_audioOnHover?.includes("true")
-          ? setaudioOnHover(true)
-          : setaudioOnHover(false);
-      }
+      const audioOnHover = async () => {
+        let saved_audioOnHover = await localForage.getItem("audioOnHover");
+        if (saved_audioOnHover !== null) {
+          saved_audioOnHover === true
+            ? setaudioOnHover(true)
+            : setaudioOnHover(false);
+          localStorage.removeItem("audioOnHover");
+        } else {
+          fallback = true;
+          let local_audioOnHover = localStorage.getItem("audioOnHover");
+          local_audioOnHover?.includes("true")
+            ? setaudioOnHover(true)
+            : setaudioOnHover(false);
+        }
+      };
 
-      let saved_columnOverride: number = await localForage.getItem(
-        "columnOverride"
-      );
-      if (saved_columnOverride !== null) {
-        saved_columnOverride > 0
-          ? setColumnOverride(saved_columnOverride)
-          : setColumnOverride(0);
-        localStorage.removeItem("columnOverride");
-      } else {
-        fallback = true;
-        let local_columnOverride = parseInt(
-          localStorage.getItem("columnOverride")
+      const columnOverride = async () => {
+        let saved_columnOverride: number = await localForage.getItem(
+          "columnOverride"
         );
-        local_columnOverride > 0
-          ? setColumnOverride(local_columnOverride)
-          : setColumnOverride(0);
-      }
+        if (saved_columnOverride !== null) {
+          saved_columnOverride > 0
+            ? setColumnOverride(saved_columnOverride)
+            : setColumnOverride(0);
+          localStorage.removeItem("columnOverride");
+        } else {
+          fallback = true;
+          let local_columnOverride = parseInt(
+            localStorage.getItem("columnOverride")
+          );
+          local_columnOverride > 0
+            ? setColumnOverride(local_columnOverride)
+            : setColumnOverride(0);
+        }
+      };
 
-      let saved_saveWideUI = await localForage.getItem("saveWideUI");
-      if (saved_saveWideUI !== null) {
-        saved_saveWideUI === false ? setSaveWideUI(false) : setSaveWideUI(true);
-        localStorage.removeItem("saveWideUI");
-      } else {
-        fallback = true;
-        let local_saveWideUI = localStorage.getItem("saveWideUI");
-        local_saveWideUI?.includes("false")
-          ? setSaveWideUI(false)
-          : setSaveWideUI(true);
-      }
+      const savedWideUI = async () => {
+        let saved_saveWideUI = await localForage.getItem("saveWideUI");
+        if (saved_saveWideUI !== null) {
+          saved_saveWideUI === false
+            ? setSaveWideUI(false)
+            : setSaveWideUI(true);
+          localStorage.removeItem("saveWideUI");
+        } else {
+          fallback = true;
+          let local_saveWideUI = localStorage.getItem("saveWideUI");
+          local_saveWideUI?.includes("false")
+            ? setSaveWideUI(false)
+            : setSaveWideUI(true);
+        }
+      };
 
-      let saved_syncWideUI = await localForage.getItem("syncWideUI");
-      if (saved_syncWideUI !== null) {
-        saved_syncWideUI === false ? setSyncWideUI(false) : setSyncWideUI(true);
-        localStorage.removeItem("syncWideUI");
-      } else {
-        fallback = true;
-        let local_syncWideUI = localStorage.getItem("syncWideUI");
-        local_syncWideUI?.includes("false")
-          ? setSyncWideUI(false)
-          : setSyncWideUI(true);
-      }
+      const syncWideUI = async () => {
+        let saved_syncWideUI = await localForage.getItem("syncWideUI");
+        if (saved_syncWideUI !== null) {
+          saved_syncWideUI === false
+            ? setSyncWideUI(false)
+            : setSyncWideUI(true);
+          localStorage.removeItem("syncWideUI");
+        } else {
+          fallback = true;
+          let local_syncWideUI = localStorage.getItem("syncWideUI");
+          local_syncWideUI?.includes("false")
+            ? setSyncWideUI(false)
+            : setSyncWideUI(true);
+        }
+      };
 
-      let saved_postWideUI = await localForage.getItem("postWideUI");
-      if (saved_postWideUI !== null) {
-        saved_postWideUI === false ? setPostWideUI(false) : setPostWideUI(true);
-        localStorage.removeItem("postWideUI");
-      } else {
-        fallback = true;
-        let local_postWideUI = localStorage.getItem("postWideUI");
-        local_postWideUI?.includes("false")
-          ? setPostWideUI(false)
-          : setPostWideUI(true);
-      }
+      const postWideUI = async () => {
+        let saved_postWideUI = await localForage.getItem("postWideUI");
+        if (saved_postWideUI !== null) {
+          saved_postWideUI === false
+            ? setPostWideUI(false)
+            : setPostWideUI(true);
+          localStorage.removeItem("postWideUI");
+        } else {
+          fallback = true;
+          let local_postWideUI = localStorage.getItem("postWideUI");
+          local_postWideUI?.includes("false")
+            ? setPostWideUI(false)
+            : setPostWideUI(true);
+        }
+      };
 
-      let saved_wideUI = await localForage.getItem("wideUI");
-      if (saved_wideUI !== null) {
-        saved_wideUI === false ? setWideUI(false) : setWideUI(true);
-        localStorage.removeItem("wideUI");
-      } else {
-        fallback = true;
-        let local_wideUI = localStorage.getItem("wideUI");
-        local_wideUI?.includes("false") ? setWideUI(false) : setWideUI(true);
-      }
+      const loadWideUI = async () => {
+        let saved_wideUI = await localForage.getItem("wideUI");
+        if (saved_wideUI !== null) {
+          saved_wideUI === false ? setWideUI(false) : setWideUI(true);
+          localStorage.removeItem("wideUI");
+        } else {
+          fallback = true;
+          let local_wideUI = localStorage.getItem("wideUI");
+          local_wideUI?.includes("false") ? setWideUI(false) : setWideUI(true);
+        }
+      };
 
-      let saved_cardStyle: string = await localForage.getItem("cardStyle");
-      if (saved_cardStyle !== null) {
-        saved_cardStyle && setCardStyle(saved_cardStyle);
-        localStorage.removeItem("cardStyle");
-      } else {
-        fallback = true;
-        let local_cardStyle = localStorage.getItem("cardStyle");
-        local_cardStyle?.length > 0
-          ? setCardStyle(saved_cardStyle)
-          : setCardStyle("default");
-      }
+      const loadCardStyle = async () => {
+        let saved_cardStyle: string = await localForage.getItem("cardStyle");
+        if (saved_cardStyle !== null) {
+          saved_cardStyle && setCardStyle(saved_cardStyle);
+          localStorage.removeItem("cardStyle");
+        } else {
+          fallback = true;
+          let local_cardStyle = localStorage.getItem("cardStyle");
+          local_cardStyle?.length > 0
+            ? setCardStyle(saved_cardStyle)
+            : setCardStyle("default");
+        }
+      };
 
-      let saved_localSubs: [] = await localForage.getItem("localSubs");
-      if (saved_localSubs !== null) {
-        saved_localSubs && setLocalSubs(saved_localSubs);
-        localStorage.removeItem("localSubs");
-      } else {
-        fallback = true;
-        let local_localSubs = JSON.parse(localStorage.getItem("localSubs"));
-        local_localSubs && setLocalSubs(local_localSubs);
-      }
+      const loadLocalSubs = async () => {
+        let saved_localSubs: [] = await localForage.getItem("localSubs");
+        if (saved_localSubs !== null) {
+          saved_localSubs && setLocalSubs(saved_localSubs);
+          localStorage.removeItem("localSubs");
+        } else {
+          fallback = true;
+          let local_localSubs = JSON.parse(localStorage.getItem("localSubs"));
+          local_localSubs && setLocalSubs(local_localSubs);
+        }
+      };
 
-      let saved_imgFilter = await localForage.getItem("imgFilter");
-      if (saved_imgFilter !== null) {
-        saved_imgFilter === false ? setImgFilter(false) : setImgFilter(true);
-        localStorage.removeItem("imgFilter");
-      } else {
-        fallback = true;
-        let local_imgFilter = localStorage.getItem("imgFilter");
-        local_imgFilter?.includes("false")
-          ? setImgFilter(false)
-          : setImgFilter(true);
-      }
+      const loadImgFilter = async () => {
+        let saved_imgFilter = await localForage.getItem("imgFilter");
+        if (saved_imgFilter !== null) {
+          saved_imgFilter === false ? setImgFilter(false) : setImgFilter(true);
+          localStorage.removeItem("imgFilter");
+        } else {
+          fallback = true;
+          let local_imgFilter = localStorage.getItem("imgFilter");
+          local_imgFilter?.includes("false")
+            ? setImgFilter(false)
+            : setImgFilter(true);
+        }
+      };
+      const loadImgPortraitFilter = async () => {
+        let saved_imgPortraitFilter = await localForage.getItem(
+          "imgPortraitFilter"
+        );
+        if (saved_imgPortraitFilter !== null) {
+          saved_imgPortraitFilter === false
+            ? setImgPortraitFilter(false)
+            : setImgPortraitFilter(true);
+          localStorage.removeItem("imgPortraitFilter");
+        } else {
+          fallback = true;
+          let local_imgPortraitFilter =
+            localStorage.getItem("imgPortraitFilter");
+          local_imgPortraitFilter?.includes("false")
+            ? setImgPortraitFilter(false)
+            : setImgPortraitFilter(true);
+        }
+      };
 
-      let saved_imgPortraitFilter = await localForage.getItem(
-        "imgPortraitFilter"
-      );
-      if (saved_imgPortraitFilter !== null) {
-        saved_imgPortraitFilter === false
-          ? setImgPortraitFilter(false)
-          : setImgPortraitFilter(true);
-        localStorage.removeItem("imgPortraitFilter");
-      } else {
-        fallback = true;
-        let local_imgPortraitFilter = localStorage.getItem("imgPortraitFilter");
-        local_imgPortraitFilter?.includes("false")
-          ? setImgPortraitFilter(false)
-          : setImgPortraitFilter(true);
-      }
+      const loadImgLandscapeFilter = async () => {
+        let saved_imgLandscapeFilter = await localForage.getItem(
+          "imgLandscapeFilter"
+        );
+        if (saved_imgLandscapeFilter !== null) {
+          saved_imgLandscapeFilter === false
+            ? setImgLandScapeFilter(false)
+            : setImgLandScapeFilter(true);
+          localStorage.removeItem("imgLandscapeFilter");
+        } else {
+          fallback = true;
+          let local_imgLandscapeFilter =
+            localStorage.getItem("imgLandscapeFilter");
+          local_imgLandscapeFilter?.includes("false")
+            ? setImgLandScapeFilter(false)
+            : setImgLandScapeFilter(true);
+        }
+      };
 
-      let saved_imgLandscapeFilter = await localForage.getItem(
-        "imgLandscapeFilter"
-      );
-      if (saved_imgLandscapeFilter !== null) {
-        saved_imgLandscapeFilter === false
-          ? setImgLandScapeFilter(false)
-          : setImgLandScapeFilter(true);
-        localStorage.removeItem("imgLandscapeFilter");
-      } else {
-        fallback = true;
-        let local_imgLandscapeFilter =
-          localStorage.getItem("imgLandscapeFilter");
-        local_imgLandscapeFilter?.includes("false")
-          ? setImgLandScapeFilter(false)
-          : setImgLandScapeFilter(true);
-      }
+      const loadVidFilter = async () => {
+        let saved_vidFilter = await localForage.getItem("vidFilter");
+        if (saved_vidFilter !== null) {
+          saved_vidFilter === false ? setVidFilter(false) : setVidFilter(true);
+          localStorage.removeItem("vidFilter");
+        } else {
+          fallback = true;
+          let local_vidFilter = localStorage.getItem("vidFilter");
+          local_vidFilter?.includes("false")
+            ? setVidFilter(false)
+            : setVidFilter(true);
+        }
+      };
 
-      let saved_vidFilter = await localForage.getItem("vidFilter");
-      if (saved_vidFilter !== null) {
-        saved_vidFilter === false ? setVidFilter(false) : setVidFilter(true);
-        localStorage.removeItem("vidFilter");
-      } else {
-        fallback = true;
-        let local_vidFilter = localStorage.getItem("vidFilter");
-        local_vidFilter?.includes("false")
-          ? setVidFilter(false)
-          : setVidFilter(true);
-      }
+      const loadLinkFilter = async () => {
+        let saved_linkFilter = await localForage.getItem("linkFilter");
+        if (saved_linkFilter !== null) {
+          saved_linkFilter === false
+            ? setLinkFilter(false)
+            : setLinkFilter(true);
+          localStorage.removeItem("linkFilter");
+        } else {
+          fallback = true;
+          let local_linkFilter = localStorage.getItem("linkFilter");
+          local_linkFilter?.includes("false")
+            ? setLinkFilter(false)
+            : setLinkFilter(true);
+        }
+      };
 
-      let saved_linkFilter = await localForage.getItem("linkFilter");
-      if (saved_linkFilter !== null) {
-        saved_linkFilter === false ? setLinkFilter(false) : setLinkFilter(true);
-        localStorage.removeItem("linkFilter");
-      } else {
-        fallback = true;
-        let local_linkFilter = localStorage.getItem("linkFilter");
-        local_linkFilter?.includes("false")
-          ? setLinkFilter(false)
-          : setLinkFilter(true);
-      }
+      const loadSelfFilter = async () => {
+        let saved_selfFilter = await localForage.getItem("selfFilter");
+        if (saved_selfFilter !== null) {
+          saved_selfFilter === false
+            ? setSelfFilter(false)
+            : setSelfFilter(true);
+          localStorage.removeItem("selfFilter");
+        } else {
+          fallback = true;
+          let local_selfFilter = localStorage.getItem("selfFilter");
+          local_selfFilter?.includes("false")
+            ? setSelfFilter(false)
+            : setSelfFilter(true);
+        }
+      };
 
-      let saved_selfFilter = await localForage.getItem("selfFilter");
-      if (saved_selfFilter !== null) {
-        saved_selfFilter === false ? setSelfFilter(false) : setSelfFilter(true);
-        localStorage.removeItem("selfFilter");
-      } else {
-        fallback = true;
-        let local_selfFilter = localStorage.getItem("selfFilter");
-        local_selfFilter?.includes("false")
-          ? setSelfFilter(false)
-          : setSelfFilter(true);
-      }
+      const loadReadFilter = async () => {
+        let saved_readFilter = await localForage.getItem("readFilter");
+        if (saved_readFilter !== null) {
+          saved_readFilter === false
+            ? setReadFilter(false)
+            : setReadFilter(true);
+          localStorage.removeItem("readFilter");
+        } else {
+          fallback = true;
+          let local_readFilter = localStorage.getItem("readFilter");
+          local_readFilter?.includes("false")
+            ? setReadFilter(false)
+            : setReadFilter(true);
+        }
+      };
 
-      let saved_readFilter = await localForage.getItem("readFilter");
-      if (saved_readFilter !== null) {
-        saved_readFilter === false ? setReadFilter(false) : setReadFilter(true);
-        localStorage.removeItem("readFilter");
-      } else {
-        fallback = true;
-        let local_readFilter = localStorage.getItem("readFilter");
-        local_readFilter?.includes("false")
-          ? setReadFilter(false)
-          : setReadFilter(true);
-      }
+      let nsfw = loadNSFW();
+      let autoplay = loadAutoplay();
+      let hoverplay = loadHoverPlay();
+      let mediaonly = loadMediaOnly();
+      let audiohover = audioOnHover();
+      let columnoverride = columnOverride();
+      let savewideui = savedWideUI();
+      let syncwideui = syncWideUI();
+      let postwideui = postWideUI();
+      let wideUI = loadWideUI();
+      let cardstyle = loadCardStyle();
+      let localsubs = loadLocalSubs();
+      let imgfilter = loadImgFilter();
+      let imgportraitfilter = loadImgPortraitFilter();
+      let imglandscapefilter = loadImgLandscapeFilter();
+      let vidfilter = loadVidFilter();
+      let linkfilter = loadLinkFilter();
+      let selffilter = loadSelfFilter();
+      let readfilter = loadReadFilter();
+      await Promise.all([
+        nsfw,
+        autoplay,
+        hoverplay,
+        mediaonly,
+        audiohover,
+        columnoverride,
+        savewideui,
+        syncwideui,
+        postwideui,
+        wideUI,
+        cardstyle,
+        localsubs,
+        imgfilter,
+        imgportraitfilter,
+        imglandscapefilter,
+        vidfilter,
+        linkfilter,
+        selffilter,
+        readfilter,
+      ]);
 
-      let saved_readPosts = await localForage.getItem("readPosts");
-      if (saved_readPosts !== null) {
-        //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
-        //saved_readPosts && setReadPosts(saved_readPosts);
-        localStorage.removeItem("readPosts");
-      }
-      // else {
-      //   fallback = true;
-      //   let local_readPosts = JSON.parse(localStorage.getItem("readPosts"));
-      //   local_readPosts && setReadPosts(saved_readPosts);
+      //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
+      // let saved_readPosts = await localForage.getItem("readPosts");
+      // if (saved_readPosts !== null) {
+      //   //saved_readPosts && setReadPosts(saved_readPosts);
+      //   localStorage.removeItem("readPosts");
       // }
       setReady(true);
     };
@@ -726,7 +812,7 @@ export const MainProvider = ({ children }) => {
         readPosts,
         addReadPost,
         toggleReadPost,
-        postOpen, 
+        postOpen,
         setPostOpen,
       }}
     >
