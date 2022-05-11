@@ -57,51 +57,69 @@ const editor = {
 const CommentReply = ({ parent, getResponse }) => {
   const maincontext: any = useMainContext();
   const { replyFocus, setReplyFocus } = maincontext;
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  //const [editorState, setEditorState] = useState(EditorState.createEmpty());
   //const [html, setHtml] = useState("");
   const { data: session, status } = useSession();
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const EditorRef = useRef(null);
 
+  const [textValue, setTextValue] = useState("");
+  const handleTextChange = (e) => {
+    setTextValue(e.target.value);
+  };
   // const plausible = usePlausible();
 
-  const editorStateChange = async (editorState) => {
-    setEditorState(editorState);
-  };
+  // const editorStateChange = async (editorState) => {
+  //   setEditorState(editorState);
+  // };
 
   const submit = (e) => {
     e.preventDefault();
-    const run = async () => {
+    //for use with WYSIWYG editor
+    // const run = async () => {
+    //   setLoading(true);
+    //   let rawContentState = await convertToRaw(editorState.getCurrentContent());
+    //   for (let i = 0; i < rawContentState?.blocks?.length ?? 0; i++) {
+    //     if (rawContentState.blocks[i]?.text) {
+    //       rawContentState.blocks[i].text = rawContentState.blocks[
+    //         i
+    //       ].text.replaceAll("\n", "  \n");
+    //     }
+    //   }
+    //   const markup = draftToMarkdown(rawContentState, {
+    //     styleItems: {},
+    //   });
+    //   if (!(markup?.length > 1)) {
+    //     setErr(true);
+    //     setLoading(false);
+    //   } else {
+    //     const res = await postComment(parent, markup);
+    //     setLoading(false);
+    //     if (res) {
+    //       getResponse(res);
+    //       setErr(false);
+    //       // plausible("comment");
+    //       setEditorState(EditorState.createEmpty());
+    //     } else {
+    //       setErr(true);
+    //     }
+    //   }
+    // };
+    //session && run();
+    const submitComment = async () => {
       setLoading(true);
-      let rawContentState = await convertToRaw(editorState.getCurrentContent());
-      for (let i = 0; i < rawContentState?.blocks?.length ?? 0; i++) {
-        if (rawContentState.blocks[i]?.text) {
-          rawContentState.blocks[i].text = rawContentState.blocks[
-            i
-          ].text.replaceAll("\n", "  \n");
-        }
-      }
-      const markup = draftToMarkdown(rawContentState, {
-        styleItems: {},
-      });
-      if (!(markup?.length > 1)) {
-        setErr(true);
-        setLoading(false);
+      const res = await postComment(parent, textValue);
+      setLoading(false);
+      if (res) {
+        getResponse(res);
+        setErr(false);
+        setTextValue("");
       } else {
-        const res = await postComment(parent, markup);
-        setLoading(false);
-        if (res) {
-          getResponse(res);
-          setErr(false);
-          // plausible("comment");
-          setEditorState(EditorState.createEmpty());
-        } else {
-          setErr(true);
-        }
+        setErr(true);
       }
     };
-    session && run();
+    session && submitComment();
   };
 
   useEffect(() => {
@@ -126,7 +144,8 @@ const CommentReply = ({ parent, getResponse }) => {
               </h1>
             )}
           </div>
-          <Editor
+          {/* Retiring this until reddit markddown can be fully properly supported */}
+          {/* <Editor
             editorRef={(ref) => (EditorRef.current = ref)}
             onFocus={() => {
               setReplyFocus(true);
@@ -144,12 +163,27 @@ const CommentReply = ({ parent, getResponse }) => {
             toolbarHidden
             toolbar={editor}
             onEditorStateChange={editorStateChange}
-          />
-          <div className="absolute right-0 flex flex-row justify-end bottom-2">
+          /> */}
+          <textarea
+            onFocus={() => {
+              setReplyFocus(true);
+            }}
+            onBlur={() => {
+              setReplyFocus(false);
+            }}
+            ref={EditorRef}
+            className="flex-wrap w-full px-4 pt-2 pb-8 font-mono leading-tight border rounded-lg scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll scrollbar-thumb-rounded-full bg-lightBG dark:bg-darkHighlight hover:cursor-text border-lightBorder focus-within:border-lightBorderHighlight focus-within:brightness-100 brightness-80 dark:border-darkBorder dark:focus-within:border-darkBorderHighlight"
+            value={textValue}
+            onChange={handleTextChange}
+          ></textarea>
+          <div className="flex items-end mt-2">
+            <p className="mb-1 ml-1 text-xs italic select-none text-darkBorderHighlight">
+              using markdown editor
+            </p>
             <button
               onClick={(e) => !loading && submit(e)}
               className={
-                "flex items-center relative justify-center px-4 py-1.5 ml-auto mr-4 text-center  border border-lightBorderHighlight    dark:border-darkBorder hover:bg-lightPostHover rounded-md cursor-pointer dark:hover:bg-darkBorder "
+                "flex items-center relative justify-center px-4 py-1.5 ml-auto text-center  border border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:bg-lightPostHover rounded-md cursor-pointer dark:hover:bg-darkBorder "
               }
             >
               <h1 className={loading ? " opacity-50 " : " mx-3 "}>Comment</h1>

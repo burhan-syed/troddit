@@ -433,12 +433,12 @@ const VideoHandler = ({
 
   useEffect(() => {
     if (focused && !context?.replyFocus) {
-      (kPress || spacePress) && playControl();
+      kPress && playControl();
       mPress && audioControl();
     }
 
     return () => {};
-  }, [kPress, mPress]);
+  }, [kPress, mPress, context.replyFocus, focused]);
 
   return (
     <div
@@ -458,13 +458,15 @@ const VideoHandler = ({
         handleMouseOut();
       }}
       ref={ref}
-      style={postMode || context.columns == 1 ? {} : { height: `${vidHeight}px` }}
+      style={
+        postMode || context.columns == 1 ? {} : { height: `${vidHeight}px` }
+      }
     >
       {/* Background Span Image */}
       <div
         className="absolute  z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 "
         ref={fullWidthRef}
-        >
+      >
         <Image
           className={"scale-110 blur-md "}
           src={thumbnail.url}
@@ -475,7 +477,6 @@ const VideoHandler = ({
           onError={() => {
             setUseFallback(true);
           }}
-          
         />
       </div>
       {/* Controls */}
@@ -647,7 +648,7 @@ const VideoHandler = ({
         )}
 
         <div
-        //high res placeholder image
+          //high res placeholder image
           className={
             `  ` +
             `${
@@ -665,8 +666,15 @@ const VideoHandler = ({
           }
         >
           <Image
-            className={(!containerDims?.[1] ? "absolute bottom-0 left-0" : " ") + (placeholder?.url?.includes('http') ? " " : " blur-2xl ")} //!postMode ?
-            src={placeholder?.url?.includes('http') ? placeholder.url : thumbnail.url}
+            className={
+              (!containerDims?.[1] ? "absolute bottom-0 left-0" : " ") +
+              (placeholder?.url?.includes("http") ? " " : " blur-2xl ")
+            } //!postMode ?
+            src={
+              placeholder?.url?.includes("http")
+                ? placeholder.url
+                : thumbnail.url
+            }
             height={vidHeight}
             width={vidWidth}
             alt="placeholder"
@@ -676,7 +684,6 @@ const VideoHandler = ({
               setUseFallback(true);
             }}
             draggable={false}
-            
           />
         </div>
 
@@ -718,7 +725,7 @@ const VideoHandler = ({
             type="video/mp4"
           />
         </video>
-        
+
         <video
           autoPlay={false}
           controls={false}
