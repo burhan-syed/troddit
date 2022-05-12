@@ -426,7 +426,6 @@ const Media = ({
               <Gallery
                 images={galleryInfo}
                 maxheight={imgFull ? 0 : maxheightnum}
-
                 postMode={postMode}
                 mediaRef={mediaRef}
                 uniformHeight={containerDims ? false : true}
@@ -474,7 +473,9 @@ const Media = ({
                     : post?.mediaInfo?.isTweet //set height normally for tweet images
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                      (imageInfo.height * (mediaRef.current.clientWidth/imageInfo.width)) > maxheightnum && //scale down image to fit in window
+                      imageInfo.height *
+                        (mediaRef.current.clientWidth / imageInfo.width) >
+                        maxheightnum && //scale down image to fit in window
                       !imgFull
                     ? maxheightnum
                     : imgWidthHeight[1] //scaled height to eliminate letterboxing
@@ -485,7 +486,9 @@ const Media = ({
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                    (imageInfo.height * (mediaRef.current.clientWidth/imageInfo.width)) > maxheightnum && //scale down image to fit in window
+                      imageInfo.height *
+                        (mediaRef.current.clientWidth / imageInfo.width) >
+                        maxheightnum && //scale down image to fit in window
                       !imgFull
                     ? Math.floor(
                         imageInfo.width * (maxheightnum / imageInfo.height)
@@ -516,13 +519,7 @@ const Media = ({
 
           {isMP4 && !isIFrame ? (
             showMP4 ? (
-              <div
-                className="flex flex-col items-center flex-none "
-                style={
-                  //imgFull ||
-                  context?.columns == 1 && !postMode ? maxheight : {}
-                }
-              >
+              <div className="flex flex-col items-center flex-none ">
                 <VideoHandler
                   thumbnail={placeholderInfo}
                   placeholder={imageInfo} //{placeholderInfo}
@@ -574,7 +571,6 @@ const Media = ({
       ) : (
         <div></div>
       )}
-      
     </div>
   );
 };
