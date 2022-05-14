@@ -17,7 +17,7 @@ const CommentCard = ({ data, postNum }) => {
               "flex flex-row items-start py-4 pr-4 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover hover:border-l hover:border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  "
             }`
           : `${
-              (context.cardStyle === "card2" ? "  " : " rounded-md ") +
+              (context.cardStyle === "row1" ? "  " : " rounded-lg ") +
               " text-sm shadow-md bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border  group hover:cursor-pointer border-gray-300 shaadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 p-3"
             }`
       }

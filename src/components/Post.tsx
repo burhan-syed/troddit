@@ -1,24 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
-import Image from "next/image";
-import Link from "next/link";
-import { BiDownvote, BiUpvote } from "react-icons/bi";
-
-import { useEffect, useState } from "react";
-import Placeholder from "./Placeholder";
-
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useMainContext } from "../MainContext";
 import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
-import Media from "./Media";
-import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/react";
-import { findMediaInfo, secondsToTime } from "../../lib/utils";
 import Card1 from "./cards/Card1";
 import Card2 from "./cards/Card2";
 import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
-
-// import { usePlausible } from "next-plausible";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
@@ -28,7 +16,6 @@ const Post = ({ post, postNum = 0 }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
-  // const plausible = usePlausible();
   const [margin, setMargin] = useState("m-1");
 
   useEffect(() => {
@@ -73,11 +60,7 @@ const Post = ({ post, postNum = 0 }) => {
       setLastRoute(router.asPath);
       context.setPauseAll(true);
       setSelect(true);
-      // need to handle pushing to [frontsort].. this kinda works (browser buttons don't work, app buttons do)
       if (router.query?.frontsort) {
-        // router.push("/", post.permalink);
-        // console.log("FRONSORT");
-        //setReturnRoute(router.asPath);
         router.push("", post?.data.id, { shallow: true });
       } else if (
         router.pathname.includes("/u/") &&

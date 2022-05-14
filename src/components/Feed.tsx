@@ -241,6 +241,7 @@ const Feed = ({
         data?.children?.length < 1
           ? setNothingHere(true)
           : setNothingHere(false);
+        setNumPosts((n) => n + data.children.length);
         let { filtered, filtercount } = await filterPosts(
           data?.children,
           {
@@ -258,7 +259,6 @@ const Feed = ({
         );
         setPosts(filtered);
         setFilterCount((n) => n + filtercount);
-        setNumPosts((n) => n + data.children.length);
         updateLoading(false);
       }
     };
@@ -386,6 +386,7 @@ const Feed = ({
                 //page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
                 query={query}
                 initItems={posts}
+                postCount={numposts}
                 filterSubs={filterSubs}
                 initAfter={after}
                 isUser={isUser}

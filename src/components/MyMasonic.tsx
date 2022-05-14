@@ -36,7 +36,6 @@ import { CgEnter } from "react-icons/cg";
 import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { useRouter } from "next/router";
 
-
 let allowload = false;
 let lastload = "";
 let loadonce = 0;
@@ -46,6 +45,7 @@ const MyMasonic = ({
   initItems,
   initAfter,
   filterSubs,
+  postCount,
   isUser = false,
   isMulti = false,
   isSubFlair = false,
@@ -71,9 +71,10 @@ const MyMasonic = ({
   } = context;
   const [filterCount, setFilterCount] = useState(0);
   const [posts, setPosts] = useState([]);
-  const [numposts, setNumPosts] = useState(0);
+  const [numposts, setNumPosts] = useState(0); //number of posts displayed
   const [after, setAfter] = useState("");
-  const [count, setCount] = useState(0);
+  const [pageCount, setPageCount] = useState(1);
+  const [count, setCount] = useState(postCount); //all posts from reddit
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
@@ -111,12 +112,11 @@ const MyMasonic = ({
       setItems([]);
       setAfter("");
       setLoading(true);
-      setCount(0);
+      setPageCount(1);
     };
     //handling these in the other useeffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initItems, initAfter]);
-
 
   const getPostsPromise = (start, end) => Promise.resolve(getPosts(start, end));
 
@@ -139,7 +139,8 @@ const MyMasonic = ({
       }
       setCols(context.columnOverride);
       //context.setColumns(context.columnOverride);
-    } else if (!context.postOpen){ //prevent layout shift when resize with post open
+    } else if (!context.postOpen) {
+      //prevent layout shift when resize with post open
       if (windowWidth > 2560) {
         setItemHeightEstimate(500);
         setCols(4);
@@ -159,13 +160,17 @@ const MyMasonic = ({
       }
     }
     return () => {};
-  }, [windowWidth, context.columnOverride, context.cardStyle, windowHeight, context.postOpen]);
+  }, [
+    windowWidth,
+    context.columnOverride,
+    context.cardStyle,
+    windowHeight,
+    context.postOpen,
+  ]);
 
   useEffect(() => {
     context.setColumns(cols);
-
-  }, [cols])
-
+  }, [cols]);
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     //console.log("try..", block.current, currAfter.current);
@@ -210,7 +215,6 @@ const MyMasonic = ({
     }
   );
 
-
   //load posts for slideshow functionality
   useEffect(() => {
     let n = items.length - context.postNum;
@@ -239,9 +243,8 @@ const MyMasonic = ({
         query?.frontsort ?? "best",
         query?.t ?? "",
         loadafter,
-        undefined,
+        count,
         context?.localSubs
-        //items.length
       );
     } else if (isSearch || router?.pathname === "/search") {
       data = await getRedditSearch(
@@ -281,7 +284,7 @@ const MyMasonic = ({
           query?.sort ?? "hot",
           query?.t ?? "",
           loadafter,
-          undefined,
+          count,
           userPostMode
         );
       }
@@ -311,8 +314,8 @@ const MyMasonic = ({
         subs ?? "",
         query?.slug?.[1] ?? "hot",
         query?.t ?? "",
-        loadafter
-        //numposts //posts.length
+        loadafter,
+        count
       );
     }
     // gtag.event({
@@ -329,7 +332,9 @@ const MyMasonic = ({
         prevAfters.current[loadafter] = 1;
         // plausible("infinitescroll");
         data?.token && context.setToken(data?.token);
-        setCount((c) => c + 1);
+        setCount((c) => c + data?.children?.length);
+        setPageCount((c) => c + 1);
+
         currAfter.current = data?.after;
         setAfter(data?.after);
         let { filtered, filtercount } = await filterPosts(
@@ -389,15 +394,14 @@ const MyMasonic = ({
     return { payload, lastafter };
   };
 
-
   const loadInfo = (
     <>
       {end && (
         <div className="flex flex-row items-center justify-center text-lg font-bold">
           <h1>
-            Loaded {numposts} post{numposts === 1 ? "" : "s"} on {count + 1}{" "}
+            Loaded {numposts} post{numposts === 1 ? "" : "s"} on {pageCount}{" "}
             page
-            {count + 1 === 1 ? "" : "s"}.{" "}
+            {pageCount === 1 ? "" : "s"}.{" "}
           </h1>
         </div>
       )}
@@ -422,12 +426,12 @@ const MyMasonic = ({
             ssrWidth={500}
           />
           {!end && loadingMore && (
-            <h1 className="text-center">Loading page {count + 1}...</h1>
+            <h1 className="text-center">Loading page {pageCount}...</h1>
           )}
           {filterCount > 0 && (
             <div className="fixed bottom-0 left-0 flex-col text-xs select-none">
               <h1>
-                {count + 1} page{count + 1 === 1 ? "" : "s"}
+                {pageCount} page{pageCount === 1 ? "" : "s"}
               </h1>
               <h1>{filterCount} filtered</h1>
             </div>
@@ -441,12 +445,8 @@ const MyMasonic = ({
 };
 
 const PostCard = (props) => {
-  //console.log("fakecard");
-  const context: any = useMainContext();
   return (
     <div className={""}>
-      {/* <span children={`${props.data.id} : ${props.data?.data?.title}`} /> */}
-      {/* <p>{props.data.id}</p> */}
       <Post post={props.data} postNum={props.index} />
     </div>
   );
