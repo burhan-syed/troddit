@@ -254,11 +254,7 @@ const VideoHandler = ({
   const handleMouseIn = (e) => {
     setShow(true);
     setMouseIn(true);
-    if (
-      !context.mediaOnly &&
-      context.hoverplay &&
-      context.cardStyle !== "row1"
-    ) {
+    if (context.hoverplay && context.cardStyle !== "row1") {
       if (
         (!manualPlay || video?.current?.paused) &&
         !context.autoplay &&
@@ -275,11 +271,7 @@ const VideoHandler = ({
   const handleMouseOut = () => {
     setMouseIn(false);
     //not in manual play, then pause audio and video
-    if (
-      !context.mediaOnly &&
-      context.hoverplay &&
-      context.cardStyle !== "row1"
-    ) {
+    if (context.hoverplay && context.cardStyle !== "row1") {
       if (!manualPlay && !context.autoplay && !postMode) {
         pauseAudio();
         pauseVideo();

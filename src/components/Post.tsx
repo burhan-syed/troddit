@@ -136,7 +136,7 @@ const Post = ({ post, postNum = 0 }) => {
   };
 
   return (
-    <div className={margin + " z-30"}>
+    <div className={margin + " "}>
       {select && (
         <PostModal
           permalink={post?.data?.permalink}

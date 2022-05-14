@@ -49,7 +49,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
 
   return (
     <>
-      <Menu as="div" className={" relative font-normal"}>
+      <Menu as="div" className={" relative font-normal "}>
         {({ open }) => (
           <>
             <div
@@ -294,6 +294,10 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                 ? " top-[-2.31rem] origin-top-right translate-x-[-13.4rem]  "
                 : mode == "row"
                 ? "  -top-3 origin-top-right translate-x-[-14.5rem]"
+                : mode == "media"
+                ? "origin-bottom-right bottom-0 right-[1.35rem] "
+                : context.cardStyle === "card2"
+                ? " origin-bottom-right bottom-0 right-[1.35rem]"
                 : " -bottom-3 origin-bottom-right translate-x-[-14.8rem] ")
             }
           >

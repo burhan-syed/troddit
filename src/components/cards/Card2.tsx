@@ -18,8 +18,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
       <div
         className={
           (context?.columnOverride == 1 && "") +
-          " text-sm bg-lightPost group hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400" 
-          + " rounded-lg overflow-clip"
+          " text-sm bg-lightPost group hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400" +
+          " rounded-lg overflow-clip"
         }
       >
         <div className="">
@@ -40,22 +40,23 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
           </a>
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
-              <h1
-                className={
-                  "  text-lg font-semibold  leading-none cursor-pointer gap-2 flex flex-row flex-wrap "
-                }
-              >
-                <a
-                  href={post?.permalink}
-                  onClick={(e) => e.preventDefault()}
-                  className=""
-                >
-                  <PostTitle post={post} />
+              <h1>
+                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <span
+                    className={
+                      " hover:underline font-semibold text-base mr-2 " +
+                      (post?.distinguished == "moderator" || post?.stickied
+                        ? " text-lightGreen dark:text-darkGreen "
+                        : " ")
+                    }
+                  >{`${post?.title ?? ""}`}</span>
                 </a>
-
-                <span className="text-xs">
-                  <TitleFlair post={post} />
-                </span>
+                {(post?.link_flair_text?.length > 0 ||
+                  post?.link_flair_richtext?.length > 0) && (
+                  <span className="text-xs font-medium">
+                    <TitleFlair post={post} />
+                  </span>
+                )}
               </h1>
 
               <div className="flex flex-row items-start py-1 pb-1 text-xs text-gray-400 truncate text-gray dark:text-gray-500">
@@ -146,7 +147,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     postindex={postNum}
                   />
                 </div>
-                <div className="flex flex-row items-center gap-2 ml-auto">
+                <div className="flex flex-row items-center gap-2 ml-auto mr-6">
                   <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                     <h1
                       className={
@@ -159,6 +160,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                       }`}
                     </h1>
                   </a>
+                </div>
+                <div className="absolute right-3">
                   <PostOptButton post={post} postNum={postNum} />
                 </div>
               </div>

@@ -17,10 +17,8 @@ const CommentCard = ({ data, postNum }) => {
               "flex flex-row items-start py-4 pr-4 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover hover:border-l hover:border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  "
             }`
           : `${
-              (context.mediaOnly || context.cardStyle === "card2"
-                ? "  "
-                : " rounded-md ") +
-              " text-sm bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border  group hover:cursor-pointer border-gray-300 shaadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 p-3"
+              (context.cardStyle === "card2" ? "  " : " rounded-md ") +
+              " text-sm shadow-md bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border  group hover:cursor-pointer border-gray-300 shaadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 p-3"
             }`
       }
     >
@@ -54,7 +52,9 @@ const CommentCard = ({ data, postNum }) => {
               </span>
               <Link href={data?.permalink}>
                 <a onClick={(e) => e.stopPropagation()}>
-                  <h2 className="font-semibold hover:underline">{data?.link_title}</h2>
+                  <h2 className="font-semibold hover:underline">
+                    {data?.link_title}
+                  </h2>
                 </a>
               </Link>
               <span className="text-gray-400 dark:text-gray-500">in</span>
