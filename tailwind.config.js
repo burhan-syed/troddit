@@ -30,6 +30,9 @@ module.exports = {
         gray: colors.gray,
         trueGray: colors.neutral,
       },
+      scale: {
+        101: "1.01",
+      },
       transitionProperty: {
         height: "height",
       },

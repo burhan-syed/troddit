@@ -243,7 +243,7 @@ export const findMediaInfo = async (post, quick = false) => {
       for (let i in post?.gallery_data?.items ?? post.media_metadata) {
         let image = post?.media_metadata?.[i];
         let id = post?.gallery_data?.items?.[i]?.media_id;
-        if (id) {
+        if (id && post.media_metadata[id]) {
           image = post.media_metadata[id];
         }
         if (image.p) {
@@ -251,7 +251,9 @@ export const findMediaInfo = async (post, quick = false) => {
             let num = image.p.length - 1;
             //console.log(num);
             gallery.push({
-              url: checkURL(image.p[num].u.replace("amp;", "")),
+              url: checkURL(
+                image?.s?.gif ?? image.p[num].u.replace("amp;", "")
+              ),
               height: image.p[num].y,
               width: image.p[num].x,
             });
@@ -413,7 +415,7 @@ export const filterPosts = async (
         quick = false;
       }
 
-      let mediaInfo = d?.mediaInfo ?? await findMediaInfo(d, quick);
+      let mediaInfo = d?.mediaInfo ?? (await findMediaInfo(d, quick));
       //orientation check
       if (!imgPortraitFilter || !imgLandscapeFilter) {
         //only check on videos or images (galleries consider images)
@@ -466,7 +468,7 @@ export const filterPosts = async (
 
     let f = await filter(data, async (d) => {
       let mediaInfo = await findMediaInfo(d.data);
-      d.data['mediaInfo'] = mediaInfo;
+      d.data["mediaInfo"] = mediaInfo;
       let r = await filterCheck(d.data);
       //console.log(d, r);
       return r;

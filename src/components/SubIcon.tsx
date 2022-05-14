@@ -37,8 +37,8 @@ const SubIcon = ({ subname = "", subInfo = {}, isUser = false, size = 6 }) => {
         <Image
           src={thumbURL}
           alt=""
-          height={256}
-          width={256}
+          height={50}
+          width={50}
           unoptimized={true}
           objectFit="cover"
           className={"rounded-full "}

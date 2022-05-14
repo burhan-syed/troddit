@@ -200,12 +200,11 @@ const PostModal = ({
 
   useEffect(() => {
     context.setPostOpen(true);
-  
+
     return () => {
       context.setPostOpen(false);
-    }
-  }, [])
-  
+    };
+  }, []);
 
   useEffect(() => {
     let asynccheck = true;
@@ -362,7 +361,8 @@ const PostModal = ({
       if (context.posts?.[context.postNum - 1]?.data) {
         //console.log("moveback");
         apost?.subreddit !==
-          context.posts[context.postNum - 1].data?.subreddit && setSR_Detail({});
+          context.posts[context.postNum - 1].data?.subreddit &&
+          setSR_Detail({});
         setPost(context.posts[context.postNum - 1].data);
         setNewLink(context.posts[context.postNum - 1]?.data?.permalink);
         if (
@@ -534,7 +534,7 @@ const PostModal = ({
   return (
     <div
       className={
-        "fixed inset-0 z-20 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
+        "fixed inset-0 z-30 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
       }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}

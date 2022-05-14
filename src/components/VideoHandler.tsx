@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
-import { useWindowHeight } from "@react-hook/window-size";
+import { useWindowSize } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 const VideoHandler = ({
@@ -23,9 +23,6 @@ const VideoHandler = ({
   const audioRef: any = useRef();
   const fullWidthRef: any = useRef();
   const seekRef: any = useRef();
-  // const [audioSrc, setaudioSrc] = useState("");
-  // const [mounted, setMounted] = useState(false);
-  // const [loaded, setLoaded] = useState(false);
 
   const [hasAudio, sethasAudio] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -46,6 +43,7 @@ const VideoHandler = ({
   const [focused, setFocused] = useState(postMode);
   const [show, setShow] = useState(postMode ? true : false);
   const [left, setLeft] = useState(false);
+  const [heightStyle, setHeightStyle] = useState({});
   const { ref } = useInView({
     threshold: [0, 0.7, 0.8, 0.9, 1],
     onChange: (inView, entry) => {
@@ -77,10 +75,6 @@ const VideoHandler = ({
     sethasAudio(true);
   };
 
-  // const [imgheight, setheight] = useState({});
-  // const [maxheight, setmaxheight] = useState({});
-  // const [maxheightnum, setmaxheightnum] = useState<Number>();
-
   const [vidHeight, setVidHeight] = useState(videoInfo?.height);
   const [vidWidth, setVidWidth] = useState(videoInfo?.width);
   useEffect(() => {
@@ -92,8 +86,6 @@ const VideoHandler = ({
     //if imgFull maximize the video to take full width
     if (imgFull && !containerDims) {
       maximizeWidth();
-      // setVidHeight(videoInfo.height);
-      // setVidWidth(videoInfo.width);
     }
     //if postMode with portrait container (containerDims) fill it
     else if (postMode && containerDims) {
@@ -118,9 +110,11 @@ const VideoHandler = ({
     //
     //in single column or in a post we will scale video so height is within window. By default maxHeightNum is x * windowHeight (set in Media component)
     else if ((context.columns == 1 || postMode) && maxHeightNum > 0) {
-      let r2 = maxHeightNum / videoInfo.height;
-      setVidHeight(Math.floor(videoInfo.height * r2));
-      setVidWidth(Math.floor(videoInfo.width * r2));
+      if (videoInfo.height > maxHeightNum) {
+        let r2 = maxHeightNum / videoInfo.height;
+        setVidHeight(Math.floor(videoInfo.height * r2));
+        setVidWidth(Math.floor(videoInfo.width * r2));
+      }
     }
     //otherwise fill the available width to minimize letterboxing
     else {
@@ -142,14 +136,16 @@ const VideoHandler = ({
     containerDims,
   ]);
 
-  // useEffect(() => {
-  //   setheight({
-  //     height: `${videoInfo.height}px`,
-  //     maxHeight: `${Math.floor(screen.height * 0.75)}px`,
-  //   });
-  //   setmaxheight({ maxHeight: `${Math.floor(screen.height * 0.75)}px` });
-  //   setmaxheightnum(Math.floor(screen.height * 0.75));
-  // }, [videoInfo]);
+  //unify overall heights to avoid weird sizing issues
+  const windowSize = useWindowSize();
+  useEffect(() => {
+    let h = (video?.current?.clientWidth / videoInfo.width) * videoInfo.height;
+    if (h > 0) {
+      setHeightStyle({
+        height: `${h}px`,
+      });
+    }
+  }, [video?.current?.clientWidth, windowSize, videoInfo]);
 
   useEffect(() => {
     if (context?.autoplay && !videoPlaying && !context.pauseAll && show) {
@@ -258,11 +254,7 @@ const VideoHandler = ({
   const handleMouseIn = (e) => {
     setShow(true);
     setMouseIn(true);
-    if (
-      !context.mediaOnly &&
-      context.hoverplay &&
-      context.cardStyle !== "row1"
-    ) {
+    if (context.hoverplay && context.cardStyle !== "row1") {
       if (
         (!manualPlay || video?.current?.paused) &&
         !context.autoplay &&
@@ -279,11 +271,7 @@ const VideoHandler = ({
   const handleMouseOut = () => {
     setMouseIn(false);
     //not in manual play, then pause audio and video
-    if (
-      !context.mediaOnly &&
-      context.hoverplay &&
-      context.cardStyle !== "row1"
-    ) {
+    if (context.hoverplay && context.cardStyle !== "row1") {
       if (!manualPlay && !context.autoplay && !postMode) {
         pauseAudio();
         pauseVideo();
@@ -353,15 +341,6 @@ const VideoHandler = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (postMode) {
-  //     setMuted(!context?.audioOnHover);
-  //   }
-  //   return () => {
-  //     //
-  //   };
-  // }, [context?.audioOnHover]);
-
   useEffect(() => {
     if ((!show || !context?.audioOnHover || left) && !postMode) {
       setMuted(true);
@@ -399,14 +378,11 @@ const VideoHandler = ({
       let duration = video?.current?.duration * 1000;
       let initialTime = video?.current?.currentTime * 1000;
       let delta = initialTime / duration;
-      //console.log(delta);
       let updateSeekRange = () => {
         if (videoPlaying) {
-          //console.log(delta + Date.now() / initial);
           timepassed = Date.now() - initial;
           delta = (initialTime + timepassed) / duration;
           if (delta > 1) delta = 1;
-          //console.log((initialTime + timepassed) / duration);
           setCurrentTime((initialTime + timepassed) / 1000);
           setProgressPerc(delta);
           //handle out of range..
@@ -423,12 +399,10 @@ const VideoHandler = ({
     } else {
       clearInterval(intervalID);
     }
-    //console.log(video?.current);
     return () => {};
   }, [videoPlaying, mouseIn]);
 
   const kPress = useKeyPress("k");
-  const spacePress = useKeyPress("Space");
   const mPress = useKeyPress("m");
 
   useEffect(() => {
@@ -444,7 +418,6 @@ const VideoHandler = ({
     <div
       className={
         "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden"
-        //+(!postMode && context.columnOverride !== 1 && " mb-[-5px]")
       }
       onClick={(e) => {
         playControl(e, true);
@@ -459,7 +432,7 @@ const VideoHandler = ({
       }}
       ref={ref}
       style={
-        postMode || context.columns == 1 ? {} : { height: `${vidHeight}px` }
+        containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
       }
     >
       {/* Background Span Image */}
@@ -640,8 +613,10 @@ const VideoHandler = ({
 
       {/* Video */}
       <div
-        className={"relative overflow-hidden flex  object-fill   "}
-        style={containerDims?.[1] && { height: `${containerDims[1]}px` }}
+        className={"relative overflow-hidden flex  object-fill"}
+        style={
+          containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
+        }
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
           <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
@@ -656,13 +631,11 @@ const VideoHandler = ({
                 ? " opacity-100 "
                 : containerDims?.[1]
                 ? " hidden "
-                : postMode
-                ? "opacity-0 "
-                : " opacity-0"
+                : " opacity-0 "
             }` +
-            (!videoLoaded &&
-              containerDims?.[1] &&
-              " absolute top-1/2 -translate-y-1/2 ")
+            (!videoLoaded && containerDims?.[1]
+              ? " absolute top-1/2 -translate-y-1/2 "
+              : "")
           }
         >
           <Image
