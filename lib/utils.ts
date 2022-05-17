@@ -365,6 +365,7 @@ export const findMediaInfo = async (post, quick = false) => {
 export const filterPosts = async (
   posts,
   filters,
+  prevposts = {},
   checkSubs = false,
   checkUsers = true
 ) => {
@@ -392,6 +393,11 @@ export const filterPosts = async (
     }
 
     const filterCheck = async (d) => {
+      //check duplicate
+      if (prevposts?.[d?.name] == 1){
+        return false;
+      }
+
       //check subs / users. Done in background without increasing filter count
       if (checkUsers && (await userFilters.getItem(d?.author?.toUpperCase()))) {
         return false;

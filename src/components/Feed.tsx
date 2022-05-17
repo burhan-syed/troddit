@@ -52,6 +52,7 @@ const Feed = ({
   const [filterCount, setFilterCount] = useState(0);
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0);
+  const [postnames, setPostNames] = useState({});
   const [after, setAfter] = useState("");
   const [subreddits, setSubreddits] = useState("");
   const [subsArray, setSubsArray] = useState([]);
@@ -254,9 +255,11 @@ const Feed = ({
             imgPortraitFilter,
             imgLandscapeFilter,
           },
+          {},
           filterSubs,
           isUser ? false : true
         );
+        setPostNames(filtered.reduce((obj, post, index) => {obj[post?.data?.name]=1; return obj;}, {}))
         setPosts(filtered);
         setFilterCount((n) => n + filtercount);
         updateLoading(false);
@@ -292,6 +295,7 @@ const Feed = ({
     return () => {
       asynccheck = false;
       setPosts([]);
+      setPostNames({});
       setAfter("");
       setNumPosts(0);
       setFilterCount(0);
@@ -387,6 +391,7 @@ const Feed = ({
                 query={query}
                 initItems={posts}
                 postCount={numposts}
+                postNames={postnames}
                 filterSubs={filterSubs}
                 initAfter={after}
                 isUser={isUser}

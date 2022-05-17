@@ -46,6 +46,7 @@ const MyMasonic = ({
   initAfter,
   filterSubs,
   postCount,
+  postNames, 
   isUser = false,
   isMulti = false,
   isSubFlair = false,
@@ -72,6 +73,7 @@ const MyMasonic = ({
   const [filterCount, setFilterCount] = useState(0);
   const [posts, setPosts] = useState([]);
   const [numposts, setNumPosts] = useState(0); //number of posts displayed
+  const [postnames, setPostNames] = useState(postNames);
   const [after, setAfter] = useState("");
   const [pageCount, setPageCount] = useState(1);
   const [count, setCount] = useState(postCount); //all posts from reddit
@@ -349,9 +351,11 @@ const MyMasonic = ({
             imgPortraitFilter,
             imgLandscapeFilter,
           },
+          postnames,
           filterSubs,
           isUser ? false : true
         );
+        setPostNames(prev => ({...prev, ...filtered.reduce((obj, post, index) => {obj[post?.data?.name]=1; return obj;}, {})}));
         setFilterCount((n) => n + filtercount);
         return { data: { posts: filtered, after: data?.after } };
       } else {
@@ -426,7 +430,7 @@ const MyMasonic = ({
             ssrWidth={500}
           />
           {!end && loadingMore && (
-            <h1 className="text-center">Loading page {pageCount}...</h1>
+            <h1 className="text-center">Loading page {pageCount+1}...</h1>
           )}
           {filterCount > 0 && (
             <div className="fixed bottom-0 left-0 flex-col text-xs select-none">
