@@ -116,6 +116,74 @@ const PostModal = ({
     }
   };
 
+  //prevent scrolling on main body when open
+  useEffect(() => {
+    if (true) {
+      const width = document.body.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.width = `${width}px`;
+    } else {
+      document.body.style.overflow = "visible";
+      document.body.style.width = `auto`;
+    }
+
+    return () => {
+      document.body.style.overflow = "visible";
+      document.body.style.width = `auto`;
+    };
+  }, []);
+
+  useEffect(() => {
+    context.setPostOpen(true);
+
+    return () => {
+      context.setPostOpen(false);
+    };
+  }, []);
+
+  useEffect(() => {
+
+    let asynccheck = true;
+    if (permalink){
+    const fetchPost = async () => {
+      if (Object.keys(postData).length > 0 && !commentMode) {
+        setPost(postData);
+        setLoadingPost(false);
+      }
+      const { post, comments, token } = await loadPost(
+        permalink,
+        sort,
+        session ? true : false,
+        context?.token
+      );
+      token && context.setToken(token);
+      if (asynccheck) {
+        if (Object.keys(postData).length === 0 || commentMode) {
+          if (post?.id) {
+            setPost(post);
+            setLoadingPost(false);
+          } else {
+            setError(true);
+          }
+        }
+        post?.sr_detail && setSR_Detail(post.sr_detail);
+        setComments(comments);
+        setLoadingComments(false);
+      }
+    };
+    fetchPost();
+  }
+    return () => {
+      asynccheck = false;
+      setPost({});
+      setComments([]);
+      setError(false);
+      setLoadingComments(true);
+      setLoadingPost(true);
+    };
+  }, [permalink]);
+
+
   const [mediaInfo, setMediaInfo] = useState<any>();
   useEffect(() => {
     const checkPortrait = async () => {
@@ -135,7 +203,6 @@ const PostModal = ({
       setWait(false);
     };
     if (apost?.id) {
-      //console.log(windowWidth, windowHeight);
       if (
         windowWidth > 1300 &&
         windowHeight < windowWidth &&
@@ -181,69 +248,7 @@ const PostModal = ({
     };
   }, [apost, context]);
 
-  //prevent scrolling on main body when open
-  useEffect(() => {
-    if (true) {
-      const width = document.body.clientWidth;
-      document.body.style.overflow = "hidden";
-      document.body.style.width = `${width}px`;
-    } else {
-      document.body.style.overflow = "visible";
-      document.body.style.width = `auto`;
-    }
-
-    return () => {
-      document.body.style.overflow = "visible";
-      document.body.style.width = `auto`;
-    };
-  }, []);
-
-  useEffect(() => {
-    context.setPostOpen(true);
-
-    return () => {
-      context.setPostOpen(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    let asynccheck = true;
-    const fetchPost = async () => {
-      if (Object.keys(postData).length > 0 && !commentMode) {
-        setPost(postData);
-        setLoadingPost(false);
-      }
-      const { post, comments, token } = await loadPost(
-        permalink,
-        sort,
-        session ? true : false,
-        context?.token
-      );
-      token && context.setToken(token);
-      if (asynccheck) {
-        if (Object.keys(postData).length === 0 || commentMode) {
-          if (post?.id) {
-            setPost(post);
-            setLoadingPost(false);
-          } else {
-            setError(true);
-          }
-        }
-        post?.sr_detail && setSR_Detail(post.sr_detail);
-        setComments(comments);
-        setLoadingComments(false);
-      }
-    };
-    fetchPost();
-    return () => {
-      asynccheck = false;
-      setPost({});
-      setComments([]);
-      setError(false);
-      setLoadingComments(true);
-      setLoadingPost(true);
-    };
-  }, [permalink]);
+  
 
   const updateSort = async (e, sort) => {
     e.preventDefault();
@@ -517,12 +522,6 @@ const PostModal = ({
     </div>
   );
 
-  if (wait && direct) {
-    return (
-      <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex items-center justify-center mt-28">
@@ -530,6 +529,14 @@ const PostModal = ({
       </div>
     );
   }
+
+  if (wait && direct) {
+    return (
+      <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
+    );
+  }
+
+
 
   return (
     <div

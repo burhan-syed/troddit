@@ -229,15 +229,14 @@ const MyMasonic = ({
   }, [context.postNum]);
 
   const loadmore = async (loadafter = after) => {
-    //console.log("loadmore after:", loadafter);
     let data: any = { after: "", children: [], token: null };
     if (
       router?.route === "/" ||
-      router?.asPath === "/best" ||
-      router?.asPath === "/top" ||
-      router?.asPath === "/hot" ||
-      router?.asPath === "/new" ||
-      router?.asPath === "/rising"
+      router?.query?.frontsort === "best" ||
+      router?.query?.frontsort === "top" ||
+      router?.query?.frontsort === "hot" ||
+      router?.query?.frontsort === "new" ||
+      router?.query?.frontsort === "rising"
     ) {
       data = await loadFront(
         session ? true : false,
@@ -320,20 +319,9 @@ const MyMasonic = ({
         count
       );
     }
-    // gtag.event({
-    //   action: "infinite-scroll",
-    //   category: "main-feed",
-    //   label: `${subreddits ? subreddits : "home"}`,
-    //   value: count,
-    // });
-
-    if (data?.after) {
-      //console.log("new", data?.after, "used: ", loadafter);
-      if (true) {
-        //after === prevAfter.current
+    data?.token && context.setToken(data?.token);
+    if (data?.children) {
         prevAfters.current[loadafter] = 1;
-        // plausible("infinitescroll");
-        data?.token && context.setToken(data?.token);
         setCount((c) => c + data?.children?.length);
         setPageCount((c) => c + 1);
 
@@ -358,10 +346,7 @@ const MyMasonic = ({
         setPostNames(prev => ({...prev, ...filtered.reduce((obj, post, index) => {obj[post?.data?.name]=1; return obj;}, {})}));
         setFilterCount((n) => n + filtercount);
         return { data: { posts: filtered, after: data?.after } };
-      } else {
-        //console.log("reject");
-        return { data: { posts: [], after: "NONE" } };
-      }
+      
     } else {
       setError(true);
       return { data: { posts: [], after: "" } };
@@ -384,8 +369,11 @@ const MyMasonic = ({
           setEnd(true);
           caughtup = true;
           allowload = false;
-          //console.log("early return");
           lastafter = data.after;
+          if (data?.posts){
+            payload = [...payload, ...data.posts]
+          }
+          setNumPosts((n) => n + payload.length);
           return { payload, lastafter };
         }
         lastafter = data.after;

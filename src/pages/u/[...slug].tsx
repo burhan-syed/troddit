@@ -52,10 +52,7 @@ const Sort = ({ query }) => {
     };
 
     if (!loading) {
-      if (query?.slug?.[1] === "p") {
-        // router.replace(`/${query.slug?.[2]}`);
-        setLoaded(true);
-      } else if (
+      if (
         query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "SAVED" ||
         query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||

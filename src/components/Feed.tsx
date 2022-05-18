@@ -85,8 +85,6 @@ const Feed = ({
       setFilterSubs(true);
     }
     if (query?.slug?.[1] === "comments" && !userPostMode) {
-      setFetchPost(true);
-      updateLoading(false);
     } else if (query.frontsort) {
       if (
         query?.frontsort == "" ||
@@ -98,17 +96,11 @@ const Feed = ({
       ) {
         setSort(query?.frontsort ?? "hot");
         setRange(query?.t ?? "");
-      } else {
-        //fetching from post from direct url
-        setFetchPost(true);
-        updateLoading(false);
-      }
-      //fetchFront();
+      } 
     } else if (query.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.sort ?? query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
-      //fetchSubs();
     } else {
       setSort(query?.frontsort ?? query?.sort ?? "hot");
       setRange(query?.t ?? "");
@@ -117,7 +109,7 @@ const Feed = ({
     return () => {
       setFilterSubs(false);
     };
-  }, [query, sessloading]);
+  }, [query]);
 
   useEffect(() => {
     let asynccheck = true;
@@ -169,7 +161,6 @@ const Feed = ({
         .split("%20")
         .join("+");
       if (query?.slug?.[1] === "comments" && !userPostMode) {
-        setFetchPost(true);
       } else if (isUser) {
         if (userPostMode !== "" && isSelf) {
           //console.log(userPostMode);
@@ -284,6 +275,7 @@ const Feed = ({
           !sessloading && fetchFront();
         } else {
           setFetchPost(true);
+          updateLoading(false);
         }
       } else if (query.slug) {
         !sessloading && fetchSubs();

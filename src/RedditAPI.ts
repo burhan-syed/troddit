@@ -1048,14 +1048,28 @@ export const loadPost = async (
     accessToken = await returnToken?.accessToken;
   }
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
+
+    let path = permalink
+    //handle direct link case
+    if(!permalink.includes("/comments/")){
+      try{
+        const res = await (
+          await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
+            params: { raw_json: 1, profile_img: true, sr_detail: true },
+          })
+        ).data;
+        path = res?.[0]?.data?.children?.[0].data?.permalink
+      } catch (err){}
+    }
+
     try {
-      let res = await axios.get(`https://oauth.reddit.com${permalink}`, {
+        let res = await axios.get(`https://oauth.reddit.com${path}`, {
         headers: {
           authorization: `bearer ${accessToken}`,
         },
         params: {
           raw_json: 1,
-          article: permalink.split("/")?.[4],
+          article: path.split("/")?.[4] ?? path,
           context: 4,
           showedits: true,
           showmedia: true,
@@ -1075,7 +1089,6 @@ export const loadPost = async (
         post: data?.[0]?.data?.children?.[0]?.data,
         comments: data?.[1]?.data?.children,
       };
-      //console.log(data);
       return { ...post, token: returnToken };
     } catch (err) {
       return { post: undefined, comments: undefined, token: returnToken };
@@ -1087,7 +1100,6 @@ export const loadPost = async (
           params: { raw_json: 1, profile_img: true, sr_detail: true },
         })
       ).data;
-      //console.log(res);
       const data = {
         post: res?.[0]?.data?.children?.[0].data,
         comments: res?.[1]?.data?.children,
