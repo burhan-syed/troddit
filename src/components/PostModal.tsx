@@ -90,26 +90,26 @@ const PostModal = ({
     return () => {};
   }, [nextPress, backPress, escapePress, context.replyFocus]);
 
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [touchStartY, setTouchStartY] = useState(0);
-  const [touchEndY, setTouchEndY] = useState(0);
+  const [touchStart, setTouchStart] = useState([0]);
+  const [touchEnd, setTouchEnd] = useState([0]);
+  const [touchStartY, setTouchStartY] = useState([0]);
+  const [touchEndY, setTouchEndY] = useState([0]);
   const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-    setTouchStartY(e.targetTouches[0].clientY);
+    touchStart[0] = e.targetTouches[0].clientX as number;
+    touchStartY[0] = e.targetTouches[0].clientY as number;
   };
   const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-    setTouchEndY(e.targetTouches[0].clientY);
+    touchEnd[0] = e.targetTouches[0].clientX as number;
+    touchEndY[0] = e.targetTouches[0].clientY as number;
   };
   const handleTouchEnd = (e) => {
     //console.log(Math.abs(touchStartY - touchEndY));
-    if (touchStart - touchEnd > 100) {
+    if (touchStart[0] - touchEnd[0] > 100) {
       //changePost(1);
       //console.log("right");
     } else if (
-      touchStart - touchEnd < -100 &&
-      Math.abs(touchStartY - touchEndY) < 20
+      touchStart[0] - touchEnd[0] < -100 &&
+      Math.abs(touchStartY[0] - touchEndY[0]) < 20
     ) {
       handleBack();
       //console.log("left");
