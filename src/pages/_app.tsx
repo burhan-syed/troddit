@@ -9,6 +9,7 @@ import Script from "next/script";
 import Head from "next/head";
 
 import { Toaster } from "react-hot-toast";
+import NavBar from "../components/NavBar";
 
 function MyApp({ Component, pageProps }) {
   // const router = useRouter();
@@ -39,6 +40,8 @@ function MyApp({ Component, pageProps }) {
           <MainProvider>
             <MySubsProvider>
               <MyCollectionsProvider>
+                <NavBar />
+                <div className="mb-16"></div>
                 <Component {...pageProps} />
                 <Toaster position="bottom-center" />
               </MyCollectionsProvider>

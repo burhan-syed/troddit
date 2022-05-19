@@ -12,13 +12,7 @@ const Search = ({ query }) => {
       </Head>
 
       <main>
-        <NavBar />
-        {/* <div className="mt-16">
-          <Feed query={query} />
-        </div> */}
-        <div className="mt-16">
           <SearchPage query={query} />
-        </div>
       </main>
     </div>
   );

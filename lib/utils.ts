@@ -134,6 +134,7 @@ export const findMediaInfo = async (post, quick = false) => {
     ) {
       isLink = false;
     }
+   
 
     //portrait check
     if (dimensions[0] > 0) {
@@ -142,6 +143,16 @@ export const findMediaInfo = async (post, quick = false) => {
       } else if (dimensions[1] < dimensions[0]) {
         isPortrait = false;
       }
+    }
+
+     //treat these as self posts, not images/videos/links or anything else
+     if (post?.selftext_html){
+      isImage = false;
+      isVideo = false;
+      isGallery = false;
+      isLink = false;
+      isPortrait = false;
+      isSelf = true; 
     }
 
     return {

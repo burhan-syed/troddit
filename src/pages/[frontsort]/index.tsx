@@ -13,11 +13,8 @@ const Subs = ({ query }) => {
         </title>
       </Head>
 
-      <main>
-        <NavBar />
-        <div className="mt-16">
+      <main className="">
           <Feed query={query} />
-        </div>
       </main>
     </div>
   );

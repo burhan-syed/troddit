@@ -38,17 +38,26 @@ const ParseBodyHTML = ({
 
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
-      return replaceUserDomains(str);
+      let splitstr = str.split("<a");
+      let replaceall = [];
+      splitstr.forEach((substr) => replaceall.push(replaceUserDomains(substr)));
+      return replaceall.join("<a");
     };
 
     const replaceUserDomains = (str: String) => {
       let redditRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))/gm;
-      let matchRegex1 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/[ru]\/)/gm;
-      let matchRegex2 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))?(\/user\/)/gm;
+      let matchRegex1 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/[ru]\/)/gm;
+      let matchRegex2 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/user\/)/gm;
+      let matchRegex3 =
+        /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/)+([A-z0-9]){6}("|\s)/gm;
       // let youtubeRegex = /([A-z.]+\.)?youtu(be\.com|\.be)/gm;
       // let twitterRegex = /([A-z.]+\.)?twitter\.com/gm;
       // let instagramRegex = /([A-z.]+\.)?instagram.com/gm;
-      if (str.match(matchRegex1) || str.match(matchRegex2)) {
+      if (
+        str.match(matchRegex1) ||
+        str.match(matchRegex2) ||
+        str.match(matchRegex3)
+      ) {
         str = str.replace(redditRegex, "troddit.com");
       }
       return str;
@@ -61,12 +70,12 @@ const ParseBodyHTML = ({
   return (
     <div
       className={
-        "dark:prose-invert prose prose-stone xl:prose-stone prose-headings:text-stone-700 dark:prose-headings:text-stone-300 dark:prose-strong:text-red-400  prose-strong:text-cyan-700  " +
+        "dark:prose-invert prose prose-stone prose-headings:text-stone-900 text-stone-700 dark:text-lightText dark:prose-headings:text-lightText prose-headings:font-normal prose-h1:text-xl   dark:prose-strong:text-rose-400 dark:prose-strong:font-semibold  prose-p:my-0  prose-strong:text-rose-800  " +
         (small && card
-          ? " prose-sm prose-p:my-0 "
+          ? " prose-sm  "
           : small
-          ? " prose-sm xl:prose-base xl:prose-p:my-0 prose-p:my-0 "
-          : " 2xl:prose-lg ") +
+          ? " prose-sm prose-h1:text-lg  prose-p:my-0 "
+          : "  ") +
         (limitWidth ? " max-w-2xl " : " max-w-none")
       }
       id="innerhtml"

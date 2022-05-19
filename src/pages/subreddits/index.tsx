@@ -12,10 +12,7 @@ const Subreddits = () => {
       </Head>
 
       <main>
-        <NavBar />
-        <div className="mt-16">
           <SubredditsPage />
-        </div>
       </main>
     </div>
   );

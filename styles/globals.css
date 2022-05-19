@@ -10,24 +10,6 @@
   scrollbar-width: thin;
 }
 
-.my-masonry-grid {
-  display: -webkit-box; /* Not needed if autoprefixing */
-  display: -ms-flexbox; /* Not needed if autoprefixing */
-  display: flex;
-  margin-left: -6px; /* gutter size offset */
-  width: auto;
-}
-.my-masonry-grid_column {
-  padding-left: 0.5rem; /* gutter size */
-  background-clip: padding-box;
-}
-
-.my-masonry-grid_column > div {
-  /* change div to reference your elements in <masonry> */
-
-  margin-bottom: 0.5rem;
-}
-
 /*input box*/
 .react-autosuggest__input {
   @apply bg-transparent;
@@ -63,7 +45,7 @@
 }
 
 #innerhtml a {
-  @apply text-blue-700 underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300;
+  @apply text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300;
 }
 #innerhtml p {
 }
@@ -72,5 +54,5 @@
 }
 
 .react-markdown a {
-  @apply text-blue-800 underline;
+  @apply text-blue-800 hover:underline;
 }

@@ -18,10 +18,7 @@ export const index = ({ session, query }) => {
         ></meta>
       </Head>
       <main>
-        <NavBar />
-        <div className="mt-16">
           <Feed query={query} />
-        </div>
       </main>
     </div>
   );

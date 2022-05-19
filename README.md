@@ -3,9 +3,8 @@
 
 Live at [troddit.com](https://www.troddit.com)
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K47IYH1)
 
-## Images
+## Screenshots
 ### Flexible column viewing.  
 Shown browsing a multi-reddit. Subreddits pane and options menu open.
 <img width="1725" alt="columns_options" src="https://user-images.githubusercontent.com/32972409/155919206-e7256397-b2a7-4718-bd17-ff1982b56d1a.png">
@@ -50,7 +49,7 @@ Clone the repo and install all packages with npm or yarn. Then to run developmen
 ```sh
 npm run dev
 # or
-yarn run dev
+yarn dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -102,4 +101,12 @@ This will create the troddit image and pull in the necessary dependencies. To ru
 ```sh
 docker run -p 3000:3000 troddit
 ```
+
+
+### Support
+
+If you like the project feel free to share and leave a star. If you're feeling generous you can support me on Ko-fi.
+
+<span align="center">[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K47IYH1)</span>
+
 

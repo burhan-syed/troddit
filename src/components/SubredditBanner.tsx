@@ -117,7 +117,7 @@ const SubredditBanner = ({
   return (
     <div
       className={
-        "w-full h-full -mt-2 relative  " +
+        "w-full h-full  relative  " +
         (subArray.length === 1 && multi === "" && !name
           ? " mb-2  md:mb-4 lg:mb-6 "
           : " space-y-2 mb-2 md:space-y-3 md:mb-3  ")

@@ -92,7 +92,7 @@ const Media = ({
         post["mediaInfo"] = m;
       }
       let a, b, c;
-      if (post["mediaInfo"].isVideo) {
+      if (post["mediaInfo"].isVideo && !post?.selftext_html) {
         b = await findVideo();
       } else if (
         !b &&
@@ -100,7 +100,7 @@ const Media = ({
         post["mediaInfo"].isIframe
       ) {
         c = await findIframe();
-      } else if (!b && !c) {
+      } else if (!b && !c && !post?.selftext_html) {
         a = await findImage();
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);

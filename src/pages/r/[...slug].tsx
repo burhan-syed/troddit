@@ -39,22 +39,22 @@ const Sort = ({ query }) => {
     };
   }, [query]);
   return (
-    <div className="overflow-x-hidden overflow-y-auto ">
+    <div className={(subsArray?.[0]?.toUpperCase() !== "ALL" &&
+    subsArray?.[0]?.toUpperCase() !== "POPULAR" ? " -mt-2 " : "" ) + " overflow-x-hidden overflow-y-auto "}>
       <Head>
         <title>
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
         </title>
       </Head>
       <main>
-        <NavBar />
         {subsArray?.[0]?.toUpperCase() !== "ALL" &&
         subsArray?.[0]?.toUpperCase() !== "POPULAR" &&
         subsArray?.length > 0 ? (
-          <div className="w-screen pt-16 ">
+          <div className="w-screen ">
             <SubredditBanner subreddits={subsArray} userMode={false} />
           </div>
         ) : (
-          <div className="pt-16"></div>
+          <div className=""></div>
         )}
         {wikiMode ? (
           <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
