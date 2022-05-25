@@ -6,10 +6,8 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import SubredditBanner from "../../components/SubredditBanner";
 import { getUserMultiSubs } from "../../RedditAPI";
-import { useSession } from "next-auth/react";
-const Sort = ({ query }) => {
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+import { getSession } from "next-auth/react";
+const Sort = ({ query, session }) => {
   const [loaded, setLoaded] = useState(false);
   const [isUser, setIsUser] = useState(false);
   const [forbidden, setForbidden] = useState(false);
@@ -51,7 +49,6 @@ const Sort = ({ query }) => {
       }
     };
 
-    if (!loading) {
       if (
         query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "SAVED" ||
@@ -74,7 +71,7 @@ const Sort = ({ query }) => {
           setLoaded(true);
         }
       }
-    }
+    
 
     return () => {
       setLoaded(false);
@@ -85,7 +82,7 @@ const Sort = ({ query }) => {
       setMode("");
       setFeedQuery("");
     };
-  }, [query, session, loading]);
+  }, [query, session]);
 
   return (
     <div className="-mt-2 overflow-x-hidden overflow-y-auto">
@@ -135,9 +132,11 @@ const Sort = ({ query }) => {
               <Feed
                 query={feedQuery}
                 isUser={isUser}
+
                 isSelf={
                   username?.toUpperCase() === session?.user?.name?.toUpperCase()
                 }
+                session={session}
                 userPostMode={mode}
                 isMulti={isMulti}
               />
@@ -149,8 +148,12 @@ const Sort = ({ query }) => {
   );
 };
 
-Sort.getInitialProps = ({ query }) => {
-  return { query };
+
+//can't use getServerSideProps because in app navigation causes page jump
+Sort.getInitialProps = async ({ query,req }) => {
+  const session = await getSession({req});
+
+  return { query,session };
 };
 
 export default Sort;

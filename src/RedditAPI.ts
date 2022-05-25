@@ -13,16 +13,14 @@ let ratelimit_remaining = 600;
 const REDDIT = "https://www.reddit.com";
 
 const getToken = async () => {
-  const session = await getSession();
+  const session =  await getSession();
   if (session) {
     try {
       let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
-      //console.log("tokendata:", tokendata);
       return {
         accessToken: tokendata.data.accessToken,
         refreshToken: tokendata.data.refreshToken,
         expires: tokendata.data.expires,
-        // username: tokendata.data.username,
       };
     } catch (err) {
       //console.log(err);
@@ -52,7 +50,7 @@ const checkToken = async (loggedIn: boolean, token) => {
 export const loadFront = async (
   loggedIn = false,
   token?,
-  sort: string = "best",
+  sort: string = "hot",
   range?: string,
   after?: string,
   count?: number,
@@ -61,7 +59,6 @@ export const loadFront = async (
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
-      //console.log("WITH LOGIN", token);
       const res1 = await axios.get(`https://oauth.reddit.com/${sort}`, {
         headers: {
           authorization: `bearer ${accessToken}`,
@@ -87,7 +84,7 @@ export const loadFront = async (
       //console.log(err);
     }
   } else {
-    let filteredsubs = localSubs.filter((s) => s.substring(0, 2) !== "u_");
+    let filteredsubs = localSubs?.filter((s) => s.substring(0, 2) !== "u_");
     if (filteredsubs?.length > 0) {
       return loadSubreddits(
         loggedIn,
@@ -101,7 +98,6 @@ export const loadFront = async (
       );
     } else {
       try {
-        //console.log("NO LOGIN");
         const res = await (
           await axios.get(`${REDDIT}/${sort}/.json?`, {
             params: {
@@ -347,10 +343,6 @@ export const loadSubFlairPosts = async (
   after = ""
 ) => {
   let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
-  // console.log(
-  //   flair,
-  //   `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`
-  // );
   try {
     const res = await axios.get(
       `https://www.reddit.com/r/${subreddit}/search/.json?q=${f}&sort=${sort}&restrict_sr=on&include_over_18=on&t=${range}&after=${after}`,
@@ -1122,7 +1114,6 @@ export const getMyID = async () => {
         authorization: `bearer ${token}`,
       },
     });
-    console.log(res);
   } catch (err) {
     console.log(err);
   }

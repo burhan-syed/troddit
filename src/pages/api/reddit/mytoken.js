@@ -4,8 +4,6 @@ import { getToken } from "next-auth/jwt";
 import axios from "axios";
 
 export default async (req, res) => {
-  //const body = JSON.parse(req.body);
-  //const session = await getSession({ req });
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   //console.log(JSON.stringify(token, null, 2));
   try {
@@ -15,7 +13,6 @@ export default async (req, res) => {
         accessToken: token.reddit.accessToken,
         refreshToken: token.reddit.refreshToken,
         expires: token.expires,
-        //username: token.reddit.username,
       },
     });
   } catch (e) {

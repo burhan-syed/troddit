@@ -1,18 +1,21 @@
 # Changelog
 
+## v0.12.4
+### Changes
+- Initial posts are now server side rendered. This should mean faster initial loads. If you have local subreddits (follow subreddits without login) you may need to reload the site to sync up your home page feed.  
 ## v0.12.3
 ### New
 - Added changelog 
 ### Changes
-- Miscellaneous text style changes including toned down header sizes and bolding
+- Miscellaneous text style changes 
 ### Fixes
-- Fewer unsupported reddit links convert to troddit  
+- Fix broken Reddit links
   
 ## v0.12.2
 ### Fixes
 - Fix last page load issue
-- Fix direct post open when logged in
-- Fix infinite scroll with front page sorts
+- Fix opening permalinks when logged in
+- Fix pagination when sorting on front page
 - Cleanup duplicate posts showing up in feed
 - Improve performance when using touch in post comments
 
@@ -63,7 +66,7 @@
 - Filter read posts
 - Hide post option
 - Add overflow (hamburger) menu to posts
-### Fix
+### Fixes
 - Fix asynchronous loading issues
 
 ## v0.9.0
@@ -72,7 +75,7 @@
 - Add user comments to user page feed
 ### Changes
 - User page menu links
-### Fix
+### Fixes
 - Fix user follow issue
 
 ## v0.8.2
