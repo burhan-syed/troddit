@@ -20,9 +20,12 @@ import LoginModal from "./LoginModal";
 import MyMasonic from "./MyMasonic";
 import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
+import type { Session } from "next-auth/core/types";
 
 const Feed = ({
   query,
+  initialData = {} as any,
+  session = {} as Session ,
   isUser = false,
   isMulti = false,
   isSubFlair = false,
@@ -31,8 +34,8 @@ const Feed = ({
   userPostMode = "",
   isSelf = false,
 }) => {
-  const { data: session, status } = useSession();
-  const sessloading = status === "loading";
+  //const { data: session, status } = useSession();
+  //const sessloading = status === "loading";
   const [loading, setLoading] = useState(true);
   const [nothingHere, setNothingHere] = useState(false);
   const [error, setError] = useState(false);
@@ -85,7 +88,7 @@ const Feed = ({
       setFilterSubs(true);
     }
     if (query?.slug?.[1] === "comments" && !userPostMode) {
-    } else if (query.frontsort) {
+    } else if (query?.frontsort) {
       if (
         query?.frontsort == "" ||
         query?.frontsort?.includes("best") ||
@@ -96,8 +99,8 @@ const Feed = ({
       ) {
         setSort(query?.frontsort ?? "hot");
         setRange(query?.t ?? "");
-      } 
-    } else if (query.slug) {
+      }
+    } else if (query?.slug) {
       setSubreddits(query?.slug?.[0] ?? "");
       setSort(query?.sort ?? query?.slug?.[1] ?? "hot");
       setRange(query?.t ?? "");
@@ -163,7 +166,6 @@ const Feed = ({
       if (query?.slug?.[1] === "comments" && !userPostMode) {
       } else if (isUser) {
         if (userPostMode !== "" && isSelf) {
-          //console.log(userPostMode);
           data = await loadUserSelf(
             context?.token,
             session ? true : false,
@@ -250,7 +252,12 @@ const Feed = ({
           filterSubs,
           isUser ? false : true
         );
-        setPostNames(filtered.reduce((obj, post, index) => {obj[post?.data?.name]=1; return obj;}, {}))
+        setPostNames(
+          filtered.reduce((obj, post, index) => {
+            obj[post?.data?.name] = 1;
+            return obj;
+          }, {})
+        );
         setPosts(filtered);
         setFilterCount((n) => n + filtercount);
         updateLoading(false);
@@ -258,29 +265,37 @@ const Feed = ({
     };
     if (context.ready) {
       setFilterCount(0);
-      if (query?.slug?.[1] === "comments" && !userPostMode) {
-        setFetchPost(true);
-        updateLoading(false);
-      } else if (isSearch) {
-        !sessloading && fetchSearch();
-      } else if (query.frontsort) {
-        if (
-          query?.frontsort == "" ||
-          query?.frontsort?.includes("best") ||
-          query?.frontsort?.includes("top") ||
-          query?.frontsort?.includes("hot") ||
-          query?.frontsort?.includes("new") ||
-          query?.frontsort?.includes("rising")
-        ) {
-          !sessloading && fetchFront();
-        } else {
+      if (initialData?.children) {
+        manageData(initialData);
+      } else {
+        if (query?.slug?.[1] === "comments" && !userPostMode) {
           setFetchPost(true);
           updateLoading(false);
+        } else if (isSearch) {
+          //!sessloading &&
+           fetchSearch();
+        } else if (query?.frontsort) {
+          if (
+            query?.frontsort == "" ||
+            query?.frontsort?.includes("best") ||
+            query?.frontsort?.includes("top") ||
+            query?.frontsort?.includes("hot") ||
+            query?.frontsort?.includes("new") ||
+            query?.frontsort?.includes("rising")
+          ) {
+            //!sessloading && 
+            fetchFront();
+          } else {
+            setFetchPost(true);
+            updateLoading(false);
+          }
+        } else if (query?.slug) {
+          //!sessloading && 
+          fetchSubs();
+        } else {
+          //!sessloading && 
+          fetchFront();
         }
-      } else if (query.slug) {
-        !sessloading && fetchSubs();
-      } else {
-        !sessloading && fetchFront();
       }
     }
 
@@ -299,8 +314,8 @@ const Feed = ({
     subreddits,
     sort,
     range,
-    sessloading,
-    query.q,
+    //sessloading,
+    query?.q,
     safeSearch,
     userPostMode,
     userPostType,
@@ -330,10 +345,10 @@ const Feed = ({
         <PostModal
           permalink={
             query?.frontsort
-              ? `/${query.frontsort}`
-              : "/r/" + query.slug.join("/")
+              ? `/${query?.frontsort}`
+              : "/r/" + query?.slug.join("/")
           }
-          returnRoute={query.slug?.[0] ? `/r/${query.slug[0]}` : "/"}
+          returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
           setSelect={setFetchPost}
           direct={true}
         />

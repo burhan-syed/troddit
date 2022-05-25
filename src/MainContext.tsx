@@ -676,7 +676,18 @@ export const MainProvider = ({ children }) => {
 
   useEffect(() => {
     if (localSubs?.length > 0) {
+      let encoded = encodeURIComponent(localSubs.join(","));
+      //if we can fit this in the cookie
+      if (encoded.length < 4000){
+        document.cookie = `localSubs=${encoded};samesite=strict`
+      } 
+      //otherwise fallback and will have to use indexed DB
+      else {
+        document.cookie = `localSubs=${true};samesite=strict`
+      }
       localForage.setItem("localSubs", localSubs);
+    } else {
+      document.cookie = `localSubs=false;samesite=strict`
     }
   }, [localSubs]);
 
