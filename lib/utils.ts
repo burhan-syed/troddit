@@ -66,6 +66,23 @@ export const numToString = (x: number, max = 10000) => {
   }
 };
 
+export const checkVersion = (a, b) => {
+  const x = a.split('.').map(e => parseInt(e, 10));
+  const y = b.split('.').map(e => parseInt(e, 10));
+
+  for (const i in x) {
+      y[i] = y[i] || 0;
+      if (x[i] === y[i]) {
+          continue;
+      } else if (x[i] > y[i]) {
+          return 1;
+      } else {
+          return -1;
+      }
+  }
+  return y.length > x.length ? -1 : 0;
+}
+
 export const findMediaInfo = async (post, quick = false) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];

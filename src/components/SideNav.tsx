@@ -16,19 +16,19 @@ const SideNav = ({ visible, toggle }) => {
   const [touchStart, setTouchStart] = useState([0]);
   const [touchEnd, setTouchEnd] = useState([0]);
   const buttonRef = useRef(null);
-  const handleTouchStart = (e) => {
-    touchStart[0] = e.targetTouches[0].clientX;
-  };
-  const handleTouchMove = (e) => {
-    touchEnd[0] = e.targetTouches[0].clientX;
-  };
-  const handleTouchEnd = (e) => {
-    if (touchStart[0] - touchEnd[0] > 50) {
-      toggle(false);
-      //console.log("right");
-    } else if (touchStart[0] - touchEnd[0] < -50) {
-    }
-  };
+  // const handleTouchStart = (e) => {
+  //   touchStart[0] = e.targetTouches[0].clientX;
+  // };
+  // const handleTouchMove = (e) => {
+  //   touchEnd[0] = e.targetTouches[0].clientX;
+  // };
+  // const handleTouchEnd = (e) => {
+  //   if (touchStart[0] - touchEnd[0] > 50) {
+  //     //toggle(false);
+  //     //console.log("right");
+  //   } else if (touchStart[0] - touchEnd[0] < -50) {
+  //   }
+  // };
   //prevent scrolling on main body when open
   useEffect(() => {
     if (visible) {
@@ -54,9 +54,9 @@ const SideNav = ({ visible, toggle }) => {
   }, [visible]);
   return (
     <div
-      onTouchStart={(e) => handleTouchStart(e)}
-      onTouchMove={(e) => handleTouchMove(e)}
-      onTouchEnd={(e) => handleTouchEnd(e)}
+      // onTouchStart={(e) => handleTouchStart(e)}
+      // onTouchMove={(e) => handleTouchMove(e)}
+      // onTouchEnd={(e) => handleTouchEnd(e)}
     >
       <div
         className={

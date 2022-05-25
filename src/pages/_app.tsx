@@ -8,22 +8,26 @@ import { MyCollectionsProvider } from "../components/collections/CollectionConte
 import Script from "next/script";
 import Head from "next/head";
 
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
+import { useEffect } from "react";
+import { checkVersion } from "../../lib/utils";
+import ToastCustom from "../components/toast/ToastCustom";
 
 function MyApp({ Component, pageProps }) {
-  // const router = useRouter();
-  // const [dataDomain, setDataDomain] = useState("");
-  // useEffect(() => {
-  //   if (window.location.host.includes("troddit.com")) {
-  //     setDataDomain("troddit.com");
-  //   } else {
-  //     setDataDomain(window.location.host);
-  //   }
-  //   return () => {
-  //     setDataDomain("");
-  //   };
-  // }, []);
+  useEffect(() => {
+    const curVersion = "0.12.4"
+    let compare = checkVersion(curVersion, localStorage.getItem("trodditVersion") ?? "");
+    if (compare === 1){
+      localStorage.setItem("trodditVersion", curVersion)
+      const toastId = toast.custom(
+        (t) => (
+          <ToastCustom t={t} message={`Troddit has updated! Click to see changelog`} mode={"version"} />
+        ),
+        { position: "bottom-center", duration: 8000 }
+      );
+    }
+  }, [])
   return (
     <>
       <Script defer data-domain={"troddit.com"} src="/js/script.js"></Script>

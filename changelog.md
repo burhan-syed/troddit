@@ -1,8 +1,10 @@
 # Changelog
 
 ## v0.12.4
+### New
+- Toast notifications now appear on version upgrade
 ### Changes
-- Initial posts are now server side rendered. This should mean faster initial loads. If you have local subreddits (follow subreddits without login) you may need to reload the site to sync up your home page feed.  
+- Initial posts are now server side rendered. This should mean faster initial page loads. If you follow subreddits locally without logging in you may need to reload the site to sync up your home page.  
 ## v0.12.3
 ### New
 - Added changelog 
@@ -29,7 +31,7 @@
 ### New
 - Add subreddit and user filters
 - Show user icons in comments
-- Show subreddit icons in original post cards when browsing multi-subsreddits such as front page, r/all, or custom feeds
+- Show subreddit icons in original post cards when browsing multi-subreddits such as front page, r/all, or custom feeds
 ### Changes
 - All card styles are now rounded
 - Videos autoplay better
@@ -80,7 +82,7 @@
 
 ## v0.8.2
 ### Changes
-- Dropdown pane support keyboard navigation
+- Dropdown pane supports keyboard navigation
 ### Fixes
 - Don't convert Reddit poll links to troddit
 - Responsive style fixes
@@ -136,7 +138,6 @@
 - Miscellaneous style changes
 ### Fixes
 - Gifs now animate (as videos)
-- Gallery 
 
 ## v0.5.1
 ### Changes
@@ -195,8 +196,8 @@
 
 ## v0.3.0
 ### New
-- Added support for subbing and unsubbing to subreddits both locally and with Reddit account
-- Added ability to reply to post with comments
+- Added support for subbing and unsubbing to subreddits either locally or with your Reddit account
+- Added ability to reply with comments
 - Added new post card styles
   - Classic Row: A classic rows view with thumbnail and expandable media
   - Compact Card: A minimal version of the original card without padding and self post text. 

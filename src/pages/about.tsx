@@ -42,40 +42,39 @@ const AboutPage = ({ changelog }) => {
             </a>
             .
           </p>
-          <p className="flex flex-wrap justify-between pt-5 font-semibold ">
-            <h4>v0.12.3</h4>
+          <p className="">
             <Link href={"/changelog"}>
-              <a className=" hover:underline">See Changelog</a>
+              <a className="flex flex-wrap justify-between pt-5 font-semibold  hover:underline">
+                <h4>v0.12.4</h4>
+                <h4>See Changelog</h4>
+              </a>
             </Link>
           </p>
-
-          
         </div>
         <div className="absolute left-0 w-full bottom-5 sm:bottom-20">
-            <div className="flex items-center justify-between max-w-xl mx-4 sm:mx-auto">
-              <a
-                href="https://ko-fi.com/K3K47IYH1"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <img
-                  src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11e22d8ff4a5b4a1b3346_Supportbutton-1-p-500.png"
-                  alt="Buy Me a Coffee at ko-fi.com"
-                  className="h-10 transition-all rounded-md dark:border hover:scale-110"
-                />
-              </a>
-              <a
-                href="https://www.github.com/burhan-syed/troddit"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:cursor-pointer"
-              >
-                <AiOutlineGithub className="w-12 h-12 transition-all hover:scale-110" />
-              </a>
-            </div>
+          <div className="flex items-center justify-between max-w-xl mx-4 sm:mx-auto">
+            <a
+              href="https://ko-fi.com/K3K47IYH1"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11e22d8ff4a5b4a1b3346_Supportbutton-1-p-500.png"
+                alt="Buy Me a Coffee at ko-fi.com"
+                className="h-10 transition-all rounded-md dark:border hover:scale-110"
+              />
+            </a>
+            <a
+              href="https://www.github.com/burhan-syed/troddit"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:cursor-pointer"
+            >
+              <AiOutlineGithub className="w-12 h-12 transition-all hover:scale-110" />
+            </a>
           </div>
+        </div>
       </div>
-      
     </div>
   );
 };
