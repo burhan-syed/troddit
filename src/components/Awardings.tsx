@@ -24,7 +24,7 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
         {all_awardings.map((a, i) => {
           if ((truncate && i < MAX_DISPLAY) || !truncate) {
             return (
-              <div key={a?.icon_url} className={styles}>
+              <div key={a?.icon_url} className={styles} title={`${a?.name} (${a?.count})`}>
                 <Image
                   src={a?.resized_icons?.[1]?.url ?? a?.icon_url}
                   alt=""
