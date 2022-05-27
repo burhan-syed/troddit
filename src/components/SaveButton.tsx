@@ -65,7 +65,7 @@ const SaveButton = ({
       )}
 
       {!isPortrait && (
-        <h1 className={post && "hidden " + (!isPortrait && " md:block ")}>
+        <h1 className={(post ? "hidden " : "") + (!isPortrait ? " md:block " : "")}>
           {isSaved ? "Unsave" : "Save"}
           {menu ? " Post" : ""}
         </h1>

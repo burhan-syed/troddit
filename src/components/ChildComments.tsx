@@ -291,12 +291,16 @@ const ChildComments = ({
             <div className="">
               {/* Comment Text */}
               <div
-                onClick={(e) => {
+                onClick={(e: any) => {
                   const cellText = document.getSelection();
-                  //console.log(cellText);
-                  if (cellText?.anchorNode?.nodeName != "#text")
+                  if (
+                    cellText?.anchorNode?.nodeName !== "#text" ||
+                    cellText?.type === "Range" ||
+                    e?.target?.nodeName === "A" ||
+                    e?.target?.localName === "a"
+                  ) {
                     e.stopPropagation();
-                  if (cellText?.type === "Range") e.stopPropagation();
+                  }
                 }}
                 className="py-2 ml-2 mr-4 "
               >
