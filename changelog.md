@@ -3,7 +3,7 @@
 ## v0.13.0
 ### New
 - Added a settings menu with new options including: 
-  - Post width: Set post width independetly of feed width
+  - Post width: Set post width independently of feed width
   - Auto collapse child comments when a post is opened
   - Only collapse child comments instead of the whole comment
   - Show or hide user flairs, post flairs, user icons, and gildings
@@ -11,13 +11,15 @@
 ### Changes
 - Wide UI option has moved from the hamburger menu to the settings menu
 ### Fixes
-- Clicking on a link in a comment no longer collapses the comment
-- Revert a change that disabled guilding details on hover
+- Clicking a link in a comment no longer collapses the comment
+- Revert a change that disabled gilding details on hover
+
 ## v0.12.4
 ### New
 - Toast notifications now appear on version upgrade
 ### Changes
 - Initial posts are now server side rendered. This should mean faster initial page loads. If you follow subreddits locally without logging in you may need to reload the site to sync up your home page.  
+
 ## v0.12.3
 ### New
 - Added changelog 
