@@ -16,18 +16,25 @@ import ToastCustom from "../components/toast/ToastCustom";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    const curVersion = "0.12.4"
-    let compare = checkVersion(curVersion, localStorage.getItem("trodditVersion") ?? "");
-    if (compare === 1){
-      localStorage.setItem("trodditVersion", curVersion)
+    const curVersion = "0.13.0";
+    let compare = checkVersion(
+      curVersion,
+      localStorage.getItem("trodditVersion") ?? ""
+    );
+    if (compare === 1) {
+      localStorage.setItem("trodditVersion", curVersion);
       const toastId = toast.custom(
         (t) => (
-          <ToastCustom t={t} message={`Troddit has updated! Click to see changelog`} mode={"version"} />
+          <ToastCustom
+            t={t}
+            message={`Troddit has updated! Click to see changelog`}
+            mode={"version"}
+          />
         ),
         { position: "bottom-center", duration: 8000 }
       );
     }
-  }, [])
+  }, []);
   return (
     <>
       <Script defer data-domain={"troddit.com"} src="/js/script.js"></Script>

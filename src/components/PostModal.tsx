@@ -142,37 +142,36 @@ const PostModal = ({
   }, []);
 
   useEffect(() => {
-
     let asynccheck = true;
-    if (permalink){
-    const fetchPost = async () => {
-      if (Object.keys(postData).length > 0 && !commentMode) {
-        setPost(postData);
-        setLoadingPost(false);
-      }
-      const { post, comments, token } = await loadPost(
-        permalink,
-        sort,
-        session ? true : false,
-        context?.token
-      );
-      token && context.setToken(token);
-      if (asynccheck) {
-        if (Object.keys(postData).length === 0 || commentMode) {
-          if (post?.id) {
-            setPost(post);
-            setLoadingPost(false);
-          } else {
-            setError(true);
-          }
+    if (permalink) {
+      const fetchPost = async () => {
+        if (Object.keys(postData).length > 0 && !commentMode) {
+          setPost(postData);
+          setLoadingPost(false);
         }
-        post?.sr_detail && setSR_Detail(post.sr_detail);
-        setComments(comments);
-        setLoadingComments(false);
-      }
-    };
-    fetchPost();
-  }
+        const { post, comments, token } = await loadPost(
+          permalink,
+          sort,
+          session ? true : false,
+          context?.token
+        );
+        token && context.setToken(token);
+        if (asynccheck) {
+          if (Object.keys(postData).length === 0 || commentMode) {
+            if (post?.id) {
+              setPost(post);
+              setLoadingPost(false);
+            } else {
+              setError(true);
+            }
+          }
+          post?.sr_detail && setSR_Detail(post.sr_detail);
+          setComments(comments);
+          setLoadingComments(false);
+        }
+      };
+      fetchPost();
+    }
     return () => {
       asynccheck = false;
       setPost({});
@@ -182,7 +181,6 @@ const PostModal = ({
       setLoadingPost(true);
     };
   }, [permalink]);
-
 
   const [mediaInfo, setMediaInfo] = useState<any>();
   useEffect(() => {
@@ -247,8 +245,6 @@ const PostModal = ({
       setHideNSFW(false);
     };
   }, [apost, context]);
-
-  
 
   const updateSort = async (e, sort) => {
     e.preventDefault();
@@ -536,8 +532,6 @@ const PostModal = ({
     );
   }
 
-
-
   return (
     <div
       className={
@@ -653,11 +647,12 @@ const PostModal = ({
                                 <h2 className="ml-1 mr-1 -translate-y-0.5 font-semibold hover:underline group">
                                   u/
                                   {apost?.author ?? ""}
-                                  {apost?.author_flair_text?.length > 0 && (
-                                    <span className="mx-1 text-xs">
-                                      <UserFlair post={apost} />
-                                    </span>
-                                  )}
+                                  {apost?.author_flair_text?.length > 0 &&
+                                    context.showUserFlairs && (
+                                      <span className="mx-1 text-xs">
+                                        <UserFlair post={apost} />
+                                      </span>
+                                    )}
                                 </h2>
                               </a>
                             </Link>

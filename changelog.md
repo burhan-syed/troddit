@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.13.0
+### New
+- Added a settings menu with new options including: 
+  - Post width: Set post width independetly of feed width
+  - Auto collapse child comments when a post is opened
+  - Only collapse child comments instead of the whole comment
+  - Show or hide user flairs, post flairs, user icons, and guildings
+  - More to come... 
+### Changes
+- Wide UI option has moved from the hamburger menu to the settings menu
+### Fixes
+- Clicking on a link in a comment no longer collapses the comment
+- Revert a change that disabled guilding details on hover
 ## v0.12.4
 ### New
 - Toast notifications now appear on version upgrade

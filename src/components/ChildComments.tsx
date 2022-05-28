@@ -25,8 +25,13 @@ const ChildComments = ({
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [hideChildren, setHideChildren] = useState(false);
-  const { data: session, status } = useSession();
   const context: any = useMainContext();
+
+  useEffect(() => {
+    context?.defaultCollapseChildren && setHideChildren(true);
+  }, [context?.defaultCollapseChildren]);
+
+  const { data: session, status } = useSession();
   const parentRef = useRef(null);
   const executeScroll = () => {
     if (parentRef.current.getBoundingClientRect().top < 0) {
@@ -174,9 +179,9 @@ const ChildComments = ({
         <div
           className={
             "flex-grow mt-3 max-w-full   " +
-            (hideChildren && !portraitMode
+            (hideChildren && !context.collapseChildrenOnly && !portraitMode
               ? " md:pl-0 mb-3 "
-              : hideChildren
+              : hideChildren && !context.collapseChildrenOnly
               ? " mb-3 "
               : " ")
           }
@@ -199,7 +204,8 @@ const ChildComments = ({
                     "flex items-center group justify-start group gap-1"
                   }
                 >
-                  {comment?.data?.profile_img?.includes("http") ? (
+                  {comment?.data?.profile_img?.includes("http") &&
+                  context.showUserIcons ? (
                     <div className="w-6 h-6 rounded-full overflow-clip mr-0.5">
                       <Image
                         src={comment.data.profile_img}
@@ -211,17 +217,25 @@ const ChildComments = ({
                       ></Image>
                     </div>
                   ) : (
-                    <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
-                      <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
-                    </div>
+                    context.showUserIcons && (
+                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
+                        <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
+                      </div>
+                    )
                   )}
-                  <h1 className="group-hover:underline">
+                  <h1
+                    className={
+                      "group-hover:underline" +
+                      (!context.showUserIcons ? " -ml-1 md:ml-2" : "")
+                    }
+                  >
                     {comment?.data?.author ?? ""}
-                    {comment?.data?.author_flair_text?.length > 0 && (
-                      <span className="ml-2 mr-0.5 text-xs">
-                        <UserFlair post={comment.data} />
-                      </span>
-                    )}
+                    {comment?.data?.author_flair_text?.length > 0 &&
+                      context.showUserFlairs && (
+                        <span className="ml-2 mr-0.5 text-xs">
+                          <UserFlair post={comment.data} />
+                        </span>
+                      )}
                   </h1>
                 </a>
               </Link>
@@ -287,16 +301,26 @@ const ChildComments = ({
           </div>
 
           {/* Main Comment Body */}
-          <div className={(hideChildren ? "hidden" : " ") + " "}>
+          <div
+            className={
+              (hideChildren && !context.collapseChildrenOnly
+                ? " hidden "
+                : " ") + " "
+            }
+          >
             <div className="">
               {/* Comment Text */}
               <div
-                onClick={(e) => {
+                onClick={(e: any) => {
                   const cellText = document.getSelection();
-                  //console.log(cellText);
-                  if (cellText?.anchorNode?.nodeName != "#text")
+                  if (
+                    cellText?.anchorNode?.nodeName !== "#text" ||
+                    cellText?.type === "Range" ||
+                    e?.target?.nodeName === "A" ||
+                    e?.target?.localName === "a"
+                  ) {
                     e.stopPropagation();
-                  if (cellText?.type === "Range") e.stopPropagation();
+                  }
                 }}
                 className="py-2 ml-2 mr-4 "
               >
@@ -326,7 +350,8 @@ const ChildComments = ({
                 <button
                   className={
                     "text-sm " +
-                    (hideChildren || comment?.myreply
+                    ((hideChildren && !context.collapseChildrenOnly) ||
+                    comment?.myreply
                       ? "hidden"
                       : "block hover:underline")
                   }
@@ -362,7 +387,29 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-              <div className="min-w-full py-2">
+              {hideChildren &&
+                context.collapseChildrenOnly &&
+                childcomments.length > 0 && (
+                  <div className="my-1 mt-2 ml-2 text-xs cursor-pointer select-none opacity-70">
+                    {childcomments?.[0]?.data?.count ?? childcomments.length}{" "}
+                    child comment
+                    {childcomments?.[0]?.data?.count ??
+                    childcomments.length == 1
+                      ? ""
+                      : "s"}{" "}
+                    hidden
+                  </div>
+                )}
+              <div
+                className={
+                  "min-w-full py-2" +
+                  (hideChildren &&
+                  context.collapseChildrenOnly &&
+                  childcomments.length > 0
+                    ? " hidden "
+                    : "")
+                }
+              >
                 {childcomments && (
                   <>
                     {childcomments.map((childcomment, i) => (

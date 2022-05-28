@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { numToString } from "../../lib/utils";
+import { useMainContext } from "../MainContext";
 
 const MAX_DISPLAY = 5;
 
 const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
   const [rewardCount, setRewardCount] = useState(0);
+  const context: any = useMainContext();
   useEffect(() => {
     let r = 0;
     all_awardings?.forEach((a, i) => {
@@ -18,13 +20,17 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
     };
   }, []);
 
-  if (all_awardings?.length > 0)
+  if (all_awardings?.length > 0 && context.showAwardings)
     return (
       <>
         {all_awardings.map((a, i) => {
           if ((truncate && i < MAX_DISPLAY) || !truncate) {
             return (
-              <div key={a?.icon_url} className={styles}>
+              <div
+                key={a?.icon_url}
+                className={styles}
+                title={`${a?.name} (${a?.count})`}
+              >
                 <Image
                   src={a?.resized_icons?.[1]?.url ?? a?.icon_url}
                   alt=""

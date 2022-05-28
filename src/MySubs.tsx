@@ -530,9 +530,9 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
-  const checkSubCache = async (sub_displayName) => {
+  const checkSubCache = async (sub_displayName, isUser) => {
     let cached = await localSubInfoCache.getItem(
-      sub_displayName?.toUpperCase()
+      ((isUser ? "U_" : "") + sub_displayName)?.toUpperCase()
     );
     return cached;
   };
@@ -565,9 +565,10 @@ export const MySubsProvider = ({ children }) => {
     localSubInfoCache.setItem(sub, subInfoLess);
 
     //keep local storage in check
+    const maxCacheLength = 200
     localSubInfoCache.length().then((len) => {
-      if (len > 100) {
-        localSubInfoCache.key(1).then((key) => {
+      if (len > maxCacheLength) {
+        localSubInfoCache.key(maxCacheLength-1).then((key) => {
           localSubInfoCache.removeItem(key);
         });
       }
@@ -586,7 +587,7 @@ export const MySubsProvider = ({ children }) => {
   useEffect(() => {
     let asynccheck = true;
     const loadCurrSubInfo = async (sub, isUser = false) => {
-      let cachedInfo = checkSubCache(sub);
+      let cachedInfo = await checkSubCache(sub, isUser);
       if (cachedInfo) {
         asynccheck && setCurrSubInfo(cachedInfo);
       }

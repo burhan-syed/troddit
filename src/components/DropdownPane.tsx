@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
@@ -11,17 +11,22 @@ import DropdownItem from "./DropdownItem";
 import { useSubsContext } from "../MySubs";
 import DropDownItems from "./DropDownItems";
 import { Menu, Transition } from "@headlessui/react";
+import { useMainContext } from "../MainContext";
 
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
   const { multi, currSubInfo, currLocation, tryLoadAll } = subsContext;
-
-  const [expand, setExpand] = useState(false);
+  const context: any = useMainContext();
+  const [expand, setExpand] = useState<boolean>();
   const router = useRouter();
 
   const handleClick = async () => {
     tryLoadAll();
   };
+
+  useEffect(() => {
+    context.expandedSubPane ? setExpand(true) : setExpand(false);
+  }, [context.expandedSubPane]);
 
   return (
     <Menu

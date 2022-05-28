@@ -1,16 +1,9 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import ToggleTheme from "./ToggleTheme";
-import ToggleNSFW from "./ToggleNSFW";
-import ToggleAutoplay from "./ToggleAutoplay";
 import Link from "next/link";
 import { useMainContext } from "../MainContext";
-import ToggleMediaOnly from "./ToggleMediaOnly";
-import ToggleAudioOnHover from "./ToggleAudioOnHover";
-import Login from "./Login";
-import ToggleWideUI from "./ToggleWideUI";
-import ToggleHoverplay from "./ToggleHoverplay";
+import Toggles from "./settings/Toggles";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -131,7 +124,7 @@ const NavMenu = ({ hide = false }) => {
                           setColumnCount(0);
                         }}
                       >
-                        Default
+                        Automatic
                       </div>
                     </li>
                     <li>
@@ -309,103 +302,42 @@ const NavMenu = ({ hide = false }) => {
                 </div>
               )}
             </Menu.Item>
-            {/* <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleMediaOnly />
-                </div>
-              )}
-            </Menu.Item> */}
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleWideUI />
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleHoverplay />
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleAutoplay />
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleAudioOnHover />
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight " : "",
-                    "block px-4 py-2 text-sm  "
-                  )}
-                >
-                  <ToggleTheme />
-                </div>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <ToggleNSFW />
-                </div>
-              )}
-            </Menu.Item>
-            {/* <Menu.Item>
-              {({ active }) => (
-                <div
-                  className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
-                    "block px-4 py-2 text-sm"
-                  )}
-                >
-                  <Login/>
-                </div>
-              )}
-            </Menu.Item> */}
 
+            {["hoverplay", "autoplay", "audioOnHover", "theme", "nsfw"].map(
+              (setting: any) => (
+                <Menu.Item key={setting}>
+                  {({ active }) => (
+                    <div
+                      className={classNames(
+                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        "block px-4 text-sm "
+                      )}
+                    >
+                      <Toggles
+                        setting={setting}
+                        externalStyles="py-2 cursor-pointer"
+                      />
+                    </div>
+                  )}
+                </Menu.Item>
+              )
+            )}
+            <Menu.Item>
+              {({ active }) => (
+                <div
+                  className={classNames(
+                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    "block px-4 py-2 text-sm"
+                  )}
+                >
+                  <Link href="/settings" passHref={true}>
+                    <div className="flex flex-row justify-center cursor-pointer select-none">
+                      Settings
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </Menu.Item>
             <Menu.Item>
               {({ active }) => (
                 <div

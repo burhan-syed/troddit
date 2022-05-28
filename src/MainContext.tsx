@@ -49,6 +49,42 @@ export const MainProvider = ({ children }) => {
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
 
+  //new settings..
+  const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
+  const [defaultCollapseChildren, setDefaultCollapseChildren] =
+    useState<boolean>();
+  const [showUserIcons, setShowUserIcons] = useState<boolean>();
+  const [showAwardings, setShowAwardings] = useState<boolean>();
+  const [showFlairs, setShowFlairs] = useState<boolean>();
+  const [showUserFlairs, setShowUserFlairs] = useState<boolean>();
+  const [expandedSubPane, setExpandedSubPane] = useState<boolean>();
+  const toggleDefaultCollapseChildren = () => {
+    setDefaultCollapseChildren((d) => !d);
+  };
+  const toggleCollapseChildrenOnly = () => {
+    if (!defaultCollapseChildren) {
+      setCollapseChildrenOnly((d) => !d);
+    }
+  };
+  useEffect(() => {
+    defaultCollapseChildren && setCollapseChildrenOnly(true);
+  }, [defaultCollapseChildren]);
+  const toggleShowUserIcons = () => {
+    setShowUserIcons((s) => !s);
+  };
+  const toggleShowAwardings = () => {
+    setShowAwardings((s) => !s);
+  };
+  const toggleShowFlairs = () => {
+    setShowFlairs((s) => !s);
+  };
+  const toggleShowUserFlairs = () => {
+    setShowUserFlairs((s) => !s);
+  };
+  const toggleExpandedSubPane = () => {
+    setExpandedSubPane((e) => !e);
+  };
+
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
   const toggleUserPostType = () => {
@@ -268,8 +304,7 @@ export const MainProvider = ({ children }) => {
   const toggleWideUI = () => {
     setSaveWideUI((w) => {
       setWideUI(!w);
-      //syncWideUI &&
-      setPostWideUI(!w);
+      syncWideUI && setPostWideUI(!w);
       return !w;
     });
   };
@@ -279,6 +314,14 @@ export const MainProvider = ({ children }) => {
       columnOverride === 1 &&
       setFastRefresh((f) => f + 1);
   }, [wideUI]);
+
+  const toggleSyncWideUI = () => {
+    setSyncWideUI((w) => !w);
+  };
+
+  const togglePostWideUI = () => {
+    setPostWideUI((w) => !w);
+  };
 
   const toggleNSFW = () => {
     setNSFW((prevNSFW) => !prevNSFW);
@@ -586,6 +629,60 @@ export const MainProvider = ({ children }) => {
         }
       };
 
+      //new settings don't need localstorage fallback..
+      const loadCollapseChildrenOnly = async () => {
+        let saved_collapseChildrenOnly = await localForage.getItem(
+          "collapseChildrenOnly"
+        );
+        saved_collapseChildrenOnly === true
+          ? setCollapseChildrenOnly(true)
+          : setCollapseChildrenOnly(false);
+      };
+      const loadDefaultCollapseChildren = async () => {
+        let saved_defaultCollapseChildren = await localForage.getItem(
+          "defaultCollapseChildren"
+        );
+        saved_defaultCollapseChildren === true
+          ? setDefaultCollapseChildren(true)
+          : setDefaultCollapseChildren(false);
+      };
+      const loadShowUserIcons = async () => {
+        let saved_loadShowUserIcons = await localForage.getItem(
+          "showUserIcons"
+        );
+        saved_loadShowUserIcons === false
+          ? setShowUserIcons(false)
+          : setShowUserIcons(true);
+      };
+      const loadShowAwardings = async () => {
+        let saved_showAwardings = await localForage.getItem("showAwardings");
+        saved_showAwardings === false
+          ? setShowAwardings(false)
+          : setShowAwardings(true);
+      };
+      const loadShowFlairs = async () => {
+        let saved_showFlairs = await localForage.getItem("showFlairs");
+        saved_showFlairs === false ? setShowFlairs(false) : setShowFlairs(true);
+      };
+      const loadShowUserFlairs = async () => {
+        let saved_showUserFlairs = await localForage.getItem("showUserFlairs");
+        saved_showUserFlairs === false
+          ? setShowUserFlairs(false)
+          : setShowUserFlairs(true);
+      };
+      const loadExpandedSubPane = async () => {
+        let saved = await localForage.getItem("expandedSubPane");
+        saved === true ? setExpandedSubPane(true) : setExpandedSubPane(false);
+      };
+
+      //things we dont' really need loaded before posts are loaded
+      loadCollapseChildrenOnly();
+      loadDefaultCollapseChildren();
+      loadShowUserIcons();
+      loadShowUserFlairs();
+      loadExpandedSubPane();
+
+      //things we need loaded before posts are rendered
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
       let hoverplay = loadHoverPlay();
@@ -605,6 +702,8 @@ export const MainProvider = ({ children }) => {
       let linkfilter = loadLinkFilter();
       let selffilter = loadSelfFilter();
       let readfilter = loadReadFilter();
+      let showflairs = loadShowFlairs();
+      let showawardings = loadShowAwardings();
       await Promise.all([
         nsfw,
         autoplay,
@@ -625,6 +724,8 @@ export const MainProvider = ({ children }) => {
         linkfilter,
         selffilter,
         readfilter,
+        showflairs,
+        showawardings,
       ]);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
@@ -638,6 +739,41 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (expandedSubPane !== undefined) {
+      localForage.setItem("expandedSubPane", expandedSubPane);
+    }
+  }, [expandedSubPane]);
+  useEffect(() => {
+    if (showUserFlairs !== undefined) {
+      localForage.setItem("showUserFlairs", showUserFlairs);
+    }
+  }, [showUserFlairs]);
+  useEffect(() => {
+    if (showFlairs !== undefined) {
+      localForage.setItem("showFlairs", showFlairs);
+    }
+  }, [showFlairs]);
+  useEffect(() => {
+    if (showAwardings !== undefined) {
+      localForage.setItem("showAwardings", showAwardings);
+    }
+  }, [showAwardings]);
+  useEffect(() => {
+    if (showUserIcons !== undefined) {
+      localForage.setItem("showUserIcons", showUserIcons);
+    }
+  }, [showUserIcons]);
+  useEffect(() => {
+    if (defaultCollapseChildren !== undefined) {
+      localForage.setItem("defaultCollapseChildren", defaultCollapseChildren);
+    }
+  }, [defaultCollapseChildren]);
+  useEffect(() => {
+    if (collapseChildrenOnly !== undefined) {
+      localForage.setItem("collapseChildrenOnly", collapseChildrenOnly);
+    }
+  }, [collapseChildrenOnly]);
   useEffect(() => {
     if (readFilter !== undefined) {
       localForage.setItem("readFilter", readFilter);
@@ -678,16 +814,16 @@ export const MainProvider = ({ children }) => {
     if (localSubs?.length > 0) {
       let encoded = encodeURIComponent(localSubs.join(","));
       //if we can fit this in the cookie
-      if (encoded.length < 4000){
-        document.cookie = `localSubs=${encoded};samesite=strict`
-      } 
+      if (encoded.length < 4000) {
+        document.cookie = `localSubs=${encoded};samesite=strict`;
+      }
       //otherwise fallback and will have to use indexed DB
       else {
-        document.cookie = `localSubs=${true};samesite=strict`
+        document.cookie = `localSubs=${true};samesite=strict`;
       }
       localForage.setItem("localSubs", localSubs);
     } else {
-      document.cookie = `localSubs=false;samesite=strict`
+      document.cookie = `localSubs=false;samesite=strict`;
     }
   }, [localSubs]);
 
@@ -766,6 +902,8 @@ export const MainProvider = ({ children }) => {
         postWideUI,
         setPostWideUI,
         setSyncWideUI,
+        toggleSyncWideUI,
+        togglePostWideUI,
         saveWideUI,
         toggleWideUI,
         setWideUI,
@@ -825,6 +963,20 @@ export const MainProvider = ({ children }) => {
         toggleReadPost,
         postOpen,
         setPostOpen,
+        collapseChildrenOnly,
+        toggleCollapseChildrenOnly,
+        defaultCollapseChildren,
+        toggleDefaultCollapseChildren,
+        showUserIcons,
+        toggleShowUserIcons,
+        showAwardings,
+        toggleShowAwardings,
+        showFlairs,
+        toggleShowFlairs,
+        showUserFlairs,
+        toggleShowUserFlairs,
+        expandedSubPane,
+        toggleExpandedSubPane,
       }}
     >
       {children}
