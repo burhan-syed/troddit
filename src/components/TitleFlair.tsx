@@ -1,12 +1,15 @@
 import { useState } from "react";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
+import { useMainContext } from "../MainContext";
 
 const TitleFlair = ({ post }) => {
-  //const flair_color = post?.link_flair_background_color ?? "#343535";
-  //post?.link_flair_text_color == "dark" &&
+  const context: any = useMainContext();
 
-  if (post?.link_flair_richtext?.length > 0 || post?.link_flair_text)
+  if (
+    (post?.link_flair_richtext?.length > 0 || post?.link_flair_text) &&
+    context.showFlairs
+  )
     return (
       <div
         className={`p-0.5 px-1 rounded-lg inline-block select-none ${

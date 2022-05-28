@@ -44,8 +44,8 @@ const AboutPage = ({ changelog }) => {
           </p>
           <p className="">
             <Link href={"/changelog"}>
-              <a className="flex flex-wrap justify-between pt-5 font-semibold  hover:underline">
-                <h4>v0.12.4</h4>
+              <a className="flex flex-wrap justify-between pt-5 font-semibold hover:underline">
+                <h4>v0.13.0</h4>
                 <h4>See Changelog</h4>
               </a>
             </Link>
