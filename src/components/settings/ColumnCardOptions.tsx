@@ -105,7 +105,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
           }
         >
           {[0, 1, 2, 3, 4, 5, 7].map((num) => (
-            <Menu.Item disabled={mode !== "columns"}>
+            <Menu.Item key={num} disabled={mode !== "columns"}>
               {({ active, disabled }) => (
                 <div
                   className={classNames(
@@ -138,7 +138,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
             </Menu.Item>
           ))}
           {["default", "compact", "media", "rows"].map((card) => (
-            <Menu.Item disabled={mode !== "cards"}>
+            <Menu.Item key={card} disabled={mode !== "cards"}>
               {({ active, disabled }) => (
                 <div
                   className={classNames(
