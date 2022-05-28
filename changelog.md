@@ -6,7 +6,7 @@
   - Post width: Set post width independetly of feed width
   - Auto collapse child comments when a post is opened
   - Only collapse child comments instead of the whole comment
-  - Show or hide user flairs, post flairs, user icons, and guildings
+  - Show or hide user flairs, post flairs, user icons, and gildings
   - More to come... 
 ### Changes
 - Wide UI option has moved from the hamburger menu to the settings menu

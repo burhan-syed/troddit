@@ -189,6 +189,10 @@ const Settings = () => {
                     : "") +
                   " cursor-pointer opacity-50 hover:opacity-80 select-none flex my-1 "
                 }
+               onClick={() => {refs[category].current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });}}
               >
                 <div className="w-1 h-12 mt-0 mr-2 dark:bg-darkScroll bg-lightScroll"></div>
 

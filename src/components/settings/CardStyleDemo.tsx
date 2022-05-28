@@ -22,7 +22,7 @@ const CardStyleDemo = () => {
         ? "Media"
         : context.cardStyle === "row1"
         ? "Rows"
-        : "Default"
+        : "Original"
     );
   }, [context.cardStyle, context.mediaOnly]);
 
@@ -35,7 +35,7 @@ const CardStyleDemo = () => {
         ? "Media cards. Only images and video are shown with title and other information available on hover."
         : cardStyle == "Rows"
         ? "Classic Rows. Thumbnails with expandable media rendered as a list."
-        : "Original cards: Displays all available information for each post in card form."}
+        : "Original cards. Displays all available information for each post in card form."}
     </div>
   );
 };

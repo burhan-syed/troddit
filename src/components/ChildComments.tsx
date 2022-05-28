@@ -312,9 +312,10 @@ const ChildComments = ({
               {/* Comment Text */}
               <div
                 onClick={(e: any) => {
+                  
                   const cellText = document.getSelection();
                   if (
-                    cellText?.anchorNode?.nodeName !== "#text" ||
+                    //cellText?.anchorNode?.nodeName !== "#text" ||
                     cellText?.type === "Range" ||
                     e?.target?.nodeName === "A" ||
                     e?.target?.localName === "a"

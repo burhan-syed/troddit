@@ -178,8 +178,8 @@ const Toggles = ({
         !subtext && setSwitchSubtext("Show user icons in comments");
         break;
       case "showAwardings":
-        !label && setSwitchLabel("Awardings");
-        !subtext && setSwitchSubtext("Show awardings everywhere");
+        !label && setSwitchLabel("Gildings");
+        !subtext && setSwitchSubtext("Show gildings everywhere");
         break;
       case "showFlairs":
         !label && setSwitchLabel("Post Flairs");

@@ -88,7 +88,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
               ? "Media"
               : context.cardStyle === "row1"
               ? "Rows"
-              : "Default")}
+              : "Original")}
       </Menu.Button>
       <Transition
         as={Fragment}
@@ -137,7 +137,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
               )}
             </Menu.Item>
           ))}
-          {["default", "compact", "media", "rows"].map((card) => (
+          {["original", "compact", "media", "rows"].map((card) => (
             <Menu.Item key={card} disabled={mode !== "cards"}>
               {({ active, disabled }) => (
                 <div
@@ -148,7 +148,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
                   )}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (card == "default") {
+                    if (card == "original") {
                       setCardStyle("card1");
                       context.setMediaOnly(false);
                     } else if (card == "compact") {
