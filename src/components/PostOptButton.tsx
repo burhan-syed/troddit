@@ -149,7 +149,32 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     )}
                   </Menu.Item>
                 )}
-                <Menu.Item>
+               
+
+                {post?.link_flair_text && (
+                  <Menu.Item disabled={post?.link_flair_text ? false : true}>
+                    {({ active }) => (
+                      <MyLink
+                        href={`/r/${
+                          post?.subreddit
+                        }/search?sort=new&q=flair%3A${encodeURIComponent(
+                          post?.link_flair_text
+                        )}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className={
+                          (active
+                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            : "") +
+                          " px-2 py-1 text-sm flex flex-row items-center"
+                        }
+                      >
+                        <AiOutlineTag className="flex-none w-4 h-4 mr-2" />
+                        <h1>Search Flair {post?.link_flair_text}</h1>
+                      </MyLink>
+                    )}
+                  </Menu.Item>
+                )}
+                 <Menu.Item>
                   {({ active }) => (
                     <div
                       onClick={(e) => {
@@ -175,30 +200,6 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     </div>
                   )}
                 </Menu.Item>
-
-                {post?.link_flair_text && (
-                  <Menu.Item disabled={post?.link_flair_text ? false : true}>
-                    {({ active }) => (
-                      <MyLink
-                        href={`/r/${
-                          post?.subreddit
-                        }/search?sort=new&q=flair%3A${encodeURIComponent(
-                          post?.link_flair_text
-                        )}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className={
-                          (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
-                            : "") +
-                          " px-2 py-1 text-sm flex flex-row items-center"
-                        }
-                      >
-                        <AiOutlineTag className="flex-none w-4 h-4 mr-2" />
-                        <h1>Search Flair {post?.link_flair_text}</h1>
-                      </MyLink>
-                    )}
-                  </Menu.Item>
-                )}
                 {mode !== "row" && mode !== "post" && (
                   <Menu.Item disabled={mode == "row" || mode == "post"}>
                     {({ active }) => (
