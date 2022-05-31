@@ -12,7 +12,7 @@ import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
 import { useWindowSize } from "@react-hook/window-size";
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
-import { BsReply } from "react-icons/bs";
+import { BsReply, BsArchive } from "react-icons/bs";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -591,11 +591,18 @@ const PostModal = ({
                 " z-10 pt-2  md:flex md:flex-col md:items-center "
               }
             >
-              <div className={"fixed z-50 right-4 top-16 md:left-4 md:top-16"  + " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent md:w-auto md:h-auto md:block  "}>
+              <div
+                className={
+                  "fixed z-50 right-4 top-16 md:left-4 md:top-16" +
+                  " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent md:w-auto md:h-auto md:block  "
+                }
+              >
                 <RiArrowGoBackLine
                   title={"back (esc)"}
                   onClick={() => handleBack()}
-                  className={"w-8 h-8 md:mt-1  md:text-gray-400 cursor-pointer md:hover:text-gray-300" }
+                  className={
+                    "w-8 h-8 md:mt-1  md:text-gray-400 cursor-pointer md:hover:text-gray-300"
+                  }
                 />
               </div>
               {/* Content container */}
@@ -704,7 +711,6 @@ const PostModal = ({
                                 styles={"mr-0.5 "}
                               />
                             )}
-                            
                           </div>
                           <div className="flex flex-col items-end justify-center flex-none ml-auto text-xs text-gray-400 dark:text-gray-500">
                             <a
@@ -924,6 +930,19 @@ const PostModal = ({
                     />
                   </div>
                 )}
+
+                {apost?.archived && (
+                  <div className="flex-grow w-full">
+                    <div className="flex items-center gap-4 p-2 px-4 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                      <BsArchive/>
+                      <p className="flex flex-col text-sm font-normal ">
+                        <span>This is an archived post.</span>
+                        <span className="text-xs">New comments cannot be posted and votes cannot be cast</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* comments */}
                 <div
                   className={
@@ -974,6 +993,7 @@ const PostModal = ({
                         {post_comments?.[0] ? "" : "no comments :("}
                       </h1>
                       {/* Open All Comments */}
+
                       {commentMode && (
                         <div className="flex-grow w-full px-2 mt-1">
                           <div className="p-2 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">

@@ -11,12 +11,13 @@ import Head from "next/head";
 import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
 import { useEffect } from "react";
+import packageInfo from "../../package.json"
 import { checkVersion } from "../../lib/utils";
 import ToastCustom from "../components/toast/ToastCustom";
-
+const VERSION = packageInfo.version
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    const curVersion = "0.13.0";
+    const curVersion = VERSION;
     let compare = checkVersion(
       curVersion,
       localStorage.getItem("trodditVersion") ?? ""
