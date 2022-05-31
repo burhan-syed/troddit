@@ -67,6 +67,7 @@ const VideoHandler = ({
   }, [videoLoaded, show]);
 
   const onLoadedData = () => {
+    setVolume(0.5);
     setVideoDuration(video?.current?.duration);
 
     setVideoLoaded(true);
@@ -136,6 +137,13 @@ const VideoHandler = ({
     containerDims,
   ]);
 
+  useEffect(() => {
+    if (videoInfo.hasAudio) {
+      audioRef.current = video.current;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   //unify overall heights to avoid weird sizing issues
   const windowSize = useWindowSize();
   useEffect(() => {
@@ -155,8 +163,8 @@ const VideoHandler = ({
     }
   }, [context.autoplay, context.pauseAll]);
   useEffect(() => {
-    if (hasAudio && audioPlaying && context.pauseAll) {
-      //console.log("forcemute");
+
+    if (context.pauseAll) {
       pauseAll();
     }
   }, [context.pauseAll]);
@@ -176,11 +184,7 @@ const VideoHandler = ({
             //setVideoPlaying(true); this will be handled directly from the video element
             manual && setmanualPlay(true);
 
-            if (
-              hasAudio
-              // &&(audioRef?.current?.paused || audioRef?.current?.ended) &&
-              // !audioPlaying
-            ) {
+            if (hasAudio && !videoInfo.hasAudio) {
               audioRef.current.currentTime = video.current.currentTime;
               audioRef?.current
                 ?.play()
@@ -198,7 +202,7 @@ const VideoHandler = ({
         setVideoPlaying(false);
         setmanualPlay(false);
         video?.current?.pause();
-        if (!audioRef?.current?.paused) {
+        if (!audioRef?.current?.paused && !videoInfo.hasAudio) {
           audioRef.current.pause();
           setAudioPlaying(false);
         }
@@ -211,12 +215,15 @@ const VideoHandler = ({
     e?.stopPropagation();
     //if audio exists
     if (audioRef?.current?.muted !== undefined && hasAudio) {
-      //always sync audio
-      audioRef.current.currentTime = video.current.currentTime;
-      //if audio is not playing and video is playing, play audio
-      if (!audioPlaying && videoPlaying) {
-        audioRef?.current?.play().catch((e) => console.log(e));
+      if (!videoInfo.hasAudio) {
+        // sync audio
+        audioRef.current.currentTime = video.current.currentTime;
+        //if audio is not playing and video is playing, play audio
+        if (!audioPlaying && videoPlaying) {
+          audioRef?.current?.play().catch((e) => console.log(e));
+        }
       }
+
       manual && setManualAudio(true);
       setMuted((m) => !m);
     }
@@ -491,7 +498,6 @@ const VideoHandler = ({
           >
             <div
               //vol container
-              title="vol container"
               className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent"
               onClick={(e) => {
                 e.preventDefault();
@@ -677,12 +683,12 @@ const VideoHandler = ({
             //pauseAll();
             setBuffering(true);
             setVideoPlaying(false);
-            pauseAudio();
+            !videoInfo.hasAudio && pauseAudio();
           }}
           onPlaying={() => {
             setBuffering(false);
             setVideoPlaying(true);
-            playAudio();
+            !videoInfo.hasAudio && playAudio();
           }}
           onPause={() => {
             setVideoPlaying(false);
@@ -690,6 +696,9 @@ const VideoHandler = ({
           controls={false}
           onLoadedData={onLoadedData}
           playsInline
+          onCanPlay={() => {
+            videoInfo.hasAudio && onAudioLoaded();
+          }}
           draggable={false}
         >
           <source
@@ -698,24 +707,25 @@ const VideoHandler = ({
             type="video/mp4"
           />
         </video>
-
-        <video
-          autoPlay={false}
-          controls={false}
-          ref={audioRef}
-          muted={!muted}
-          loop={false}
-          className="hidden"
-          playsInline
-          onCanPlay={onAudioLoaded}
-          onPlaying={() => setAudioPlaying(true)}
-          onPause={() => setAudioPlaying(false)}
-          onWaiting={() => setAudioPlaying(false)}
-          onError={(err) => null}
-          onLoadStart={(e) => setVolume(0.5)}
-        >
-          <source data-src={audio} src={audio} type="video/mp4" />
-        </video>
+        {/* if video doesn't have its own audio (v.reddits) */}
+        {!videoInfo?.hasAudio && (
+          <video
+            autoPlay={false}
+            controls={false}
+            ref={!videoInfo?.hasAudio && audioRef}
+            muted={!muted}
+            loop={false}
+            className="hidden"
+            playsInline
+            onCanPlay={onAudioLoaded}
+            onPlaying={() => setAudioPlaying(true)}
+            onPause={() => setAudioPlaying(false)}
+            onWaiting={() => setAudioPlaying(false)}
+            onError={(err) => null}
+          >
+            <source data-src={audio} src={audio} type="video/mp4" />
+          </video>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.13.1
+### New
+- Post upvote ratio information now included on post page
+### Changes
+- Clicking on the title on a post page will now open the source link instead of the Reddit post 
+### Fixes
+- Archived post voting and commenting is disabled
+- Gfycat source videos will now contain audio when available
+
 ## v0.13.0
 ### New
 - Added a settings menu with new options including: 

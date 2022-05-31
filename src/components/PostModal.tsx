@@ -3,18 +3,16 @@ import Comments from "./Comments";
 import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
 import { loadComments, loadPost, postVote, getUserVotes } from "../RedditAPI";
-import Media from "./Media";
 import { BiDownvote, BiUpvote, BiExpand, BiCollapse } from "react-icons/bi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BiComment } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
-import { BsBookmarks } from "react-icons/bs";
 
 import { useWindowSize } from "@react-hook/window-size";
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
-import { BsReply } from "react-icons/bs";
+import { BsReply, BsArchive } from "react-icons/bs";
 import ReactDOM from "react-dom";
 import React, { useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -476,6 +474,7 @@ const PostModal = ({
                 score={apost?.score}
                 size={7}
                 postindex={context.postNum}
+                archived={apost?.archived}
               />
             </div>
             <div></div>
@@ -549,7 +548,7 @@ const PostModal = ({
         <div
           title={`previous post (left arrow)`}
           onClick={(e) => changePost(-1)}
-          className="fixed p-2 text-gray-400 cursor-pointer left-4 hover:text-gray-300 top-1/2"
+          className="fixed hidden p-2 text-gray-400 cursor-pointer md:block left-4 hover:text-gray-300 top-1/2"
         >
           <AiOutlineLeft className="w-10 h-10" />
         </div>
@@ -592,11 +591,18 @@ const PostModal = ({
                 " z-10 pt-2  md:flex md:flex-col md:items-center "
               }
             >
-              <div className="absolute md:fixed left-4 top-16">
+              <div
+                className={
+                  "fixed z-50 right-4 top-16 md:left-4 md:top-16" +
+                  " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent md:w-auto md:h-auto md:block  "
+                }
+              >
                 <RiArrowGoBackLine
                   title={"back (esc)"}
                   onClick={() => handleBack()}
-                  className="w-8 h-8 mt-1 text-gray-400 cursor-pointer hover:text-gray-300"
+                  className={
+                    "w-8 h-8 md:mt-1  md:text-gray-400 cursor-pointer md:hover:text-gray-300"
+                  }
                 />
               </div>
               {/* Content container */}
@@ -622,6 +628,7 @@ const PostModal = ({
                           size={7}
                           postindex={context.postNum}
                           postMode={true}
+                          archived={apost?.archived}
                         />
                       </div>
                       {/* Main Media Column */}
@@ -632,7 +639,7 @@ const PostModal = ({
                             {apost?.crosspost_parent_list?.[0] && (
                               <div className="flex flex-row items-start gap-1 ">
                                 <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
-                                <span className="-translate-y-0.5 italic font-semibold">
+                                <span className="italic font-semibold -translate-y-0.5">
                                   crosspost by
                                 </span>
                               </div>
@@ -644,7 +651,7 @@ const PostModal = ({
                                   e.stopPropagation();
                                 }}
                               >
-                                <h2 className="ml-1 mr-1 -translate-y-0.5 font-semibold hover:underline group">
+                                <h2 className="ml-1 mr-1 font-semibold -translate-y-0.5 hover:underline group">
                                   u/
                                   {apost?.author ?? ""}
                                   {apost?.author_flair_text?.length > 0 &&
@@ -675,6 +682,11 @@ const PostModal = ({
                             <p className="-translate-y-0.5">
                               {secondsToTime(apost?.created_utc)}
                             </p>
+                            <p className="-translate-y-0.5 mx-1">•</p>
+
+                            <p className="text-xs translate-y-[0.05rem] text-gray-400 select-none dark:text-gray-500 ">
+                              {apost?.upvote_ratio * 100}% upvoted
+                            </p>
                             {apost?.over_18 && (
                               <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
@@ -696,11 +708,11 @@ const PostModal = ({
                               <Awardings
                                 all_awardings={apost?.all_awardings}
                                 truncate={false}
-                                styles={"mr-0.5 mt-0.5"}
+                                styles={"mr-0.5 "}
                               />
                             )}
                           </div>
-                          <div className="flex flex-row justify-center flex-none ml-auto">
+                          <div className="flex flex-col items-end justify-center flex-none ml-auto text-xs text-gray-400 dark:text-gray-500">
                             <a
                               title="open source"
                               href={`${apost.url}`}
@@ -708,7 +720,7 @@ const PostModal = ({
                               rel="noreferrer"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <p className="text-xs text-gray-400 dark:text-gray-500 hover:underline">{`(${apost?.domain})`}</p>
+                              <p className=" hover:underline">{`(${apost?.domain})`}</p>
                             </a>
                           </div>
                         </div>
@@ -716,9 +728,10 @@ const PostModal = ({
                         <h1 className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
                           <a
                             className={" text-xl font-semibold mr-2"}
-                            href={`https://www.reddit.com${
-                              apost?.permalink ?? ""
-                            }`}
+                            href={
+                              `${apost?.url}` ??
+                              `https://www.reddit.com${apost?.permalink ?? ""}`
+                            }
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -745,6 +758,7 @@ const PostModal = ({
                           </>
                         )}
                         {/* Bottom Buttons */}
+
                         <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
                           {/* Vote buttons for mobiles */}
                           <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
@@ -753,6 +767,7 @@ const PostModal = ({
                               name={apost?.name}
                               score={apost?.score}
                               size={7}
+                              archived={apost?.archived}
                             />
                           </div>
                           <div className="flex flex-row items-center justify-start space-x-1">
@@ -774,7 +789,7 @@ const PostModal = ({
                               <button
                                 autoFocus
                                 onClick={(e) => setimgFull((p) => !p)}
-                                className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                className="flex-row items-center hidden p-2 border rounded-md md:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
                               >
                                 {imgFull ? (
                                   <>
@@ -795,13 +810,19 @@ const PostModal = ({
                           <div className="flex flex-row items-center justify-end gap-1 text-sm">
                             <div>
                               <button
+                                disabled={apost?.archived}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  session
+                                  session && !apost?.archived
                                     ? setopenReply((r) => !r)
-                                    : context.toggleLoginModal();
+                                    : !session && context.toggleLoginModal();
                                 }}
-                                className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                className={
+                                  "flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder  " +
+                                  (apost?.archived
+                                    ? " opacity-50"
+                                    : " hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")
+                                }
                               >
                                 <BsReply
                                   className={
@@ -833,7 +854,12 @@ const PostModal = ({
                               ></SaveButton>
                             </div>
                             <a
-                              href={`${apost?.url}` ?? "https://reddit.com"}
+                              href={
+                                `${apost?.url}` ??
+                                `https://www.reddit.com${
+                                  apost?.permalink ?? ""
+                                }`
+                              }
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -904,6 +930,19 @@ const PostModal = ({
                     />
                   </div>
                 )}
+
+                {apost?.archived && (
+                  <div className="flex-grow w-full">
+                    <div className="flex items-center gap-4 p-2 px-4 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                      <BsArchive/>
+                      <p className="flex flex-col text-sm font-normal ">
+                        <span>This is an archived post.</span>
+                        <span className="text-xs">New comments cannot be posted and votes cannot be cast</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* comments */}
                 <div
                   className={
@@ -954,6 +993,7 @@ const PostModal = ({
                         {post_comments?.[0] ? "" : "no comments :("}
                       </h1>
                       {/* Open All Comments */}
+
                       {commentMode && (
                         <div className="flex-grow w-full px-2 mt-1">
                           <div className="p-2 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
@@ -987,7 +1027,7 @@ const PostModal = ({
         <div
           title={`next post (right arrow)`}
           onClick={(e) => changePost(1)}
-          className="fixed p-2 text-gray-400 cursor-pointer right-4 hover:text-gray-300 top-1/2"
+          className="fixed hidden p-2 text-gray-400 cursor-pointer md:block right-4 hover:text-gray-300 top-1/2"
         >
           <AiOutlineRight className="w-10 h-10" />
         </div>

@@ -3,7 +3,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import { AiOutlineGithub } from "react-icons/ai";
-
+import packageInfo from "../../package.json"
+const VERSION = packageInfo.version
 const AboutPage = ({ changelog }) => {
   return (
     <div className="h-screen mx-4 -mt-16">
@@ -45,7 +46,7 @@ const AboutPage = ({ changelog }) => {
           <p className="">
             <Link href={"/changelog"}>
               <a className="flex flex-wrap justify-between pt-5 font-semibold hover:underline">
-                <h4>v0.13.0</h4>
+                <h4>v{VERSION}</h4>
                 <h4>See Changelog</h4>
               </a>
             </Link>

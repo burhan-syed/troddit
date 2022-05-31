@@ -44,6 +44,7 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
               score={post?.score ?? 0}
               name={post?.name}
               postindex={postNum}
+              archived={post?.archived}
             />
           </div>
         </div>

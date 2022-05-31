@@ -268,6 +268,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                   likes={post?.likes}
                   size={5}
                   postindex={postNum}
+                  archived={post?.archived}
                 />
               </div>
               <div className="flex flex-row items-center justify-end gap-2 ml-auto -mr-2">
@@ -409,6 +410,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                   likes={post?.likes}
                   size={5}
                   postindex={postNum}
+                  archived={post?.archived}
                 />
               </div>
               <div className="flex flex-row items-center gap-2 ml-auto mr-6">

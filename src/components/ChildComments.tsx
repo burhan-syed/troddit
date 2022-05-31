@@ -346,20 +346,22 @@ const ChildComments = ({
                     name={comment?.data?.name}
                     likes={comment?.data?.likes}
                     score={comment?.data?.score}
+                    archived={comment?.data?.archived}
                   />
                 </div>
                 <button
+                disabled={comment?.data?.archived}
                   className={
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
-                    comment?.myreply
+                    comment?.myreply || comment?.data?.archived
                       ? "hidden"
-                      : "block hover:underline")
+                      : "block hover:underline") 
                   }
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    session
+                    session && !comment?.data?.archived
                       ? setopenReply((p) => !p)
                       : context.toggleLoginModal();
                   }}

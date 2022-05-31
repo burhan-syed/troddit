@@ -815,7 +815,7 @@ export const MainProvider = ({ children }) => {
       let encoded = encodeURIComponent(localSubs.join(","));
       //if we can fit this in the cookie
       if (encoded.length < 4000) {
-        document.cookie = `localSubs=${encoded};samesite=strict`;
+        document.cookie = `localSubs=${encoded};samesite=strict;path=/`;
       }
       //otherwise fallback and will have to use indexed DB
       else {

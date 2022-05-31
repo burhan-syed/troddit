@@ -67,21 +67,21 @@ export const numToString = (x: number, max = 10000) => {
 };
 
 export const checkVersion = (a, b) => {
-  const x = a.split('.').map(e => parseInt(e, 10));
-  const y = b.split('.').map(e => parseInt(e, 10));
+  const x = a.split(".").map((e) => parseInt(e, 10));
+  const y = b.split(".").map((e) => parseInt(e, 10));
 
   for (const i in x) {
-      y[i] = y[i] || 0;
-      if (x[i] === y[i]) {
-          continue;
-      } else if (x[i] > y[i]) {
-          return 1;
-      } else {
-          return -1;
-      }
+    y[i] = y[i] || 0;
+    if (x[i] === y[i]) {
+      continue;
+    } else if (x[i] > y[i]) {
+      return 1;
+    } else {
+      return -1;
+    }
   }
   return y.length > x.length ? -1 : 0;
-}
+};
 
 export const findMediaInfo = async (post, quick = false) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
@@ -147,11 +147,11 @@ export const findMediaInfo = async (post, quick = false) => {
       post?.domain?.includes("redd.it") ||
       post?.domain?.includes("reddit") ||
       post?.domain?.includes("self.") ||
-      post?.url?.includes("imgur")
+      post?.url?.includes("imgur") ||
+      isVideo
     ) {
       isLink = false;
     }
-   
 
     //portrait check
     if (dimensions[0] > 0) {
@@ -162,14 +162,14 @@ export const findMediaInfo = async (post, quick = false) => {
       }
     }
 
-     //treat these as self posts, not images/videos/links or anything else
-     if (post?.selftext_html){
+    //treat these as self posts, not images/videos/links or anything else
+    if (post?.selftext_html) {
       isImage = false;
       isVideo = false;
       isGallery = false;
       isLink = false;
       isPortrait = false;
-      isSelf = true; 
+      isSelf = true;
     }
 
     return {
@@ -197,8 +197,37 @@ export const findMediaInfo = async (post, quick = false) => {
     return url;
   };
 
-  const findVideo = async (post) => {
+  const findGfy = async (id, post) => {
+    let req = await fetch(`https://api.gfycat.com/v1/gfycats/${id}`);
+    if (req?.ok) {
+      let data = await req.json();
+      videoInfo = {
+        url: data["gfyItem"]["mp4Url"],
+        height: data["gfyItem"]["height"],
+        width: data["gfyItem"]["width"],
+        hasAudio: data["gfyItem"]["hasAudio"],
+      };
+      findImage(post);
+      isVideo = true;
+      return true;
+    } else {
+      findVideo(post, true);
+    }
+  };
+
+  const findVideo = async (post, skipGfy = false) => {
     // console.log("find vid", post?.title);
+    if (
+      post?.url_overridden_by_dest?.includes("https://gfycat.com") &&
+      post?.url_overridden_by_dest?.split("/")?.[3] &&
+      !skipGfy
+    ) {
+      let res = await findGfy(
+        post?.url_overridden_by_dest?.split("/")?.[3],
+        post
+      );
+      return res;
+    }
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
         videoInfo = {
@@ -258,6 +287,7 @@ export const findMediaInfo = async (post, quick = false) => {
         return true;
       }
     }
+
     return false;
   };
 
@@ -422,7 +452,7 @@ export const filterPosts = async (
 
     const filterCheck = async (d) => {
       //check duplicate
-      if (prevposts?.[d?.name] == 1){
+      if (prevposts?.[d?.name] == 1) {
         return false;
       }
 

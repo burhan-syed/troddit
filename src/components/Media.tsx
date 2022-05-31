@@ -47,7 +47,12 @@ const Media = ({
   const [isTweet, setIsTweet] = useState(false);
   const [showMP4, setShowMP4] = useState(true);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
-  const [videoInfo, setVideoInfo] = useState({ url: "", height: 0, width: 0 });
+  const [videoInfo, setVideoInfo] = useState({
+    url: "",
+    height: 0,
+    width: 0,
+    hasAudio: false,
+  });
   const [videoAudio, setvideoAudio] = useState("");
   const [placeholderInfo, setPlaceholderInfo] = useState({
     url: "",
@@ -117,7 +122,7 @@ const Media = ({
       }
       if (videoInfo.url === "self") {
         setVideoInfo((imgInfo) => {
-          return { ...imageInfo, url: placeholder };
+          return { ...imageInfo, url: placeholder, hasAudio: false };
         });
       }
       if (placeholderInfo.url === "self") {
@@ -179,6 +184,7 @@ const Media = ({
           url: url,
           height: post.mediaInfo.videoInfo.height,
           width: post.mediaInfo.videoInfo.width,
+          hasAudio: post.mediaInfo.videoInfo?.hasAudio,
         });
         setPlaceholderInfo({
           url: checkURL(post?.thumbnail),
@@ -297,7 +303,7 @@ const Media = ({
       setIsTweet(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
-      setVideoInfo({ url: "", height: 0, width: 0 });
+      setVideoInfo({ url: "", height: 0, width: 0, hasAudio: false });
       setPlaceholderInfo({ url: "", height: 0, width: 0 });
       setMediaLoaded(false);
       setLoaded(false);
