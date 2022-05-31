@@ -718,7 +718,7 @@ const PostModal = ({
                         <h1 className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
                           <a
                             className={" text-xl font-semibold mr-2"}
-                            href={`https://www.reddit.com${
+                            href={`${apost?.url}` ?? `https://www.reddit.com${
                               apost?.permalink ?? ""
                             }`}
                             target="_blank"
@@ -777,7 +777,7 @@ const PostModal = ({
                               <button
                                 autoFocus
                                 onClick={(e) => setimgFull((p) => !p)}
-                                className="flex-row items-center hidden p-2 border rounded-md sm:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                className="flex flex-row items-center p-2 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
                               >
                                 {imgFull ? (
                                   <>
@@ -837,7 +837,9 @@ const PostModal = ({
                               ></SaveButton>
                             </div>
                             <a
-                              href={`${apost?.url}` ?? "https://reddit.com"}
+                              href={`${apost?.url}` ?? `https://www.reddit.com${
+                                apost?.permalink ?? ""
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
