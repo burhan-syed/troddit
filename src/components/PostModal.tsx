@@ -476,6 +476,7 @@ const PostModal = ({
                 score={apost?.score}
                 size={7}
                 postindex={context.postNum}
+                archived={apost?.archived}
               />
             </div>
             <div></div>
@@ -622,6 +623,7 @@ const PostModal = ({
                           size={7}
                           postindex={context.postNum}
                           postMode={true}
+                          archived={apost?.archived}
                         />
                       </div>
                       {/* Main Media Column */}
@@ -753,6 +755,7 @@ const PostModal = ({
                               name={apost?.name}
                               score={apost?.score}
                               size={7}
+                              archived={apost?.archived}
                             />
                           </div>
                           <div className="flex flex-row items-center justify-start space-x-1">
@@ -795,18 +798,19 @@ const PostModal = ({
                           <div className="flex flex-row items-center justify-end gap-1 text-sm">
                             <div>
                               <button
+                              disabled={apost?.archived}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  session
+                                  session && !apost?.archived
                                     ? setopenReply((r) => !r)
-                                    : context.toggleLoginModal();
+                                    : !session && context.toggleLoginModal();
                                 }}
-                                className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                className={"flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder  " + (apost?.archived ? " opacity-50" : " hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")}
                               >
                                 <BsReply
                                   className={
                                     "flex-none w-5 h-5 scale-x-[-1] " +
-                                    (!usePortrait && " md:mr-1")
+                                    (!usePortrait && " md:mr-1") 
                                   }
                                 />
                                 <h1
