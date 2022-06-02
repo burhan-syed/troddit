@@ -58,6 +58,7 @@ export const MainProvider = ({ children }) => {
   const [showFlairs, setShowFlairs] = useState<boolean>();
   const [showUserFlairs, setShowUserFlairs] = useState<boolean>();
   const [expandedSubPane, setExpandedSubPane] = useState<boolean>();
+  const [infiniteLoading, setInfinitLoading] = useState<boolean>(); 
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -84,6 +85,9 @@ export const MainProvider = ({ children }) => {
   const toggleExpandedSubPane = () => {
     setExpandedSubPane((e) => !e);
   };
+  const toggleInfiniteLoading = () => {
+    setInfinitLoading(i => !i)
+  }
 
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
@@ -674,6 +678,10 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("expandedSubPane");
         saved === true ? setExpandedSubPane(true) : setExpandedSubPane(false);
       };
+      const loadInfiniteLoading = async() => {
+        let saved = await localForage.getItem("infiniteLoading");
+        saved === false ? setInfinitLoading(false) : setInfinitLoading(true); 
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -704,6 +712,7 @@ export const MainProvider = ({ children }) => {
       let readfilter = loadReadFilter();
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
+      let infiniteLoading = loadInfiniteLoading(); 
       await Promise.all([
         nsfw,
         autoplay,
@@ -726,6 +735,7 @@ export const MainProvider = ({ children }) => {
         readfilter,
         showflairs,
         showawardings,
+        infiniteLoading
       ]);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
@@ -739,6 +749,11 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (infiniteLoading !== undefined) {
+      localForage.setItem("infiniteLoading", infiniteLoading);
+    }
+  }, [infiniteLoading]);
   useEffect(() => {
     if (expandedSubPane !== undefined) {
       localForage.setItem("expandedSubPane", expandedSubPane);
@@ -977,6 +992,8 @@ export const MainProvider = ({ children }) => {
         toggleShowUserFlairs,
         expandedSubPane,
         toggleExpandedSubPane,
+        infiniteLoading, 
+        toggleInfiniteLoading
       }}
     >
       {children}

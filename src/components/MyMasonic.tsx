@@ -46,7 +46,7 @@ const MyMasonic = ({
   initAfter,
   filterSubs,
   postCount,
-  postNames, 
+  postNames,
   isUser = false,
   isMulti = false,
   isSubFlair = false,
@@ -202,10 +202,11 @@ const MyMasonic = ({
       });
     }
   };
-
   const maybeLoadMorePosts = useInfiniteLoader(
     async (startIndex, stopIndex, currentItems) => {
-      return await loadMoreItems(startIndex, stopIndex);
+      if (context?.infiniteLoading) {
+        return await loadMoreItems(startIndex, stopIndex);
+      }
     },
     {
       isItemLoaded: (index, items) => {
@@ -321,32 +322,37 @@ const MyMasonic = ({
     }
     data?.token && context.setToken(data?.token);
     if (data?.children) {
-        prevAfters.current[loadafter] = 1;
-        setCount((c) => c + data?.children?.length);
-        setPageCount((c) => c + 1);
+      prevAfters.current[loadafter] = 1;
+      setCount((c) => c + data?.children?.length);
+      setPageCount((c) => c + 1);
 
-        currAfter.current = data?.after;
-        setAfter(data?.after);
-        let { filtered, filtercount } = await filterPosts(
-          data?.children,
-          {
-            readFilter,
-            imgFilter,
-            vidFilter,
-            selfFilter,
-            // galFilter,
-            linkFilter,
-            imgPortraitFilter,
-            imgLandscapeFilter,
-          },
-          postnames,
-          filterSubs,
-          isUser ? false : true
-        );
-        setPostNames(prev => ({...prev, ...filtered.reduce((obj, post, index) => {obj[post?.data?.name]=1; return obj;}, {})}));
-        setFilterCount((n) => n + filtercount);
-        return { data: { posts: filtered, after: data?.after } };
-      
+      currAfter.current = data?.after;
+      setAfter(data?.after);
+      let { filtered, filtercount } = await filterPosts(
+        data?.children,
+        {
+          readFilter,
+          imgFilter,
+          vidFilter,
+          selfFilter,
+          // galFilter,
+          linkFilter,
+          imgPortraitFilter,
+          imgLandscapeFilter,
+        },
+        postnames,
+        filterSubs,
+        isUser ? false : true
+      );
+      setPostNames((prev) => ({
+        ...prev,
+        ...filtered.reduce((obj, post, index) => {
+          obj[post?.data?.name] = 1;
+          return obj;
+        }, {}),
+      }));
+      setFilterCount((n) => n + filtercount);
+      return { data: { posts: filtered, after: data?.after } };
     } else {
       setError(true);
       return { data: { posts: [], after: "" } };
@@ -370,8 +376,8 @@ const MyMasonic = ({
           caughtup = true;
           allowload = false;
           lastafter = data.after;
-          if (data?.posts){
-            payload = [...payload, ...data.posts]
+          if (data?.posts) {
+            payload = [...payload, ...data.posts];
           }
           setNumPosts((n) => n + payload.length);
           return { payload, lastafter };
@@ -389,7 +395,7 @@ const MyMasonic = ({
   const loadInfo = (
     <>
       {end && (
-        <div className="flex flex-row items-center justify-center text-lg font-bold">
+        <div className="flex flex-row items-center justify-center my-6 text-sm font-light">
           <h1>
             Loaded {numposts} post{numposts === 1 ? "" : "s"} on {pageCount}{" "}
             page
@@ -417,8 +423,26 @@ const MyMasonic = ({
             className="outline-none"
             ssrWidth={500}
           />
-          {!end && loadingMore && (
-            <h1 className="text-center">Loading page {pageCount+1}...</h1>
+          {!context?.infiniteLoading && !end && (
+            <div className="flex items-center justify-center mt-6 mb-6">
+              <button
+                disabled={loadingMore}
+                onClick={() => {
+                  loadMoreItems(items.length, items.length + 20);
+                }}
+                className={
+                  (loadingMore
+                    ? " animate-pulse "
+                    : " cursor-pointer hover:bg-lightPostHover dark:hover:bg-darkPostHover shadow-2xl hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ") +
+                  "flex items-center justify-center px-4 py-2 border rounded-md  h-9 dark:border border-lightBorder dark:bg-darkBG bg-lightPost dark:border-darkBorder "
+                }
+              >
+                <h1>Load Page {pageCount + 1}</h1>
+              </button>
+            </div>
+          )}
+          {!end && loadingMore && context?.infiniteLoading && (
+            <h1 className="text-center">Loading page {pageCount + 1}...</h1>
           )}
           {filterCount > 0 && (
             <div className="fixed bottom-0 left-0 flex-col text-xs select-none">

@@ -402,6 +402,7 @@ const Feed = ({
                 filterSubs={filterSubs}
                 initAfter={after}
                 isUser={isUser}
+                isSelf={isSelf}
                 userPostMode={userPostMode}
                 isMulti={isMulti}
                 isSearch={isSearch}
