@@ -67,7 +67,7 @@
 ### Changes
 - All card styles are now rounded
 - Videos autoplay better
-- Audio auto unmutes when video scrolls into view in single column mode with audio toggle enabled
+- Audio will automatically unmute when a video scrolls into view in single column mode with audio toggle enabled
 - Local storage changes
 - Media better fills cards
 
@@ -147,7 +147,7 @@
 ### New
 - Added video controls
 ### Fixes
-- Miscallaneous fixes
+- Miscellaneous fixes
   
 ## v0.6.1
 ### New
@@ -212,7 +212,7 @@
 
 ## v0.4.0
 ### New 
-- Support to nagivate posts with arrows, both onscreen and keyboard
+- Support to navigate posts with arrows, both onscreen and keyboard
 - Added new 'portrait' post mode view with media and comments side-by-side. Automatically selected for portrait media.
 - Now downloadable as PWA
 
@@ -228,7 +228,7 @@
 
 ## v0.3.0
 ### New
-- Added support for subbing and unsubbing to subreddits either locally or with your Reddit account
+- Added support for subscribing and unsubscribing to subreddits either locally or with your Reddit account
 - Added ability to reply with comments
 - Added new post card styles
   - Classic Row: A classic rows view with thumbnail and expandable media

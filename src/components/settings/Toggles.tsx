@@ -108,7 +108,7 @@ const Toggles = ({
         !label && setSwitchLabel("Autoplay");
         !subtext &&
           setSwitchSubtext(
-            "Autoplays videos and gifs when they enter into view or when opening a post"
+            "Autoplay videos and gifs when they enter into view or when opening a post"
           );
         setTitle("autoplay videos & gifs");
         setCheckedIcon(<BsPlay />);
@@ -125,7 +125,7 @@ const Toggles = ({
         !label && setSwitchLabel("Audio");
         !subtext &&
           setSwitchSubtext(
-            "Auto unmute audio on hover or post open. Also unmutes audio when a post scrolls into view in single column mode."
+            "Auto unmute audio on hover or post open. Will also unmute audio when a post scrolls into view in single column mode."
           );
         setTitle("unmute on post open or video hover");
         setCheckedIcon(<BsVolumeUp />);
@@ -171,7 +171,7 @@ const Toggles = ({
         !label && setSwitchLabel("Collapse Children");
         !subtext &&
           setSwitchSubtext(
-            "Enable to collapse all chidren comments initially. Requries alternate collapse mode to be enabled."
+            "Enable to collapse all children comments initially. Requires alternate collapse mode to be enabled."
           );
         break;
       case "showUserIcons":
