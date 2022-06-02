@@ -1,10 +1,18 @@
 # Changelog
 
+## v0.13.2
+### New
+- Option to disable infinite loading 
+### Changes
+- Changed appearance of hidden comments count. Hidden comments count now appears in standard comment collapse mode.
+### Fixes
+- Fixed an issue when loading more pages with saved posts and other user specific feeds
+
 ## v0.13.1
 ### New
 - Post upvote ratio information now included on post page
 ### Changes
-- Clicking on the title on a post page will now open the source link instead of the Reddit post 
+- Clicking the title on a post page will now open the source link instead of the Reddit post 
 ### Fixes
 - Archived post voting and commenting is disabled
 - Gfycat source videos will now contain audio when available

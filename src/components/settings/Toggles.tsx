@@ -33,7 +33,8 @@ type ComponentProps = {
     | "showAwardings"
     | "showFlairs"
     | "showUserFlairs"
-    | "expandedSubPane";
+    | "expandedSubPane"
+    | "infiniteLoading";
   label?: string;
   externalStyles?: string;
   withSubtext?: boolean;
@@ -196,6 +197,13 @@ const Toggles = ({
             "Automatically shows the subreddit dropdown pane as expanded instead of collapsed"
           );
         break;
+        case "infiniteLoading":
+        !label && setSwitchLabel("Infinite Loading");
+        !subtext &&
+          setSwitchSubtext(
+            "Switches between infinite loaded or paginated feeds"
+          );
+        break;
       default:
         break;
     }
@@ -250,6 +258,9 @@ const Toggles = ({
         break;
       case "expandedSubPane":
         context.toggleExpandedSubPane();
+        break;
+        case "infiniteLoading":
+        context.toggleInfiniteLoading();
         break;
       default:
         break;

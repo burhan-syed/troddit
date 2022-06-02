@@ -136,7 +136,7 @@ const Settings = () => {
     Other: {
       icon: <BiCog className={icons} />,
       settings: [
-        ...["showAwardings", "showFlairs"].map((s: any) => (
+        ...["showAwardings", "showFlairs", "infiniteLoading"].map((s: any) => (
           <Toggles
             key={s}
             setting={s}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { loadMoreComments, postVote } from "../RedditAPI";
 import { BiDownvote, BiUpvote } from "react-icons/bi";
 import { useSession } from "next-auth/react";
@@ -138,6 +138,19 @@ const ChildComments = ({
     },
     [comment?.data?.permalink, session, context, fixformat]
   );
+
+  const childCommentCount = useMemo(() => {
+    let count = 0;
+    childcomments.forEach((c) => {
+      if (c?.data?.count) {
+        count += c?.data?.count;
+      } else {
+        count += 1;
+      }
+    });
+
+    return count;
+  }, [childcomments]);
 
   return (
     <div
@@ -285,19 +298,28 @@ const ChildComments = ({
                 </>
               )}
             </div>
-            {comment?.data?.edited && (
-              <p className="pr-2 mt-1 text-xs italic ">
-                edited{" "}
-                {secondsToTime(comment?.data?.edited, [
-                  "s ago",
-                  "min ago",
-                  "hr ago",
-                  "dy ago",
-                  "mo ago",
-                  "yr ago",
-                ])}
-              </p>
-            )}
+            <div className="flex items-center mt-1">
+              {comment?.data?.edited && (
+                <p className="pr-4 text-xs italic ">
+                  edited{" "}
+                  {secondsToTime(comment?.data?.edited, [
+                    "s ago",
+                    "min ago",
+                    "hr ago",
+                    "dy ago",
+                    "mo ago",
+                    "yr ago",
+                  ])}
+                </p>
+              )}
+              {hideChildren &&
+                !context.collapseChildrenOnly &&
+                childcomments.length > 0 && (
+                  <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
+                    +{childCommentCount}
+                  </div>
+                )}
+            </div>
           </div>
 
           {/* Main Comment Body */}
@@ -312,7 +334,6 @@ const ChildComments = ({
               {/* Comment Text */}
               <div
                 onClick={(e: any) => {
-                  
                   const cellText = document.getSelection();
                   if (
                     //cellText?.anchorNode?.nodeName !== "#text" ||
@@ -350,13 +371,14 @@ const ChildComments = ({
                   />
                 </div>
                 <button
-                disabled={comment?.data?.archived}
+                  disabled={comment?.data?.archived}
                   className={
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
-                    comment?.myreply || comment?.data?.archived
+                    comment?.myreply ||
+                    comment?.data?.archived
                       ? "hidden"
-                      : "block hover:underline") 
+                      : "block hover:underline")
                   }
                   onClick={(e) => {
                     e.preventDefault();
@@ -374,9 +396,19 @@ const ChildComments = ({
                     saved={comment?.data?.saved}
                   />
                 </div>
+                {hideChildren &&
+                  context.collapseChildrenOnly &&
+                  childcomments.length > 0 && (
+                    <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
+                      +{childCommentCount}
+                    </div>
+                  )}
               </div>
 
               {/* Comment Reply */}
+              {hideChildren &&
+                context.collapseChildrenOnly &&
+                childcomments.length > 0 && <div className="py-1"></div>}
               {openReply && (
                 <div
                   className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
@@ -390,19 +422,7 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-              {hideChildren &&
-                context.collapseChildrenOnly &&
-                childcomments.length > 0 && (
-                  <div className="my-1 mt-2 ml-2 text-xs cursor-pointer select-none opacity-70">
-                    {childcomments?.[0]?.data?.count ?? childcomments.length}{" "}
-                    child comment
-                    {childcomments?.[0]?.data?.count ??
-                    childcomments.length == 1
-                      ? ""
-                      : "s"}{" "}
-                    hidden
-                  </div>
-                )}
+
               <div
                 className={
                   "min-w-full py-2" +
