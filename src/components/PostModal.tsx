@@ -593,8 +593,8 @@ const PostModal = ({
             >
               <div
                 className={
-                  "fixed z-50 right-4 top-16 md:left-4 md:top-16" +
-                  " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent md:w-auto md:h-auto md:block  "
+                  "fixed z-50 right-8 bottom-12 md:left-4 md:top-16 md:bottom-auto  " +
+                  " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
                 }
               >
                 <RiArrowGoBackLine
@@ -607,7 +607,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full mt-24 overflow-y-auto border-t border-transparent rounded-lg md:mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
+                className="flex flex-col w-full overflow-y-auto border-t border-transparent rounded-lg mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
