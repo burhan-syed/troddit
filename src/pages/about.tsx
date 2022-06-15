@@ -3,8 +3,9 @@
 import Head from "next/head";
 import Link from "next/link";
 import { AiOutlineGithub } from "react-icons/ai";
-import packageInfo from "../../package.json"
-const VERSION = packageInfo.version
+import packageInfo from "../../package.json";
+const VERSION = packageInfo.version;
+const link = "text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300"
 const AboutPage = ({ changelog }) => {
   return (
     <div className="h-screen mx-4 -mt-16">
@@ -25,23 +26,24 @@ const AboutPage = ({ changelog }) => {
           </p>
 
           <p className="">
-            For any feature requests or bug reports create an issue on{" "}
+            For any feature requests, bug reports, or general conversation head
+            over to <Link href={"/r/TrodditForReddit"}><a className={link}>r/TrodditForReddit</a></Link>.
+            You can also create an issue on{" "}
             <a
               href="https://www.github.com/burhan-syed/troddit"
               target="_blank"
               rel="noreferrer"
-              className="text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300"
+              className={link}
             >
               GitHub
             </a>{" "}
-            and for anything feel free to contact me at{" "}
+            or contact me at{" "}
             <a
-              className="text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300"
+              className=""
               href="mailto: trodditdev@gmail.com"
             >
               trodditdev@gmail.com
-            </a>
-            .
+            </a> for anything else.
           </p>
           <p className="">
             <Link href={"/changelog"}>
