@@ -11,10 +11,10 @@ import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick }) => {
   const context: any = useMainContext();
   return (
-    <div>
+    <div onClick={(e) => handleClick(e)}>
       <div
         className={
           (context?.columnOverride == 1 && "") +
@@ -151,7 +151,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                   />
                 </div>
                 <div className="flex flex-row items-center gap-2 ml-auto mr-6">
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); handleClick(e, true);}}>
                     <h1
                       className={
                         "cursor-pointer hover:underline font-semibold " +

@@ -20,12 +20,21 @@ import { hideLink } from "../../RedditAPI";
 import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
-const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
-  const context: any = useMainContext(); 
+const Row1 = ({
+  post,
+  hasMedia,
+  hideNSFW,
+  forceMute,
+  postNum,
+  read,
+  handleClick,
+}) => {
+  const context: any = useMainContext();
   const [expand, setexpand] = useState(false);
 
   return (
     <div
+      onClick={(e) => handleClick(e)}
       className={
         (postNum === 0 ? " border-t rounded-t-md " : " ") +
         "flex flex-row items-start py-1 pb-2 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover border-l border-r border-transparent  dark:hover:border-trueGray-500 hover:border-gray-500  "
@@ -120,8 +129,8 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     " group-hover:underline font-semibold text-base " +
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
-                      : " ")
-                      + (read && context.dimRead  ? " opacity-50" : "")
+                      : " ") +
+                    (read && context.dimRead ? " opacity-50" : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>
@@ -245,7 +254,9 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
             </button>
 
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-              <button className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <button
+              onClick={e => {e.stopPropagation(); e.preventDefault(); handleClick(e, true)}}
+              className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
                 <BiComment className="flex-none w-4 h-4 " />
                 <h1 className="">{`${
                   numToString(post?.num_comments, 1000) ?? "??"

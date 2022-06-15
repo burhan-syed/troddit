@@ -7,6 +7,7 @@ const ParseBodyHTML = ({
   rows = false,
   card = false,
   limitWidth = false,
+  comment = false
 }) => {
   const [insertHTML, setInsertHTML] = useState(html);
   const ref = useRef<HTMLDivElement>();
@@ -79,7 +80,7 @@ const ParseBodyHTML = ({
 
   //allow single click to open links, posts..
   useEffect(() => {
-    if (post || rows || card) {
+    if ( rows || card && !comment) {
       ref?.current && ref.current.click();
     }
   }, [ref]);
@@ -87,7 +88,7 @@ const ParseBodyHTML = ({
   return (
     <div
       ref={ref}
-      //onClick={e => {if (post)  {e.stopPropagation();}}} //alternate to single click fix
+      onClick={e => {if (post)  {e.stopPropagation();}}} //alternate to single click fix
       className={
         "dark:prose-invert prose prose-stone prose-headings:text-stone-900 text-stone-700 dark:text-lightText dark:prose-headings:text-lightText prose-headings:font-normal prose-h1:text-xl   dark:prose-strong:text-rose-400 dark:prose-strong:font-semibold  prose-p:my-0  prose-strong:text-rose-800  " +
         (small && card

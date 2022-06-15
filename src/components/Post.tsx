@@ -19,7 +19,7 @@ const Post = ({ post, postNum = 0 }) => {
   const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
   const {read} = useRead(post?.data?.name)
-  
+  const [commentsDirect, setCommentsDirect] = useState(false); 
 
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
@@ -50,16 +50,20 @@ const Post = ({ post, postNum = 0 }) => {
     if (lastRoute === router.asPath) {
       //console.log("match");
       setSelect(false);
+      setCommentsDirect(false);
       context.setPauseAll(false);
     }
     //don't add lastRoute to the array, breaks things
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
-  const handleClick = (e) => {
+  const handleClick = (e, toComments) => {
     e.stopPropagation();
     // plausible("postOpen");
-    if (!e.ctrlKey) {
+    if (toComments){
+      setCommentsDirect(true); 
+    }
+    if (!e.ctrlKey && !e.metaKey) {
       setLastRoute(router.asPath);
       context.setPauseAll(true);
       setSelect(true);
@@ -135,15 +139,14 @@ const Post = ({ post, postNum = 0 }) => {
           postData={post?.data}
           postNum={postNum}
           commentMode={post?.kind === "t1"}
+          commentsDirect={commentsDirect}
         />
       )}
 
       {/* Click wrappter */}
-      <div className="select-none" onClick={(e) => handleClick(e)}>
-        {/* OG Card */}
-        {/* <h1>{postNum}</h1> */}
+      <div className="select-none" > 
         {post?.kind === "t1" ? (
-          <CommentCard data={post?.data} postNum={postNum} />
+          <CommentCard data={post?.data} postNum={postNum} handleClick={handleClick}/>
         ) : context?.cardStyle === "row1" ? (
           <Row1
             post={post?.data}
@@ -152,6 +155,7 @@ const Post = ({ post, postNum = 0 }) => {
             forceMute={forceMute}
             postNum={postNum}
             read={read}
+            handleClick={handleClick}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
@@ -161,6 +165,7 @@ const Post = ({ post, postNum = 0 }) => {
             forceMute={forceMute}
             postNum={postNum}
             read={read}
+            handleClick={handleClick}
           />
         ) : (
           <Card1
@@ -170,6 +175,7 @@ const Post = ({ post, postNum = 0 }) => {
             forceMute={forceMute}
             postNum={postNum}
             read={read}
+            handleClick={handleClick}
           />
         )}
       </div>

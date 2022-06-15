@@ -12,7 +12,7 @@ import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick }) => {
   const context: any = useMainContext();
   const [hovered, setHovered] = useState(false);
   const [mediaInfoHeight, setMediaInfoHeight] = useState(0);
@@ -67,6 +67,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
           ? " hover:scale-101 group hover:transition-transform transition-transform "
           : "")
       }
+      onClick={(e) => {setHovered(false); handleClick(e)}}
     >
       <div
         className={
@@ -265,7 +266,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                 />
               </div>
               <div className="flex flex-row items-center justify-end gap-2 ml-auto -mr-2">
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
                   <h1
                     className={
                       "cursor-pointer hover:underline" +
@@ -408,7 +409,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                 />
               </div>
               <div className="flex flex-row items-center gap-2 ml-auto mr-6">
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
                   <h1
                     className={
                       "cursor-pointer hover:underline font-semibold " +
