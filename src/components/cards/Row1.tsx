@@ -21,6 +21,7 @@ import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
+  const context: any = useMainContext(); 
   const [expand, setexpand] = useState(false);
 
   return (
@@ -120,7 +121,7 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
                       : " ")
-                      + (read ? " opacity-50" : "")
+                      + (read && context.dimRead  ? " opacity-50" : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>

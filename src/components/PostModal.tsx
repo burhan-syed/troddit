@@ -287,7 +287,7 @@ const PostModal = ({
   }, [postNum]);
 
   useEffect(() => {
-    context.addReadPost(apost?.name);
+    context?.autoRead && context.addReadPost(apost?.name);
   }, [apost]);
 
   const [newLink, setNewLink] = useState("");

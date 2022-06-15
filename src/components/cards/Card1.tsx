@@ -197,7 +197,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     onClick={(e) => e.preventDefault()}
                     className=""
                   >
-                    <PostTitle post={post} read={read} />
+                    <PostTitle post={post} read={read && context.dimRead} />
                   </a>
                   <span className="text-sm ">
                     <TitleFlair post={post} />
@@ -315,7 +315,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
                       : " ")
-                      + (read ? " opacity-50 " : "")
+                      + (read && context.dimRead ? " opacity-50 " : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>

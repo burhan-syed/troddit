@@ -59,6 +59,9 @@ export const MainProvider = ({ children }) => {
   const [showUserFlairs, setShowUserFlairs] = useState<boolean>();
   const [expandedSubPane, setExpandedSubPane] = useState<boolean>();
   const [infiniteLoading, setInfinitLoading] = useState<boolean>(); 
+  const [dimRead, setDimRead] = useState<boolean>(); 
+  const [autoRead, setAutoRead] = useState<boolean>();
+
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -87,6 +90,12 @@ export const MainProvider = ({ children }) => {
   };
   const toggleInfiniteLoading = () => {
     setInfinitLoading(i => !i)
+  }
+  const toggleDimRead = () => {
+    setDimRead(d => !d)
+  }
+  const toggleAutoRead = () => {
+    setAutoRead(r => !r)
   }
 
   //toggle for type of posts to show in saved screen
@@ -684,6 +693,14 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("infiniteLoading");
         saved === false ? setInfinitLoading(false) : setInfinitLoading(true); 
       }
+      const loadDimRead = async() => {
+        let saved = await localForage.getItem("dimRead");
+        saved === false ? setDimRead(false) : setDimRead(true); 
+      }
+      const loadAutoRead = async() => {
+        let saved = await localForage.getItem("autoRead");
+        saved === false ? setAutoRead(false) : setAutoRead(true); 
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -691,6 +708,7 @@ export const MainProvider = ({ children }) => {
       loadShowUserIcons();
       loadShowUserFlairs();
       loadExpandedSubPane();
+      loadAutoRead(); 
 
       //things we need loaded before posts are rendered
       let nsfw = loadNSFW();
@@ -715,6 +733,7 @@ export const MainProvider = ({ children }) => {
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
       let infiniteLoading = loadInfiniteLoading(); 
+      let dimread = loadDimRead(); 
       await Promise.all([
         nsfw,
         autoplay,
@@ -737,7 +756,8 @@ export const MainProvider = ({ children }) => {
         readfilter,
         showflairs,
         showawardings,
-        infiniteLoading
+        infiniteLoading,
+        dimread
       ]);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
@@ -751,6 +771,16 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (autoRead !== undefined) {
+      localForage.setItem("autoRead", autoRead);
+    }
+  }, [autoRead]);
+  useEffect(() => {
+    if (dimRead !== undefined) {
+      localForage.setItem("dimRead", dimRead);
+    }
+  }, [dimRead]);
   useEffect(() => {
     if (infiniteLoading !== undefined) {
       localForage.setItem("infiniteLoading", infiniteLoading);
@@ -996,7 +1026,11 @@ export const MainProvider = ({ children }) => {
         expandedSubPane,
         toggleExpandedSubPane,
         infiniteLoading, 
-        toggleInfiniteLoading
+        toggleInfiniteLoading,
+        dimRead, 
+        toggleDimRead, 
+        autoRead, 
+        toggleAutoRead
       }}
     >
       {children}

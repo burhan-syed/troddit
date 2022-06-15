@@ -34,7 +34,9 @@ type ComponentProps = {
     | "showFlairs"
     | "showUserFlairs"
     | "expandedSubPane"
-    | "infiniteLoading";
+    | "infiniteLoading"
+    | "dimRead"
+    | "autoRead";
   label?: string;
   externalStyles?: string;
   withSubtext?: boolean;
@@ -197,11 +199,22 @@ const Toggles = ({
             "Automatically shows the subreddit dropdown pane as expanded instead of collapsed"
           );
         break;
-        case "infiniteLoading":
+      case "infiniteLoading":
         !label && setSwitchLabel("Infinite Loading");
         !subtext &&
           setSwitchSubtext(
             "Switches between infinite loaded or paginated feeds"
+          );
+        break;
+      case "dimRead":
+        !label && setSwitchLabel("Dim Read");
+        !subtext && setSwitchSubtext("Dim read post titles in cards");
+        break;
+      case "autoRead":
+        !label && setSwitchLabel("Auto Read");
+        !subtext &&
+          setSwitchSubtext(
+            "Automatically mark posts as read when their thread is opened"
           );
         break;
       default:
@@ -259,8 +272,14 @@ const Toggles = ({
       case "expandedSubPane":
         context.toggleExpandedSubPane();
         break;
-        case "infiniteLoading":
+      case "infiniteLoading":
         context.toggleInfiniteLoading();
+        break;
+      case "dimRead":
+        context.toggleDimRead();
+        break;
+      case "autoRead":
+        context.toggleAutoRead();
         break;
       default:
         break;
