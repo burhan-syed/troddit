@@ -400,28 +400,15 @@ const Media = ({
           )}
           {isIFrame && (allowIFrame || context?.columns === 1) ? (
             <div
-              className="relative"
-              //filling IFrames in postmode portrait pane or aproximating a 16:9 ratio elsewhere
+              className={"relative"}
+              //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
               style={
                 containerDims?.[1]
-                  ? { height: `${Math.floor(containerDims[1])}px` }
-                  : {
-                      height: `${Math.floor(
-                        (!context.saveWideUI && context.cardStyle !== "row1"
-                          ? 768
-                          : windowWidth *
-                            (windowWidth < 768
-                              ? 1
-                              : windowWidth >= 1024
-                              ? 3 / 4
-                              : 10 / 12)) *
-                          (9 / 16)
-                      )}px`,
-                    }
+                  ? { height: `${Math.floor(containerDims[1])}px` } : {}
               }
             >
               <div
-                className="w-full h-full"
+                className={"w-full h-full max-h-[80vh] " + (containerDims?.[1] ? " " : " aspect-video")}
                 dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
               ></div>
             </div>
