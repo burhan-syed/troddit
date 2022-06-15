@@ -25,47 +25,12 @@ const MyLink = (props) => {
 const PostOptButton = ({ post, postNum, mode = "" }) => {
   const context: any = useMainContext();
   const { addSubFilter, addUserFilter } = useFilterSubs();
-  //check store if read and update context
-  // const [contextRead, setContextRead] = useState(false);
   const filterMenuRef = useRef(null);
-  // useEffect(() => {
-  //   console.log("inner check?", post?.name, !!context?.readPosts?.[post?.name])
-  //   setContextRead(!!context?.readPosts?.[post?.name]);
-  // }, [context?.readPosts])
-  // useEffect(() => {
-  //   const checkRead = async () => {
-  //     let read = await localRead.getItem(post?.name);
-  //     console.log("check?", read, !!context?.readPosts?.[post?.name] )
-
-  //     if (read) {
-  //       context.addReadPost(post?.name);
-  //       setRead(true);
-  //     }
-  //   };
-  //   checkRead();
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log('readPost?', mode, !!context?.readPosts?.[post?.name], context?.readPosts)
-  //   // context?.readPosts?.[post?.name] ? setRead(true) : setRead(false);
-  //   if (!!context?.readPosts?.[post?.name]){
-  //     setRead(true);
-  //   } else {
-  //     setRead(false);
-  //   }
-  // }, [context?.readPosts]);
-
-  // useEffect(() => {
-  //   console.log(read, !!context?.readPosts?.[post?.name])
-  
-
-  // }, [read, context?.readPosts?.[post?.name]])
   const {read} = useRead(post?.name)
 
 
   const toggleRead = async () => {
     context?.toggleReadPost(post?.name);
-    //setRead((r) => !r);
   };
 
   return (
