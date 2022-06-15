@@ -12,7 +12,6 @@ const MediaWrapper = ({
   hideNSFW,
   post,
   forceMute,
-  allowIFrame,
   imgFull,
   postMode,
   containerDims = undefined,
@@ -67,7 +66,6 @@ const MediaWrapper = ({
         <Media
           post={postData}
           forceMute={forceMute}
-          allowIFrame={allowIFrame}
           imgFull={imgFull}
           postMode={postMode}
           containerDims={containerDims}

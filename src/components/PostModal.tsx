@@ -570,7 +570,6 @@ const PostModal = ({
                         hideNSFW={hideNSFW}
                         post={apost}
                         forceMute={false}
-                        allowIFrame={true}
                         imgFull={imgFull}
                         postMode={true}
                         containerDims={[pWidth, pHeight]}
@@ -751,7 +750,6 @@ const PostModal = ({
                                 hideNSFW={hideNSFW}
                                 post={apost}
                                 forceMute={false}
-                                allowIFrame={true}
                                 imgFull={imgFull}
                                 postMode={true}
                               />

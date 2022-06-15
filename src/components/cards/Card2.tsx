@@ -33,7 +33,6 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
               hideNSFW={hideNSFW}
               post={post}
               forceMute={forceMute}
-              allowIFrame={false}
               postMode={false}
               imgFull={false}
               read={read}

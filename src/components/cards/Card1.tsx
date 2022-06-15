@@ -14,19 +14,10 @@ import SubIcon from "../SubIcon";
 //og card
 const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
   const context: any = useMainContext();
-  const [allowIFrame, setallowIFrame] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [mediaInfoHeight, setMediaInfoHeight] = useState(0);
   const mediaBox = useRef(null);
   const infoBox = useRef(null);
-  useEffect(() => {
-    if (context?.columnOverride === 1) {
-      setallowIFrame(true);
-    } else {
-      setallowIFrame(false);
-    }
-    return () => {};
-  }, [context?.columnOverride]);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -229,7 +220,6 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                     hideNSFW={hideNSFW}
                     post={post}
                     forceMute={forceMute}
-                    allowIFrame={allowIFrame}
                     postMode={false}
                     imgFull={false}
                     read={read}
@@ -253,7 +243,6 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                   hideNSFW={hideNSFW}
                   post={post}
                   forceMute={forceMute}
-                  allowIFrame={allowIFrame}
                   postMode={false}
                   imgFull={false}
                   read={read}

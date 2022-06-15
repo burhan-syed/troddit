@@ -9,7 +9,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
-
+import {ImEmbed} from 'react-icons/im'
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -28,7 +28,6 @@ async function fileExists(url) {
 
 const Media = ({
   post,
-  allowIFrame = false,
   imgFull = false,
   forceMute = 0,
   portraitMode = false,
@@ -64,25 +63,34 @@ const Media = ({
 
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [toLoad, setToLoad] = useState(false);
 
   const onLoaded = () => {
     setMediaLoaded(true);
   };
 
+  const [allowIFrame, setAllowIFrame] = useState<boolean>(postMode);
   const [isIFrame, setIsIFrame] = useState(false);
   const [iFrame, setIFrame] = useState<Element>();
   const [isYTVid, setisYTVid] = useState(false);
-  const [ytVidHeight, setytVidHeight] = useState({});
+
   useEffect(() => {
     //
     return () => {
       setIsIFrame(false);
       setIFrame(null);
-      setisYTVid(false);
-      setytVidHeight({});
     };
   }, [post]);
+
+  useEffect(() => {
+    if (postMode || context.columns === 1) {
+      setAllowIFrame(true);
+    } else {
+      setAllowIFrame(false);
+    }
+    // return () => {
+    //   setAllowIFrame(false);
+    // }
+  }, [postMode, context.columns]);
 
   useEffect(() => {
     const shouldLoad = () => {
@@ -101,13 +109,14 @@ const Media = ({
       let a, b, c;
       if (post["mediaInfo"].isVideo && !post?.selftext_html) {
         b = await findVideo();
-      } else if (
-        !b &&
-        (context.columns == 1 || allowIFrame) &&
-        post["mediaInfo"].isIframe
-      ) {
+        if (b) {
+          setAllowIFrame(false);
+        }
+      }
+      if (post["mediaInfo"].isIframe) {
         c = await findIframe();
-      } else if (!b && !c && !post?.selftext_html) {
+      }
+      if (!b && !post?.selftext_html) {
         a = await findImage();
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
@@ -216,18 +225,12 @@ const Media = ({
     };
 
     const findIframe = async () => {
-      //console.log("find iframe", post?.title);
-      //console.log(post?.mediaInfo?.iFrameHTML.src);
       if (post?.mediaInfo?.iFrameHTML) {
-        if (
-          post?.mediaInfo?.iFrameHTML?.src?.includes("youtube.com")
-          // || post?.mediaInfo?.iFrameHTML.src.includes("twitch.tv/embed")
-        ) {
-          setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
+        if (post?.mediaInfo?.iFrameHTML?.src?.includes("youtube.com")) {
           setisYTVid(true);
         }
         setIFrame(post.mediaInfo.iFrameHTML);
-        (context.columns === 1 || allowIFrame) && setIsIFrame(true);
+        setIsIFrame(true);
         return true;
       } else {
         return false;
@@ -294,14 +297,15 @@ const Media = ({
 
     if (shouldLoad()) {
       initialize();
-      setToLoad(true);
     } else {
     }
     return () => {
       setIsGallery(false);
+      setIsIFrame(false);
       setGalleryInfo([]);
       setIsImage(false);
       setIsMP4(false);
+      setisYTVid(false);
       setIsTweet(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
@@ -309,9 +313,8 @@ const Media = ({
       setPlaceholderInfo({ url: "", height: 0, width: 0 });
       setMediaLoaded(false);
       setLoaded(false);
-      setToLoad(false);
     };
-  }, [post, allowIFrame, context?.columns, imgFull]);
+  }, [post, context?.columns, imgFull]);
 
   //scale media
   const [imgheight, setimgheight] = useState({}); //sets style height for image
@@ -369,6 +372,20 @@ const Media = ({
     <div className="block select-none group" ref={mediaRef}>
       {loaded ? (
         <>
+          {isIFrame  && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); 
+                e.preventDefault(); 
+                setAllowIFrame((f) => !f);
+              }}
+              className="absolute z-10 items-center hidden gap-1 p-1 text-xs text-white bg-black rounded-md group-hover:flex left-1 bottom-24 bg-opacity-20 hover:bg-opacity-40"
+            >
+              <ImEmbed/>
+              switch embed
+            </button>
+          )}
+
           {isTweet && (
             <div
               className={!imgFull && "flex justify-center " + " bg-transparent"}
@@ -398,17 +415,35 @@ const Media = ({
               />
             </div>
           )}
-          {isIFrame && (allowIFrame || context?.columns === 1) ? (
+          {/* <p className="absolute top-0 left-0 z-50">
+            {isIFrame ? "isIframe" : "no"} {allowIFrame ? "allowIframe" : "no"}{" "}
+            {post?.mediaInfo?.dimensions[0]}/{post?.mediaInfo?.dimensions[1]}
+          </p> */}
+          {isIFrame && allowIFrame ? (
             <div
-              className={"relative"}
+              className={"relative w-full h-full"}
               //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
-              style={
-                containerDims?.[1]
-                  ? { height: `${Math.floor(containerDims[1])}px` } : {}
-              }
             >
               <div
-                className={"w-full h-full max-h-[80vh] " + (containerDims?.[1] ? " " : " aspect-video")}
+                className={
+                  "w-full h-full " +
+                  (containerDims?.[1]
+                    ? ""
+                    : postMode || context.columns == 1
+                    ? " max-h-[80vh]"
+                    : "")
+                }
+                style={
+                  containerDims?.[1]
+                    ? { height: `${Math.floor(containerDims[1])}px` }
+                    : {
+                        aspectRatio: `${
+                          post.mediaInfo?.dimensions[1] > 0 && !isYTVid
+                            ? `${post.mediaInfo?.dimensions[0]} / ${post.mediaInfo?.dimensions[1]}`
+                            : "16 / 9"
+                        }`,
+                      }
+                }
                 dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
               ></div>
             </div>
@@ -430,7 +465,7 @@ const Media = ({
             ""
           )}
 
-          {isImage && !isIFrame && !isMP4 && !isTweet && (
+          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && !isTweet && (
             <div
               className={
                 "relative  " +
@@ -512,7 +547,7 @@ const Media = ({
             </div>
           )}
 
-          {isMP4 && !isIFrame ? (
+          {isMP4 && (!allowIFrame || !isIFrame) ? (
             showMP4 ? (
               <div className="flex flex-col items-center flex-none ">
                 <VideoHandler

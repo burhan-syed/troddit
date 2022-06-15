@@ -315,7 +315,6 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                 hideNSFW={hideNSFW}
                 post={post}
                 forceMute={forceMute}
-                allowIFrame={expand}
                 postMode={false}
                 imgFull={false}
               />
