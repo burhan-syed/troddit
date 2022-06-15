@@ -7,6 +7,7 @@ import Card1 from "./cards/Card1";
 import Card2 from "./cards/Card2";
 import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
+import { useRead } from "../hooks/useRead";
 
 const Post = ({ post, postNum = 0 }) => {
   const context: any = useMainContext();
@@ -17,6 +18,8 @@ const Post = ({ post, postNum = 0 }) => {
   const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
+  const {read} = useRead(post?.data?.name)
+  
 
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
@@ -148,6 +151,7 @@ const Post = ({ post, postNum = 0 }) => {
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
+            read={read}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
@@ -156,6 +160,7 @@ const Post = ({ post, postNum = 0 }) => {
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
+            read={read}
           />
         ) : (
           <Card1
@@ -164,6 +169,7 @@ const Post = ({ post, postNum = 0 }) => {
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
+            read={read}
           />
         )}
       </div>

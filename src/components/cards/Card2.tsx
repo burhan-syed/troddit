@@ -11,7 +11,7 @@ import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
   const context: any = useMainContext();
   return (
     <div>
@@ -163,7 +163,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                   </a>
                 </div>
                 <div className="absolute right-3">
-                  <PostOptButton post={post} postNum={postNum} />
+                  <PostOptButton post={post} postNum={postNum}  />
                 </div>
               </div>
             </div>

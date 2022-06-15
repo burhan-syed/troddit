@@ -61,6 +61,7 @@ const PostModal = ({
   const [windowWidth, windowHeight] = useWindowSize();
   const [error, setError] = useState(false);
   const commentsRef = useRef<HTMLDivElement>(null);
+
   const executeScroll = () => {
     commentsRef.current.scrollIntoView({
       behavior: "smooth",

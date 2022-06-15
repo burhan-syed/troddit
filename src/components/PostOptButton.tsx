@@ -11,6 +11,7 @@ import SaveButton from "./SaveButton";
 import HideButton from "./HideButton";
 import { useMainContext, localRead } from "../MainContext";
 import useFilterSubs from "../hooks/useFilterSubs";
+import { useRead } from "../hooks/useRead";
 
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
@@ -25,31 +26,54 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
   const context: any = useMainContext();
   const { addSubFilter, addUserFilter } = useFilterSubs();
   //check store if read and update context
-  const [read, setRead] = useState(false);
+  // const [contextRead, setContextRead] = useState(false);
   const filterMenuRef = useRef(null);
-  useEffect(() => {
-    const checkRead = async () => {
-      let read = await localRead.getItem(post?.name);
-      if (read) {
-        context.addReadPost(post?.name);
-        setRead(true);
-      }
-    };
-    checkRead();
-  }, []);
+  // useEffect(() => {
+  //   console.log("inner check?", post?.name, !!context?.readPosts?.[post?.name])
+  //   setContextRead(!!context?.readPosts?.[post?.name]);
+  // }, [context?.readPosts])
+  // useEffect(() => {
+  //   const checkRead = async () => {
+  //     let read = await localRead.getItem(post?.name);
+  //     console.log("check?", read, !!context?.readPosts?.[post?.name] )
 
-  useEffect(() => {
-    context?.readPosts?.[post?.name] ? setRead(true) : setRead(false);
-  }, [context?.readPosts]);
+  //     if (read) {
+  //       context.addReadPost(post?.name);
+  //       setRead(true);
+  //     }
+  //   };
+  //   checkRead();
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log('readPost?', mode, !!context?.readPosts?.[post?.name], context?.readPosts)
+  //   // context?.readPosts?.[post?.name] ? setRead(true) : setRead(false);
+  //   if (!!context?.readPosts?.[post?.name]){
+  //     setRead(true);
+  //   } else {
+  //     setRead(false);
+  //   }
+  // }, [context?.readPosts]);
+
+  // useEffect(() => {
+  //   console.log(read, !!context?.readPosts?.[post?.name])
+  
+
+  // }, [read, context?.readPosts?.[post?.name]])
+  const {read} = useRead(post?.name)
+
 
   const toggleRead = async () => {
     context?.toggleReadPost(post?.name);
-    setRead((r) => !r);
+    //setRead((r) => !r);
   };
 
   return (
     <>
-      <Menu as="div" className={" relative font-normal "}>
+      <Menu
+        as="div"
+        className={" relative font-normal "}
+      >
         {({ open }) => (
           <>
             <div
@@ -149,7 +173,6 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     )}
                   </Menu.Item>
                 )}
-               
 
                 {post?.link_flair_text && (
                   <Menu.Item disabled={post?.link_flair_text ? false : true}>
@@ -174,7 +197,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     )}
                   </Menu.Item>
                 )}
-                 <Menu.Item>
+                <Menu.Item>
                   {({ active }) => (
                     <div
                       onClick={(e) => {
@@ -265,7 +288,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         className="flex flex-row items-center min-w-full px-2 py-1 text-sm hover:cursor-pointer"
                       >
                         <MdOutlineClear className="flex-none w-4 h-4 mr-2 mt-0.5 " />
-                        <h1>{read ? "Mark Unread" : "Mark Read"}</h1>
+                        <h1>{read  ? "Mark Unread" : "Mark Read"}</h1>
                       </button>
                     </div>
                   )}

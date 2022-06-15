@@ -20,7 +20,7 @@ import { hideLink } from "../../RedditAPI";
 import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
-const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
+const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
   const [expand, setexpand] = useState(false);
 
   return (

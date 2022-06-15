@@ -99,21 +99,22 @@ export const MainProvider = ({ children }) => {
   };
 
   const [readPosts, setReadPosts] = useState<{}>({});
+  const [readPostsChange, setReadPostsChange] = useState<number>(0);
   const addReadPost = (postid) => {
     localRead.setItem(postid, new Date());
     setReadPosts((read) => {
+      setReadPostsChange(n => n+1);
+
       if (Object.keys(read).length < 1000) {
         read[postid] = new Date();
-        //localStorage.setItem("readPosts", JSON.stringify(read));
         return read;
       }
       //resetting object if space becomes too large
       let newread = {};
       newread[postid] = new Date();
-      //localStorage.setItem("readPosts", JSON.stringify(newread));
-
       return newread;
     });
+    
   };
   const toggleReadPost = async (postid) => {
     setReadPosts((read) => {
@@ -125,11 +126,12 @@ export const MainProvider = ({ children }) => {
         localRead.setItem(postid, new Date());
       }
       //localStorage.setItem("readPosts", JSON.stringify(read));
+      setReadPostsChange(n => n+1);
 
       return read;
     });
   };
-
+ 
   //filters in the inverse sense, true = allowed
   const [readFilter, setReadFilter] = useState<boolean>();
   const [imgFilter, setImgFilter] = useState<boolean>();
@@ -974,6 +976,7 @@ export const MainProvider = ({ children }) => {
         userPostType,
         toggleUserPostType,
         readPosts,
+        readPostsChange, 
         addReadPost,
         toggleReadPost,
         postOpen,

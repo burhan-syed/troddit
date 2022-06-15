@@ -12,7 +12,7 @@ import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
   const context: any = useMainContext();
   const [allowIFrame, setallowIFrame] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -284,7 +284,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     }`}
                   </h1>
                 </a>
-                <PostOptButton post={post} postNum={postNum} mode="" />
+                <PostOptButton post={post} postNum={postNum} mode=""  />
               </div>
             </div>
           )}
