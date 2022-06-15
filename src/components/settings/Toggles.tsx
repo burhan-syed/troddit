@@ -152,7 +152,7 @@ const Toggles = ({
         !label && setSwitchLabel("Sync Width");
         !subtext &&
           setSwitchSubtext(
-            "Syncs wide UI changes with post width. If wide UI is disabled posts will not automatically display comments to the side."
+            "Syncs Wide UI changes with Post Width. If Post Width is narrow posts will not automatically display comments to the side."
           );
         break;
       case "postWideUI":

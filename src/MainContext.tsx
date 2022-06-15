@@ -358,7 +358,7 @@ export const MainProvider = ({ children }) => {
   }, [wideUI]);
 
   const toggleSyncWideUI = () => {
-    setSyncWideUI((w) => !w);
+    setSyncWideUI((w) => {if (!w){setPostWideUI(saveWideUI)} return !w});
   };
 
   const togglePostWideUI = () => {
