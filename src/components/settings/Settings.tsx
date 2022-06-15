@@ -65,7 +65,7 @@ const Settings = () => {
     Media: {
       icon: <BiImages className={icons} />,
       settings: [
-        ...["autoplay", "hoverplay", "audioOnHover", "nsfw"].map((s: any) => (
+        ...["disableEmbeds", "preferEmbeds", "embedsEverywhere","autoplay", "hoverplay", "audioOnHover", "nsfw"].map((s: any) => (
           <Toggles
             key={s}
             setting={s}

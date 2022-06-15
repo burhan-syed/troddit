@@ -82,7 +82,7 @@ const Media = ({
   }, [post]);
 
   useEffect(() => {
-    if (postMode || context.columns === 1) {
+    if ((postMode || context.columns === 1 || context.embedsEverywhere) && !context.disableEmbeds) {
       setAllowIFrame(true);
     } else {
       setAllowIFrame(false);
@@ -90,7 +90,7 @@ const Media = ({
     // return () => {
     //   setAllowIFrame(false);
     // }
-  }, [postMode, context.columns]);
+  }, [postMode, context.columns, context.disableEmbeds, context.embedsEverywhere]);
 
   useEffect(() => {
     const shouldLoad = () => {
@@ -109,7 +109,7 @@ const Media = ({
       let a, b, c;
       if (post["mediaInfo"].isVideo && !post?.selftext_html) {
         b = await findVideo();
-        if (b) {
+        if (b && !context.preferEmbeds) {
           setAllowIFrame(false);
         }
       }

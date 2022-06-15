@@ -36,7 +36,11 @@ type ComponentProps = {
     | "expandedSubPane"
     | "infiniteLoading"
     | "dimRead"
-    | "autoRead";
+    | "autoRead"
+    | "disableEmbeds"
+    | "preferEmbeds" 
+    | "embedsEverywhere";
+
   label?: string;
   externalStyles?: string;
   withSubtext?: boolean;
@@ -217,6 +221,27 @@ const Toggles = ({
             "Automatically mark posts as read when their thread is opened"
           );
         break;
+        case "disableEmbeds":
+          !label && setSwitchLabel("Disable Embeds");
+          !subtext &&
+            setSwitchSubtext(
+              "Will not load any embeds unless you explicitly switch to embed"
+            );
+          break;
+          case "preferEmbeds":
+            !label && setSwitchLabel("Prefer Embeds");
+            !subtext &&
+              setSwitchSubtext(
+                "Prefer embeds instead of native video. Native video options may not work (autoplay, hoverplay, audio, etc.)"
+              );
+            break;
+            case "embedsEverywhere":
+              !label && setSwitchLabel("Embed Everywhere");
+              !subtext &&
+                setSwitchSubtext(
+                  "By default embeds will only show in single column view or in a post thread. Enable this to show embeds in multi-column mode. Note, this is disabled by default for better performance."
+                );
+              break;
       default:
         break;
     }
@@ -281,6 +306,15 @@ const Toggles = ({
       case "autoRead":
         context.toggleAutoRead();
         break;
+        case "disableEmbeds":
+          context.toggleDisableEmbeds();
+          break;
+          case "preferEmbeds":
+          context.togglePreferEmbeds();
+          break;
+          case "embedsEverywhere":
+          context.toggleEmbedsEverywhere();
+          break;
       default:
         break;
     }

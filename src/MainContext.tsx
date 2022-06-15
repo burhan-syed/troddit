@@ -61,7 +61,9 @@ export const MainProvider = ({ children }) => {
   const [infiniteLoading, setInfinitLoading] = useState<boolean>(); 
   const [dimRead, setDimRead] = useState<boolean>(); 
   const [autoRead, setAutoRead] = useState<boolean>();
-
+  const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
+  const [preferEmbeds, setPreferEmbeds] = useState<boolean>(); 
+  const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>(); 
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -96,6 +98,31 @@ export const MainProvider = ({ children }) => {
   }
   const toggleAutoRead = () => {
     setAutoRead(r => !r)
+  }
+  const toggleDisableEmbeds = () => {
+    setDisableEmbeds(d => {
+      if (!d){
+        setPreferEmbeds(false); 
+        setEmbedsEveryWhere(false); 
+      }
+      return !d;
+      })
+  }
+  const togglePreferEmbeds = () => {
+    setPreferEmbeds(p => {
+      if (!p){
+        setDisableEmbeds(false);
+      }
+      return !p;
+    })
+  }
+  const toggleEmbedsEverywhere = () => {
+    setEmbedsEveryWhere(e => {
+      if (!e){
+        setDisableEmbeds(false); 
+      }
+      return !e; 
+    })
   }
 
   //toggle for type of posts to show in saved screen
@@ -701,6 +728,18 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("autoRead");
         saved === false ? setAutoRead(false) : setAutoRead(true); 
       }
+      const loadDisableEmbeds = async() => {
+        let saved = await localForage.getItem("disableEmbeds");
+        saved === true ? setDisableEmbeds(true) : setDisableEmbeds(false); 
+      }
+      const loadPreferEmbeds = async() => {
+        let saved = await localForage.getItem("preferEmbeds");
+        saved === true ? setPreferEmbeds(true) : setPreferEmbeds(false); 
+      }
+      const loadEmbedsEverywhere = async() => {
+        let saved = await localForage.getItem("embedsEverywhere");
+        saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false); 
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -734,6 +773,9 @@ export const MainProvider = ({ children }) => {
       let showawardings = loadShowAwardings();
       let infiniteLoading = loadInfiniteLoading(); 
       let dimread = loadDimRead(); 
+      let disableembeds = loadDisableEmbeds(); 
+      let preferembeds = loadPreferEmbeds(); 
+      let loadembedseverywhere = loadEmbedsEverywhere(); 
       await Promise.all([
         nsfw,
         autoplay,
@@ -757,7 +799,10 @@ export const MainProvider = ({ children }) => {
         showflairs,
         showawardings,
         infiniteLoading,
-        dimread
+        dimread,
+        disableembeds, 
+        preferembeds, 
+        loadembedseverywhere
       ]);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
@@ -771,6 +816,21 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (disableEmbeds !== undefined) {
+      localForage.setItem("disableEmbeds", disableEmbeds);
+    }
+  }, [disableEmbeds]);
+  useEffect(() => {
+    if (preferEmbeds !== undefined) {
+      localForage.setItem("preferEmbeds", preferEmbeds);
+    }
+  }, [preferEmbeds]);
+  useEffect(() => {
+    if (embedsEverywhere !== undefined) {
+      localForage.setItem("embedsEverywhere", embedsEverywhere);
+    }
+  }, [embedsEverywhere]);
   useEffect(() => {
     if (autoRead !== undefined) {
       localForage.setItem("autoRead", autoRead);
@@ -1030,7 +1090,13 @@ export const MainProvider = ({ children }) => {
         dimRead, 
         toggleDimRead, 
         autoRead, 
-        toggleAutoRead
+        toggleAutoRead,
+        disableEmbeds, 
+        toggleDisableEmbeds, 
+        preferEmbeds, 
+        togglePreferEmbeds, 
+        embedsEverywhere, 
+        toggleEmbedsEverywhere
       }}
     >
       {children}
