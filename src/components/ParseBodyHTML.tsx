@@ -10,6 +10,7 @@ const ParseBodyHTML = ({
   useEffect(() => {
     //formatting per Teddit
     const unescape = (s) => {
+
       if (s) {
         var re = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g;
         var unescaped = {
@@ -27,7 +28,7 @@ const ParseBodyHTML = ({
         let result = s.replace(re, (m) => {
           return unescaped[m];
         });
-
+        result = blankTargets(result);
         result = replaceDomains(result);
 
         return result;
@@ -35,6 +36,16 @@ const ParseBodyHTML = ({
         return "";
       }
     };
+
+    const blankTargets = (str) => {
+      if (str?.includes("<a ")) {
+        str = str?.replaceAll(
+          "<a ",
+          '<a target="_blank" '
+        );
+      }
+      return str; 
+    }
 
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
@@ -62,7 +73,8 @@ const ParseBodyHTML = ({
       }
       return str;
     };
-
+    
+   
     let unescaped = unescape(html);
     setInsertHTML(unescaped);
   }, [html]);
