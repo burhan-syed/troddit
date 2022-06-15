@@ -33,7 +33,8 @@ const Media = ({
   forceMute = 0,
   portraitMode = false,
   postMode = false,
-  read=false,
+  read = false,
+  card = false,
   containerDims = undefined,
 }) => {
   const context: any = useMainContext();
@@ -555,11 +556,14 @@ const Media = ({
                 (!imgFull
                   ? " max-h-96 border-b dark:border-darkBorderHighlight"
                   : " ") +
-                (containerDims?.[1] ? " mx-4 my-2 " : "")
-                + (read && context.dimRead ? " opacity-50 " : "")
+                (containerDims?.[1] ? " mx-4 my-2 " : "") +
+                (read && context.dimRead ? " opacity-50 " : "")
               }
             >
               <ParseBodyHTML
+                rows={context.cardStyle == "row1"}
+                post={postMode}
+                card={card}
                 html={post?.selftext_html}
                 small={postMode ? false : true}
                 limitWidth={postMode && !context.postWideUI}

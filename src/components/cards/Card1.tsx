@@ -12,7 +12,7 @@ import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
   const context: any = useMainContext();
   const [allowIFrame, setallowIFrame] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -233,6 +233,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     postMode={false}
                     imgFull={false}
                     read={read}
+                    card={true}
                   />
                 </div>
               )}
@@ -256,6 +257,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                   postMode={false}
                   imgFull={false}
                   read={read}
+                  card={true}
                 />
               </div>
             </a>
@@ -286,7 +288,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     }`}
                   </h1>
                 </a>
-                <PostOptButton post={post} postNum={postNum} mode=""  />
+                <PostOptButton post={post} postNum={postNum} mode="" />
               </div>
             </div>
           )}
@@ -314,8 +316,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     " hover:underline font-semibold text-base mr-2 " +
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
-                      : " ")
-                      + (read && context.dimRead ? " opacity-50 " : "")
+                      : " ") +
+                    (read && context.dimRead ? " opacity-50 " : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>

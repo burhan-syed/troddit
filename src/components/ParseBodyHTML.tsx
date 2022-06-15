@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const ParseBodyHTML = ({
   html,
   small = true,
+  post = false,
+  rows = false,
   card = false,
   limitWidth = false,
 }) => {
   const [insertHTML, setInsertHTML] = useState(html);
+  const ref = useRef<HTMLDivElement>();
   useEffect(() => {
     //formatting per Teddit
     const unescape = (s) => {
-
       if (s) {
         var re = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g;
         var unescaped = {
@@ -39,13 +41,10 @@ const ParseBodyHTML = ({
 
     const blankTargets = (str) => {
       if (str?.includes("<a ")) {
-        str = str?.replaceAll(
-          "<a ",
-          '<a target="_blank" '
-        );
+        str = str?.replaceAll("<a ", '<a target="_blank" rel="noreferrer" ');
       }
-      return str; 
-    }
+      return str;
+    };
 
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
@@ -73,14 +72,22 @@ const ParseBodyHTML = ({
       }
       return str;
     };
-    
-   
+
     let unescaped = unescape(html);
     setInsertHTML(unescaped);
   }, [html]);
 
+  //allow single click to open links, posts..
+  useEffect(() => {
+    if (post || rows || card) {
+      ref?.current && ref.current.click();
+    }
+  }, [ref]);
+
   return (
     <div
+      ref={ref}
+      //onClick={e => {if (post)  {e.stopPropagation();}}} //alternate to single click fix
       className={
         "dark:prose-invert prose prose-stone prose-headings:text-stone-900 text-stone-700 dark:text-lightText dark:prose-headings:text-lightText prose-headings:font-normal prose-h1:text-xl   dark:prose-strong:text-rose-400 dark:prose-strong:font-semibold  prose-p:my-0  prose-strong:text-rose-800  " +
         (small && card

@@ -37,6 +37,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
               postMode={false}
               imgFull={false}
               read={read}
+              card={true}
             />
           </a>
           {true && (
