@@ -7,7 +7,10 @@ import Feed from "../../components/Feed";
 import SubredditBanner from "../../components/SubredditBanner";
 import { getUserMultiSubs } from "../../RedditAPI";
 import { getSession } from "next-auth/react";
-const Sort = ({ query, session }) => {
+import { useSession } from "next-auth/react";
+const Sort = ({ query }) => {
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [loaded, setLoaded] = useState(false);
   const [isUser, setIsUser] = useState(false);
   const [forbidden, setForbidden] = useState(false);
@@ -16,7 +19,7 @@ const Sort = ({ query, session }) => {
   const [username, setUserName] = useState("");
   const [isMulti, setIsMulti] = useState(false);
   const [feedQuery, setFeedQuery] = useState("");
-
+  
   const getSubsArray = async () => {
     let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
     // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
@@ -48,8 +51,8 @@ const Sort = ({ query, session }) => {
         setMode(mode.toUpperCase());
       }
     };
-
-      if (
+   
+    if (
         query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
         query?.slug?.[1]?.toUpperCase() === "SAVED" ||
         query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
@@ -67,7 +70,6 @@ const Sort = ({ query, session }) => {
           setLoaded(true);
         } else {
           setUserName(query?.slug?.[0]);
-
           setLoaded(true);
         }
       }
@@ -82,7 +84,7 @@ const Sort = ({ query, session }) => {
       setMode("");
       setFeedQuery("");
     };
-  }, [query, session]);
+  }, [query, session, loading]);
 
   return (
     <div className="-mt-2 overflow-x-hidden overflow-y-auto">
@@ -150,10 +152,9 @@ const Sort = ({ query, session }) => {
 
 
 //can't use getServerSideProps because in app navigation causes page jump
-Sort.getInitialProps = async ({ query,req }) => {
-  const session = await getSession({req});
+Sort.getInitialProps =  ({ query,req }) => {
 
-  return { query,session };
+  return { query };
 };
 
 export default Sort;

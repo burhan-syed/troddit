@@ -212,7 +212,7 @@ const Toggles = ({
         break;
       case "dimRead":
         !label && setSwitchLabel("Dim Read");
-        !subtext && setSwitchSubtext("Dim read post titles in cards");
+        !subtext && setSwitchSubtext("Dim read post titles and text in cards");
         break;
       case "autoRead":
         !label && setSwitchLabel("Auto Read");
