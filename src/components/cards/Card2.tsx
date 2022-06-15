@@ -19,7 +19,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
         className={
           (context?.columnOverride == 1 && "") +
           " text-sm bg-lightPost group hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border hover:cursor-pointer border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400" +
-          " rounded-lg overflow-clip"
+          " rounded-lg overflow-clip" 
         }
       >
         <div className="">
@@ -36,6 +36,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
               allowIFrame={false}
               postMode={false}
               imgFull={false}
+              read={read}
             />
           </a>
           {true && (
@@ -48,6 +49,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read }) => {
                       (post?.distinguished == "moderator" || post?.stickied
                         ? " text-lightGreen dark:text-darkGreen "
                         : " ")
+                        + (read ? " opacity-50" : "")
                     }
                   >{`${post?.title ?? ""}`}</span>
                 </a>

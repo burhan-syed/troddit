@@ -16,6 +16,7 @@ const MediaWrapper = ({
   imgFull,
   postMode,
   containerDims = undefined,
+  read=false
 }) => {
   const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
@@ -69,6 +70,7 @@ const MediaWrapper = ({
           imgFull={imgFull}
           postMode={postMode}
           containerDims={containerDims}
+          read={read}
         />
       </div>
       {hideNSFW && hidden && (

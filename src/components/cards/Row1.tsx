@@ -120,6 +120,7 @@ const Row1 = ({ post, hasMedia, hideNSFW, forceMute, postNum,read }) => {
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
                       : " ")
+                      + (read ? " opacity-50" : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>

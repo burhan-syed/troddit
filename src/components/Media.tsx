@@ -33,6 +33,7 @@ const Media = ({
   forceMute = 0,
   portraitMode = false,
   postMode = false,
+  read=false,
   containerDims = undefined,
 }) => {
   const context: any = useMainContext();
@@ -555,6 +556,7 @@ const Media = ({
                   ? " max-h-96 border-b dark:border-darkBorderHighlight"
                   : " ") +
                 (containerDims?.[1] ? " mx-4 my-2 " : "")
+                + (read ? " opacity-50 " : "")
               }
             >
               <ParseBodyHTML
