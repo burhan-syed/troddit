@@ -9,7 +9,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
-import {ImEmbed} from 'react-icons/im'
+import { ImEmbed } from "react-icons/im";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -82,7 +82,10 @@ const Media = ({
   }, [post]);
 
   useEffect(() => {
-    if ((postMode || context.columns === 1 || context.embedsEverywhere) && !context.disableEmbeds) {
+    if (
+      (postMode || context.columns === 1 || context.embedsEverywhere) &&
+      !context.disableEmbeds
+    ) {
       setAllowIFrame(true);
     } else {
       setAllowIFrame(false);
@@ -90,7 +93,12 @@ const Media = ({
     // return () => {
     //   setAllowIFrame(false);
     // }
-  }, [postMode, context.columns, context.disableEmbeds, context.embedsEverywhere]);
+  }, [
+    postMode,
+    context.columns,
+    context.disableEmbeds,
+    context.embedsEverywhere,
+  ]);
 
   useEffect(() => {
     const shouldLoad = () => {
@@ -238,9 +246,10 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url.includes("twitter.com") && postMode) {
+      if (post.url.includes("twitter.com")) {
         setIsTweet(true);
-        return true;
+        setIsIFrame(true);
+        //return true;
       }
 
       if (post?.mediaInfo?.gallery) {
@@ -372,31 +381,27 @@ const Media = ({
     <div className="block select-none group" ref={mediaRef}>
       {loaded ? (
         <>
-          {isIFrame  && (
+          {isIFrame && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); 
-                e.preventDefault(); 
+                e.stopPropagation();
+                e.preventDefault();
                 setAllowIFrame((f) => !f);
               }}
               className="absolute z-10 items-center hidden gap-1 p-1 text-xs text-white bg-black rounded-md group-hover:flex left-1 bottom-24 bg-opacity-20 hover:bg-opacity-40"
             >
-              <ImEmbed/>
+              <ImEmbed />
               switch embed
             </button>
           )}
 
-          {isTweet && (
+          {isTweet && allowIFrame && (
             <div
-              className={!imgFull && "flex justify-center " + " bg-transparent"}
+              className={ " bg-transparent"}
             >
-              {/* {!tweetLoaded && (
-                <div className="my-5 bg-gray-300 border rounded-lg w-60 h-96 animate-pulse dark:bg-gray-800"></div>
-              )} */}
               <TwitterTweetEmbed
-                // onLoad={() => setTweetLoaded(true)}
                 placeholder={
-                  <div className="relative my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
+                  <div className="relative mx-auto my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
@@ -415,11 +420,7 @@ const Media = ({
               />
             </div>
           )}
-          {/* <p className="absolute top-0 left-0 z-50">
-            {isIFrame ? "isIframe" : "no"} {allowIFrame ? "allowIframe" : "no"}{" "}
-            {post?.mediaInfo?.dimensions[0]}/{post?.mediaInfo?.dimensions[1]}
-          </p> */}
-          {isIFrame && allowIFrame ? (
+          {isIFrame && allowIFrame && !isTweet ? (
             <div
               className={"relative w-full h-full"}
               //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
@@ -465,14 +466,12 @@ const Media = ({
             ""
           )}
 
-          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && !isTweet && (
+          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
             <div
               className={
                 "relative  " +
-                (imgFull ||
-                (!postMode &&
-                  context.columns !== 1 &&
-                  !post?.mediaInfo?.isTweet)
+                ((imgFull || (!postMode && context.columns !== 1)) &&
+                !post?.mediaInfo?.isTweet
                   ? " block "
                   : " flex items-center justify-center ") +
                 (post?.mediaInfo?.isTweet ? " py-14 " : " ")
@@ -483,7 +482,7 @@ const Media = ({
                 (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
                   ? imgheight
                   : !post?.mediaInfo?.isTweet
-                  ? { height: `${imgWidthHeight[1]}px` }
+                  ? { height: `${imgWidthHeight?.[1]}px` }
                   : {}
               }
             >
@@ -498,10 +497,9 @@ const Media = ({
               <Image
                 src={imageInfo.url}
                 height={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet //layout in fill mode, no height needed
-                    ? undefined
-                    : post?.mediaInfo?.isTweet //set height normally for tweet images
-                    ? imageInfo.height
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                    ? //layout in fill mode, no height needed
+                      undefined
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -513,8 +511,6 @@ const Media = ({
                 width={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? undefined
-                    : post?.mediaInfo?.isTweet
-                    ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -529,7 +525,7 @@ const Media = ({
                 layout={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? "fill"
-                    : imgFull
+                    : imgFull //|| post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"
                 }
