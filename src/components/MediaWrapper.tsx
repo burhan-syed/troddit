@@ -12,10 +12,11 @@ const MediaWrapper = ({
   hideNSFW,
   post,
   forceMute,
-  allowIFrame,
   imgFull,
   postMode,
   containerDims = undefined,
+  read = false,
+  card = false,
 }) => {
   const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
@@ -65,10 +66,11 @@ const MediaWrapper = ({
         <Media
           post={postData}
           forceMute={forceMute}
-          allowIFrame={allowIFrame}
           imgFull={imgFull}
           postMode={postMode}
           containerDims={containerDims}
+          read={read}
+          card={card}
         />
       </div>
       {hideNSFW && hidden && (

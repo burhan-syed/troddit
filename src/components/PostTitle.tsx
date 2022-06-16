@@ -1,4 +1,4 @@
-const PostTitle = ({ post }) => {
+const PostTitle = ({ post, read=false }) => {
   return (
     <h1
       className={
@@ -6,6 +6,7 @@ const PostTitle = ({ post }) => {
         (post?.distinguished == "moderator" || post?.stickied
           ? " text-lightGreen dark:text-darkGreen "
           : " ")
+          + (read ? " opacity-50 " : "")
       }
     >
       {`${post?.title ?? ""}`}

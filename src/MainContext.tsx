@@ -59,6 +59,11 @@ export const MainProvider = ({ children }) => {
   const [showUserFlairs, setShowUserFlairs] = useState<boolean>();
   const [expandedSubPane, setExpandedSubPane] = useState<boolean>();
   const [infiniteLoading, setInfinitLoading] = useState<boolean>(); 
+  const [dimRead, setDimRead] = useState<boolean>(); 
+  const [autoRead, setAutoRead] = useState<boolean>();
+  const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
+  const [preferEmbeds, setPreferEmbeds] = useState<boolean>(); 
+  const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>(); 
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -88,6 +93,37 @@ export const MainProvider = ({ children }) => {
   const toggleInfiniteLoading = () => {
     setInfinitLoading(i => !i)
   }
+  const toggleDimRead = () => {
+    setDimRead(d => !d)
+  }
+  const toggleAutoRead = () => {
+    setAutoRead(r => !r)
+  }
+  const toggleDisableEmbeds = () => {
+    setDisableEmbeds(d => {
+      if (!d){
+        setPreferEmbeds(false); 
+        setEmbedsEveryWhere(false); 
+      }
+      return !d;
+      })
+  }
+  const togglePreferEmbeds = () => {
+    setPreferEmbeds(p => {
+      if (!p){
+        setDisableEmbeds(false);
+      }
+      return !p;
+    })
+  }
+  const toggleEmbedsEverywhere = () => {
+    setEmbedsEveryWhere(e => {
+      if (!e){
+        setDisableEmbeds(false); 
+      }
+      return !e; 
+    })
+  }
 
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
@@ -99,21 +135,22 @@ export const MainProvider = ({ children }) => {
   };
 
   const [readPosts, setReadPosts] = useState<{}>({});
+  const [readPostsChange, setReadPostsChange] = useState<number>(0);
   const addReadPost = (postid) => {
     localRead.setItem(postid, new Date());
     setReadPosts((read) => {
+      setReadPostsChange(n => n+1);
+
       if (Object.keys(read).length < 1000) {
         read[postid] = new Date();
-        //localStorage.setItem("readPosts", JSON.stringify(read));
         return read;
       }
       //resetting object if space becomes too large
       let newread = {};
       newread[postid] = new Date();
-      //localStorage.setItem("readPosts", JSON.stringify(newread));
-
       return newread;
     });
+    
   };
   const toggleReadPost = async (postid) => {
     setReadPosts((read) => {
@@ -125,11 +162,12 @@ export const MainProvider = ({ children }) => {
         localRead.setItem(postid, new Date());
       }
       //localStorage.setItem("readPosts", JSON.stringify(read));
+      setReadPostsChange(n => n+1);
 
       return read;
     });
   };
-
+ 
   //filters in the inverse sense, true = allowed
   const [readFilter, setReadFilter] = useState<boolean>();
   const [imgFilter, setImgFilter] = useState<boolean>();
@@ -320,7 +358,7 @@ export const MainProvider = ({ children }) => {
   }, [wideUI]);
 
   const toggleSyncWideUI = () => {
-    setSyncWideUI((w) => !w);
+    setSyncWideUI((w) => {if (!w){setPostWideUI(saveWideUI)} return !w});
   };
 
   const togglePostWideUI = () => {
@@ -682,6 +720,26 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("infiniteLoading");
         saved === false ? setInfinitLoading(false) : setInfinitLoading(true); 
       }
+      const loadDimRead = async() => {
+        let saved = await localForage.getItem("dimRead");
+        saved === false ? setDimRead(false) : setDimRead(true); 
+      }
+      const loadAutoRead = async() => {
+        let saved = await localForage.getItem("autoRead");
+        saved === false ? setAutoRead(false) : setAutoRead(true); 
+      }
+      const loadDisableEmbeds = async() => {
+        let saved = await localForage.getItem("disableEmbeds");
+        saved === true ? setDisableEmbeds(true) : setDisableEmbeds(false); 
+      }
+      const loadPreferEmbeds = async() => {
+        let saved = await localForage.getItem("preferEmbeds");
+        saved === true ? setPreferEmbeds(true) : setPreferEmbeds(false); 
+      }
+      const loadEmbedsEverywhere = async() => {
+        let saved = await localForage.getItem("embedsEverywhere");
+        saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false); 
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -689,6 +747,7 @@ export const MainProvider = ({ children }) => {
       loadShowUserIcons();
       loadShowUserFlairs();
       loadExpandedSubPane();
+      loadAutoRead(); 
 
       //things we need loaded before posts are rendered
       let nsfw = loadNSFW();
@@ -713,6 +772,10 @@ export const MainProvider = ({ children }) => {
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
       let infiniteLoading = loadInfiniteLoading(); 
+      let dimread = loadDimRead(); 
+      let disableembeds = loadDisableEmbeds(); 
+      let preferembeds = loadPreferEmbeds(); 
+      let loadembedseverywhere = loadEmbedsEverywhere(); 
       await Promise.all([
         nsfw,
         autoplay,
@@ -735,7 +798,11 @@ export const MainProvider = ({ children }) => {
         readfilter,
         showflairs,
         showawardings,
-        infiniteLoading
+        infiniteLoading,
+        dimread,
+        disableembeds, 
+        preferembeds, 
+        loadembedseverywhere
       ]);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
@@ -749,6 +816,31 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (disableEmbeds !== undefined) {
+      localForage.setItem("disableEmbeds", disableEmbeds);
+    }
+  }, [disableEmbeds]);
+  useEffect(() => {
+    if (preferEmbeds !== undefined) {
+      localForage.setItem("preferEmbeds", preferEmbeds);
+    }
+  }, [preferEmbeds]);
+  useEffect(() => {
+    if (embedsEverywhere !== undefined) {
+      localForage.setItem("embedsEverywhere", embedsEverywhere);
+    }
+  }, [embedsEverywhere]);
+  useEffect(() => {
+    if (autoRead !== undefined) {
+      localForage.setItem("autoRead", autoRead);
+    }
+  }, [autoRead]);
+  useEffect(() => {
+    if (dimRead !== undefined) {
+      localForage.setItem("dimRead", dimRead);
+    }
+  }, [dimRead]);
   useEffect(() => {
     if (infiniteLoading !== undefined) {
       localForage.setItem("infiniteLoading", infiniteLoading);
@@ -974,6 +1066,7 @@ export const MainProvider = ({ children }) => {
         userPostType,
         toggleUserPostType,
         readPosts,
+        readPostsChange, 
         addReadPost,
         toggleReadPost,
         postOpen,
@@ -993,7 +1086,17 @@ export const MainProvider = ({ children }) => {
         expandedSubPane,
         toggleExpandedSubPane,
         infiniteLoading, 
-        toggleInfiniteLoading
+        toggleInfiniteLoading,
+        dimRead, 
+        toggleDimRead, 
+        autoRead, 
+        toggleAutoRead,
+        disableEmbeds, 
+        toggleDisableEmbeds, 
+        preferEmbeds, 
+        togglePreferEmbeds, 
+        embedsEverywhere, 
+        toggleEmbedsEverywhere
       }}
     >
       {children}

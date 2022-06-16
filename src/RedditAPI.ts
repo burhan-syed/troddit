@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
-import { json } from "stream/consumers";
 
 // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
 // let limitUrl     = "limit=" + limit;
@@ -31,12 +30,13 @@ const getToken = async () => {
 };
 
 //to reduce serverless calls to refresh token
-const checkToken = async (loggedIn: boolean, token) => {
+const checkToken = async (loggedIn: boolean, token, skipCheck:boolean = false) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
-    loggedIn &&
+    loggedIn && 
     (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
+    && !skipCheck
   ) {
     returnToken = await getToken();
     accessToken = await returnToken?.accessToken;
@@ -54,9 +54,10 @@ export const loadFront = async (
   range?: string,
   after?: string,
   count?: number,
-  localSubs?: [string]
+  localSubs?: [string],
+  skipCheck:boolean = false
 ) => {
-  let { returnToken, accessToken } = await checkToken(loggedIn, token);
+  let { returnToken, accessToken } = await checkToken(loggedIn, token, skipCheck);
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       const res1 = await axios.get(`https://oauth.reddit.com/${sort}`, {

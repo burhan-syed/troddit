@@ -9,7 +9,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
-
+import { ImEmbed } from "react-icons/im";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -28,11 +28,12 @@ async function fileExists(url) {
 
 const Media = ({
   post,
-  allowIFrame = false,
   imgFull = false,
   forceMute = 0,
   portraitMode = false,
   postMode = false,
+  read = false,
+  card = false,
   containerDims = undefined,
 }) => {
   const context: any = useMainContext();
@@ -62,25 +63,42 @@ const Media = ({
 
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [toLoad, setToLoad] = useState(false);
 
   const onLoaded = () => {
     setMediaLoaded(true);
   };
 
+  const [allowIFrame, setAllowIFrame] = useState<boolean>(postMode);
   const [isIFrame, setIsIFrame] = useState(false);
   const [iFrame, setIFrame] = useState<Element>();
   const [isYTVid, setisYTVid] = useState(false);
-  const [ytVidHeight, setytVidHeight] = useState({});
+
   useEffect(() => {
     //
     return () => {
       setIsIFrame(false);
       setIFrame(null);
-      setisYTVid(false);
-      setytVidHeight({});
     };
   }, [post]);
+
+  useEffect(() => {
+    if (
+      (postMode || context.columns === 1 || context.embedsEverywhere) &&
+      !context.disableEmbeds
+    ) {
+      setAllowIFrame(true);
+    } else {
+      setAllowIFrame(false);
+    }
+    // return () => {
+    //   setAllowIFrame(false);
+    // }
+  }, [
+    postMode,
+    context.columns,
+    context.disableEmbeds,
+    context.embedsEverywhere,
+  ]);
 
   useEffect(() => {
     const shouldLoad = () => {
@@ -99,13 +117,14 @@ const Media = ({
       let a, b, c;
       if (post["mediaInfo"].isVideo && !post?.selftext_html) {
         b = await findVideo();
-      } else if (
-        !b &&
-        (context.columns == 1 || allowIFrame) &&
-        post["mediaInfo"].isIframe
-      ) {
+        if (b && !context.preferEmbeds) {
+          setAllowIFrame(false);
+        }
+      }
+      if (post["mediaInfo"].isIframe) {
         c = await findIframe();
-      } else if (!b && !c && !post?.selftext_html) {
+      }
+      if (!b && !post?.selftext_html) {
         a = await findImage();
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
@@ -214,18 +233,12 @@ const Media = ({
     };
 
     const findIframe = async () => {
-      //console.log("find iframe", post?.title);
-      //console.log(post?.mediaInfo?.iFrameHTML.src);
       if (post?.mediaInfo?.iFrameHTML) {
-        if (
-          post?.mediaInfo?.iFrameHTML?.src?.includes("youtube.com")
-          // || post?.mediaInfo?.iFrameHTML.src.includes("twitch.tv/embed")
-        ) {
-          setytVidHeight({ height: `${Math.floor(windowHeight * 0.75)}px` });
+        if (post?.mediaInfo?.iFrameHTML?.src?.includes("youtube.com")) {
           setisYTVid(true);
         }
         setIFrame(post.mediaInfo.iFrameHTML);
-        (context.columns === 1 || allowIFrame) && setIsIFrame(true);
+        setIsIFrame(true);
         return true;
       } else {
         return false;
@@ -233,9 +246,10 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url.includes("twitter.com") && postMode) {
+      if (post.url.includes("twitter.com")) {
         setIsTweet(true);
-        return true;
+        setIsIFrame(true);
+        //return true;
       }
 
       if (post?.mediaInfo?.gallery) {
@@ -292,14 +306,15 @@ const Media = ({
 
     if (shouldLoad()) {
       initialize();
-      setToLoad(true);
     } else {
     }
     return () => {
       setIsGallery(false);
+      setIsIFrame(false);
       setGalleryInfo([]);
       setIsImage(false);
       setIsMP4(false);
+      setisYTVid(false);
       setIsTweet(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
@@ -307,9 +322,8 @@ const Media = ({
       setPlaceholderInfo({ url: "", height: 0, width: 0 });
       setMediaLoaded(false);
       setLoaded(false);
-      setToLoad(false);
     };
-  }, [post, allowIFrame, context?.columns, imgFull]);
+  }, [post, context?.columns, imgFull]);
 
   //scale media
   const [imgheight, setimgheight] = useState({}); //sets style height for image
@@ -367,17 +381,27 @@ const Media = ({
     <div className="block select-none group" ref={mediaRef}>
       {loaded ? (
         <>
-          {isTweet && (
-            <div
-              className={!imgFull && "flex justify-center " + " bg-transparent"}
+          {isIFrame && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setAllowIFrame((f) => !f);
+              }}
+              className="absolute z-10 items-center hidden gap-1 p-1 text-xs text-white bg-black rounded-md group-hover:flex left-1 bottom-24 bg-opacity-20 hover:bg-opacity-40"
             >
-              {/* {!tweetLoaded && (
-                <div className="my-5 bg-gray-300 border rounded-lg w-60 h-96 animate-pulse dark:bg-gray-800"></div>
-              )} */}
+              <ImEmbed />
+              switch embed
+            </button>
+          )}
+
+          {isTweet && allowIFrame && (
+            <div
+              className={ " bg-transparent"}
+            >
               <TwitterTweetEmbed
-                // onLoad={() => setTweetLoaded(true)}
                 placeholder={
-                  <div className="relative my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
+                  <div className="relative mx-auto my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
@@ -396,30 +420,31 @@ const Media = ({
               />
             </div>
           )}
-          {isIFrame && (allowIFrame || context?.columns === 1) ? (
+          {isIFrame && allowIFrame && !isTweet ? (
             <div
-              className="relative"
-              //filling IFrames in postmode portrait pane or aproximating a 16:9 ratio elsewhere
-              style={
-                containerDims?.[1]
-                  ? { height: `${Math.floor(containerDims[1])}px` }
-                  : {
-                      height: `${Math.floor(
-                        (!context.saveWideUI && context.cardStyle !== "row1"
-                          ? 768
-                          : windowWidth *
-                            (windowWidth < 768
-                              ? 1
-                              : windowWidth >= 1024
-                              ? 3 / 4
-                              : 10 / 12)) *
-                          (9 / 16)
-                      )}px`,
-                    }
-              }
+              className={"relative w-full h-full"}
+              //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
             >
               <div
-                className="w-full h-full"
+                className={
+                  "w-full h-full " +
+                  (containerDims?.[1]
+                    ? ""
+                    : postMode || context.columns == 1
+                    ? " max-h-[80vh]"
+                    : "")
+                }
+                style={
+                  containerDims?.[1]
+                    ? { height: `${Math.floor(containerDims[1])}px` }
+                    : {
+                        aspectRatio: `${
+                          post.mediaInfo?.dimensions[1] > 0 && !isYTVid
+                            ? `${post.mediaInfo?.dimensions[0]} / ${post.mediaInfo?.dimensions[1]}`
+                            : "16 / 9"
+                        }`,
+                      }
+                }
                 dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
               ></div>
             </div>
@@ -441,14 +466,12 @@ const Media = ({
             ""
           )}
 
-          {isImage && !isIFrame && !isMP4 && !isTweet && (
+          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
             <div
               className={
                 "relative  " +
-                (imgFull ||
-                (!postMode &&
-                  context.columns !== 1 &&
-                  !post?.mediaInfo?.isTweet)
+                ((imgFull || (!postMode && context.columns !== 1)) &&
+                !post?.mediaInfo?.isTweet
                   ? " block "
                   : " flex items-center justify-center ") +
                 (post?.mediaInfo?.isTweet ? " py-14 " : " ")
@@ -459,7 +482,7 @@ const Media = ({
                 (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
                   ? imgheight
                   : !post?.mediaInfo?.isTweet
-                  ? { height: `${imgWidthHeight[1]}px` }
+                  ? { height: `${imgWidthHeight?.[1]}px` }
                   : {}
               }
             >
@@ -474,10 +497,9 @@ const Media = ({
               <Image
                 src={imageInfo.url}
                 height={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet //layout in fill mode, no height needed
-                    ? undefined
-                    : post?.mediaInfo?.isTweet //set height normally for tweet images
-                    ? imageInfo.height
+                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                    ? //layout in fill mode, no height needed
+                      undefined
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -489,8 +511,6 @@ const Media = ({
                 width={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? undefined
-                    : post?.mediaInfo?.isTweet
-                    ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -505,7 +525,7 @@ const Media = ({
                 layout={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? "fill"
-                    : imgFull
+                    : imgFull //|| post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"
                 }
@@ -523,7 +543,7 @@ const Media = ({
             </div>
           )}
 
-          {isMP4 && !isIFrame ? (
+          {isMP4 && (!allowIFrame || !isIFrame) ? (
             showMP4 ? (
               <div className="flex flex-col items-center flex-none ">
                 <VideoHandler
@@ -554,10 +574,14 @@ const Media = ({
                 (!imgFull
                   ? " max-h-96 border-b dark:border-darkBorderHighlight"
                   : " ") +
-                (containerDims?.[1] ? " mx-4 my-2 " : "")
+                (containerDims?.[1] ? " mx-4 my-2 " : "") +
+                (read && context.dimRead ? " opacity-50 " : "")
               }
             >
               <ParseBodyHTML
+                rows={context.cardStyle == "row1"}
+                post={postMode}
+                card={card}
                 html={post?.selftext_html}
                 small={postMode ? false : true}
                 limitWidth={postMode && !context.postWideUI}

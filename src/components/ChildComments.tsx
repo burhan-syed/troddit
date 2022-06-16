@@ -59,18 +59,6 @@ const ChildComments = ({
   }, [comment]);
 
   useEffect(() => {
-    if (comment?.data?.body_html?.includes("<a ")) {
-      comment.data.body_html = comment.data.body_html?.replaceAll(
-        "<a ",
-        '<a target="_blank" '
-      );
-      //console.log(comment?.data?.body_html);
-    }
-
-    return () => {};
-  }, [comment]);
-
-  useEffect(() => {
     if (childcomments?.length > 0) {
       setchildcomments((p) => p.filter((pr) => pr?.myreply !== true));
       setchildcomments((p) => [...myReplies, ...p]);

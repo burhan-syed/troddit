@@ -34,7 +34,10 @@ const Settings = () => {
             externalStyles="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
           />
         )),
-        <label key={"column_count"} className="flex flex-row items-center justify-between w-full p-2 my-2">
+        <label
+          key={"column_count"}
+          className="flex flex-row items-center justify-between w-full p-2 my-2"
+        >
           <span className="flex flex-col gap-0.5">
             <span>Column Count</span>
             <span className="mr-2 text-xs opacity-70">
@@ -44,7 +47,10 @@ const Settings = () => {
           </span>
           <ColumnCardOptions mode="columns" />
         </label>,
-        <label key={"card_style"} className="flex flex-row items-center justify-between w-full p-2 my-2">
+        <label
+          key={"card_style"}
+          className="flex flex-row items-center justify-between w-full p-2 my-2"
+        >
           <span className="flex flex-col gap-0.5">
             <span>Card Style</span>
             <span className="mr-2 text-xs opacity-70">
@@ -59,7 +65,7 @@ const Settings = () => {
     Media: {
       icon: <BiImages className={icons} />,
       settings: [
-        ...["autoplay", "hoverplay", "audioOnHover", "nsfw"].map((s: any) => (
+        ...["disableEmbeds", "preferEmbeds", "embedsEverywhere","autoplay", "hoverplay", "audioOnHover", "nsfw"].map((s: any) => (
           <Toggles
             key={s}
             setting={s}
@@ -91,7 +97,9 @@ const Settings = () => {
             key={s}
             setting={s}
             withSubtext={true}
-            externalStyles={"rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"}
+            externalStyles={
+              "rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
+            }
           />
         )),
       ],
@@ -109,9 +117,7 @@ const Settings = () => {
           "read",
         ].map((f, i) => (
           <div key={f}>
-            {/* <div className={"block px-4  text-sm "}> */}
             <ToggleFilters filter={f} withSubtext={true} />
-            {/* </div> */}
           </div>
         )),
         <div key={"other_filters"} className={"flex flex-col gap-4 py-2 "}>
@@ -136,7 +142,13 @@ const Settings = () => {
     Other: {
       icon: <BiCog className={icons} />,
       settings: [
-        ...["showAwardings", "showFlairs", "infiniteLoading"].map((s: any) => (
+        ...[
+          "autoRead",
+          "dimRead",
+          "infiniteLoading",
+          "showAwardings",
+          "showFlairs",
+        ].map((s: any) => (
           <Toggles
             key={s}
             setting={s}
@@ -189,10 +201,12 @@ const Settings = () => {
                     : "") +
                   " cursor-pointer opacity-50 hover:opacity-80 select-none flex my-1 "
                 }
-               onClick={() => {refs[category].current.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });}}
+                onClick={() => {
+                  refs[category].current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }}
               >
                 <div className="w-1 h-12 mt-0 mr-2 dark:bg-darkScroll bg-lightScroll"></div>
 

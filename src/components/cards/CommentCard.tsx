@@ -5,11 +5,12 @@ import { BiComment } from "react-icons/bi";
 import Link from "next/link";
 import { secondsToTime } from "../../../lib/utils";
 
-const CommentCard = ({ data, postNum }) => {
+const CommentCard = ({ data, postNum, handleClick }) => {
   const context: any = useMainContext();
 
   return (
     <div
+      onClick={(e) => handleClick(e)}
       className={
         context.cardStyle === "row1"
           ? `${
@@ -92,7 +93,7 @@ const CommentCard = ({ data, postNum }) => {
             }
           ></div>
           <div className="flex items-start justify-start pl-2 overflow-y-auto border-l select-text overscroll-auto scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll max-h-40">
-            <ParseBodyHTML html={data?.body_html} small={true} card={true} />
+            <ParseBodyHTML html={data?.body_html} small={true} card={true} comment={true} />
           </div>
         </div>
       </div>

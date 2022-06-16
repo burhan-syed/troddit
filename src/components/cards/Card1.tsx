@@ -12,21 +12,12 @@ import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
+const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick }) => {
   const context: any = useMainContext();
-  const [allowIFrame, setallowIFrame] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [mediaInfoHeight, setMediaInfoHeight] = useState(0);
   const mediaBox = useRef(null);
   const infoBox = useRef(null);
-  useEffect(() => {
-    if (context?.columnOverride === 1) {
-      setallowIFrame(true);
-    } else {
-      setallowIFrame(false);
-    }
-    return () => {};
-  }, [context?.columnOverride]);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -76,6 +67,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
           ? " hover:scale-101 group hover:transition-transform transition-transform "
           : "")
       }
+      onClick={(e) => {setHovered(false); handleClick(e)}}
     >
       <div
         className={
@@ -197,7 +189,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     onClick={(e) => e.preventDefault()}
                     className=""
                   >
-                    <PostTitle post={post} />
+                    <PostTitle post={post} read={read && context.dimRead} />
                   </a>
                   <span className="text-sm ">
                     <TitleFlair post={post} />
@@ -229,9 +221,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     hideNSFW={hideNSFW}
                     post={post}
                     forceMute={forceMute}
-                    allowIFrame={allowIFrame}
                     postMode={false}
                     imgFull={false}
+                    read={read}
+                    card={true}
                   />
                 </div>
               )}
@@ -251,9 +244,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                   hideNSFW={hideNSFW}
                   post={post}
                   forceMute={forceMute}
-                  allowIFrame={allowIFrame}
                   postMode={false}
                   imgFull={false}
+                  read={read}
+                  card={true}
                 />
               </div>
             </a>
@@ -272,7 +266,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                 />
               </div>
               <div className="flex flex-row items-center justify-end gap-2 ml-auto -mr-2">
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
                   <h1
                     className={
                       "cursor-pointer hover:underline" +
@@ -312,7 +306,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                     " hover:underline font-semibold text-base mr-2 " +
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-lightGreen dark:text-darkGreen "
-                      : " ")
+                      : " ") +
+                    (read && context.dimRead ? " opacity-50 " : "")
                   }
                 >{`${post?.title ?? ""}`}</span>
               </a>
@@ -414,7 +409,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum }) => {
                 />
               </div>
               <div className="flex flex-row items-center gap-2 ml-auto mr-6">
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
                   <h1
                     className={
                       "cursor-pointer hover:underline font-semibold " +

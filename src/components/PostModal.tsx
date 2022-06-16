@@ -61,6 +61,7 @@ const PostModal = ({
   const [windowWidth, windowHeight] = useWindowSize();
   const [error, setError] = useState(false);
   const commentsRef = useRef<HTMLDivElement>(null);
+
   const executeScroll = () => {
     commentsRef.current.scrollIntoView({
       behavior: "smooth",
@@ -217,10 +218,10 @@ const PostModal = ({
     };
   }, [apost, windowWidth]);
   useEffect(() => {
-    if (commentsRef?.current && commentsDirect) {
+    if (commentsRef?.current && commentsDirect && !loadingComments) {
       executeScroll();
     }
-  }, [commentsRef?.current, commentsDirect]);
+  }, [commentsRef?.current, commentsDirect, loadingComments]);
 
   const updateMyReplies = (resdata) => {
     const newreply = {
@@ -286,7 +287,7 @@ const PostModal = ({
   }, [postNum]);
 
   useEffect(() => {
-    context.addReadPost(apost?.name);
+    context?.autoRead && context.addReadPost(apost?.name);
   }, [apost]);
 
   const [newLink, setNewLink] = useState("");
@@ -569,7 +570,6 @@ const PostModal = ({
                         hideNSFW={hideNSFW}
                         post={apost}
                         forceMute={false}
-                        allowIFrame={true}
                         imgFull={imgFull}
                         postMode={true}
                         containerDims={[pWidth, pHeight]}
@@ -750,7 +750,6 @@ const PostModal = ({
                                 hideNSFW={hideNSFW}
                                 post={apost}
                                 forceMute={false}
-                                allowIFrame={true}
                                 imgFull={imgFull}
                                 postMode={true}
                               />
@@ -934,10 +933,12 @@ const PostModal = ({
                 {apost?.archived && (
                   <div className="flex-grow w-full">
                     <div className="flex items-center gap-4 p-2 px-4 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
-                      <BsArchive/>
+                      <BsArchive />
                       <p className="flex flex-col text-sm font-normal ">
                         <span>This is an archived post.</span>
-                        <span className="text-xs">New comments cannot be posted and votes cannot be cast</span>
+                        <span className="text-xs">
+                          New comments cannot be posted and votes cannot be cast
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -958,11 +959,11 @@ const PostModal = ({
                       left: 0,
                     }}
                   ></div>
-                  <div
-                    ref={commentsRef}
-                    className="flex flex-row justify-between h-10 px-2 mt-2 "
-                  >
-                    <div className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2">
+                  <div className="flex flex-row justify-between h-10 px-2 mt-2 ">
+                    <div
+                      ref={commentsRef}
+                      className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2"
+                    >
                       <BiComment className="flex-none w-6 h-6 " />
                       <div className="flex flex-row items-center mb-1 space-x-1">
                         <h1 className="">{`${apost?.num_comments ?? "??"}`}</h1>
@@ -983,7 +984,13 @@ const PostModal = ({
                   {loadingComments ? (
                     // Comment Loader
                     <>
-                      {[...Array(5)].map((u, i) => (
+                      {[
+                        ...Array(
+                          parseInt(apost?.num_comments) < 5
+                            ? parseInt(apost?.num_comments)
+                            : 5
+                        ),
+                      ].map((u, i) => (
                         <div key={i}>{commentPlaceHolder}</div>
                       ))}{" "}
                     </>

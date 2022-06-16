@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.13.3
+### New
+- There's now a subreddit to discuss troddit: <a href="/r/TrodditForReddit">r/TrodditForReddit</a>
+- Read post titles and text will be dimmed in cards
+  - New option to disable this in settings
+  - New option to disable automatically marking a post as read when its thread is opened
+- Options for handling embedded media:
+  - Disable embedded: useful if you don't want cookies from external sites such as YouTube.
+  - Prefer embedded: will prefer embedded videos instead of native video. Useful if native videos don't include audio from the external source. 
+  - Embedded everywhere: Will allow embedded media everywhere including multi-column cards. By default embedded media will only appear in post threads or in single column mode. Enabling this may reduce performance. 
+- Button to switch between embedded or native media. Will appear when hovered on media with this option.
+- Clicking on the 'comments' buttons on a card will jump to the comments when the thread is loaded
+
+### Changes
+- Links in post text will automatically open in a new tab
+### Fixes
+- Read post state is now shown properly when automatically marked as read
+- When logged in the initial posts were sometimes not from your front page. This was fixed. 
+- User page will no longer jump to top when navigating back from posts 
+- Command click now works for Mac to open posts in a new window
+
 ## v0.13.2
 ### New
 - Option to disable infinite loading 

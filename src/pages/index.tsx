@@ -81,12 +81,12 @@ index.getInitialProps = async ({ req, query }) => {
         req,
         secret: process.env.NEXTAUTH_SECRET,
       });
-      const tokendata = {
+      let tokenData = {
         accessToken: token.reddit.accessToken,
         refreshToken: token.reddit.refreshToken,
         expires: token.expires,
       };
-      data = await loadFront(true, tokendata);
+      data = await loadFront(true, tokenData, undefined, undefined, undefined, undefined, undefined, true);
     }
     if (data?.children && data?.after) {
       return {
@@ -98,7 +98,7 @@ index.getInitialProps = async ({ req, query }) => {
         session: session,
       };
     }
-    return { query: query, postData: {}, session: session, user: "" }; 
+    return { query: query, postData: {}, session: session, user: "" };
   }
   return { query };
 };

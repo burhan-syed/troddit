@@ -1,6 +1,6 @@
 {
   "name": "troddit",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -34,7 +34,8 @@
     "react-intersection-observer": "^9.1.0",
     "react-markdown": "^8.0.3",
     "react-switch": "^6.0.0",
-    "react-twitter-embed": "^4.0.4"
+    "react-twitter-embed": "^4.0.4",
+    "rehype-raw": "^6.1.1"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.0",
