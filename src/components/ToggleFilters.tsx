@@ -77,7 +77,7 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
     <div
       title={title}
       onClick={(e) => e.stopPropagation()}
-      className="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+      className="rounded-lg group hover:bg-th-highlight"
     >
       <label className="flex flex-row items-center justify-between p-2 cursor-pointer ">
         <span className="flex flex-col">
@@ -91,13 +91,13 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
           checked={checked}
           checkedHandleIcon={<div></div>}
           checkedIcon={
-            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
+            <div className="flex items-center justify-center h-full text-lg ">
               <BsCheck />
             </div>
           }
           uncheckedHandleIcon={<div></div>}
           uncheckedIcon={
-            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
+            <div className="flex items-center justify-center h-full text-lg ">
               <BsX />
             </div>
           }

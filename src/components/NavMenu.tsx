@@ -9,6 +9,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const subOptionStyle =
+  "px-4 py-3 text-sm hover:bg-th-highlight  cursor-pointer";
+
 const NavMenu = ({ hide = false }) => {
   const context: any = useMainContext();
 
@@ -69,7 +72,7 @@ const NavMenu = ({ hide = false }) => {
         <Menu.Button
           title={"options"}
           name="Options"
-          className="flex flex-row items-center justify-center w-full h-full bg-white border border-white rounded-md hover:border-lightBorder dark:hover:border-darkBorder dark:bg-darkBG dark:border-darkBG focus:outline-none"
+          className="flex flex-row items-center justify-center w-full h-full border border-transparent rounded-md hover:border-th-border focus:outline-none"
         >
           <BsThreeDotsVertical className="flex-none w-5 h-5" />
         </Menu.Button>
@@ -86,7 +89,7 @@ const NavMenu = ({ hide = false }) => {
       >
         <Menu.Items
           className={
-            "absolute right-0 w-40 mt-11 origin-top-right bbg-white dark:bg-darkBG bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder " +
+            "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg focus:outline-none border border-th-border ring-1 ring-th-base ring-opacity-5  " +
             (hide && " hidden")
           }
         >
@@ -96,7 +99,7 @@ const NavMenu = ({ hide = false }) => {
                 <div className="group">
                   <div
                     className={classNames(
-                      active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                      active ? "bg-th-highlight " : "",
                       "block px-4 py-2 text-sm"
                     )}
                     onClick={(e) => {
@@ -111,14 +114,14 @@ const NavMenu = ({ hide = false }) => {
                   <ul
                     className={
                       (active ? "block " : "hidden ") +
-                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-th-background2 rounded-md shadow-lg border border-th-border text-right"
                     }
                   >
                     <li>
                       <div
                         className={
                           (context.columnOverride === 0 ? "font-bold " : "") +
-                          " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                          " px-4 py-3 text-sm hover:bg-th-highlight   mt-1 cursor-pointer"
                         }
                         onClick={(e) => {
                           setColumnCount(0);
@@ -131,7 +134,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 1 ? "font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(1);
@@ -144,7 +147,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 2 ? "font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(2);
@@ -157,7 +160,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 3 ? "font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(3);
@@ -170,7 +173,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 4 ? "font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(4);
@@ -183,7 +186,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 5 ? "font-bold " : "") +
-                          " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(5);
@@ -196,7 +199,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.columnOverride === 7 ? "font-bold " : "") +
-                          " px-3 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mb-1 cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setColumnCount(7);
@@ -214,7 +217,7 @@ const NavMenu = ({ hide = false }) => {
                 <div className="group">
                   <div
                     className={classNames(
-                      active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                      active ? "bg-th-highlight " : "",
                       "block px-4 py-2 text-sm"
                     )}
                     onClick={(e) => {
@@ -229,7 +232,7 @@ const NavMenu = ({ hide = false }) => {
                   <ul
                     className={
                       (active ? "block " : "hidden ") +
-                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                      "absolute top-0 w-32 -left-32 group-hover:block group-focus:block bg-th-background2 rounded-md shadow-lg border border-th-border text-right"
                     }
                   >
                     <li>
@@ -237,8 +240,7 @@ const NavMenu = ({ hide = false }) => {
                         className={
                           (context.cardStyle === "card1" && !context.mediaOnly
                             ? " font-bold "
-                            : "") +
-                          " px-4 py-2.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                            : "") + ` ${subOptionStyle} mt-1`
                         }
                         onClick={(e) => {
                           setCardStyle("card1");
@@ -254,7 +256,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.cardStyle === "card2" ? " font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setCardStyle("card2");
@@ -271,8 +273,7 @@ const NavMenu = ({ hide = false }) => {
                         className={
                           (context.cardStyle == "card1" && context.mediaOnly
                             ? " font-bold "
-                            : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                            : "") + ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setCardStyle("card1");
@@ -287,7 +288,7 @@ const NavMenu = ({ hide = false }) => {
                       <div
                         className={
                           (context.cardStyle == "row1" ? " font-bold " : "") +
-                          " px-4 py-3 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer"
+                          ` ${subOptionStyle}`
                         }
                         onClick={(e) => {
                           setCardStyle("row1");
@@ -309,7 +310,7 @@ const NavMenu = ({ hide = false }) => {
                   {({ active }) => (
                     <div
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight " : "",
                         "block px-4 text-sm "
                       )}
                     >
@@ -326,7 +327,7 @@ const NavMenu = ({ hide = false }) => {
               {({ active }) => (
                 <div
                   className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    active ? "bg-th-highlight " : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >
@@ -342,7 +343,7 @@ const NavMenu = ({ hide = false }) => {
               {({ active }) => (
                 <div
                   className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    active ? "bg-th-highlight " : "",
                     "block px-4 py-2 text-sm"
                   )}
                 >

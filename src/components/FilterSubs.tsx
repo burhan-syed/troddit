@@ -49,7 +49,7 @@ const FilterSubs = ({ mode = "subs" }) => {
       : "";
   };
   return (
-    <div className="flex flex-col gap-2 border rounded-md dark:bg-darkHighlight bg-lightPostHover border-lightBorder dark:border-transparent">
+    <div className="flex flex-col gap-2 border rounded-md bg-th-background2 border-th-border">
       <div
         className={
           "flex flex-col p-2   max-h-40 overflow-y-scroll" + `${scrollbar}`
@@ -72,14 +72,14 @@ const FilterSubs = ({ mode = "subs" }) => {
               .map((f) => (
                 <div
                   key={f}
-                  className="flex flex-row justify-between p-2 rounded-md cursor-pointer group hover:dark:bg-darkBG hover:bg-lightHighlight"
+                  className="flex flex-row justify-between p-2 rounded-md cursor-pointer group hover:bg-th-highlight"
                   onClick={(e) => {
                     e.preventDefault();
                     removeFilter(f);
                   }}
                 >
                   <h4 className="capitalize">{f?.toLowerCase()}</h4>
-                  <button className="p-0.5 border rounded-md border-transparent hover:ring group-hover:dark:border-darkBorder group-hover:border-lightBorderHighlight">
+                  <button className="p-0.5 rounded-md border-transparent group-hover:ring-2 hover:bg-th-highlight ring-th-accent2 border ">
                     <MdOutlineClear className="w-5 h-5 transition-transform " />
                   </button>
                 </div>
@@ -109,19 +109,19 @@ const FilterSubs = ({ mode = "subs" }) => {
               setInput(e.target.value);
             }}
             className={
-              "dark:bg-darkPostHover flex-grow border dark:border-darkBorder border-lightBorder bg-lightPostHover outline-none ring-0 p-1 rounded-md focus:dark:border-darkBorderHighlight focus:border-lightBorderHighlight "
+              " flex-grow border  outline-none ring-0 p-1 rounded-md border-th-border bg-th-highlight focus:border-th-borderHighlight "
             }
           />
           <button
             onClick={(e) => handleSubmit(e)}
-            className="flex items-center justify-center ml-2 border rounded-md w-9 h-9 dark:border-darkBorder hover:dark:border-darkBorderHighlight border-lightBorder hover:dark:bg-darkBG hover:border-lightBorderHighlight hover:bg-lightHighlight"
+            className="flex items-center justify-center ml-2 border rounded-md w-9 h-9 hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
           >
             <AiOutlinePlus className="w-5 h-5" />
           </button>
         </form>
       ) : (
         <button
-          className="flex flex-row items-center px-2 py-1 mb-2 ml-2 border rounded-md hover:border-lightBorderHighlight hover:dark:bg-darkPostHover w-28 dark:border-darkBorder dark:hover:border-darkBorderHighlight"
+          className="flex flex-row items-center px-2 py-1 mb-2 ml-2 border rounded-md hover:bg-th-highlight border-th-border w-28 hover:border-th-borderHighlight"
           onClick={(e) => {
             e.preventDefault();
             setOpenForm((o) => !o);

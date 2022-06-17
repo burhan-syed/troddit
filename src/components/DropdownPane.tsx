@@ -13,6 +13,8 @@ import DropDownItems from "./DropDownItems";
 import { Menu, Transition } from "@headlessui/react";
 import { useMainContext } from "../MainContext";
 
+const scrollStyle = "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
   const { multi, currSubInfo, currLocation, tryLoadAll } = subsContext;
@@ -39,8 +41,8 @@ const DropdownPane = ({ hide }) => {
           <Menu.Button
             as="div"
             className={
-              "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer hover:border-lightBorder rounded-2 dark:bg-darkBG dark:hover:border-darkBorder dark:border-darkBG" +
-              (open ? " border-lightBorder dark:border-darkBorder" : "")
+              "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer rounded-2  hover:border-th-border " +
+              (open ? " border-th-border " : "")
             }
             onClick={handleClick}
           >
@@ -107,25 +109,24 @@ const DropdownPane = ({ hide }) => {
           {/* Dropdown */}
           <Transition
             as={Fragment}
-            // enter="transition ease-out duration-100"
-            // enterFrom="transform opacity-0 scale-95"
-            // enterTo="transform opacity-100 scale-100"
-            // leave="transition ease-in duration-75"
-            // leaveFrom="transform opacity-100 scale-100"
-            // leaveTo="transform opacity-0 scale-95"
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items
               as="div"
               className={
-                " flex outline-none flex-col w-full border dark:bg-darkBG bg-white dark:border-darkBorder border-lightBorder mt-1 rounded-md shadow-sm " +
+                " flex outline-none flex-col w-full border bg-th-background2 border-th-border ring-1 ring-th-base mt-1 rounded-md shadow-sm origin-top " +
                 `${open && !hide ? " block" : " hidden"}`
-                //transform transition border duration-150 ease-in-out origin-top
               }
             >
               {/* scroll */}
               <div
                 className={
-                  "grid grid-cols-1 overflow-y-auto overscroll-contain scrollbar-thin transition-all scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll " +
+                  `grid grid-cols-1 overflow-y-auto overscroll-contain transition-all ${scrollStyle}` +
                   (expand ? " max-h-[90vh]" : "  max-h-[30rem] ")
                 }
               >
@@ -137,7 +138,7 @@ const DropdownPane = ({ hide }) => {
                   e.stopPropagation();
                   setExpand((s) => !s);
                 }}
-                className="flex items-center justify-center border-t border-lightBorder dark:border-darkBorder hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+                className="flex items-center justify-center border-t border-th-border hover:cursor-pointer hover:bg-th-highlight"
               >
                 <HiOutlineMinus className="w-6 h-3 " />
               </div>

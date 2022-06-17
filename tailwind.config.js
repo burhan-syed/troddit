@@ -4,10 +4,27 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: "class", // or 'media' or 'class'
+  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       colors: {
+        'th-text': 'var(--text)', 
+        'th-textLight': 'var(--textLight)',
+        'th-base': 'var(--base)',
+        'th-accent1': 'var(--accent1)',
+        'th-accent2' : 'var(--accent2)',
+        'th-background': 'var(--background)',
+        'th-background2' : 'var(--background2)',
+        'th-post': 'var(--post)',
+        'th-postHover': 'var(--postHover)',
+        'th-highlight': 'var(--highlight)',
+        'th-border' : 'var(--border)',
+        'th-borderHighlight' : 'var(--borderHighlight)',
+        'th-green': 'var(--green)',
+        'th-red' : 'var(--red)',
+        'th-upvote' : 'var(--upvote)',
+        'th-downvote' : 'var(--downvote)',
+        'th-scrollbar' : 'var(--scrollbar)',
         lightText: "#E7E5E4",
         lightBG: "#F1F5F9",
         lightPost: "#F8FAFC",

@@ -70,8 +70,8 @@ const DropdownItem = ({ sub, isUser = false }) => {
             <div
               className={
                 (isMulti
-                  ? "rounded bg-red-400"
-                  : "rounded-full bg-lightScroll dark:bg-darkScroll border-2 ") +
+                  ? "rounded bg-th-red"
+                  : "rounded-full bg-th-accent2 border-2 ") +
                 " w-6 h-6 text-center text-lightText overflow-clip flex items-center justify-center  text-lg"
               }
             >

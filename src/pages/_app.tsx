@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <SessionProvider session={pageProps.session}>
-        <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider  defaultTheme="system">
           <MainProvider>
             <MySubsProvider>
               <MyCollectionsProvider>

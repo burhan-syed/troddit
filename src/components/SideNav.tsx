@@ -10,6 +10,8 @@ import DropDownItems from "./DropDownItems";
 import { Menu } from "@headlessui/react";
 import LoginProfile from "./LoginProfile";
 
+const scrollStyle = "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+
 const SideNav = ({ visible, toggle }) => {
   const { data: session, status } = useSession();
   const [vis, setVis] = useState(false);
@@ -65,25 +67,10 @@ const SideNav = ({ visible, toggle }) => {
         }
       >
         <div className="flex flex-row flex-none h-screen overscroll-y-contain">
-          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-lightHighlight dark:bg-darkBG ">
+          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-th-background2 ">
             <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
               <div className="flex flex-row items-center justify-between w-full ">
                 <div className="">
-                  {/* {!session && (
-                    <>
-                      <div></div>
-                    </>
-                  )}
-                  {session && (
-                    <>
-                      <button
-                        className="w-full h-full"
-                        onClick={() => signOut()}
-                      >
-                        Logout
-                      </button>
-                    </>
-                  )} */}
                   <LoginProfile />
                 </div>
                 <RiArrowGoBackLine
@@ -99,11 +86,10 @@ const SideNav = ({ visible, toggle }) => {
               </div>
               <Menu
                 as="div"
-                className="h-full px-2 overflow-x-hidden overflow-y-scroll outline-none "
+                className={`h-full px-2 overflow-x-hidden overflow-y-auto outline-none ${scrollStyle}`}
               >
                 {({ open }) => (
                   <>
-                    {/* <SideDropDown visible={vis} /> */}
                     <Menu.Button
                       as="div"
                       className={"hidden"}
@@ -124,7 +110,7 @@ const SideNav = ({ visible, toggle }) => {
                         className="flex items-center justify-center h-full select-none"
                         onClick={() => buttonRef?.current?.click()}
                       >
-                        <h1 className="text-gray-400 dark:text-gray-500">
+                        <h1 className="opacity-50 text-th-textLight">
                           (click for subs)
                         </h1>
                       </div>

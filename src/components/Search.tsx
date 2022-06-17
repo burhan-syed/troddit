@@ -17,6 +17,7 @@ import {
   AiOutlineMinus,
 } from "react-icons/ai";
 import { useCollectionContext } from "./collections/CollectionContext";
+import Checkbox from "./ui/Checkbox";
 
 const Search = ({ id }) => {
   const router = useRouter();
@@ -229,7 +230,7 @@ const Search = ({ id }) => {
         <>
           {/* Default value */}
           <div>
-            <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight ">
+            <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-th-highlight ">
               <div className="ml-2">
                 {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
                   <div className="relative w-6 h-6 rounded-full">
@@ -245,21 +246,21 @@ const Search = ({ id }) => {
                     ></Image>
                   </div>
                 ) : (
-                  <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2">
                     r/
                   </div>
                 )}
               </div>
               <div className="flex flex-col ml-4">
                 <div>{lastRequest.current}</div>
-                <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                <div className="text-xs text-th-borderHighlight">
                   {"?? followers "}
                 </div>
               </div>
             </div>
             {/* Loading placeholder */}
             <>
-              <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight ">
+              <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-th-highlight ">
                 <div className="ml-2">
                   {suggestion?.data?.icon_image ??
                   suggestion?.data?.icon_img ? (
@@ -276,14 +277,14 @@ const Search = ({ id }) => {
                       ></Image>
                     </div>
                   ) : (
-                    <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText animate-pulse">
+                    <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2 animate-pulse">
                       r/
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col ml-4">
-                  <div className="h-4 bg-gray-200 rounded-md w-52 dark:bg-gray-500 animate-pulse"></div>
-                  <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight animate-pulse">
+                  <div className="h-4 rounded-md bg-th-highlight w-52 animate-pulse"></div>
+                  <div className="text-xs text-th-text opacity-70 animate-pulse">
                     {"?? followers "}
                   </div>
                 </div>
@@ -303,35 +304,11 @@ const Search = ({ id }) => {
           }
         >
           <a>
-            <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+            <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-th-highlight">
               <AiOutlineSearch className="w-6 h-6" />
               <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
               {currSub !== "" && (
-                <div
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSrRestrict((r) => !r);
-                  }}
-                  className="flex flex-row items-center mt-auto ml-auto space-x-2 group"
-                >
-                  <h1 className="text-xs">Limit to r/{currSub}</h1>
-                  <div
-                    className={
-                      "w-7 h-7 p-0.5 border rounded-md transition-all flex items-center justify-center   " +
-                      (srRestrict
-                        ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
-                        : " dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 group-hover:border-0")
-                    }
-                  >
-                    <AiOutlineCheck
-                      className={
-                        " w-4 h-4  pt-[1px] pl-[1px] flex-none transition-all text-white" +
-                        (srRestrict ? " scale-100 " : " scale-0")
-                      }
-                    />
-                  </div>
-                </div>
+                <Checkbox toggled={srRestrict} clickEvent={() => setSrRestrict(r => !r)} labelText={`Limit to r/${currSub}`}/>
               )}
             </div>
           </a>
@@ -350,7 +327,7 @@ const Search = ({ id }) => {
           >
             <div
               // onClick={(e) =>}
-              className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight "
+              className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-th-highlight "
             >
               <div className="ml-2">
                 {suggestion?.data?.icon_image?.length > 1 ||
@@ -377,7 +354,7 @@ const Search = ({ id }) => {
                     ></Image>
                   </div>
                 ) : (
-                  <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText">
+                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2">
                     r/
                   </div>
                 )}
@@ -387,13 +364,13 @@ const Search = ({ id }) => {
               </div>
               <div className="flex flex-col ml-4">
                 <div>{suggestion?.data?.display_name_prefixed}</div>
-                <div className="text-xs text-lightBorderHighlight dark:text-darkBorderHighlight">
+                <div className="text-xs text-th-text opacity-70">
                   {suggestion?.data?.subscribers
                     ? suggestion.data.subscribers.toLocaleString("en-US") +
                       " followers "
                     : "?? followers "}
                   {suggestion?.data?.over18 && (
-                    <span className="pl-2 text-xs font-semibold text-red-400 dark:text-red-700">
+                    <span className="pl-2 text-xs font-semibold text-th-red ">
                       nsfw
                     </span>
                   )}
@@ -416,7 +393,7 @@ const Search = ({ id }) => {
                       ? "Remove Selected"
                       : "Add to Selected"}
                   </span>
-                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 dark:text-lightText group-hover:ring-2 ring-blue-400 dark:group-ring-blue-600 dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder">
+                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 hover:ring-2 ring-th-accent2 hover:bg-th-highlight border-th-border ">
                     {addMode == "feeds" &&
                     selected.find(
                       (s) =>
@@ -440,7 +417,7 @@ const Search = ({ id }) => {
           error &&
           lastsuggestion === suggestion?.data?.display_name_prefixed && (
             <>
-              <div className="flex flex-col items-center justify-center w-full h-full py-3 bg-white border rounded-lg select-none dark:bg-darkBG border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight">
+              <div className="flex flex-col items-center justify-center w-full h-full py-3 border rounded-lg select-none bg-th-background2 border-th-border hover:border-th-borderHighlight ">
                 <h1>{"No subreddit suggestions"}</h1>
               </div>
             </>
