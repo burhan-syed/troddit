@@ -82,7 +82,7 @@ const CollectionOptions = ({
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
-                  "w-6  flex justify-center items-center  bg-white border border-lightBorder hover:border-lightBorderHighlight rounded-md dark:border-darkBorder dark:hover:border-darkBorderHighlight dark:hover:bg-darkPostHover focus:outline-none dark:bg-darkBG" +
+                  "w-6  flex justify-center items-center border rounded-md focus:outline-none bg-background2 hover:bg-th-highlight border-th-border hover:border-th-borderHighlight   " +
                   (currMulti ? " h-8" : " h-9")
                 }
               >
@@ -101,7 +101,7 @@ const CollectionOptions = ({
             >
               <Menu.Items
                 className={
-                  "z-50 absolute   w-40 mt-2  bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer " +
+                  "z-50 absolute   w-40 mt-2 bg-th-background2 ring-th-base border-th-border rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border  select-none cursor-pointer " +
                   (currMulti
                     ? " origin-top-right right-7 -top-2  "
                     : "origin-bottom-right bottom-10 right-0")
@@ -113,7 +113,7 @@ const CollectionOptions = ({
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") +
                           " block px-4 py-1 text-sm" +
                           (disabled ? " opacity-20 " : "")
@@ -124,7 +124,7 @@ const CollectionOptions = ({
                         </div>
                         <div
                           className={
-                            "absolute top-0 -left-[10rem] w-40 overflow-y-scroll  bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer py-1 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800" +
+                            "absolute top-0 -left-[10rem] w-40 overflow-y-scroll bg-th-background2  rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border  select-none cursor-pointer py-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full  scrollbar-thumb-th-scrollbar" +
                             (active ? "  " : " hidden ") +
                             (currMulti ? " max-h-96 " : " max-h-40 ")
                           }
@@ -135,7 +135,7 @@ const CollectionOptions = ({
                             }}
                           >
                             <div
-                              className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight hover:cursor-pointer"
+                              className="px-2 py-1 hover:bg-th-highlight hover:cursor-pointer"
                               onClick={multiCreate}
                             >
                               <h1 className="pl-2">Create New</h1>
@@ -153,7 +153,7 @@ const CollectionOptions = ({
                                     {/* {multi.data.display_name.toUpperCase() !==
                                       currMulti.toUpperCase()  */}
                                     {true && (
-                                      <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                                      <div className="px-2 py-1 hover:bg-th-highlight">
                                         <DropdownItem sub={multi} />
                                       </div>
                                     )}
@@ -173,7 +173,7 @@ const CollectionOptions = ({
                                     {/* {multi.data.display_name.toUpperCase() !==
                                       currMulti.toUpperCase() && ( */}
                                     {true && (
-                                      <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                                      <div className="px-2 py-1 hover:bg-th-highlight">
                                         <DropdownItem sub={multi} />
                                       </div>
                                     )}
@@ -192,7 +192,7 @@ const CollectionOptions = ({
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") +
                           " flex justify-end px-4 py-1 text-sm" +
                           (disabled ? " hidden " : "")
@@ -244,7 +244,7 @@ const CollectionOptions = ({
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") +
                           " block px-4 py-1 text-sm" +
                           (disabled ? " hidden " : "")
@@ -297,7 +297,7 @@ const CollectionOptions = ({
                         <div
                           className={
                             (active
-                              ? "bg-lightHighlight dark:bg-darkHighlight "
+                              ? "bg-th-highlight "
                               : "") +
                             " block px-4 py-1 text-sm" +
                             (disabled ? " hidden" : "")

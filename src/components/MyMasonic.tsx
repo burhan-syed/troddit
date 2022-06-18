@@ -433,8 +433,8 @@ const MyMasonic = ({
                 className={
                   (loadingMore
                     ? " animate-pulse "
-                    : " cursor-pointer hover:bg-lightPostHover dark:hover:bg-darkPostHover shadow-2xl hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ") +
-                  "flex items-center justify-center px-4 py-2 border rounded-md  h-9 dark:border border-lightBorder dark:bg-darkBG bg-lightPost dark:border-darkBorder "
+                    : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
+                  "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
                 }
               >
                 <h1>Load Page {pageCount + 1}</h1>

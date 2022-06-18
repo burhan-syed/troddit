@@ -65,7 +65,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
       <Menu.Button
         title={"options"}
         name="Options"
-        className="w-24 py-2 capitalize border rounded-md border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-darkBorderHighlight dark:bg-darkBG focus:outline-none"
+        className="w-24 py-2 capitalize border rounded-md focus:outline-none hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
       >
         {mode === "columns"
           ? context.columnOverride == 0
@@ -101,7 +101,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
       >
         <Menu.Items
           className={
-            "absolute z-10 right-0 mt-1 py-2 w-24 origin-top-left bg-white dark:bg-darkBG  rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder "
+            "absolute z-10 right-0 mt-1 py-2 w-24 origin-top-left   rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border bg-th-background2 "
           }
         >
           {[0, 1, 2, 3, 4, 5, 7].map((num) => (
@@ -109,7 +109,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
               {({ active, disabled }) => (
                 <div
                   className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    active ? "bg-th-highlight " : "",
                     "block px-4 py-2 text-sm cursor-pointer",
                     disabled ? "hidden" : ""
                   )}
@@ -142,7 +142,7 @@ const ColumnCardOptions = ({ mode }: Mode) => {
               {({ active, disabled }) => (
                 <div
                   className={classNames(
-                    active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                    active ? "bg-th-highlight " : "",
                     "block px-4 py-2 text-sm cursor-pointer",
                     disabled ? "hidden" : ""
                   )}

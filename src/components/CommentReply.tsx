@@ -136,10 +136,10 @@ const CommentReply = ({ parent, getResponse }) => {
     <div className="relative ">
       {session && (
         <>
-          <div className="flex flex-row justify-between w-full select-none text-darkBorderHighlight">
+          <div className="flex flex-row justify-between w-full select-none text-th-textLight">
             <h1>Commenting as {session.user.name}</h1>
             {err && (
-              <h1 className="text-red-400 text-color dark:text-red-700">
+              <h1 className="text-xs text-th-red">
                 Something went wrong
               </h1>
             )}
@@ -172,18 +172,18 @@ const CommentReply = ({ parent, getResponse }) => {
               setReplyFocus(false);
             }}
             ref={EditorRef}
-            className="flex-wrap w-full px-4 pt-2 pb-8 font-mono leading-tight border rounded-lg scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll scrollbar-thumb-rounded-full bg-lightBG dark:bg-darkHighlight hover:cursor-text border-lightBorder focus-within:border-lightBorderHighlight focus-within:brightness-100 brightness-80 dark:border-darkBorder dark:focus-within:border-darkBorderHighlight"
+            className="flex-wrap w-full px-3 pt-3 pb-8 font-mono leading-tight border rounded-lg outline-none scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-thumb-rounded-full bg-th-postHover hover:cursor-text border-th-border focus-within:border-th-borderHighlight focus-within:brightness-100 brightness-80 "
             value={textValue}
             onChange={handleTextChange}
           ></textarea>
           <div className="flex items-end mt-2">
-            <p className="mb-1 ml-1 text-xs italic select-none text-darkBorderHighlight">
+            <p className="mb-1 ml-1 text-xs italic select-none text-th-textLight">
               using markdown editor
             </p>
             <button
               onClick={(e) => !loading && submit(e)}
               className={
-                "flex items-center relative justify-center px-4 py-1.5 ml-auto text-center  border border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:bg-lightPostHover rounded-md cursor-pointer dark:hover:bg-darkBorder "
+                "flex items-center relative justify-center px-4 py-1.5 ml-auto text-center border border-th-border hover:border-th-borderHighlight hover:bg-th-highlight rounded-md cursor-pointer  "
               }
             >
               <h1 className={loading ? " opacity-50 " : " mx-3 "}>Comment</h1>

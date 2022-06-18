@@ -63,7 +63,7 @@ const FilterModal = ({ toOpen }) => {
             <div className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl select-none bg-th-background2 sm:my-8 sm:align-middle sm:max-w-lg">
               <div className="relative px-4 pt-5 pb-4 overflow-visible sm:p-6 sm:pb-4">
                 <div
-                  className="absolute flex items-center justify-center w-8 h-8 ml-auto text-th-border hover:text-th-borderHighlight top-2 right-2 hover:cursor-pointer"
+                  className="absolute flex items-center justify-center w-8 h-8 ml-auto top-2 opacity-40 hover:opacity-60 right-2 hover:cursor-pointer"
                   onClick={() => {
                     setOpen(false);
                   }}

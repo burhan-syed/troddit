@@ -19,13 +19,13 @@ const CheckBox = ({ toggled }) => {
       className={
         "flex h-full border rounded-md transition-all items-center justify-center  " +
         (toggled
-          ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
-          : " dark:group-hover:bg-darkBorder group-hover:bg-lightBorder border-lightBorder dark:border-darkBorder ")
+          ? "  bg-th-accent2 border-th-accent2 "
+          : " group-hover:bg-th-highlight border-th-border  ")
       }
     >
       <AiOutlineCheck
         className={
-          " transition-all text-white" + (toggled ? " scale-100 " : " scale-0")
+          " transition-all text-white" + (toggled ? " scale-100 hover:scale-110" : " scale-0")
         }
       />
     </div>
@@ -71,15 +71,15 @@ const Collection = ({
   return (
     <div
       className={
-        "relative  transition-colors bg-contain border border-gray-300 shadow-md bg-lightPost  dark:bg-darkBG dark:border-trueGray-700  rounded-lg select-none dark:hover:border-trueGray-500 hover:border-gray-400"
+        "relative  transition-colors bg-contain border border-th-border bg-th-post  shadow-md rounded-lg select-none "
       }
     >
       <div
-        className={` absolute  w-full h-16 bg-cover bg-center  rounded-t-md bg-blue-400 dark:bg-red-800 `}
+        className={` absolute  w-full h-16 bg-cover bg-center  rounded-t-md bg-th-scrollbar `}
       ></div>
       <div className="flex flex-col mx-2 my-2 ">
         <div className="flex flex-row mt-6">
-          <div className="z-20 flex-none w-16 h-16 border-2 rounded-full dark:bg-darkBG bg-lightPost">
+          <div className="z-20 flex-none w-16 h-16 border-2 rounded-full bg-th-post">
             {icon?.includes("https://") ? (
               <>
                 <Image
@@ -103,7 +103,7 @@ const Collection = ({
               </div>
             )}
           </div>
-          <div className="z-10 flex flex-row items-baseline gap-2 p-1 pr-4 mt-1 pl-11 -ml-9 rounded-tr-md pl-auto dark:bg-darkBG bg-lightPost ">
+          <div className="z-10 flex flex-row items-baseline gap-2 p-1 pr-4 mt-1 pl-11 -ml-9 rounded-tr-md pl-auto bg-th-post ">
             <div
               className="flex flex-row items-baseline gap-2 cursor-pointer group "
               onClick={(e) => {
@@ -119,7 +119,7 @@ const Collection = ({
             </div>
 
             {over_18 && (
-              <span className="text-xs text-red-400 text-color dark:text-red-700 pb-0.5">
+              <span className="text-xs  text-th-red text-color pb-0.5">
                 NSFW
               </span>
             )}
@@ -138,7 +138,7 @@ const Collection = ({
               A collection of {subreddits.length} subreddits
             </span>
 
-            <div className="flex items-center justify-center w-10 h-8 ml-auto border border-transparent rounded-md group-hover:bg-lightHighlight dark:group-hover:bg-darkHighlight group-hover:border-lightBorderHighlight dark:group-hover:border-transparent">
+            <div className="flex items-center justify-center w-10 h-8 ml-auto border border-transparent rounded-md group-hover:bg-th-highlight group-hover:border-th-borderHighlight ">
               <BsChevronDown
                 className={
                   (expand ? "-rotate-180 " : "rotate-0 ") +
@@ -156,7 +156,7 @@ const Collection = ({
           />
           <div className="mr-1 "></div>
           <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
-            <a className="flex items-center justify-center w-10 h-8 border rounded-md border-lightBorder hover:border-lightBorderHighlight hover:dark:bg-darkHighlight dark:border-darkBorder hover:bg-lightHighlight dark:hover:border-darkBorderHighlight">
+            <a className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
               <BsArrowRight />
             </a>
           </Link>
@@ -176,7 +176,7 @@ const Collection = ({
             })
             ?.map((sub, i) => (
               <div
-                className="flex flex-row-reverse items-center text-sm border rounded-md overflow-ellipsis dark:border-darkBorder"
+                className="flex flex-row-reverse items-center text-sm border rounded-md overflow-ellipsis border-th-border "
                 key={sub + i}
               >
                 <div className="flex flex-row items-center flex-none ml-auto">

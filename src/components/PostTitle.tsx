@@ -4,7 +4,7 @@ const PostTitle = ({ post, read=false }) => {
       className={
         " hover:underline " +
         (post?.distinguished == "moderator" || post?.stickied
-          ? " text-lightGreen dark:text-darkGreen "
+          ? " text-th-green "
           : " ")
           + (read ? " opacity-50 " : "")
       }

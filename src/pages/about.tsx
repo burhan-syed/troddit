@@ -5,14 +5,14 @@ import Link from "next/link";
 import { AiOutlineGithub } from "react-icons/ai";
 import packageInfo from "../../package.json";
 const VERSION = packageInfo.version;
-const link = "text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300"
+const link = "text-th-link hover:underline hover:text-th-linkHover "
 const AboutPage = ({ changelog }) => {
   return (
     <div className="h-screen mx-4 -mt-16">
       <Head>
         <title>troddit · about</title>
       </Head>
-      <div className="h-full text-justify dark:text-lightText">
+      <div className="h-full text-justify text-th-text ">
         <div className="flex flex-col justify-center max-w-xl min-h-full gap-4 mx-auto space-y-1 overflow-y-scroll scrollbar-none ">
           <p className="">
             Troddit is a web app for Reddit. Follow subreddits and users locally
@@ -39,7 +39,7 @@ const AboutPage = ({ changelog }) => {
             </a>{" "}
             or contact me at{" "}
             <a
-              className=""
+              className={link}
               href="mailto: trodditdev@gmail.com"
             >
               trodditdev@gmail.com
@@ -64,7 +64,7 @@ const AboutPage = ({ changelog }) => {
               <img
                 src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11e22d8ff4a5b4a1b3346_Supportbutton-1-p-500.png"
                 alt="Buy Me a Coffee at ko-fi.com"
-                className="h-10 transition-all rounded-md dark:border hover:scale-110"
+                className="h-10 transition-all rounded-md border-th-border hover:scale-110"
               />
             </a>
             <a

@@ -7,7 +7,7 @@ import { getRedditSearch } from "../RedditAPI";
 import Feed from "./Feed";
 import SubCard from "./cards/SubCard";
 import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
-
+import Checkbox from './ui/Checkbox'
 const SearchPage = ({ query }) => {
   const router = useRouter();
   const context: any = useMainContext();
@@ -128,7 +128,7 @@ const SearchPage = ({ query }) => {
               <div
                 className={
                   (expand
-                    ? "md:sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 md:flex-none  p-2 md:mr-4  bg-lightPost  border   border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 " +
+                    ? "md:sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 md:flex-none  p-2 md:px-0 md:mr-4  border  bg-th-post border-th-border2   shadow-md  " +
                       ( " rounded-lg ")
                     : "flex flex-row justify-between select-none  ") + " "
                 }
@@ -136,7 +136,7 @@ const SearchPage = ({ query }) => {
                 <div
                   className={
                     "flex flex-row items-baseline gap-2  w-full " +
-                    (expand ? " md:flex-col md:items-start  " : " font-bold ")
+                    (expand ? " md:flex-col md:items-start    " : " font-bold ")
                   }
                 >
                   {["Subreddits", "Users"].map((sel) => (
@@ -146,10 +146,10 @@ const SearchPage = ({ query }) => {
                         "cursor-pointer " +
                         ((searchUsers && sel == "Users") ||
                         (!searchUsers && sel == "Subreddits")
-                          ? " font-bold "
+                          ? ` font-bold  ${expand ? " bg-th-highlight " : ""} `
                           : " opacity-50 hover:opacity-70") +
                         (expand
-                          ? " md:w-full flex flex-col-reverse md:-ml-2 -mb-2 md:mb-0 items-center md:flex-row flex-grow"
+                          ? " md:w-full flex flex-col-reverse   -mb-2 md:mb-0 items-center md:flex-row flex-grow"
                           : "")
                       }
                       onClick={(e) => {
@@ -158,49 +158,25 @@ const SearchPage = ({ query }) => {
                       }}
                     >
                       {expand && (
-                        <div className="w-full h-1 mt-1 md:w-1 md:h-8 md:mr-2 md:mt-0 dark:bg-darkScroll bg-lightScroll"></div>
+                        <div className="w-full h-1 mt-1 md:w-1 md:h-8 md:mr-2 md:mt-0 bg-th-scrollbar"></div>
                       )}
 
                       {sel}
                     </div>
                   ))}
-
-                  <div
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setSafeSearch((r) => !r);
-                    }}
-                    className={
-                      "flex flex-row items-center my-auto   gap-2 hover:cursor-pointer" +
+                  <div  className={
+                      "flex flex-row items-center my-auto gap-2 hover:cursor-pointer" +
                       (expand
-                        ? " md:flex-row-reverse ml-auto md:mr-auto md:ml-0 md:my-1 "
-                        : " mr-2 ml-auto ")
-                    }
-                  >
-                    <h1 className="text-xs font-normal">Safe Search</h1>
-                    <div
-                      className={
-                        "w-5 h-5 p-0.5 border rounded-md transition-all  " +
-                        (safeSearch
-                          ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
-                          : " dark:hover:bg-darkBorder hover:bg-lightBorder border-lightBorder dark:border-darkBorder")
-                      }
-                    >
-                      <AiOutlineCheck
-                        className={
-                          "absolute p-0.5 translate-x-[-1px] transition-all text-white" +
-                          (safeSearch ? " scale-100 " : " scale-0")
-                        }
-                      />
-                    </div>
+                        ? " md:flex-row-reverse ml-auto md:mr-auto md:ml-0 md:my-1 pl-2 "
+                        : " mr-2 ml-auto ")}>
+                  <Checkbox clickEvent={() => setSafeSearch((r) => !r)}  toggled={safeSearch} labelText={"Safe Search"} reverse={expand}/>
                   </div>
                 </div>
               </div>
               <div
                 className={
                   (expand ? " hidden md:block " : " hidden ") +
-                  " cursor-pointer opacity-50 hover:opacity-70 w-full sticky top-[12rem] "
+                  " cursor-pointer opacity-50 hover:opacity-70 w-full sticky top-[13rem] "
                 }
                 onClick={(e) => {
                   e.preventDefault();
@@ -231,7 +207,7 @@ const SearchPage = ({ query }) => {
                     </div>
                   ))}
                   <button
-                    className="flex items-center justify-center w-24 mt-2 ml-auto text-center border-2 rounded-md cursor-pointer h-9 dark:border border-lightBorder dark:bg-darkBG bg-lightPost dark:border-lightBorder hover:bg-lightHighlight dark:hover:bg-darkBorder"
+                    className="flex items-center justify-center w-24 mt-2 ml-auto text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base"
                     onClick={(e) => {
                       e.preventDefault();
                     }}
@@ -272,7 +248,7 @@ const SearchPage = ({ query }) => {
                               e.preventDefault();
                               router.back();
                             }}
-                            className="flex items-center justify-center w-24 text-center border-2 rounded-md cursor-pointer h-9 dark:border border-lightBorder bg-lightPost dark:border-lightBorder hover:bg-lightHighlight dark:bg-transparent dark:hover:bg-darkBG "
+                            className="flex items-center justify-center w-24 text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base "
                           >
                             Go Back
                           </div>
@@ -283,14 +259,14 @@ const SearchPage = ({ query }) => {
                               e.preventDefault();
                               setSearchUsers((s) => !s);
                             }}
-                            className="flex items-center justify-center w-24 ml-2 text-center border-2 rounded-md cursor-pointer h-9 dark:border border-lightBorder dark:bg-transparent dark:hover:bg-darkBG bg-lightPost dark:border-lightBorder hover:bg-lightHighlight "
+                            className="flex items-center justify-center w-24 ml-2 text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base "
                           >
                             Find {searchUsers ? "Subs" : "Users"}
                           </div>
                         )}
                         {(!expand || after) && (
                           <button
-                            className="flex items-center justify-center w-24 ml-auto text-center border-2 rounded-md cursor-pointer dark:bg-transparent dark:hover:bg-darkBG h-9 dark:border border-lightBorder bg-lightPost dark:border-lightBorder hover:bg-lightHighlight "
+                            className="flex items-center justify-center w-24 ml-auto text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base "
                             onClick={(e) => {
                               e.preventDefault();
                               if (!expand) {
@@ -342,7 +318,7 @@ const SearchPage = ({ query }) => {
                       </div>
                       <div
                         className={
-                          "absolute top-0 flex flex-col items-center justify-center w-full h-full text-center border border-gray-300 bg-lightPost group dark:bg-darkBG dark:border-trueGray-700 " +
+                          "absolute top-0 flex flex-col items-center justify-center w-full h-full text-center border bg-th-post border-th-border " +
                           ( " rounded-lg ")
                         }
                       >

@@ -59,7 +59,7 @@ const SaveButton = ({
             (row || menu ? " w-4 h-4 " : " w-5 h-5 ") +
             (!isPortrait && !row ? " md:mr-2 " : " ") +
             (menu ? " mr-2 " : "") +
-            (isSaved ? " dark:text-yellow-300 text-yellow-600 " : " ")
+            (isSaved ? " text-th-upvote  " : " ")
           }
         />
       )}

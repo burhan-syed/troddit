@@ -1,3 +1,4 @@
+import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 const ParseBodyHTML = ({
@@ -7,10 +8,17 @@ const ParseBodyHTML = ({
   rows = false,
   card = false,
   limitWidth = false,
-  comment = false
+  comment = false,
 }) => {
+  const { theme, resolvedTheme } = useTheme();
   const [insertHTML, setInsertHTML] = useState(html);
   const ref = useRef<HTMLDivElement>();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     //formatting per Teddit
     const unescape = (s) => {
@@ -80,17 +88,25 @@ const ParseBodyHTML = ({
 
   //allow single click to open links, posts..
   useEffect(() => {
-    if ( rows || card && !comment) {
+    if (rows || (card && !comment)) {
       ref?.current && ref.current.click();
     }
   }, [ref]);
 
+  if (!mounted) {
+    return <></>;
+  }
   return (
     <div
       ref={ref}
-      onClick={e => {if (post)  {e.stopPropagation();}}} //alternate to single click fix
+      onClick={(e) => {
+        if (post) {
+          e.stopPropagation();
+        }
+      }} //alternate to single click fix
       className={
-        "dark:prose-invert prose prose-stone prose-headings:text-stone-900 text-stone-700 dark:text-lightText dark:prose-headings:text-lightText prose-headings:font-normal prose-h1:text-xl   dark:prose-strong:text-rose-400 dark:prose-strong:font-semibold  prose-p:my-0  prose-strong:text-rose-800  " +
+        " prose  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
+        (resolvedTheme === "dark" ? " prose-invert prose-strong:font-semibold prose-strong:text-rose-400  " : " prose-stone prose-strong:text-rose-800  prose-headings:text-stone-900 text-stone-700 ") +
         (small && card
           ? " prose-sm  "
           : small

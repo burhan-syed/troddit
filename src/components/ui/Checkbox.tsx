@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { AiOutlineCheck } from 'react-icons/ai';
 
-const Checkbox = ({toggled, clickEvent, labelText}) => {
+const Checkbox = ({toggled, clickEvent, labelText, reverse=false}) => {
 
   const [hovered, setHovered] = useState(false);
 
@@ -14,7 +14,7 @@ const Checkbox = ({toggled, clickEvent, labelText}) => {
     }}
     onMouseEnter={() => setHovered(true)}
     onMouseLeave={() => setHovered(false)}
-    className="flex flex-row items-center mt-auto ml-auto space-x-2 group"
+    className={"flex  items-center mt-auto ml-auto gap-2 group" + (reverse ? " flex-row-reverse" : " flex-row")}
   >
     <h1 className="text-xs">{labelText}</h1>
     <div

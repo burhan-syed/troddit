@@ -1,8 +1,4 @@
-import Login from "./Login";
-import DropdownPane from "./DropdownPane";
-import SortMenu from "./SortMenu";
 import Search from "./Search";
-import SideDropDown from "./SideDropDown";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";

@@ -143,7 +143,7 @@ const Gallery = ({
           {"<"}
         </button> */}
         {images.length > 1 && (
-          <div className="absolute z-10 p-2 bg-black bg-opacity-50 rounded-lg text-lightText top-2 right-2">
+          <div className="absolute z-10 p-2 text-white bg-black bg-opacity-50 rounded-lg top-2 right-2">
             <h1>{index + 1 + "/" + images.length}</h1>
           </div>
         )}

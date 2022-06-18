@@ -79,13 +79,13 @@ const SubCard = ({
   const main = (
     <div
       className={
-        "relative  transition-colors bg-contain border shadow-md bg-lightPost    dark:bg-darkBG   " +
+        "relative  transition-colors bg-contain border  shadow-md bg-th-post  " +
         (tall
           ? "  "
           : " rounded-lg ") +
         (tall
-          ? " border-transparent dark:border-b-trueGray-700 border-b-gray-300 "
-          : " group dark:border-trueGray-700 border-gray-300   dark:hover:border-trueGray-500 hover:shadow-2xl hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:cursor-pointer hover:border-gray-400")
+          ? " border-transparent  border-b-th-border "
+          : " group hover:bg-th-postHover border-th-border hover:shadow-2xl  hover:cursor-pointer ")
       }
     >
       <div
@@ -98,7 +98,7 @@ const SubCard = ({
           (hideNSFW ||
           (subBanner?.backgroundImage?.length < 9 &&
             subBanner?.backgroundColor?.length < 2)
-            ? "  bg-lightScroll dark:bg-darkScroll"
+            ? "  bg-th-scrollbar "
             : "")
         }
         style={hideNSFW ? {} : subBanner}
@@ -118,7 +118,7 @@ const SubCard = ({
         >
           <div
             className={
-              "z-20 flex-none  border-4 hover:cursor-pointer rounded-full dark:bg-darkBG bg-lightPost" +
+              "z-20 flex-none  border-4 hover:cursor-pointer rounded-full bg-th-post " +
               (tall ? " -mt-2 w-24 h-24 mx-auto md:mx-0" : " w-16 h-16")
             }
             onClick={() => {
@@ -138,13 +138,13 @@ const SubCard = ({
             ) : (
               <div
                 className={
-                  "rounded-full bg-lightScroll dark:bg-darkScroll " +
-                  " w-full h-full  text-lightText text-6xl overflow-hidden items-center justify-center flex "
+                  "rounded-full bg-th-scrollbar " +
+                  " w-full h-full  text-white text-6xl overflow-hidden items-center justify-center flex relative "
                 }
               >
                 {data?.kind === "t2" ? "u/" : data?.kind === "t5" ? "r/" : " "}
                 {hideNSFW && (
-                  <span className="absolute ml-16 text-xs opacity-70 ">
+                  <span className="absolute right-0 opacity-70 " style={{fontSize: '0.5rem'}}>
                     {"18+"}
                   </span>
                 )}
@@ -154,10 +154,10 @@ const SubCard = ({
           <div className="flex flex-col ">
             <div
               className={
-                "z-10 flex flex-row mx-auto    space-x-2  pl-auto dark:bg-darkBG bg-lightPost " +
+                "z-10 flex flex-row mx-auto    space-x-2  pl-auto bg-th-post " +
                 (tall
                   ? " md:border-t  md:border-r md:pt-[6px] md:pb-[-3px] items-end mt-4 md:mt-[10px] md:rounded-tr-md md:pl-5 md:pr-2  md:-ml-3.5 md:mx-0"
-                  : " dark:group-hover:bg-darkPostHover items-baseline group-hover:bg-lightPostHover pt-0.5 mt-2 rounded-tr-md pl-5 pr-2  -ml-3.5")
+                  : " items-baseline group-hover:bg-th-postHover pt-0.5 mt-2 rounded-tr-md pl-5 pr-2  -ml-3.5")
               }
             >
               {loading ? (
@@ -201,7 +201,7 @@ const SubCard = ({
                       }`}
                       target={"_blank"}
                       rel="noreferrer"
-                      className="mb-3 ml-2 rounded dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+                      className="mb-3 ml-2 rounded hover:bg-th-postHover"
                     >
                       <BsBoxArrowInUpRight className="w-3 h-3 -ml-1" />
                     </a>
@@ -230,7 +230,7 @@ const SubCard = ({
                   )}
                   {(data?.data?.over18 || data?.data?.subreddit?.over_18) && (
                     <>
-                      <span className="text-xs text-red-400 text-color dark:text-red-700 pb-0.5">
+                      <span className="text-xs text-th-red pb-0.5">
                         NSFW
                       </span>
                     </>
@@ -267,7 +267,7 @@ const SubCard = ({
             {isSelf ? (
               <div
                 className={
-                  "w-24 text-center flex justify-center items-center rounded-md bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG p-1"
+                  "w-24 text-center flex justify-center items-center rounded-md bg-th-background2 border border-th-border hover:border-th-borderHighlight  focus:outline-none  p-1"
                 }
               >
                 <Login />
@@ -304,7 +304,7 @@ const SubCard = ({
             {isSelf ? (
               <div
                 className={
-                  "mx-auto w-24 text-center flex justify-center items-center rounded-md bg-white border border-lightBorder hover:border-lightBorderHighlight dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG p-1"
+                  "mx-auto w-24 text-center flex justify-center items-center rounded-md bg-th-background2 border-th-border hover:border-th-borderHighlight border focus:outline-none  p-1"
                 }
               >
                 <Login />

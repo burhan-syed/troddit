@@ -6,41 +6,59 @@
 
 :root{
 --text: theme('colors.gray.900');
---textLight: theme('colors.gray.300')
+--textLight: theme('colors.gray.400');
 --accent1: theme('colors.cyan.500');
 --accent2: theme('colors.blue.400');
 --base: theme('colors.gray.200');
 --background: theme('colors.slate.100');
 --background2: theme('colors.white');
 --post: theme('colors.slate.50');
+--post2: theme('colors.slate.50');
 --postHover: #FFFFFF;
 --highlight: theme('colors.gray.100');
 --border: theme('colors.zinc.300');
 --borderHighlight: theme('colors.zinc.500');
+--border2: theme('colors.gray.300');
+--borderHighlight2: theme('colors.gray.400');
 --green: theme('colors.green.600');
 --upvote: theme('colors.orange.500');
 --downvote: theme('colors.blue.400');
 --red: theme('colors.red.400');
 --scrollbar: theme('colors.blue.400');
+--link: theme('colors.blue.700');
+--linkHover: theme('colors.blue.500');
+--commentRibbon: theme('colors.blue.600');
+--commentRibbonHover: theme('colors.blue.800');
+--backgroundComment: theme('colors.white');
+--backgroundCommentAlternate: theme('colors.gray.100');
 }
 [data-theme='dark']{
 --text: theme('colors.stone.200');
---textLight: theme('colors.gray.700');
+--textLight: theme('colors.gray.500');
 --accent1: theme('colors.blue.400');
 --accent2: theme('colors.blue.600');
 --base: theme('colors.black');
 --background: #1A1A1B;
 --background2: #1A1A1B;
---post: theme('colors.slate.50');
+--post: #1A1A1B;
+--post2: #212121;
 --postHover: theme('colors.neutral.800');
 --highlight: theme('colors.neutral.800');
 --border: theme('colors.zinc.700');
 --borderHighlight: theme('colors.zinc.500');
+--border2: theme('colors.trueGray.700');
+--borderHighlight2: theme('colors.trueGray.500');
 --green: #7AFBD6;
 --upvote: theme('colors.orange.500');
 --downvote: theme('colors.blue.400');
 --scrollbar: theme('colors.red.800');
 --red: theme('colors.red.700');
+--link: theme('colors.blue.400');
+--linkHover: theme('colors.blue.300');
+--commentRibbon: theme('colors.red.700');
+--commentRibbonHover: theme('colors.red.600');
+--backgroundComment: #161616;
+--backgroundCommentAlternate: #1A1A1B;
 }
 
 :root {
@@ -87,14 +105,14 @@
 }
 
 #innerhtml a {
-  @apply text-blue-700 hover:underline hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300;
+  @apply text-th-link hover:text-th-linkHover hover:underline;
 }
 #innerhtml p {
 }
 #innerhtml .md-spoiler-text {
-  @apply text-transparent hover:text-[#44403c] dark:hover:text-[#d6d3d1] bg-darkBorderHighlight  dark:bg-lightBorder  hover:bg-transparent dark:hover:bg-transparent p-0.5 rounded-md;
+  @apply text-transparent hover:text-th-text bg-th-border hover:bg-transparent p-0.5 rounded-md;
 }
 
 .react-markdown a {
-  @apply text-blue-800 hover:underline;
+  @apply text-th-link hover:text-th-linkHover hover:underline;
 }

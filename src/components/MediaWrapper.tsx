@@ -74,11 +74,14 @@ const MediaWrapper = ({
         />
       </div>
       {hideNSFW && hidden && (
-        <div className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-7 top-1/2 text-lightText hover:cursor-pointer">
+        <div className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-11 top-1/2 text-white hover:cursor-pointer">
+          <div className="flex flex-col items-center justify-center p-4 bg-opacity-50 rounded-lg bg-black/30 backdrop-blur-xl">
           <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
           <VscEye className="hidden w-10 h-10 group-hover:block" />
-          <h1 className="hidden text-xs group-hover:block">Click to Unhide</h1>
+          <h1 className="hidden text-sm group-hover:block">Click to Unhide</h1>
           <h1 className="group-hover:hidden">{hideText}</h1>
+          </div>
+        
         </div>
       )}
     </div>
@@ -108,8 +111,8 @@ const MediaWrapper = ({
               
             </div> */}
       </div>
-      <div className="flex flex-row items-start py-0 text-xs text-gray-400 truncate select-auto dark:text-gray-500">
-        <div className="flex flex-row flex-wrap items-start text-xs text-gray-400 truncate select-auto dark:text-gray-500">
+      <div className="flex flex-row items-start py-0 text-xs truncate select-auto text-th-textLight">
+        <div className="flex flex-row flex-wrap items-start text-xs truncate select-auto text-th-textLight">
           <Link href={`/r/${postData?.subreddit}`}>
             <a
               title={`go to r/${postData?.subreddit}`}
@@ -118,7 +121,7 @@ const MediaWrapper = ({
                 e.stopPropagation();
               }}
             >
-              <h2 className="font-semibold text-black hover:underline dark:text-lightText ">
+              <h2 className="font-semibold hover:underline text-th-text ">
                 r/{postData?.subreddit ?? ""}
               </h2>
             </a>
@@ -150,7 +153,7 @@ const MediaWrapper = ({
           {postData?.over_18 && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-red-400 text-color dark:text-red-700">
+              <span className="text-th-red">
                 NSFW
               </span>
             </div>
@@ -158,7 +161,7 @@ const MediaWrapper = ({
           {postData?.spoiler && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-red-400 text-color dark:text-red-700">
+              <span className="text-th-red">
                 SPOILER
               </span>
             </div>
@@ -192,7 +195,7 @@ const MediaWrapper = ({
       <div
         className={
           (!context?.mediaOnly || postMode
-            ? "transition-colors border border-gray-300 rounded bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 "
+            ? "transition-colors border rounded bg-th-post hover:bg-th-postHover border-th-border2 hover:border-th-borderHighlight2 "
             : "") + (context?.cardStyle == "card2" && !postMode ? " m-2" : "")
         }
       >

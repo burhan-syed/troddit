@@ -31,7 +31,7 @@ const Settings = () => {
             key={s}
             setting={s}
             withSubtext={true}
-            externalStyles="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
+            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
           />
         )),
         <label
@@ -70,7 +70,7 @@ const Settings = () => {
             key={s}
             setting={s}
             withSubtext={true}
-            externalStyles="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
+            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
           />
         )),
       ],
@@ -98,7 +98,7 @@ const Settings = () => {
             setting={s}
             withSubtext={true}
             externalStyles={
-              "rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
+              "rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
             }
           />
         )),
@@ -153,7 +153,7 @@ const Settings = () => {
             key={s}
             setting={s}
             withSubtext={true}
-            externalStyles="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight p-2 cursor-pointer"
+            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
           />
         )),
       ],
@@ -188,7 +188,7 @@ const Settings = () => {
       </h1>
       <Tab.List
         className={
-          "flex flex-col border rounded-lg  py-4 w-16 sm:w-44 px-0 pb-0 flex-none  sm:mr-4 overflow-hidden border-r-0 sm:border-r  rounded-r-none sm:rounded-r-lg  bg-lightPost  border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700"
+          "flex flex-col border rounded-lg  py-4 w-16 sm:w-44 px-0 pb-0 flex-none  sm:mr-4 overflow-hidden border-r-0 sm:border-r  rounded-r-none sm:rounded-r-lg bg-th-post border-th-border2 shadow-md "
         }
       >
         {Object.keys(categories).map((category, i) => (
@@ -197,7 +197,7 @@ const Settings = () => {
               <div
                 className={
                   (selected
-                    ? " font-bold opacity-100 dark:bg-darkPostHover bg-lightPostHover "
+                    ? " font-bold opacity-100 bg-th-highlight "
                     : "") +
                   " cursor-pointer opacity-50 hover:opacity-80 select-none flex my-1 "
                 }
@@ -208,7 +208,7 @@ const Settings = () => {
                   });
                 }}
               >
-                <div className="w-1 h-12 mt-0 mr-2 dark:bg-darkScroll bg-lightScroll"></div>
+                <div className="w-1 h-12 mt-0 mr-2 bg-th-scrollbar "></div>
 
                 <div className="flex items-center justify-start py-2 pl-1">
                   <span className="">{categories[category]?.icon}</span>
@@ -221,8 +221,8 @@ const Settings = () => {
       </Tab.List>
       <Tab.Panels
         className={
-          "border bg-lightPost  border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 rounded-lg rounded-l-none sm:rounded-l-lg p-2 max-h-[60vh]  overflow-y-auto  flex-grow select-none outline-none" +
-          " scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll "
+          "border  shadow-md  rounded-lg rounded-l-none sm:rounded-l-lg p-2 max-h-[60vh]  overflow-y-auto  flex-grow select-none outline-none" +
+          " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full bg-th-post border-th-border2"
         }
       >
         {Object.keys(categories).map((category, i) => (

@@ -444,7 +444,7 @@ const VideoHandler = ({
     >
       {/* Background Span Image */}
       <div
-        className="absolute  z-0 min-w-full min-h-full overflow-hidden  dark:brightness-[0.2] brightness-50 "
+        className="absolute z-0 min-w-full min-h-full overflow-hidden brightness-[0.2]"
         ref={fullWidthRef}
       >
         <Image
@@ -460,7 +460,7 @@ const VideoHandler = ({
         />
       </div>
       {/* Controls */}
-      <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-lightText">
+      <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-white">
         <div className="flex items-center space-x-2">
           <button
             onClick={(e) => {
@@ -552,7 +552,7 @@ const VideoHandler = ({
                     ></div>
                     <div
                       //vol container
-                      className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-lightScroll dark:bg-darkScroll"
+                      className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-th-scrollbar"
                       style={{ height: `${muted ? 0 : volume * 100}%` }}
                     ></div>
                     <div className="absolute bottom-0 z-0 w-full h-full bg-white bg-opacity-50 rounded-full"></div>
@@ -587,7 +587,7 @@ const VideoHandler = ({
         >
           {seekTime !== "" && (
             <div
-              className="absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 dark:border-darkBorder"
+              className="absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 border-th-border"
               style={{
                 left: `${
                   seekLeftOfset <= 24
@@ -603,7 +603,7 @@ const VideoHandler = ({
           )}
           <div
             //video duration
-            className="absolute bottom-0 left-0 h-1 origin-left bg-blue-400 dark:bg-red-800 "
+            className="absolute bottom-0 left-0 h-1 origin-left bg-th-scrollbar "
             style={{ width: `${progressPerc * 100}%` }}
           ></div>
           <div

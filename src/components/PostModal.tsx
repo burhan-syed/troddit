@@ -410,7 +410,7 @@ const PostModal = ({
   }, [wait, usePortrait]);
 
   const commentPlaceHolder = (
-    <div className="mx-2 my-1 border rounded-md h-44 border-lightBorder dark:border-darkBorder">
+    <div className="mx-2 my-1 border rounded-md h-44 border-th-border">
       <div className={"flex flex-row"}>
         {/* Left column */}
         <div
@@ -418,7 +418,7 @@ const PostModal = ({
             "h-44 w-1 rounded-l-md  md:w-4 flex-none  cursor-pointer group animate-pulse"
           }
         >
-          <div className="flex-none w-0.5 min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+          <div className="flex-none w-0.5 min-h-full bg-th-commentRibbon hover:bg-th-commentRibbonHover"></div>
         </div>
         {/* Comment Body */}
         <div
@@ -427,45 +427,45 @@ const PostModal = ({
           }
         >
           {/* Author */}
-          <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base text-gray-400 bg-gray-300 rounded md:pl-0 dark:text-gray-500 dark:bg-gray-800 "></div>
+          <div className="flex flex-row justify-start w-2/5 h-4 pl-3 space-x-1 text-base rounded t md:pl-0 bg-th-border "></div>
           {/* Main Comment Body */}
-          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
-          <div className="w-full h-4 bg-gray-300 rounded-md dark:bg-gray-800"></div>
+          <div className="w-full h-4 rounded-md bg-th-border "></div>
+          <div className="w-full h-4 rounded-md bg-th-border "></div>
+          <div className="w-full h-4 rounded-md bg-th-border "></div>
+          <div className="w-full h-4 rounded-md bg-th-border "></div>
+          <div className="w-full h-4 rounded-md bg-th-border "></div>
         </div>
       </div>
     </div>
   );
 
   const postPlaceHolder = (
-    <div className="w-full mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+    <div className="w-full mb-3 border rounded-lg border-th-border bg-th-background2">
       {/* Flex container */}
       <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
         {/* Upvote column */}
         <div className="flex-col flex-none items-center self-start justify-start hidden h-full pt-1.5 md:px-2 md:flex animate-pulse ">
           <BiUpvote
             className={
-              " flex-none cursor-pointer w-7 h-7 hover:text-upvote hover:scale-110 "
+              " flex-none cursor-pointer w-7 h-7 hover:text-th-upvote hover:scale-110 "
             }
           />
-          <div className="flex-grow w-full h-4 py-1.5 bg-gray-300 rounded dark:bg-gray-800 text-transparent">
+          <div className="flex-grow w-full h-4 py-1.5 rounded bg-th-border text-transparent">
             0000
           </div>
           <BiDownvote
             className={
-              " flex-none cursor-pointer w-7 h-7 hover:text-downvote hover:scale-110 "
+              " flex-none cursor-pointer w-7 h-7 hover:text-th-downvote hover:scale-110 "
             }
           />
         </div>
-        <div className="flex flex-col flex-grow space-y-2 animate-pulse pt-1.5 md:pl-3 border-gray-100 md:border-l dark:border-darkHighlight">
-          <div className="w-1/4 h-4 bg-gray-300 rounded dark:bg-gray-800"></div>
-          <div className="w-full bg-gray-300 rounded dark:bg-gray-800"></div>
-          <div className="w-3/4 h-6 bg-gray-300 rounded dark:bg-gray-800"></div>
-          <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800 place-self-center"></div>
-          <div className="w-5/6 h-6 bg-gray-300 rounded dark:bg-gray-800 place-self-center"></div>
-          <div className="w-5/6 bg-gray-300 rounded h-96 dark:bg-gray-800 place-self-center"></div>
+        <div className="flex flex-col flex-grow space-y-2 animate-pulse pt-1.5 md:pl-3 md:border-l border-th-border ">
+          <div className="w-1/4 h-4 rounded bg-th-border"></div>
+          <div className="w-full rounded bg-th-border"></div>
+          <div className="w-3/4 h-6 rounded bg-th-border"></div>
+          <div className="w-5/6 h-6 rounded bg-th-border place-self-center"></div>
+          <div className="w-5/6 h-6 rounded bg-th-border place-self-center"></div>
+          <div className="w-5/6 rounded h-96 bg-th-border place-self-center"></div>
           <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
             {/* Vote buttons for mobiles */}
             <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
@@ -485,7 +485,7 @@ const PostModal = ({
                   onClick={(e) => {
                     e.preventDefault();
                   }}
-                  className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                  className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight "
                 >
                   <BsReply className="flex-none w-6 h-6 md:pr-2 scale-x-[-1]" />
                   <h1 className="hidden md:block">Reply</h1>
@@ -496,7 +496,7 @@ const PostModal = ({
                 target="_blank"
                 rel="noreferrer"
               >
-                <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
                   <BiExit className="flex-none w-6 h-6 md:pr-2" />
                   <h1 className="hidden md:block">Source</h1>
                 </div>
@@ -506,7 +506,7 @@ const PostModal = ({
                 target="_blank"
                 rel="noreferrer"
               >
-                <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
                   <ImReddit className="flex-none w-6 h-6 md:pr-2" />
                   <h1 className="hidden md:block ">Original</h1>
                 </div>
@@ -528,7 +528,7 @@ const PostModal = ({
 
   if (wait && direct) {
     return (
-      <div className="fixed left-0 z-30 w-screen h-2 bg-blue-700 top-[56px] animate-pulse"></div>
+      <div className="fixed left-0 z-30 w-screen h-2 bg-th-accent2 top-[56px] animate-pulse"></div>
     );
   }
 
@@ -561,7 +561,7 @@ const PostModal = ({
             {usePortrait && (
               <div
                 ref={portraitDivRef}
-                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG md:w-6/12 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
+                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto border rounded-lg bg-th-background2 border-th-border md:w-6/12 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
               >
                 {pHeight && pWidth && (
                   <div className={"flex-grow " + (imgFull ? " my-auto" : "")}>
@@ -594,7 +594,7 @@ const PostModal = ({
               <div
                 className={
                   "fixed z-50 right-8 bottom-12 md:left-4 md:top-16 md:bottom-auto  " +
-                  " dark:bg-darkBorder/40 bg-lightBorder/40 backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
+                  " bg-th-border/40  backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
                 }
               >
                 <RiArrowGoBackLine
@@ -607,7 +607,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full overflow-y-auto border-t border-transparent rounded-lg mt-14 dark:border-darkBorder md:pt-0 scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll"
+                className="flex flex-col w-full overflow-y-auto border-t rounded-lg border-th-border mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
@@ -616,7 +616,7 @@ const PostModal = ({
                   <>{postPlaceHolder}</>
                 ) : (
                   // Loaded Media Card
-                  <div className="w-full mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                  <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border ">
                     {/* Flex container */}
                     <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                       {/* Upvote column */}
@@ -632,7 +632,7 @@ const PostModal = ({
                         />
                       </div>
                       {/* Main Media Column */}
-                      <div className="flex-grow border-gray-100 md:border-l dark:border-darkHighlight">
+                      <div className="flex-grow border-th-border md:border-l ">
                         {/* Title etc*/}
                         <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
                           <div className="flex flex-row flex-wrap items-start group">
@@ -684,13 +684,13 @@ const PostModal = ({
                             </p>
                             <p className="-translate-y-0.5 mx-1">•</p>
 
-                            <p className="text-xs translate-y-[0.05rem] text-gray-400 select-none dark:text-gray-500 ">
+                            <p className="text-xs translate-y-[0.05rem] text-th-textLight select-none  ">
                               {apost?.upvote_ratio * 100}% upvoted
                             </p>
                             {apost?.over_18 && (
                               <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
-                                <span className="text-red-400 text-color dark:text-red-700">
+                                <span className="text-th-red">
                                   NSFW
                                 </span>
                               </div>
@@ -698,7 +698,7 @@ const PostModal = ({
                             {apost?.spoiler && (
                               <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
-                                <span className="text-red-400 text-color dark:text-red-700">
+                                <span className="text-th-red">
                                   SPOILER
                                 </span>
                               </div>
@@ -712,7 +712,7 @@ const PostModal = ({
                               />
                             )}
                           </div>
-                          <div className="flex flex-col items-end justify-center flex-none ml-auto text-xs text-gray-400 dark:text-gray-500">
+                          <div className="flex flex-col items-end justify-center flex-none ml-auto text-xs text-th-textLight">
                             <a
                               title="open source"
                               href={`${apost.url}`}
@@ -776,7 +776,7 @@ const PostModal = ({
                                   onClick={(e) => {
                                     setUsePortrait((p) => !p);
                                   }}
-                                  className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
+                                  className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight "
                                 >
                                   <HiOutlineSwitchHorizontal
                                     className={"flex-none w-5 h-5  "}
@@ -788,7 +788,7 @@ const PostModal = ({
                               <button
                                 autoFocus
                                 onClick={(e) => setimgFull((p) => !p)}
-                                className="flex-row items-center hidden p-2 border rounded-md md:flex border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                                className="flex-row items-center hidden p-2 border rounded-md md:flex border-th-border hover:border-th-borderHighlight"
                               >
                                 {imgFull ? (
                                   <>
@@ -817,10 +817,10 @@ const PostModal = ({
                                     : !session && context.toggleLoginModal();
                                 }}
                                 className={
-                                  "flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder  " +
+                                  "flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border  " +
                                   (apost?.archived
                                     ? " opacity-50"
-                                    : " hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")
+                                    : " hover:border-th-borderHighlight ")
                                 }
                               >
                                 <BsReply
@@ -841,7 +841,7 @@ const PostModal = ({
                             </div>
                             <div
                               className={
-                                "flex flex-row items-center cursor-pointer p-2  border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight"
+                                "flex flex-row items-center cursor-pointer p-2  border rounded-md border-th-border hover:border-th-borderHighlight"
                               }
                             >
                               <SaveButton
@@ -862,7 +862,7 @@ const PostModal = ({
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                              <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
                                 <BiExit
                                   className={
                                     "flex-none w-5 h-5 " +
@@ -885,7 +885,7 @@ const PostModal = ({
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                              <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
                                 <ImReddit
                                   className={
                                     "flex-none w-5 h-5 " +
@@ -920,7 +920,7 @@ const PostModal = ({
                   <div
                     className={
                       (openReply ? "block " : "hidden ") +
-                      "bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG p-2 mb-3"
+                       "bg-th-background2  border rounded-lg border-th-border p-2 mb-3"
                     }
                   >
                     <CommentReply
@@ -932,7 +932,7 @@ const PostModal = ({
 
                 {apost?.archived && (
                   <div className="flex-grow w-full">
-                    <div className="flex items-center gap-4 p-2 px-4 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                    <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border bg-th-background2 ">
                       <BsArchive />
                       <p className="flex flex-col text-sm font-normal ">
                         <span>This is an archived post.</span>
@@ -947,7 +947,7 @@ const PostModal = ({
                 {/* comments */}
                 <div
                   className={
-                    "flex-grow bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG"
+                    "flex-grow border rounded-lg bg-th-background2 border-th-border "
                   }
                 >
                   <div
@@ -1003,9 +1003,9 @@ const PostModal = ({
 
                       {commentMode && (
                         <div className="flex-grow w-full px-2 mt-1">
-                          <div className="p-2 mb-3 bg-white border rounded-lg border-lightBorder dark:border-darkBorder dark:bg-darkBG">
+                          <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border">
                             <Link href={apost.permalink} passHref>
-                              <a className="font-semibold text-blue-700 hover:text-blue-500 dark:text-blue-400 hover:dark:text-blue-300">
+                              <a className="font-semibold text-th-link hover:text-th-linkHover">
                                 Click to view all comments
                               </a>
                             </Link>

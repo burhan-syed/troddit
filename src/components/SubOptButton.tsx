@@ -1,7 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import SubMultiButton from "./SubMultiButton";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
 import MultiManageModal from "./MultiManageModal";
@@ -140,7 +139,7 @@ const SubOptButton = ({
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
-                  "w-6 h-9 flex justify-center items-center  bg-white border border-lightBorder hover:border-lightBorderHighlight rounded-md dark:border-darkBorder dark:hover:border-lightBorder focus:outline-none dark:bg-darkBG"
+                  "w-6 h-9 flex justify-center items-center   border border-th-border hover:border-th-borderHighlight rounded-md  focus:outline-none "
                 }
               >
                 <BsThreeDotsVertical className="w-5 h-8" />
@@ -158,7 +157,7 @@ const SubOptButton = ({
             >
               <Menu.Items
                 className={
-                  "absolute right-0  w-40 mt-2 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer "
+                  "absolute right-0  w-40 mt-2 origin-top-right  rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border bg-th-background2 border-th-border ring-th-base select-none cursor-pointer "
                 }
               >
                 <div className="py-1 ">
@@ -167,7 +166,7 @@ const SubOptButton = ({
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") + " block px-4 py-1 text-sm"
                         }
                       >
@@ -176,7 +175,7 @@ const SubOptButton = ({
                         </div>
                         <div
                           className={
-                            "absolute top-0 -left-[10rem] w-40 max-h-96 overflow-y-scroll  bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer py-1 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-red-800" +
+                            "absolute top-0 -left-[10rem] w-40 max-h-96 overflow-y-scroll   rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border  select-none cursor-pointer py-1 scrollbar-thin  scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-th-scrollbar bg-th-background2 border-th-border ring-th-base" +
                             (active ? "  " : " hidden ")
                           }
                         >
@@ -186,7 +185,7 @@ const SubOptButton = ({
                             }}
                           >
                             <div
-                              className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight hover:cursor-pointer"
+                              className="px-2 py-1 hover:bg-th-highlight hover:cursor-pointer"
                               onClick={multiCreate}
                             >
                               <h1 className="pl-2">Create New</h1>
@@ -204,7 +203,7 @@ const SubOptButton = ({
                                     {/* {multi.data.display_name.toUpperCase() !==
                                       currMulti.toUpperCase()  */}
                                     {true && (
-                                      <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                                      <div className="px-2 py-1 hover:bg-th-highlight">
                                         <DropdownItem sub={multi} />
                                       </div>
                                     )}
@@ -224,7 +223,7 @@ const SubOptButton = ({
                                     {/* {multi.data.display_name.toUpperCase() !==
                                       currMulti.toUpperCase() && ( */}
                                     {true && (
-                                      <div className="px-2 py-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+                                      <div className="px-2 py-1 hover:bg-th-highlight">
                                         <DropdownItem sub={multi} />
                                       </div>
                                     )}
@@ -242,7 +241,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active
-                              ? "bg-lightHighlight dark:bg-darkHighlight "
+                              ? "bg-th-highlight "
                               : "") + " block px-4 py-1 text-sm"
                           }
                           onClick={removeFromMulti}
@@ -260,7 +259,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active
-                              ? "bg-lightHighlight dark:bg-darkHighlight "
+                              ? "bg-th-highlight "
                               : "") + " block px-4 py-1 text-sm"
                           }
                         >
@@ -309,7 +308,7 @@ const SubOptButton = ({
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") + " block px-4 py-1 text-sm"
                         }
                         onClick={() => addSubFilter(subInfo?.display_name)}
@@ -327,7 +326,7 @@ const SubOptButton = ({
                           <div
                             className={
                               (active
-                                ? "bg-lightHighlight dark:bg-darkHighlight "
+                                ? "bg-th-highlight "
                                 : "") + " block px-4 py-1 text-sm"
                             }
                             onClick={openDescription}
@@ -343,7 +342,7 @@ const SubOptButton = ({
                           <div
                             className={
                               (active
-                                ? "bg-lightHighlight dark:bg-darkHighlight "
+                                ? "bg-th-highlight "
                                 : "") +
                               " block px-4 py-1 text-sm cursor-pointer select-none"
                             }
@@ -364,7 +363,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active
-                              ? "bg-lightHighlight dark:bg-darkHighlight "
+                              ? "bg-th-highlight "
                               : "") + " block px-4 py-1 text-sm"
                           }
                           onClick={JoinAll}

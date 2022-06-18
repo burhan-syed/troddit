@@ -15,11 +15,11 @@ const UserFlair = ({ post }) => {
       <div
         className={`px-1 rounded-lg inline-block select-none ${
           post?.author_flair_text_color == "light"
-            ? " text-lightText "
+            ? " text-white "
             : post?.author_flair_text_color == "dark"
-            ? "text-darkPostHover"
+            ? "text-black"
             : resolvedTheme === "dark"
-            ? "text-lightText"
+            ? "text-white"
             : "text-black"
         }`}
         style={{

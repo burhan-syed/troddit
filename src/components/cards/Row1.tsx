@@ -37,7 +37,7 @@ const Row1 = ({
       onClick={(e) => handleClick(e)}
       className={
         (postNum === 0 ? " border-t rounded-t-md " : " ") +
-        "flex flex-row items-start py-1 pb-2 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover border-l border-r border-transparent  dark:hover:border-trueGray-500 hover:border-gray-500  "
+        "flex flex-row items-start py-1 pb-2 text-sm bg-th-post2 hover:bg-th-postHover group  border-l border-r border-transparent  dark:hover:border-th-borderHighlight2   "
       }
     >
       {/* Votes */}
@@ -128,7 +128,7 @@ const Row1 = ({
                   className={
                     " group-hover:underline font-semibold text-base " +
                     (post?.distinguished == "moderator" || post?.stickied
-                      ? " text-lightGreen dark:text-darkGreen "
+                      ? " text-th-green "
                       : " ") +
                     (read && context.dimRead ? " opacity-50" : "")
                   }
@@ -146,7 +146,7 @@ const Row1 = ({
           </h1>
         </div>
         {/* Info */}
-        <div className="flex flex-row flex-wrap items-center pt-1 text-xs text-gray-400 truncate dark:text-gray-500">
+        <div className="flex flex-row flex-wrap items-center pt-1 text-xs truncate text-th-textLight ">
           <Link href={`/r/${post?.subreddit}`}>
             <a
               className="mr-1"
@@ -191,17 +191,13 @@ const Row1 = ({
           {post?.over_18 && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-red-400 text-color dark:text-red-700">
-                NSFW
-              </span>
+              <span className="text-th-red">NSFW</span>
             </div>
           )}
           {post?.spoiler && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-red-400 text-color dark:text-red-700">
-                SPOILER
-              </span>
+              <span className="text-th-red">SPOILER</span>
             </div>
           )}
           <div className="mx-0.5"></div>
@@ -226,10 +222,10 @@ const Row1 = ({
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs text-gray-400 select-none dark:text-gray-500">
+          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-th-text ">
             <button
               className={
-                "flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight " +
+                "flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
                 (!hasMedia &&
                   !post?.selftext_html &&
                   "opacity-0 cursor-default")
@@ -255,8 +251,13 @@ const Row1 = ({
 
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
               <button
-              onClick={e => {e.stopPropagation(); e.preventDefault(); handleClick(e, true)}}
-              className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleClick(e, true);
+                }}
+                className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  "
+              >
                 <BiComment className="flex-none w-4 h-4 " />
                 <h1 className="">{`${
                   numToString(post?.num_comments, 1000) ?? "??"
@@ -266,7 +267,7 @@ const Row1 = ({
                 }`}</h1>
               </button>
             </a>
-            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:cursor-pointer ">
+            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">
               <SaveButton
                 id={post?.name}
                 saved={post?.saved}
@@ -275,7 +276,7 @@ const Row1 = ({
                 postindex={postNum}
               />
             </div>
-            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight hover:cursor-pointer ">
+            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 hover:cursor-pointer ">
               <HideButton
                 id={post?.name}
                 hidden={post?.hidden}
@@ -289,7 +290,7 @@ const Row1 = ({
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 ">
                 <BiExit className="flex-none w-4 h-4 " />
                 <h1 className="hidden md:block">Source</h1>
               </div>
@@ -299,13 +300,15 @@ const Row1 = ({
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight ">
+              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 ">
                 <ImReddit className="flex-none w-4 h-4 mb-0.5" />
                 <h1 className="hidden md:block ">Original</h1>
               </div>
             </a>
             <div className="flex-grow md:flex-grow-0"></div>
-            <PostOptButton post={post} postNum={postNum} mode={"row"} />
+            <div className="text-th-textLight">
+              <PostOptButton post={post} postNum={postNum} mode={"row"} />
+            </div>
           </div>
         </div>
         {/* Hidden Media */}
@@ -313,7 +316,7 @@ const Row1 = ({
         {expand && (
           <div
             className={
-              "block p-1 border-gray-100 md:border-l origin-top dark:border-darkHighlight " +
+              "block p-1 border-th-border md:border-l origin-top  " +
               (hideNSFW && " overflow-hidden relative")
             }
           >

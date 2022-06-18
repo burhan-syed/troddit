@@ -8,7 +8,7 @@ const ToastCustom = ({ t, message, mode = "" }) => {
     <div
      onClick={() => toast.remove(t.id)}
       className={
-        " shadow-2xl transition-all rounded-md select-none border h-14 w-96 md:w-[40rem] lg:w-[52rem] gap-4 xl:w-[56rem] p-2 dark:border-darkBorder border-lightBorder bg-lightBG dark:bg-darkBG flex items-center justify-start " +
+        " shadow-2xl transition-all rounded-md select-none border h-14 w-96 md:w-[40rem] lg:w-[52rem] gap-4 xl:w-[56rem] p-2 border-th-border bg-th-background2 flex items-center justify-start " +
         (t.visible ? " " : "  ")
       }
     >
@@ -26,9 +26,9 @@ const ToastCustom = ({ t, message, mode = "" }) => {
             leaveTo="scale-50"
           >
             {mode === "error" ? (
-              <AiOutlineClose className="flex-none w-6 h-6 p-1 font-bold text-white bg-red-500 rounded-full dark:bg-red-800 " />
+              <AiOutlineClose className="flex-none w-6 h-6 p-1 font-bold text-white rounded-full bg-th-red " />
             ) : (
-              <AiOutlineCheck className="flex-none w-6 h-6 p-1 font-bold text-white rounded-full dark:bg-emerald-600 bg-emerald-500" />
+              <AiOutlineCheck className="flex-none w-6 h-6 p-1 font-bold text-white rounded-full bg-emerald-600 " />
             )}
           </Transition>
         )}
