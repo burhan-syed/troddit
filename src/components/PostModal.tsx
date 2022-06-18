@@ -607,7 +607,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full overflow-y-auto border-t rounded-lg border-th-border mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+                className="flex flex-col w-full h-screen overflow-y-auto border-t rounded-lg border-th-border mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
@@ -947,7 +947,7 @@ const PostModal = ({
                 {/* comments */}
                 <div
                   className={
-                    "flex-grow border rounded-lg bg-th-background2 border-th-border "
+                    "border rounded-lg bg-th-background2 border-th-border "
                   }
                 >
                   <div
@@ -1024,6 +1024,7 @@ const PostModal = ({
                     </div>
                   )}
                 </div>
+                <div className="flex-grow w-full " onClick={handleBack}></div>
               </div>
             </div>
           </div>
