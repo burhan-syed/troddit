@@ -47,7 +47,7 @@ const SubIcon = ({ subname = "", subInfo = {}, isUser = false, size = 6 }) => {
         <div
           className={
             "rounded-full bg-th-accent2 " +
-            " w-full h-full  text-lightText  overflow-hidden items-center justify-center flex !no-underline border-2 " +
+            " w-full h-full  text-white  overflow-hidden items-center justify-center flex !no-underline border-2 " +
             (hideNSFW ? " text-md " : " text-xl")
           }
         >

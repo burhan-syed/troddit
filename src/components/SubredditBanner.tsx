@@ -7,6 +7,8 @@ import SubPills from "./SubPills";
 import SubCard from "./cards/SubCard";
 import Link from "next/link";
 import ToggleUserPostType from "./ToggleUserPostType";
+import Collection from "./collections/Collection";
+import { useSession } from "next-auth/react";
 
 const SubredditBanner = ({
   subreddits,
@@ -16,16 +18,22 @@ const SubredditBanner = ({
   isSelf = false,
 }) => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const subsContext: any = useSubsContext();
-  const { currSubInfo, multi } = subsContext;
+  const { currSubInfo, multi, myMultis, myLocalMultis } = subsContext;
   const [currSubData, setCurrSubData] = useState<any>({});
   const [subreddit, setSubreddit] = useState("");
   const [multiSub, setMultiSub] = useState("");
   const [currMulti, setCurrMulti] = useState("");
   const [subArray, setSubArray] = useState([]);
+  const [mounted, setMounted] = useState(false);
   const [keepInMultiArray, setKeepInMultiArray] = useState(false);
 
   const [openDescription, setOpenDescription] = useState(0);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setCurrSubData(currSubInfo?.data?.subreddit ?? currSubInfo?.data);
@@ -88,6 +96,7 @@ const SubredditBanner = ({
 
   const removeSub = (s) => {
     if (router.route === "/r/[...slug]") {
+      setMultiSub("")
       let curr: string = router.query.slug[0];
       let currsubs = curr.split("+");
       let filtered = currsubs.filter(
@@ -114,6 +123,73 @@ const SubredditBanner = ({
     setOpenDescription((p) => p + 1);
   };
 
+  const [myMultiInfo, setMyMultiInfo] = useState<any>();
+  useEffect(() => {
+
+    const matchMulti = (myMulti, currSubs, currMulti) => {
+      if (myMulti?.data?.name?.toUpperCase() !== currMulti?.toUpperCase())
+        return false;
+      if (myMulti?.data?.subreddits?.length !== currSubs?.length) return false;
+
+      const multiSubs: string[] = myMulti?.data?.subreddits?.map((sub) =>
+        sub?.name?.toUpperCase()
+      );
+
+      let allFound = true;
+      for (let multiSub of multiSubs) {
+        if (!currSubs.includes(multiSub)) {
+          allFound = false;
+          break;
+        }
+      }
+      if (allFound) {
+        setMyMultiInfo(myMulti);
+        return myMulti;
+      }
+      return false;
+    };
+
+    const checkIsMyMulti = (currSubs, currMulti) => {
+      let matched = [false, {}] as [boolean, any];
+      if (myMultis && session) {
+        for (let myMulti of myMultis) {
+          matched = matchMulti(myMulti, currSubs, currMulti);
+          if (matched) return [true, matched];
+        }
+      } else if (myLocalMultis) {
+        for (let myMulti of myLocalMultis) {
+          matched = matchMulti(myMulti, currSubs, currMulti);
+          if (matched) return [true, matched];
+        }
+      }
+      return matched;
+    };
+
+    if (!loading && subreddits && multi) {
+      const currSubs: string[] = multiSub
+        ? subArray?.map((s) => s?.toUpperCase())
+        : subreddits?.map((s) => s?.toUpperCase());
+      let matched = checkIsMyMulti(currSubs, multi);
+      // if (
+      //   router?.query?.m &&
+      //   router?.query?.m?.toString()?.toUpperCase() !==
+      //     matched?.[1]?.data?.name?.toUpperCase()
+      // ) {
+      //   console.log("MISMATCH!");
+      //   //router.push(`${subreddits.join("+")}`);
+      // }
+    }
+    return () => {
+      setMyMultiInfo(undefined);
+    };
+  }, [subreddits, multi, myMultis, myLocalMultis, loading]);
+
+  //kick out of multi if the multi is changed..
+  useEffect(() => {if (mounted && myMultiInfo && router.query?.m){
+        router.push(`${subreddits.join("+")}`);
+  }}, [myMultis, myLocalMultis]);
+
+
   return (
     <div
       className={
@@ -128,16 +204,30 @@ const SubredditBanner = ({
         descriptionHTML={currSubData?.description_html}
         displayName={currSubData?.display_name_prefixed}
       />
-      <SubCard
-        data={currSubInfo}
-        link={false}
-        tall={true}
-        subInfo={currSubData}
-        currMulti={currMulti}
-        subArray={subArray}
-        openDescription={toggleOpenDescription}
-        isSelf={isSelf}
-      />
+      {subreddits.length >1 && router.pathname === "/r/[...slug]" ? (
+        <Collection
+          subreddits={subArray}
+          collapsed={true}
+          name={myMultiInfo?.data?.display_name ?? currMulti}
+          icon={myMultiInfo?.data?.icon_url}
+          over_18={myMultiInfo?.data?.over_18}
+          key_color={myMultiInfo?.data?.key_color}
+          isOwner={router?.query?.m && (myMultiInfo?.data?.name?.toUpperCase() == router?.query?.m?.toString()?.toUpperCase())}
+          bannerMode={true}
+          goToMultiSub={goToMultiSub}
+        />
+      ) : (
+        <SubCard
+          data={currSubInfo}
+          link={false}
+          tall={true}
+          subInfo={currSubData}
+          currMulti={currMulti}
+          subArray={subArray}
+          openDescription={toggleOpenDescription}
+          isSelf={isSelf}
+        />
+      )}
 
       {name && (
         <div className="flex flex-row w-full mt-2 mb-2 md:justify-center ">

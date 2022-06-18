@@ -19,6 +19,8 @@ const MyMultiCollections = () => {
               over_18={multi?.data?.over_18}
               owner={multi?.data?.owner}
               key_color={multi?.data?.key_color}
+              isOwner={true}
+              collapsed={myMultis?.length > 5}
             />
           </div>
         ))}
@@ -37,6 +39,9 @@ const MyMultiCollections = () => {
               over_18={multi?.data?.over_18}
               owner={multi?.data?.owner}
               key_color={multi?.data?.key_color}
+              isOwner={true}
+              collapsed={myLocalMultis?.length > 5}
+
             />
           </div>
         ))}

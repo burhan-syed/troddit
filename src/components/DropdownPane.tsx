@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, Fragment, useEffect } from "react";
+import { useState, Fragment, useEffect, useMemo } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
@@ -17,7 +17,7 @@ const scrollStyle = "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track
 
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
-  const { multi, currSubInfo, currLocation, tryLoadAll } = subsContext;
+  const { multi, currSubInfo, currLocation, tryLoadAll, myMultis } = subsContext;
   const context: any = useMainContext();
   const [expand, setExpand] = useState<boolean>();
   const router = useRouter();
@@ -25,6 +25,18 @@ const DropdownPane = ({ hide }) => {
   const handleClick = async () => {
     tryLoadAll();
   };
+
+  const multi_icon = useMemo(() => {
+    let icon = ""; 
+    if (multi && myMultis){
+      myMultis?.forEach(myMulti => {
+        if (myMulti?.data?.name?.toUpperCase() == multi?.toUpperCase()){
+          icon = myMulti?.data?.icon_url;
+        }
+      });
+    } 
+    return icon;
+  }, [multi, myMultis])
 
   useEffect(() => {
     context.expandedSubPane ? setExpand(true) : setExpand(false);
@@ -66,6 +78,7 @@ const DropdownPane = ({ hide }) => {
                           display_name: multi,
                           name: multi,
                           subreddits: ["", ""],
+                          icon_url: multi_icon
                         },
                       }}
                     />
@@ -109,12 +122,12 @@ const DropdownPane = ({ hide }) => {
           {/* Dropdown */}
           <Transition
             as={Fragment}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
+            // enter="transition ease-out duration-100"
+            // enterFrom="transform opacity-0 scale-95"
+            // enterTo="transform opacity-100 scale-100"
+            // leave="transition ease-in duration-75"
+            // leaveFrom="transform opacity-100 scale-100"
+            // leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items
               as="div"

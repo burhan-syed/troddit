@@ -37,7 +37,7 @@ const SubPills = ({
       <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
         <div
           className={
-            "items-center h-9 px-4 py-1.5 text-center border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
+            "items-center flex h-9 px-4 py-1.5 text-center border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
             (multiSub === "" && "  ring-2 border-transparent ring-th-accent2")
           }
         >
@@ -74,7 +74,7 @@ const SubPills = ({
           }}
           key={s}
         >
-          <a href={`${s}`}>
+          <a href={`${s}?m=${currMulti}`}>
             <div
               title={`show only posts from r/${s}`}
               className={
@@ -90,7 +90,7 @@ const SubPills = ({
                   e.preventDefault();
                   removeSub(s);
                 }}
-                className=" border rounded-full p-0.5 border-th-postHover hover:bg-th-base hover:ring-1 "
+                className=" border rounded-full p-0.5 border-th-postHover hover:bg-th-base hover:ring-1 cursor-pointer"
               >
                 <MdOutlineClear className="flex-none w-4 h-4 " />
               </button>

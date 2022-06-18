@@ -10,6 +10,7 @@ const CollectionOptions = ({
   // subInfo,
   subArray,
   currMulti = "",
+  isOwner = true,
 }) => {
   const { data: session, status } = useSession();
   const loading = status === "loading";
@@ -186,7 +187,7 @@ const CollectionOptions = ({
                   </Menu.Item>
 
                   <Menu.Item
-                    disabled={subArray.length < 1 || currMulti.length < 1}
+                    disabled={subArray.length < 1 || currMulti.length < 1 || !isOwner}
                   >
                     {({ active, disabled }) => (
                       <div
@@ -239,7 +240,7 @@ const CollectionOptions = ({
                       </div>
                     )}
                   </Menu.Item>
-                  <Menu.Item disabled={currMulti.length < 1}>
+                  <Menu.Item disabled={currMulti.length < 1 || !isOwner}>
                     {({ active, disabled }) => (
                       <div
                         className={

@@ -25,7 +25,8 @@ const CheckBox = ({ toggled }) => {
     >
       <AiOutlineCheck
         className={
-          " transition-all text-white" + (toggled ? " scale-100 hover:scale-110" : " scale-0")
+          " transition-all text-white" +
+          (toggled ? " scale-100 hover:scale-110" : " scale-0")
         }
       />
     </div>
@@ -39,8 +40,12 @@ const Collection = ({
   over_18 = false,
   owner = "",
   key_color = "",
+  collapsed = true,
+  isOwner = false,
+  bannerMode = false,
+  goToMultiSub = (e, s) => {},
 }) => {
-  const [expand, setExpand] = useState(true);
+  const [expand, setExpand] = useState(!collapsed);
   const [toggledSubs, setToggledSubs] = useState([]);
   const [allToggled, setAllToggled] = useState(false);
   // const [sortedSubs, setSortedSubs] = useState([]);
@@ -71,15 +76,31 @@ const Collection = ({
   return (
     <div
       className={
-        "relative  transition-colors bg-contain border border-th-border bg-th-post  shadow-md rounded-lg select-none "
+        "relative  transition-colors bg-contain  border-th-border bg-th-post  shadow-md  select-none " +
+        (bannerMode ? " border-t border-b " : " rounded-lg border")
       }
     >
       <div
-        className={` absolute  w-full h-16 bg-cover bg-center  rounded-t-md bg-th-scrollbar `}
+        className={` absolute  w-full  bg-cover bg-center  bg-th-scrollbar ${
+          bannerMode ? " h-[121px] " : " h-16 rounded-t-md"
+        }`}
       ></div>
-      <div className="flex flex-col mx-2 my-2 ">
-        <div className="flex flex-row mt-6">
-          <div className="z-20 flex-none w-16 h-16 border-2 rounded-full bg-th-post">
+      <div
+        className={
+          "flex flex-col my-2 " + (bannerMode ? " md:mx-16 " : " mx-2")
+        }
+      >
+        <div
+          className={
+            "flex flex-row " + (bannerMode ? " mt-[3.75rem]" : " mt-6")
+          }
+        >
+          <div
+            className={
+              "z-20 flex-none  rounded-full bg-th-post" +
+              (bannerMode ? " w-24 h-24 mt-1 border-4" : " w-16 h-16 border-2")
+            }
+          >
             {icon?.includes("https://") ? (
               <>
                 <Image
@@ -96,14 +117,19 @@ const Collection = ({
               <div
                 className={
                   "rounded-full bg-red-400 " +
-                  " w-full h-full  text-lightText text-6xl items-center font-semibold  justify-center flex overflow-hidden"
+                  " w-full h-full  text-white text-6xl items-center   justify-center flex overflow-hidden"
                 }
               >
                 {"f/"}
               </div>
             )}
           </div>
-          <div className="z-10 flex flex-row items-baseline gap-2 p-1 pr-4 mt-1 pl-11 -ml-9 rounded-tr-md pl-auto bg-th-post ">
+          <div
+            className={
+              "z-10 flex flex-row items-baseline gap-2 p-1 pr-4 pl-11 -ml-9 rounded-tr-md pl-auto bg-th-post " +
+              (bannerMode ? " mt-6 pt-1.5" : " mt-1 ")
+            }
+          >
             <div
               className="flex flex-row items-baseline gap-2 cursor-pointer group "
               onClick={(e) => {
@@ -125,7 +151,12 @@ const Collection = ({
             )}
           </div>
         </div>
-        <div className="z-30 flex flex-row pl-5 -mt-7 ml-14 ">
+        <div
+          className={
+            "z-30 flex flex-row pl-5  " +
+            (bannerMode ? " -mt-10 ml-[5.5rem] py-1" : " -mt-7 ml-14")
+          }
+        >
           <div
             className="flex flex-row flex-grow group hover:cursor-pointer "
             onClick={(e) => {
@@ -153,13 +184,18 @@ const Collection = ({
               subreddits.find((sub) => sub?.toUpperCase() === s?.toUpperCase())
             )}
             currMulti={name}
+            isOwner={isOwner}
           />
-          <div className="mr-1 "></div>
-          <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
-            <a className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
-              <BsArrowRight />
-            </a>
-          </Link>
+          {!bannerMode && (
+            <>
+              <div className="mr-1 "></div>
+              <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
+                <a className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
+                  <BsArrowRight />
+                </a>
+              </Link>
+            </>
+          )}
         </div>
         <div
           className={
@@ -180,8 +216,19 @@ const Collection = ({
                 key={sub + i}
               >
                 <div className="flex flex-row items-center flex-none ml-auto">
-                  <Link href={`/r/${sub}`} passHref>
-                    <a>
+                  <Link
+                    href={`/r/${sub}${bannerMode ? `?m=${name}` : ""}`}
+                    passHref
+                  >
+                    <a
+                      onClick={(e) => {
+                        if (bannerMode) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          goToMultiSub(e, sub);
+                        }
+                      }}
+                    >
                       <BsBoxArrowInUpRight className="ml-0.5 w-3 h-3 transition-transform hover:scale-125" />
                     </a>
                   </Link>

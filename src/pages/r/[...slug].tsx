@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import SubredditBanner from "../../components/SubredditBanner";
 import { getWikiContent } from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
+import Collection from "../../components/collections/Collection";
 const Sort = ({ query }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
