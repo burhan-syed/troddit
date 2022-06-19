@@ -1028,7 +1028,8 @@ export const loadPost = async (
   permalink,
   sort = "top",
   loggedIn = false,
-  token?
+  token?,
+  withcontext?
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -1063,7 +1064,7 @@ export const loadPost = async (
         params: {
           raw_json: 1,
           article: path.split("/")?.[4] ?? path,
-          context: 4,
+          context: withcontext ? 10000 : 1,
           showedits: true,
           showmedia: true,
           showmore: true,
@@ -1090,7 +1091,7 @@ export const loadPost = async (
     try {
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-          params: { raw_json: 1, profile_img: true, sr_detail: true },
+          params: { raw_json: 1, profile_img: true, sr_detail: true, context: (withcontext ? 10000 : "") },
         })
       ).data;
       const data = {

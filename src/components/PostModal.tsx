@@ -43,6 +43,7 @@ const PostModal = ({
   direct = false,
   commentsDirect = false,
   commentMode = false,
+  withcontext = false,
 }) => {
   const router = useRouter();
   const [apost, setPost] = useState<any>({});
@@ -152,7 +153,8 @@ const PostModal = ({
           permalink,
           sort,
           session ? true : false,
-          context?.token
+          context?.token,
+          withcontext
         );
         token && context.setToken(token);
         if (asynccheck) {
@@ -179,7 +181,7 @@ const PostModal = ({
       setLoadingComments(true);
       setLoadingPost(true);
     };
-  }, [permalink]);
+  }, [permalink, withcontext]);
 
   const [mediaInfo, setMediaInfo] = useState<any>();
   useEffect(() => {
@@ -690,17 +692,13 @@ const PostModal = ({
                             {apost?.over_18 && (
                               <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
-                                <span className="text-th-red">
-                                  NSFW
-                                </span>
+                                <span className="text-th-red">NSFW</span>
                               </div>
                             )}
                             {apost?.spoiler && (
                               <div className="flex flex-row pl-1 space-x-1 -translate-y-0.5">
                                 <p>•</p>
-                                <span className="text-th-red">
-                                  SPOILER
-                                </span>
+                                <span className="text-th-red">SPOILER</span>
                               </div>
                             )}
                             <div className="mx-1"></div>
@@ -920,7 +918,7 @@ const PostModal = ({
                   <div
                     className={
                       (openReply ? "block " : "hidden ") +
-                       "bg-th-background2  border rounded-lg border-th-border p-2 mb-3"
+                      "bg-th-background2  border rounded-lg border-th-border p-2 mb-3"
                     }
                   >
                     <CommentReply
@@ -1002,13 +1000,30 @@ const PostModal = ({
                       {/* Open All Comments */}
 
                       {commentMode && (
-                        <div className="flex-grow w-full px-2 mt-1">
+                        <div className="flex-grow w-full px-2 mt-1 text-sm">
                           <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border">
-                            <Link href={apost.permalink} passHref>
-                              <a className="font-semibold text-th-link hover:text-th-linkHover">
-                                Click to view all comments
-                              </a>
-                            </Link>
+                            <p className="flex flex-col mx-3 text-sm font-normal ">
+                              <span>
+                                You are viewing a single comment's thread
+                              </span>
+                              <span className="text-xs">
+                                <Link href={`${apost.permalink}`} passHref>
+                                  <a className="font-semibold text-th-link hover:text-th-linkHover">
+                                    Click to view all comments
+                                  </a>
+                                </Link>
+                                {!withcontext && (
+                                  <Link
+                                    href={`${post_comments?.[0]?.data?.permalink}?context=10000`}
+                                    passHref
+                                  >
+                                    <a className="ml-2 font-semibold text-th-link hover:text-th-linkHover">
+                                      view context
+                                    </a>
+                                  </Link>
+                                )}
+                              </span>
+                            </p>
                           </div>
                         </div>
                       )}

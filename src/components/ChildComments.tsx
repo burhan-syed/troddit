@@ -13,6 +13,7 @@ import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
 import Image from "next/image";
+import { BsArrowRightShort } from "react-icons/bs";
 
 const ChildComments = ({
   comment,
@@ -148,7 +149,7 @@ const ChildComments = ({
         (depth == 0
           ? " bg-th-backgroundComment border-r "
           : depth % 2 === 0
-          ? " bg-th-backgroundComment " 
+          ? " bg-th-backgroundComment "
           : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
         " border-t border-l border-l-transparent  border-b border-th-border rounded-md"
@@ -243,23 +244,17 @@ const ChildComments = ({
 
               {(comment?.data?.author == op || comment?.data?.is_submitter) && (
                 <>
-                  <p className="px-0.5 font-medium text-th-accent2 ">
-                    {"OP"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-accent2 ">{"OP"}</p>
                 </>
               )}
               {comment?.data?.distinguished == "moderator" && (
                 <>
-                  <p className="px-0.5 font-medium text-th-green ">
-                    {"MOD"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-green ">{"MOD"}</p>
                 </>
               )}
               {comment?.data?.distinguished == "admin" && (
                 <>
-                  <p className="px-0.5 font-medium text-th-red ">
-                    {"ADMIN"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-red ">{"ADMIN"}</p>
                 </>
               )}
 
@@ -454,7 +449,11 @@ const ChildComments = ({
                                     {`Load ${childcomment.data?.count} More... `}
                                   </div>
                                 ) : (
-                                  <></>
+                                  <Link href={comment?.data?.permalink}>
+                                    <a className="flex items-center ml-3 text-sm select-none hover:font-semibold md:pl-0">
+                                      Continue thread <BsArrowRightShort />
+                                    </a>
+                                  </Link>
                                 )}
                               </>
                             ) : (

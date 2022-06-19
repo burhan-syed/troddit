@@ -8,10 +8,14 @@ import SubredditBanner from "../../components/SubredditBanner";
 import { getWikiContent } from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
-const Sort = ({ query }) => {
+import PostModal from "../../components/PostModal";
+import LoginModal from '../../components/LoginModal'
+const SubredditPage = ({ query }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
+  const [commentThread, setCommentThread] = useState(false); 
+  const [withCommentContext, setWithCommentContext] = useState(false)
   useEffect(() => {
     const getWiki = async (wikiquery) => {
       const data = await getWikiContent(wikiquery);
@@ -28,13 +32,19 @@ const Sort = ({ query }) => {
         .join("+")
         .split("+")
     );
-    if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
+    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS" && query?.slug?.[4]) {
+      query?.context && setWithCommentContext(true); 
+      setCommentThread(true); 
+    }
+    else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
       setWikiMode(true);
       let wikiquery = query.slug;
       if (!wikiquery?.[2]) wikiquery[2] = "index";
       getWiki(wikiquery);
     }
     return () => {
+      setWithCommentContext(false);
+      setCommentThread(false); 
       setWikiMode(false);
       setSubsArray([]);
     };
@@ -66,7 +76,18 @@ const Sort = ({ query }) => {
             </Link>
             <ParseBodyHTML html={wikiContent} />
           </div>
-        ) : (
+        ) : commentThread ? (      <div className="mt-10">
+        <LoginModal />
+        <PostModal
+          permalink={ "/r/" + query?.slug.join("/")
+          }
+          returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
+          setSelect={setCommentThread}
+          direct={true}
+          commentMode={true}
+          withcontext={withCommentContext}
+        />
+      </div>) : (
           <Feed
             query={query}
             isSubFlair={query?.slug?.[1] === "search" && query?.q}
@@ -84,8 +105,8 @@ const Sort = ({ query }) => {
 //     },
 //   };
 // }
-Sort.getInitialProps = ({ query }) => {
+SubredditPage.getInitialProps = ({ query }) => {
   return { query };
 };
 
-export default Sort;
+export default SubredditPage;
