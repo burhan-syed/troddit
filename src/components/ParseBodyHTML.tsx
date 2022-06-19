@@ -1,5 +1,35 @@
+/* eslint-disable react/display-name */
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ParseATag from "./ParseATag";
+
+const HtmlToReact = require('html-to-react');
+const HtmlToReactParser = require('html-to-react').Parser;
+const htmlToReactParser = new HtmlToReactParser();
+const isValidNode = function () {
+  return true;
+};
+
+// Order matters. Instructions are processed in the order they're defined
+const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
+const processingInstructions = [
+  {
+    shouldProcessNode: function (node) {
+      let check = (node.parent && node.parent.name && node.parent.name === 'a' && node.parent?.attribs?.href?.includes('https://'));
+      return check;
+    },
+    processNode: function (node, children, index) {
+      return React.createElement(ParseATag, {key: index }, node )//node?.data?.toUpperCase();
+    }
+  },
+  {
+    // Anything else
+    shouldProcessNode: function (node) {
+      return true;
+    },
+    processNode: processNodeDefinitions.processDefaultNode
+  }
+];
 
 const ParseBodyHTML = ({
   html,
@@ -11,7 +41,7 @@ const ParseBodyHTML = ({
   comment = false,
 }) => {
   const { theme, resolvedTheme } = useTheme();
-  const [insertHTML, setInsertHTML] = useState(html);
+  const [component, setComponent] = useState<any>(); 
   const ref = useRef<HTMLDivElement>();
 
   const [mounted, setMounted] = useState(false);
@@ -41,8 +71,7 @@ const ParseBodyHTML = ({
         });
         result = blankTargets(result);
         result = replaceDomains(result);
-
-        return result;
+        return result; 
       } else {
         return "";
       }
@@ -82,8 +111,15 @@ const ParseBodyHTML = ({
       return str;
     };
 
+    const parseHTML = (html) => {
+
+      const reactElement = htmlToReactParser.parseWithInstructions(html, isValidNode, processingInstructions); 
+      return reactElement;
+    }
+
     let unescaped = unescape(html);
-    setInsertHTML(unescaped);
+    let reactElement = parseHTML(unescaped)
+    setComponent(reactElement)
   }, [html]);
 
   //allow single click to open links, posts..
@@ -99,13 +135,14 @@ const ParseBodyHTML = ({
   return (
     <div
       ref={ref}
+      id="innerhtml"
       onClick={(e) => {
         if (post) {
           e.stopPropagation();
         }
       }} //alternate to single click fix
       className={
-        " prose  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
+        " prose prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
         (resolvedTheme === "dark" ? " prose-invert prose-strong:font-semibold prose-strong:text-rose-400  " : " prose-stone prose-strong:text-rose-800  prose-headings:text-stone-900 text-stone-700 ") +
         (small && card
           ? " prose-sm  "
@@ -114,9 +151,9 @@ const ParseBodyHTML = ({
           : "  ") +
         (limitWidth ? " max-w-2xl " : " max-w-none")
       }
-      id="innerhtml"
-      dangerouslySetInnerHTML={{ __html: insertHTML }}
-    ></div>
+    >
+    {component}
+    </div>
   );
 };
 
