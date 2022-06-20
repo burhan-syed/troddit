@@ -3,7 +3,7 @@ import Switch from "react-switch";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 
-import { BiMoon, BiSun } from "react-icons/bi";
+import { BiComment, BiDetail, BiMoon, BiSun } from "react-icons/bi";
 import { CgArrowsShrinkH, CgArrowsMergeAltH } from "react-icons/cg";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import {
@@ -40,7 +40,8 @@ type ComponentProps = {
     | "autoRead"
     | "disableEmbeds"
     | "preferEmbeds"
-    | "embedsEverywhere";
+    | "embedsEverywhere"
+    | "userPostType";
 
   label?: string;
   externalStyles?: string;
@@ -270,10 +271,22 @@ const Toggles = ({
             "By default embeds will only show in single column view or in a post thread. Enable this to show embeds in multi-column mode. Note, this is disabled by default for better performance."
           );
         break;
+      case "userPostType":
+        setIsChecked(context?.[setting] === "links");
+        setCheckedIcon(<BiDetail />);
+        setUncheckedIcon(<BiComment />);
+        !label && setSwitchLabel("Post Type");
+        !subtext &&
+          setSwitchSubtext("Switch between showing comments or posts");
+        break;
       default:
         break;
     }
-    if (setting !== "theme" && setting !== "wideUI") {
+    if (
+      setting !== "theme" &&
+      setting !== "wideUI" &&
+      setting !== "userPostType"
+    ) {
       setIsChecked(context[setting] === true);
     }
   }, [resolvedTheme, context?.[setting], context.syncWideUI]);
@@ -346,6 +359,9 @@ const Toggles = ({
         break;
       case "embedsEverywhere":
         context.toggleEmbedsEverywhere();
+        break;
+      case "userPostType":
+        context.toggleUserPostType();
         break;
       default:
         break;

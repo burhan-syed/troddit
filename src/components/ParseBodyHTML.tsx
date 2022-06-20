@@ -161,7 +161,7 @@ const ParseBodyHTML = ({
         className={
           " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
           "  prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody " +
-         (resolvedTheme == "dark" ? " prose-invert " : "") +
+         ((resolvedTheme == "dark" || resolvedTheme == "black" || resolvedTheme == "nord") ? " prose-invert " : "") +
           (small && card
             ? " prose-sm  "
             : small

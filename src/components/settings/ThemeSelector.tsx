@@ -6,6 +6,8 @@ const THEMES = {
   system: { name: "system" },
   light: { name: "light" },
   dark: { name: "dark" },
+  black: {name: "black"},
+  nord: {name: "nord"},
 };
 
 function classNames(...classes) {

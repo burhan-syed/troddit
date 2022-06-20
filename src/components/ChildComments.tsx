@@ -152,7 +152,7 @@ const ChildComments = ({
           ? " bg-th-backgroundComment "
           : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
-        " border-t border-l border-l-transparent  border-b border-th-border rounded-md"
+        " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
     >
       <div

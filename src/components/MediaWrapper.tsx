@@ -14,7 +14,7 @@ const MediaWrapper = ({
   forceMute,
   imgFull,
   postMode,
-  containerDims = undefined,
+  containerDims = undefined as any,
   read = false,
   card = false,
 }) => {

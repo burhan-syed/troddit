@@ -6,9 +6,9 @@ import router, { useRouter } from "next/router";
 import SubPills from "./SubPills";
 import SubCard from "./cards/SubCard";
 import Link from "next/link";
-import ToggleUserPostType from "./ToggleUserPostType";
 import Collection from "./collections/Collection";
 import { useSession } from "next-auth/react";
+import Toggles from "./settings/Toggles";
 
 const SubredditBanner = ({
   subreddits,
@@ -336,7 +336,7 @@ const SubredditBanner = ({
             )}
             {userPostMode === "SAVED" && (
               <div className="ml-auto text-sm">
-                <ToggleUserPostType />
+                <Toggles externalStyles="gap-2" setting="userPostType" />
               </div>
             )}
           </div>

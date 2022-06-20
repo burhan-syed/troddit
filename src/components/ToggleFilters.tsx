@@ -71,6 +71,35 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
     //console.log(filter, f, context[f])
     context[f] ? setChecked(true) : setChecked(false);
   }, [context, filter]);
+
+  const [onHandleColor, setOnHandleColor] = useState<string>();
+  const [offHandleColor, setOffHandleColor] = useState<string>();
+  const [onColor, setOnColor] = useState<string>();
+  const [offColor, setOffColor] = useState<string>();
+  const [updateTheme, setUpdateTheme] = useState(0);
+  useEffect(() => {
+    setUpdateTheme((t) => t + 1);
+  }, [resolvedTheme]);
+  useEffect(() => {
+    let toggleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleColor")
+      .trim();
+    let toggleHandleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleHandleColor")
+      .trim();
+
+    setOnHandleColor(() => toggleHandleColor
+    );
+    setOffHandleColor(() => toggleHandleColor
+    );
+    setOnColor(() => toggleColor);
+    setOffColor(() =>toggleColor
+    );
+  }, [updateTheme]);
+
+
   if (!mounted) return null;
 
   return (
@@ -101,10 +130,10 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
               <BsX />
             </div>
           }
-          offColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
-          onColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
-          offHandleColor="#0284C7"
-          onHandleColor="#0284C7"
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
         />
       </label>
     </div>

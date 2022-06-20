@@ -50,11 +50,11 @@ const PostModal = ({
   const [sr_detail, setSR_Detail] = useState({});
   const [wait, setWait] = useState(true);
   const [usePortrait, setUsePortrait] = useState(false);
-  const [post_comments, setComments] = useState([]);
+  const [post_comments, setComments] = useState<any[]>([]);
   const [loadingPost, setLoadingPost] = useState(true);
   const [loadingComments, setLoadingComments] = useState(true);
   const [sort, setSort] = useState("top");
-  const [myReplies, setmyReplies] = useState([]);
+  const [myReplies, setmyReplies] = useState<any[]>([]);
   const [openReply, setopenReply] = useState(false);
   const { data: session, status } = useSession();
   const context: any = useMainContext();
@@ -64,7 +64,7 @@ const PostModal = ({
   const commentsRef = useRef<HTMLDivElement>(null);
 
   const executeScroll = () => {
-    commentsRef.current.scrollIntoView({
+    commentsRef?.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -265,7 +265,7 @@ const PostModal = ({
   const scrollComments = () => {
     const element = document.getElementById("anchor-name");
     //let node = ReactDOM.findDOMNode(divRef.current) as Element;
-    element.scrollIntoView({ block: "start", behavior: "smooth" });
+    element && element.scrollIntoView({ block: "start", behavior: "smooth" });
     //window.scrollBy(0, -10); // Adjust scrolling with a negative value here
   };
 
@@ -401,7 +401,7 @@ const PostModal = ({
     }
   };
 
-  const portraitDivRef = useRef(null);
+  const portraitDivRef = useRef<any>(null);
   const [pHeight, setpHeight] = useState();
   const [pWidth, setpWidth] = useState();
   useEffect(() => {
@@ -412,7 +412,7 @@ const PostModal = ({
   }, [wait, usePortrait]);
 
   const commentPlaceHolder = (
-    <div className="mx-2 my-1 border rounded-md h-44 border-th-border">
+    <div className="mx-2 my-1 border rounded-md h-44 border-th-border2">
       <div className={"flex flex-row"}>
         {/* Left column */}
         <div
@@ -442,7 +442,7 @@ const PostModal = ({
   );
 
   const postPlaceHolder = (
-    <div className="w-full mb-3 border rounded-lg border-th-border bg-th-background2">
+    <div className="w-full mb-3 border rounded-lg border-th-border2 bg-th-background2">
       {/* Flex container */}
       <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
         {/* Upvote column */}
@@ -545,7 +545,7 @@ const PostModal = ({
     >
       <div
         onClick={() => handleBack()}
-        className="fixed top-0 left-0 w-screen h-full bg-black backdrop-filter backdrop-blur-lg opacity-80 overscroll-none"
+        className="fixed top-0 left-0 w-screen h-full bg-black opacity-80 backdrop-filter backdrop-blur-lg overscroll-none"
       ></div>
       {context.posts?.[context.postNum - 1]?.data && (
         <div
@@ -563,7 +563,7 @@ const PostModal = ({
             {usePortrait && (
               <div
                 ref={portraitDivRef}
-                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto border rounded-lg bg-th-background2 border-th-border md:w-6/12 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+                className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto border rounded-lg bg-th-background2 border-th-border2 md:w-6/12 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
               >
                 {pHeight && pWidth && (
                   <div className={"flex-grow " + (imgFull ? " my-auto" : "")}>
@@ -609,7 +609,7 @@ const PostModal = ({
               </div>
               {/* Content container */}
               <div
-                className="flex flex-col w-full h-screen overflow-y-auto border-t rounded-lg border-th-border mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+                className="flex flex-col w-full h-screen overflow-y-auto border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* LOADING POST CARD */}
@@ -618,7 +618,7 @@ const PostModal = ({
                   <>{postPlaceHolder}</>
                 ) : (
                   // Loaded Media Card
-                  <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border ">
+                  <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border2 ">
                     {/* Flex container */}
                     <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                       {/* Upvote column */}
@@ -634,7 +634,7 @@ const PostModal = ({
                         />
                       </div>
                       {/* Main Media Column */}
-                      <div className="flex-grow border-th-border md:border-l ">
+                      <div className="flex-grow border-th-border2 md:border-l ">
                         {/* Title etc*/}
                         <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
                           <div className="flex flex-row flex-wrap items-start group">
@@ -918,7 +918,7 @@ const PostModal = ({
                   <div
                     className={
                       (openReply ? "block " : "hidden ") +
-                      "bg-th-background2  border rounded-lg border-th-border p-2 mb-3"
+                      "bg-th-background2  border rounded-lg border-th-border2 p-2 mb-3"
                     }
                   >
                     <CommentReply
@@ -930,7 +930,7 @@ const PostModal = ({
 
                 {apost?.archived && (
                   <div className="flex-grow w-full">
-                    <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border bg-th-background2 ">
+                    <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
                       <BsArchive />
                       <p className="flex flex-col text-sm font-normal ">
                         <span>This is an archived post.</span>
@@ -945,7 +945,7 @@ const PostModal = ({
                 {/* comments */}
                 <div
                   className={
-                    "border rounded-lg bg-th-background2 border-th-border "
+                    "border rounded-lg bg-th-background2 border-th-border2 "
                   }
                 >
                   <div
@@ -1001,7 +1001,7 @@ const PostModal = ({
 
                       {commentMode && (
                         <div className="flex-grow w-full px-2 mt-1 text-sm">
-                          <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border">
+                          <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border2">
                             <p className="flex flex-col mx-3 text-sm font-normal ">
                               <span>
                                 You are viewing a single comment's thread

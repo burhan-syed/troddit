@@ -18,17 +18,17 @@ const UserFlair = ({ post }) => {
             ? " text-white "
             : post?.author_flair_text_color == "dark"
             ? "text-black"
-            : resolvedTheme === "dark"
-            ? "text-white"
-            : "text-black"
+            : (resolvedTheme === "light")
+            ? "text-black"
+            : "text-white"
         }`}
         style={{
           backgroundColor: `${
             post?.author_flair_background_color
               ? post?.author_flair_background_color
-              : resolvedTheme === "dark"
-              ? " #bbbb "
-              : ""
+              : (resolvedTheme === "light")
+              ? ""
+              : " #bbbb "
           }`,
         }}
       >
