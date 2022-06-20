@@ -15,6 +15,7 @@ module.exports = withPlausibleProxy()(
           permanent: true,
         },
         { source: "/comments/:path*", destination: "/:path*", permanent: true },
+      {source: "/r/:sub/w/:page*", destination: "/r/:sub/wiki/:page*", permanent: true}
       ];
     },
     async rewrites() {

@@ -13,6 +13,7 @@ import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
 import Image from "next/image";
+import { BsArrowRightShort } from "react-icons/bs";
 
 const ChildComments = ({
   comment,
@@ -140,19 +141,23 @@ const ChildComments = ({
     return count;
   }, [childcomments]);
 
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       ref={parentRef}
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
-          ? "bg-white dark:bg-[#161616]  border-r "
+          ? " bg-th-backgroundComment border-r "
           : depth % 2 === 0
-          ? " bg-white dark:bg-[#161616]"
-          : "bg-lightHighlight  dark:bg-darkBG ") +
+          ? " bg-th-backgroundComment "
+          : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
-        " border-t border-l border-b border-lightBorder dark:border-darkBorder rounded-md"
+        " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
         className={"flex flex-row"}
@@ -174,7 +179,12 @@ const ChildComments = ({
             (portraitMode ? " w-2.5 " : " md:w-2  lg:w-4")
           }
         >
-          <div className="flex-none w-0.5  min-h-full bg-blue-600 hover:bg-blue-800 group-hover:bg-blue-800 dark:bg-red-700 rounded-l-md dark:hover:bg-red-600 dark:group-hover:bg-red-600"></div>
+          <div
+            className={
+              "flex-none w-0.5  min-h-full  rounded-l-md bg-th-commentRibbon hover:bg-th-commentRibbonHover group-hover:bg-commentRibbonHover" +
+              (hovered ? " bg-th-commentRibbonHover " : " ")
+            }
+          ></div>
         </div>
         {/* Comment Body */}
         <div
@@ -193,7 +203,7 @@ const ChildComments = ({
           }}
         >
           {/* comment metadata*/}
-          <div className="flex flex-row items-start justify-between ml-3 space-x-1 text-sm text-gray-400 md:ml-0 dark:text-gray-500">
+          <div className="flex flex-row items-start justify-between ml-3 space-x-1 text-sm md:ml-0 text-th-textLight">
             {/* Author */}
             <div className="flex flex-row flex-wrap items-center gap-1 ">
               <Link href={`/u/${comment?.data?.author}`}>
@@ -219,7 +229,7 @@ const ChildComments = ({
                     </div>
                   ) : (
                     context.showUserIcons && (
-                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-lightScroll dark:bg-darkScroll">
+                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-th-accent">
                         <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
                       </div>
                     )
@@ -243,23 +253,17 @@ const ChildComments = ({
 
               {(comment?.data?.author == op || comment?.data?.is_submitter) && (
                 <>
-                  <p className="px-0.5 font-medium text-blue-500 dark:text-blue-700 dark:opacity-80">
-                    {"OP"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-accent ">{"OP"}</p>
                 </>
               )}
               {comment?.data?.distinguished == "moderator" && (
                 <>
-                  <p className="px-0.5 font-medium text-lightGreen dark:text-darkGreen ">
-                    {"MOD"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-green ">{"MOD"}</p>
                 </>
               )}
               {comment?.data?.distinguished == "admin" && (
                 <>
-                  <p className="px-0.5 font-medium text-red-500 dark:text-red-700 dark:opacity-80">
-                    {"ADMIN"}
-                  </p>
+                  <p className="px-0.5 font-medium text-th-red ">{"ADMIN"}</p>
                 </>
               )}
 
@@ -341,7 +345,7 @@ const ChildComments = ({
               <div
                 className={
                   (portraitMode ? " ml-1 " : " ml-2 ") +
-                  " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-gray-400 dark:text-gray-500  "
+                  " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-th-textLight "
                 }
               >
                 {/* Vote */}
@@ -412,6 +416,8 @@ const ChildComments = ({
               {/* Children */}
 
               <div
+                onMouseEnter={() => setHovered(false)}
+                onMouseLeave={() => setHovered(true)}
                 className={
                   "min-w-full py-2" +
                   (hideChildren &&
@@ -431,6 +437,8 @@ const ChildComments = ({
                               <>
                                 {childcomment.data?.count > 0 ? (
                                   <div
+                                    onMouseEnter={() => setHovered(true)}
+                                    onMouseLeave={() => setHovered(false)}
                                     className={
                                       (portraitMode ? "" : "") +
                                       (loadingComments && " animate-pulse ") +
@@ -454,7 +462,15 @@ const ChildComments = ({
                                     {`Load ${childcomment.data?.count} More... `}
                                   </div>
                                 ) : (
-                                  <></>
+                                  <Link href={comment?.data?.permalink}>
+                                    <a
+                                      className="flex items-center ml-3 text-sm select-none hover:font-semibold md:pl-0"
+                                      onMouseEnter={() => setHovered(true)}
+                                      onMouseLeave={() => setHovered(false)}
+                                    >
+                                      Continue thread <BsArrowRightShort />
+                                    </a>
+                                  </Link>
                                 )}
                               </>
                             ) : (

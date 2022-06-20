@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.14.0
+### New
+- Added themes! Find them in the new appearance section of the settings page:
+  - Abyss, Black, Nord, Ocean, and Palenight
+- In-line image viewing: open linked images directly in comments and posts.
+### Changes
+- Feeds (multi-reddits) now show the feed banner instead of the first subreddit banner. 
+- Some colors have changed to support more themes
+### Fixes
+- Direct comment links now work
+- Deeply nested comments were previously hidden. There is now a link to open them. 
+- You can now load more comments beyond the first page. This requires a log in. 
+- Feed icons are now shown.
 ## v0.13.3
 ### New
 - There's now a subreddit to discuss troddit: <a href="/r/TrodditForReddit">r/TrodditForReddit</a>

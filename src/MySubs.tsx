@@ -522,7 +522,7 @@ export const MySubsProvider = ({ children }) => {
           <ToastCustom
             t={t}
             message={`Error deleting ${multi}`}
-            mode={"success"}
+            mode={"error"}
           />
         ),
         { id: toastId, duration: 1500 }

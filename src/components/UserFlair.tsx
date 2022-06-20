@@ -15,20 +15,20 @@ const UserFlair = ({ post }) => {
       <div
         className={`px-1 rounded-lg inline-block select-none ${
           post?.author_flair_text_color == "light"
-            ? " text-lightText "
+            ? " text-white "
             : post?.author_flair_text_color == "dark"
-            ? "text-darkPostHover"
-            : resolvedTheme === "dark"
-            ? "text-lightText"
-            : "text-black"
+            ? "text-black"
+            : (resolvedTheme === "light")
+            ? "text-black"
+            : "text-white"
         }`}
         style={{
           backgroundColor: `${
             post?.author_flair_background_color
               ? post?.author_flair_background_color
-              : resolvedTheme === "dark"
-              ? " #bbbb "
-              : ""
+              : (resolvedTheme === "light")
+              ? ""
+              : " #bbbb "
           }`,
         }}
       >

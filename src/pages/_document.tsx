@@ -63,8 +63,7 @@ class MyDocument extends Document {
           />
         </Head>
         <PlausibleProvider domain="troddit.com">
-          <body className="overflow-x-hidden text-gray-900 bg-gray-200 dark:bg-black dark:text-lightText ">
-            {/* scrollbar-thin scrollbar-thumb-blue-400 dark:scrollbar-thumb-red-800 scrollbar-thumb-rounded-full */}
+          <body className="overflow-x-hidden bg-th-base text-th-text ">
             <Main />
             <NextScript />
           </body>

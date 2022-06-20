@@ -205,8 +205,7 @@ const SubredditsPage = ({ query = undefined }) => {
           <Tab.List className={""}>
             <div
               className={
-                " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden  bg-lightPost transition-colors border   border-gray-300 shadow-md dark:bg-darkBG dark:border-trueGray-700 " +
-                ( " rounded-lg ")
+                " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg" 
               }
             >
               {categories.map((c) => (
@@ -215,12 +214,12 @@ const SubredditsPage = ({ query = undefined }) => {
                     <div
                       className={
                         (selected
-                          ? " font-bold opacity-100 dark:bg-darkPostHover bg-lightPostHover "
+                          ? " font-bold opacity-100 bg-th-highlight  "
                           : "") +
                         " outline-none ring-0 cursor-pointer opacity-50 hover:opacity-80 select-none flex flex-col-reverse md:flex-row flex-grow items-center"
                       }
                     >
-                      <div className="w-full h-1 mt-1 md:w-1 md:h-8 md:mr-2 md:mt-0 dark:bg-darkScroll bg-lightScroll"></div>
+                      <div className="w-full h-1 mt-1 md:w-1 md:h-8 md:mr-2 md:mt-0 bg-th-scrollbar "></div>
 
                       <h1>
                         {c === "mine"
@@ -258,7 +257,7 @@ const SubredditsPage = ({ query = undefined }) => {
                         ))}
                         {after && !end ? (
                           <button
-                            className="flex items-center justify-center w-24 ml-auto mr-2 text-center border-2 rounded-md cursor-pointer h-9 dark:border border-lightBorder dark:bg-transparent bg-lightPost dark:border-lightBorder hover:bg-lightHighlight dark:hover:bg-darkBG"
+                            className="flex items-center justify-center w-24 ml-auto mr-2 text-center border rounded-md shadow-xl cursor-pointer h-9 ring-1 ring-th-base border-th-border bg-th-background2 hover:bg-th-highlight hover:border-th-borderHighlight "
                             onClick={(e) => {
                               e.preventDefault();
                               !waiting && fetchSubreddits(after, "popular");
@@ -285,7 +284,7 @@ const SubredditsPage = ({ query = undefined }) => {
                         ))}
                         {afterNew && !endNew ? (
                           <button
-                            className="flex items-center justify-center w-24 ml-auto mr-2 text-center border-2 rounded-md cursor-pointer h-9 dark:border border-lightBorder dark:bg-transparent bg-lightPost dark:border-lightBorder hover:bg-lightHighlight dark:hover:bg-darkBG"
+                            className="flex items-center justify-center w-24 ml-auto mr-2 text-center border rounded-md shadow-xl cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base"
                             onClick={(e) => {
                               e.preventDefault();
                               !waiting && fetchSubreddits(afterNew, "new");

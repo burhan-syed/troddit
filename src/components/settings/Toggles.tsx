@@ -3,7 +3,7 @@ import Switch from "react-switch";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 
-import { BiMoon, BiSun } from "react-icons/bi";
+import { BiComment, BiDetail, BiMoon, BiSun } from "react-icons/bi";
 import { CgArrowsShrinkH, CgArrowsMergeAltH } from "react-icons/cg";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import {
@@ -16,6 +16,7 @@ import {
 } from "react-icons/bs";
 
 import { useMainContext } from "../../MainContext";
+import ThemeSelector from "./ThemeSelector";
 
 type ComponentProps = {
   setting:
@@ -38,8 +39,9 @@ type ComponentProps = {
     | "dimRead"
     | "autoRead"
     | "disableEmbeds"
-    | "preferEmbeds" 
-    | "embedsEverywhere";
+    | "preferEmbeds"
+    | "embedsEverywhere"
+    | "userPostType";
 
   label?: string;
   externalStyles?: string;
@@ -56,28 +58,12 @@ const Toggles = ({
 }: ComponentProps) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const context: any = useMainContext();
 
-  const onHandleColor =
-    setting == "nsfw"
-      ? resolvedTheme === "dark"
-        ? "#991B1B"
-        : "#EF4444"
-      : "#0284C7";
-  const offHandleColor =
-    setting == "theme" ? "#F59E0B" : setting == "nsfw" ? "#4ADE80" : "#0284C7";
-  const onColor = resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB";
-  const offColor =
-    setting == "theme"
-      ? "#EA580C"
-      : setting == "nsfw"
-      ? "#059669"
-      : resolvedTheme === "dark"
-      ? "#4B5563"
-      : "#D1D5DB";
+  const [onHandleColor, setOnHandleColor] = useState<string>();
+  const [offHandleColor, setOffHandleColor] = useState<string>();
+  const [onColor, setOnColor] = useState<string>();
+  const [offColor, setOffColor] = useState<string>();
 
   const [checkedIcon, setCheckedIcon] = useState(<BsCheck />);
   const [uncheckedIcon, setUncheckedIcon] = useState(<BsX />);
@@ -87,9 +73,52 @@ const Toggles = ({
   const disabled =
     (setting == "postWideUI" && context.syncWideUI == true) ||
     (setting == "collapseChildrenOnly" &&
-      context.defaultCollapseChildren === true);
-
+      context.defaultCollapseChildren === true) ||
+    (setting == "theme" &&
+      resolvedTheme !== "dark" &&
+      resolvedTheme !== "light");
   const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const [updateTheme, setUpdateTheme] = useState(0);
+  useEffect(() => {
+    setUpdateTheme((t) => t + 1);
+  }, [resolvedTheme]);
+  useEffect(() => {
+    let toggleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleColor")
+      .trim();
+    let toggleHandleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleHandleColor")
+      .trim();
+
+    setOnHandleColor(() =>
+      setting == "nsfw"
+        ? resolvedTheme === "dark"
+          ? "#991B1B"
+          : "#EF4444"
+        : toggleHandleColor
+    );
+    setOffHandleColor(() =>
+      setting == "theme"
+        ? "#F59E0B"
+        : setting == "nsfw"
+        ? "#4ADE80"
+        : toggleHandleColor
+    );
+    setOnColor(() => toggleColor);
+    setOffColor(() =>
+      setting == "theme"
+        ? "#EA580C"
+        : setting == "nsfw"
+        ? "#059669"
+        : toggleColor
+    );
+  }, [updateTheme]);
 
   useEffect(() => {
     switch (setting) {
@@ -98,7 +127,7 @@ const Toggles = ({
         !subtext && setSwitchSubtext("Switch between dark and light theme");
         setCheckedIcon(<BiMoon />);
         setUncheckedIcon(<BiSun />);
-        setIsChecked(resolvedTheme === "dark");
+        setIsChecked(resolvedTheme !== "light");
         break;
       case "nsfw":
         !label && setSwitchLabel("NSFW");
@@ -221,31 +250,43 @@ const Toggles = ({
             "Automatically mark posts as read when their thread is opened"
           );
         break;
-        case "disableEmbeds":
-          !label && setSwitchLabel("Disable Embeds");
-          !subtext &&
-            setSwitchSubtext(
-              "Will not load any embeds unless you explicitly switch to embed"
-            );
-          break;
-          case "preferEmbeds":
-            !label && setSwitchLabel("Prefer Embeds");
-            !subtext &&
-              setSwitchSubtext(
-                "Prefer embeds instead of native video. Native video options may not work (autoplay, hoverplay, audio, etc.)"
-              );
-            break;
-            case "embedsEverywhere":
-              !label && setSwitchLabel("Embed Everywhere");
-              !subtext &&
-                setSwitchSubtext(
-                  "By default embeds will only show in single column view or in a post thread. Enable this to show embeds in multi-column mode. Note, this is disabled by default for better performance."
-                );
-              break;
+      case "disableEmbeds":
+        !label && setSwitchLabel("Disable Embeds");
+        !subtext &&
+          setSwitchSubtext(
+            "Will not load any embeds unless you explicitly switch to embed"
+          );
+        break;
+      case "preferEmbeds":
+        !label && setSwitchLabel("Prefer Embeds");
+        !subtext &&
+          setSwitchSubtext(
+            "Prefer embeds instead of native video. Native video options may not work (autoplay, hoverplay, audio, etc.)"
+          );
+        break;
+      case "embedsEverywhere":
+        !label && setSwitchLabel("Embed Everywhere");
+        !subtext &&
+          setSwitchSubtext(
+            "By default embeds will only show in single column view or in a post thread. Enable this to show embeds in multi-column mode. Note, this is disabled by default for better performance."
+          );
+        break;
+      case "userPostType":
+        setIsChecked(context?.[setting] === "links");
+        setCheckedIcon(<BiDetail />);
+        setUncheckedIcon(<BiComment />);
+        !label && setSwitchLabel("Post Type");
+        !subtext &&
+          setSwitchSubtext("Switch between showing comments or posts");
+        break;
       default:
         break;
     }
-    if (setting !== "theme" && setting !== "wideUI") {
+    if (
+      setting !== "theme" &&
+      setting !== "wideUI" &&
+      setting !== "userPostType"
+    ) {
       setIsChecked(context[setting] === true);
     }
   }, [resolvedTheme, context?.[setting], context.syncWideUI]);
@@ -253,7 +294,11 @@ const Toggles = ({
   const handleChange = () => {
     switch (setting) {
       case "theme":
-        setTheme(theme === "dark" ? "light" : "dark");
+        setTheme(
+          resolvedTheme === "dark"
+            ? "light"
+            : resolvedTheme === "light" && "dark"
+        );
         break;
       case "nsfw":
         context.toggleNSFW();
@@ -306,21 +351,28 @@ const Toggles = ({
       case "autoRead":
         context.toggleAutoRead();
         break;
-        case "disableEmbeds":
-          context.toggleDisableEmbeds();
-          break;
-          case "preferEmbeds":
-          context.togglePreferEmbeds();
-          break;
-          case "embedsEverywhere":
-          context.toggleEmbedsEverywhere();
-          break;
+      case "disableEmbeds":
+        context.toggleDisableEmbeds();
+        break;
+      case "preferEmbeds":
+        context.togglePreferEmbeds();
+        break;
+      case "embedsEverywhere":
+        context.toggleEmbedsEverywhere();
+        break;
+      case "userPostType":
+        context.toggleUserPostType();
+        break;
       default:
         break;
     }
   };
 
   if (!mounted) return <></>;
+
+  // if (disabled && setting == "theme"){
+  //   return (<div className="flex items-center flex-grow gap-1"><label>Theme</label><ThemeSelector/></div>)
+  // }
 
   return (
     <label
@@ -340,6 +392,7 @@ const Toggles = ({
       </span>
 
       <Switch
+        disabled={disabled}
         onChange={() => {
           !disabled && handleChange();
         }}

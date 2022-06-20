@@ -37,8 +37,8 @@ const SubPills = ({
       <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
         <div
           className={
-            "items-center h-9 px-4 py-1.5 text-center border rounded-md select-none  dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-            (multiSub === "" && "  ring-2")
+            "items-center flex h-9 px-4 py-1.5 text-center border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
+            (multiSub === "" && "  ring-2 border-transparent ring-th-accent")
           }
         >
           {`${currMulti ? `${currMulti}` : "Feed"} (${subArray.length})`}
@@ -50,7 +50,7 @@ const SubPills = ({
     <div
       title={!expand ? "expand" : "collapse"}
       onClick={() => setExpand((e) => !e)}
-      className="flex items-center justify-center flex-none text-center border rounded-md cursor-pointer select-none h-9 w-7 dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover"
+      className="flex items-center justify-center flex-none text-center border rounded-md cursor-pointer select-none h-9 w-7 border-th-border bg-th-post ring-th-accent hover:bg-th-postHover hover:ring-2 hover:border-transparent"
     >
       {" "}
       <BsChevronDown className={expand ? "-rotate-180" : " rotate-0 "} />
@@ -74,12 +74,12 @@ const SubPills = ({
           }}
           key={s}
         >
-          <a href={`${s}`}>
+          <a href={`${s}?m=${currMulti}`}>
             <div
               title={`show only posts from r/${s}`}
               className={
-                "flex h-9 items-center px-3 py-1 space-x-2 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2")
+                "flex h-9 items-center px-3 py-1 space-x-2 border rounded-full select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent ring-th-accent  " +
+                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2  ")
               }
             >
               <h1 className="">{s}</h1>
@@ -90,7 +90,7 @@ const SubPills = ({
                   e.preventDefault();
                   removeSub(s);
                 }}
-                className=" border rounded-full p-0.5 dark:border-darkPostHover dark:hover:bg-trueGray-900 hover:ring-1 "
+                className=" border rounded-full p-0.5 border-th-postHover hover:bg-th-base hover:ring-1 cursor-pointer"
               >
                 <MdOutlineClear className="flex-none w-4 h-4 " />
               </button>

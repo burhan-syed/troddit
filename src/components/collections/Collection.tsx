@@ -19,13 +19,14 @@ const CheckBox = ({ toggled }) => {
       className={
         "flex h-full border rounded-md transition-all items-center justify-center  " +
         (toggled
-          ? " dark:bg-blue-600 bg-blue-400 border-blue-400 dark:border-blue-600"
-          : " dark:group-hover:bg-darkBorder group-hover:bg-lightBorder border-lightBorder dark:border-darkBorder ")
+          ? "  bg-th-accent border-th-accent "
+          : " group-hover:bg-th-highlight border-th-border  ")
       }
     >
       <AiOutlineCheck
         className={
-          " transition-all text-white" + (toggled ? " scale-100 " : " scale-0")
+          " transition-all text-white" +
+          (toggled ? " scale-100 hover:scale-110" : " scale-0")
         }
       />
     </div>
@@ -39,8 +40,12 @@ const Collection = ({
   over_18 = false,
   owner = "",
   key_color = "",
+  collapsed = true,
+  isOwner = false,
+  bannerMode = false,
+  goToMultiSub = (e, s) => {},
 }) => {
-  const [expand, setExpand] = useState(true);
+  const [expand, setExpand] = useState(!collapsed);
   const [toggledSubs, setToggledSubs] = useState([]);
   const [allToggled, setAllToggled] = useState(false);
   // const [sortedSubs, setSortedSubs] = useState([]);
@@ -71,15 +76,31 @@ const Collection = ({
   return (
     <div
       className={
-        "relative  transition-colors bg-contain border border-gray-300 shadow-md bg-lightPost  dark:bg-darkBG dark:border-trueGray-700  rounded-lg select-none dark:hover:border-trueGray-500 hover:border-gray-400"
+        "relative  transition-colors bg-contain  border-th-border bg-th-post  shadow-md  select-none " +
+        (bannerMode ? " border-t border-b " : " rounded-lg border")
       }
     >
       <div
-        className={` absolute  w-full h-16 bg-cover bg-center  rounded-t-md bg-blue-400 dark:bg-red-800 `}
+        className={` absolute  w-full  bg-cover bg-center  bg-th-scrollbar ${
+          bannerMode ? " h-[121px] " : " h-16 rounded-t-md"
+        }`}
       ></div>
-      <div className="flex flex-col mx-2 my-2 ">
-        <div className="flex flex-row mt-6">
-          <div className="z-20 flex-none w-16 h-16 border-2 rounded-full dark:bg-darkBG bg-lightPost">
+      <div
+        className={
+          "flex flex-col my-2 " + (bannerMode ? " md:mx-16 " : " mx-2")
+        }
+      >
+        <div
+          className={
+            "flex flex-row " + (bannerMode ? " mt-[3.75rem]" : " mt-6")
+          }
+        >
+          <div
+            className={
+              "z-20 flex-none  rounded-full bg-th-post" +
+              (bannerMode ? " w-24 h-24 mt-1 border-4" : " w-16 h-16 border-2")
+            }
+          >
             {icon?.includes("https://") ? (
               <>
                 <Image
@@ -96,14 +117,19 @@ const Collection = ({
               <div
                 className={
                   "rounded-full bg-red-400 " +
-                  " w-full h-full  text-lightText text-6xl items-center font-semibold  justify-center flex overflow-hidden"
+                  " w-full h-full  text-white text-6xl items-center   justify-center flex overflow-hidden"
                 }
               >
-                {"f/"}
+                {"f"}
               </div>
             )}
           </div>
-          <div className="z-10 flex flex-row items-baseline gap-2 p-1 pr-4 mt-1 pl-11 -ml-9 rounded-tr-md pl-auto dark:bg-darkBG bg-lightPost ">
+          <div
+            className={
+              "z-10 flex flex-row items-baseline gap-2 p-1 pr-4 pl-11 -ml-9 rounded-tr-md pl-auto bg-th-post " +
+              (bannerMode ? " mt-6 pt-1.5" : " mt-1 ")
+            }
+          >
             <div
               className="flex flex-row items-baseline gap-2 cursor-pointer group "
               onClick={(e) => {
@@ -119,13 +145,18 @@ const Collection = ({
             </div>
 
             {over_18 && (
-              <span className="text-xs text-red-400 text-color dark:text-red-700 pb-0.5">
+              <span className="text-xs  text-th-red text-color pb-0.5">
                 NSFW
               </span>
             )}
           </div>
         </div>
-        <div className="z-30 flex flex-row pl-5 -mt-7 ml-14 ">
+        <div
+          className={
+            "z-30 flex flex-row pl-5  " +
+            (bannerMode ? " -mt-10 ml-[5.5rem] py-1" : " -mt-7 ml-14")
+          }
+        >
           <div
             className="flex flex-row flex-grow group hover:cursor-pointer "
             onClick={(e) => {
@@ -138,7 +169,7 @@ const Collection = ({
               A collection of {subreddits.length} subreddits
             </span>
 
-            <div className="flex items-center justify-center w-10 h-8 ml-auto border border-transparent rounded-md group-hover:bg-lightHighlight dark:group-hover:bg-darkHighlight group-hover:border-lightBorderHighlight dark:group-hover:border-transparent">
+            <div className="flex items-center justify-center w-10 h-8 ml-auto border border-transparent rounded-md group-hover:bg-th-highlight group-hover:border-th-borderHighlight ">
               <BsChevronDown
                 className={
                   (expand ? "-rotate-180 " : "rotate-0 ") +
@@ -153,13 +184,18 @@ const Collection = ({
               subreddits.find((sub) => sub?.toUpperCase() === s?.toUpperCase())
             )}
             currMulti={name}
+            isOwner={isOwner}
           />
-          <div className="mr-1 "></div>
-          <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
-            <a className="flex items-center justify-center w-10 h-8 border rounded-md border-lightBorder hover:border-lightBorderHighlight hover:dark:bg-darkHighlight dark:border-darkBorder hover:bg-lightHighlight dark:hover:border-darkBorderHighlight">
-              <BsArrowRight />
-            </a>
-          </Link>
+          {!bannerMode && (
+            <>
+              <div className="mr-1 "></div>
+              <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
+                <a className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
+                  <BsArrowRight />
+                </a>
+              </Link>
+            </>
+          )}
         </div>
         <div
           className={
@@ -176,12 +212,23 @@ const Collection = ({
             })
             ?.map((sub, i) => (
               <div
-                className="flex flex-row-reverse items-center text-sm border rounded-md overflow-ellipsis dark:border-darkBorder"
+                className="flex flex-row-reverse items-center text-sm border rounded-md overflow-ellipsis border-th-border "
                 key={sub + i}
               >
                 <div className="flex flex-row items-center flex-none ml-auto">
-                  <Link href={`/r/${sub}`} passHref>
-                    <a>
+                  <Link
+                    href={`/r/${sub}${bannerMode ? `?m=${name}` : ""}`}
+                    passHref
+                  >
+                    <a
+                      onClick={(e) => {
+                        if (bannerMode) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          goToMultiSub(e, sub);
+                        }
+                      }}
+                    >
                       <BsBoxArrowInUpRight className="ml-0.5 w-3 h-3 transition-transform hover:scale-125" />
                     </a>
                   </Link>

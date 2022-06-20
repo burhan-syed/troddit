@@ -189,7 +189,7 @@ export const MainProvider = ({ children }) => {
   const [scoreGreater, setScoreGreater] = useState(true);
 
   const [replyFocus, setReplyFocus] = useState(false);
-
+  const [updateFilters, setUpdateFilters] = useState(0);
   const toggleFilter = (filter) => {
     switch (filter) {
       case "read":
@@ -1096,7 +1096,9 @@ export const MainProvider = ({ children }) => {
         preferEmbeds, 
         togglePreferEmbeds, 
         embedsEverywhere, 
-        toggleEmbedsEverywhere
+        toggleEmbedsEverywhere,
+        updateFilters, 
+        setUpdateFilters,
       }}
     >
       {children}

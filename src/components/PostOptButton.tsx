@@ -26,8 +26,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
   const context: any = useMainContext();
   const { addSubFilter, addUserFilter } = useFilterSubs();
   const filterMenuRef = useRef(null);
-  const {read} = useRead(post?.name)
-
+  const { read } = useRead(post?.name);
 
   const toggleRead = async () => {
     context?.toggleReadPost(post?.name);
@@ -35,10 +34,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
 
   return (
     <>
-      <Menu
-        as="div"
-        className={" relative font-normal "}
-      >
+      <Menu as="div" className={" relative font-normal "}>
         {({ open }) => (
           <>
             <div
@@ -52,8 +48,8 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                 className={
                   " flex justify-center items-center  border rounded-md  " +
                   (mode == "row"
-                    ? " border-transparent hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight "
-                    : " border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight")
+                    ? " border-transparent hover:border-th-borderHighlight "
+                    : " border-th-border hover:border-th-borderHighlight ")
                 }
               >
                 <BsThreeDotsVertical
@@ -72,7 +68,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
             >
               <Menu.Items
                 className={
-                  "absolute translate-x-[-13.4rem] z-50  w-52 bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer  py-1" +
+                  "absolute translate-x-[-13.4rem] z-50  w-52 bg-th-background2 ring-th-base rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border border-th-border select-none cursor-pointer  py-1" +
                   (mode == "post" || mode == "row"
                     ? " top-0 origin-top-right"
                     : " bottom-0 origin-bottom-right")
@@ -86,12 +82,12 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       onClick={(e) => e.stopPropagation()}
                       className={
                         (active
-                          ? "bg-lightHighlight dark:bg-darkHighlight "
+                          ? "bg-th-highlight "
                           : "") +
                         " px-2 py-1 text-sm flex flex-row items-center"
                       }
                     >
-                      <div className="flex items-center justify-center flex-none w-4 h-4 mr-2 overflow-hidden border-black rounded-full select-none border-1">
+                      <div className="flex items-center justify-center flex-none w-4 h-4 mr-2 overflow-hidden rounded-full select-none ">
                         <h1>r/</h1>
                       </div>
                       <h1>{`Go to ${post?.subreddit}`}</h1>
@@ -106,7 +102,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       onClick={(e) => e.stopPropagation()}
                       className={
                         (active
-                          ? "bg-lightHighlight dark:bg-darkHighlight "
+                          ? "bg-th-highlight "
                           : "") +
                         "  px-2 py-1 text-sm flex flex-row items-center"
                       }
@@ -126,7 +122,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         onClick={(e) => e.stopPropagation()}
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") +
                           " px-2 py-1 text-sm flex flex-row items-center"
                         }
@@ -151,7 +147,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         onClick={(e) => e.stopPropagation()}
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") +
                           " px-2 py-1 text-sm flex flex-row items-center"
                         }
@@ -170,7 +166,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       }}
                       className={
                         (active
-                          ? "bg-lightHighlight dark:bg-darkHighlight "
+                          ? "bg-th-highlight "
                           : "") + "  "
                       }
                     >
@@ -194,7 +190,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") + " block  text-sm hover:cursor-pointer"
                         }
                         onClick={(e) => e.stopPropagation()}
@@ -216,7 +212,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       <div
                         className={
                           (active
-                            ? "bg-lightHighlight dark:bg-darkHighlight "
+                            ? "bg-th-highlight "
                             : "") + " block  text-sm hover:cursor-pointer"
                         }
                         onClick={(e) => e.stopPropagation()}
@@ -240,7 +236,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       }}
                       className={
                         (active
-                          ? "bg-lightHighlight dark:bg-darkHighlight "
+                          ? "bg-th-highlight "
                           : "") + "  "
                       }
                     >
@@ -253,13 +249,11 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         className="flex flex-row items-center min-w-full px-2 py-1 text-sm hover:cursor-pointer"
                       >
                         <MdOutlineClear className="flex-none w-4 h-4 mr-2 mt-0.5 " />
-                        <h1>{read  ? "Mark Unread" : "Mark Read"}</h1>
+                        <h1>{read ? "Mark Unread" : "Mark Read"}</h1>
                       </button>
                     </div>
                   )}
                 </Menu.Item>
-                {/* <Menu.Item>{({ active }) => <div>Mark Unread</div>}</Menu.Item>
-                <Menu.Item>{({ active }) => <div>Filter..</div>}</Menu.Item> */}
               </Menu.Items>
             </Transition>
           </>
@@ -278,7 +272,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
         >
           <Menu.Items
             className={
-              "absolute  z-50  w-52 bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer  py-1" +
+              "absolute  z-50  w-52 bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border select-none cursor-pointer  py-1" +
               (mode == "post"
                 ? " top-[-2.31rem] origin-top-right translate-x-[-13.4rem]  "
                 : mode == "row"
@@ -301,7 +295,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     e.stopPropagation();
                   }}
                   className={
-                    (active ? "bg-lightHighlight dark:bg-darkHighlight " : "") +
+                    (active ? "bg-th-highlight " : "") +
                     " px-2 py-1 text-sm flex flex-row items-center w-full"
                   }
                 >
@@ -320,7 +314,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     e.stopPropagation();
                   }}
                   className={
-                    (active ? "bg-lightHighlight dark:bg-darkHighlight " : "") +
+                    (active ? "bg-th-highlight " : "") +
                     "  px-2 py-1 text-sm flex flex-row items-center w-full"
                   }
                 >

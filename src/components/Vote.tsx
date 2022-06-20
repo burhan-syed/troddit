@@ -91,8 +91,8 @@ const Vote = ({
       strokeWidth="0"
       viewBox="0 0 24 24"
       className={
-        (liked ? " text-upvote " : "") +
-        ` flex-none  w-${size} h-${size} ${!archived ? " cursor-pointer hover:text-upvote scale-110 hover:scale-100" : ""}`
+        (liked ? " text-th-upvote " : "") +
+        ` flex-none  w-${size} h-${size} ${!archived ? " cursor-pointer hover:text-th-upvote scale-110 hover:scale-100" : ""}`
       }
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -109,8 +109,8 @@ const Vote = ({
       strokeWidth="0"
       viewBox="0 0 24 24"
       className={
-        (liked === false ? " text-downvote " : " ") +
-        ` flex-none w-${size} h-${size} ${!archived ? " cursor-pointer } hover:text-downvote scale-110 hover:scale-100" : ""} `
+        (liked === false ? " text-th-downvote " : " ") +
+        ` flex-none w-${size} h-${size} ${!archived ? " cursor-pointer } hover:text-th-downvote scale-110 hover:scale-100" : ""} `
       }
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -128,8 +128,8 @@ const Vote = ({
           title={`${!archived ? `upvote ${postMode ? "(a)" : ""}` : "archived"}`}
           onClick={(e) => castVote(e, true)}
           className={
-            (liked ? " text-upvote " : liked === false ? " opacity-50 " : "") +
-            ` flex-none w-${size} h-${size} ${!archived ? "cursor-pointer  hover:text-upvote hover:scale-110 hover:opacity-100" : " opacity-10 "} `
+            (liked ? " text-th-upvote " : liked === false ? " opacity-50 " : "") +
+            ` flex-none w-${size} h-${size} ${!archived ? "cursor-pointer  hover:text-th-upvote hover:scale-110 hover:opacity-100" : " opacity-10 "} `
           }
         />
       )}
@@ -138,9 +138,9 @@ const Vote = ({
           <p
             className={
               (liked
-                ? " text-upvote "
+                ? " text-th-upvote "
                 : liked === false
-                ? "text-downvote "
+                ? "text-th-downvote "
                 : " ") + " text-sm"
             }
           >
@@ -156,7 +156,7 @@ const Vote = ({
           onClick={(e) => castVote(e, false)}
           className={
             (liked ? " opacity-50 " : "") +
-            ` flex-none w-${size} h-${size} ${!archived ? "cursor-pointer  hover:text-downvote hover:scale-110 hover:opacity-100" : "opacity-10"} `
+            ` flex-none w-${size} h-${size} ${!archived ? "cursor-pointer  hover:text-th-downvote hover:scale-110 hover:opacity-100" : "opacity-10"} `
           }
         />
       )}

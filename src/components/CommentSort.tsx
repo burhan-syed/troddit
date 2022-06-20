@@ -25,7 +25,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
           <div className="flex-grow ">
             <Menu.Button
               name="Sort Comments By"
-              className="flex flex-row items-center justify-between h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG"
+              className="flex flex-row items-center justify-between h-full px-2 border rounded-md border-th-border bg-th-background2 focus:outline-none hover:border-th-borderHighlight"
             >
               <div className="mr-2">{`sort comments by ${sort}`}</div>
               <BsChevronDown
@@ -49,7 +49,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
           >
             <Menu.Items
               className={
-                "absolute right-0 w-40 mt-11 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder select-none cursor-pointer "
+                "absolute right-0 w-40 mt-11 origin-top-right rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border ring-th-base border-th-border bg-th-background2 select-none cursor-pointer "
                 // + (hide && " hidden")
               }
             >
@@ -63,7 +63,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                         setsort("best");
                       }}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -82,7 +82,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                         setsort("top");
                       }}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -105,7 +105,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                       <div
                         className={classNames(
                           active
-                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            ? "bg-th-highlight"
                             : "",
                           "block px-4 py-1 text-sm"
                         )}
@@ -126,7 +126,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                         setsort("controversial");
                       }}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -145,7 +145,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                         setsort("old");
                       }}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >
@@ -164,7 +164,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                         setsort("q & a");
                       }}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm "
                       )}
                     >

@@ -72,14 +72,14 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
       <div
         className={
           (!context.mediaOnly || !hasMedia
-            ? "px-3 pt-3 pb-2 bg-lightPost hover:bg-lightPostHover dark:bg-darkBG dark:hover:bg-darkPostHover "
+            ? "px-3 pt-3 pb-2 bg-th-post hover:bg-th-postHover  "
             : "  ") +
           " rounded-lg    " +
           (context.mediaOnly && hasMedia
             ? " border-transparent overflow-clip "
-            : " dark:hover:border-trueGray-500 hover:border-gray-400 hover:shadow-2xl border-gray-300 shadow-md group dark:border-trueGray-700 bg-lightPost hover:bg-lightPostHover dark:bg-darkBG dark:hover:bg-darkPostHover ") +
+            : " hover:border-th-borderHighlight2 border-th-border2  hover:shadow-2xl  shadow-md group bg-th-post hover:bg-th-postHover ") +
           (context.mediaOnly && hasMedia && hovered
-            ? "  dark:border-b-transparent border-b-transparent rounded-b-none dark:border-trueGray-500 border-gray-400  "
+            ? "  border-b-transparent rounded-b-none border-th-border2   "
             : " ") +
           " text-sm transition-colors border hover:cursor-pointer "
         }
@@ -87,12 +87,12 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
         <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row items-center py-1 text-xs text-gray-400 truncate select-auto dark:text-gray-500">
-                <div className="flex flex-row flex-wrap items-center text-xs text-gray-400 truncate select-auto dark:text-gray-500">
+              <div className="flex flex-row items-center py-1 text-xs truncate select-auto text-th-textLight ">
+                <div className="flex flex-row flex-wrap items-center text-xs truncate select-auto ">
                   <Link href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
-                      className="flex flex-row items-center mr-1 font-semibold text-black hover:underline dark:text-lightText"
+                      className="flex flex-row items-center mr-1 font-semibold text-th-text hover:underline "
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
@@ -143,7 +143,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   {post?.over_18 && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-red-400 text-color dark:text-red-700">
+                      <span className="text-th-red text-color ">
                         NSFW
                       </span>
                     </div>
@@ -151,7 +151,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   {post?.spoiler && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-red-400 text-color dark:text-red-700">
+                      <span className="text-th-red text-color ">
                         SPOILER
                       </span>
                     </div>
@@ -195,10 +195,6 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                     <TitleFlair post={post} />
                   </span>
                 </h1>
-
-                {/* <div className="pb-1 text-xs">
-                  
-                </div> */}
               </div>
             </div>
           )}
@@ -270,7 +266,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   <h1
                     className={
                       "cursor-pointer hover:underline" +
-                      " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
+                      " text-th-textLight group-hover:text-th-text   "
                     }
                   >
                     {`${numToString(post.num_comments, 1000)} ${
@@ -295,7 +291,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
             ref={infoBox}
             className={
               (hovered ? "" : " hidden ") +
-              " absolute w-full mr-1 px-2 pb-1  -mt-8 rounded-b-lg border-t-0 -z-10 drop-shadow-xl bg-lightPost dark:bg-darkBG dark:border-trueGray-500 border-gray-400 border-t-transparent border shadow-2xl"
+              " absolute w-full mr-1 px-2 pb-1  -mt-8 rounded-b-lg border-t-0 -z-10 drop-shadow-xl bg-th-post border-th-border2 border-t-transparent border shadow-2xl"
             }
           >
             <div className="bg-transparent pt-9"></div>
@@ -305,7 +301,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   className={
                     " hover:underline font-semibold text-base mr-2 " +
                     (post?.distinguished == "moderator" || post?.stickied
-                      ? " text-lightGreen dark:text-darkGreen "
+                      ? " text-th-green "
                       : " ") +
                     (read && context.dimRead ? " opacity-50 " : "")
                   }
@@ -319,7 +315,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
               )}
             </h1>
 
-            <div className="flex flex-row items-start py-1 pb-1 text-xs text-gray-400 truncate text-gray dark:text-gray-500">
+            <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight">
               <div className="flex flex-row flex-wrap items-start ">
                 <Link href={`/r/${post?.subreddit}`}>
                   <a
@@ -328,7 +324,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                       e.stopPropagation();
                     }}
                   >
-                    <h2 className="font-semibold text-black hover:underline dark:text-lightText">
+                    <h2 className="font-semibold text-th-text hover:underline">
                       r/{post?.subreddit ?? ""}
                     </h2>
                   </a>
@@ -367,7 +363,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                 {post?.over_18 && (
                   <div className="flex flex-row pl-1 space-x-1">
                     <p>•</p>
-                    <span className="text-red-400 text-color dark:text-red-700">
+                    <span className="text-th-red ">
                       NSFW
                     </span>
                   </div>
@@ -375,7 +371,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                 {post?.spoiler && (
                   <div className="flex flex-row pl-1 space-x-1">
                     <p>•</p>
-                    <span className="text-red-400 text-color dark:text-red-700">
+                    <span className="text-th-red">
                       SPOILER
                     </span>
                   </div>
@@ -413,7 +409,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   <h1
                     className={
                       "cursor-pointer hover:underline font-semibold " +
-                      " text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-lightText  "
+                      " text-th-textLight group-hover:text-th-text   "
                     }
                   >
                     {`${numToString(post.num_comments, 1000)} ${

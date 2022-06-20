@@ -96,7 +96,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-80" />
+            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-800 bg-opacity-80" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -115,24 +115,18 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-darkBG sm:my-8 sm:align-middle sm:max-w-lg md:max-w-3xl lg:max-w-5xl sm:w-full">
-              <div className="relative px-4 pt-5 pb-4 overflow-visible bg-white dark:bg-darkBG sm:p-6 sm:pb-4">
+            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl bg-th-background2 sm:my-8 sm:align-middle sm:max-w-lg md:max-w-3xl lg:max-w-5xl sm:w-full">
+              <div className="relative px-4 pt-5 pb-4 overflow-visible sm:p-6 sm:pb-4">
                 <div
-                  className="absolute flex items-center justify-center w-8 h-8 ml-auto text-gray-500 top-2 right-2 hover:text-gray-900 dark:hover:text-gray-200 hover:cursor-pointer"
+                  className="absolute flex items-center justify-center w-8 h-8 ml-auto top-2 right-2 opacity-40 hover:opacity-60 hover:cursor-pointer"
                   onClick={() => {
                     setOpen(false);
                   }}
                 >
                   <RiArrowGoBackLine className="w-8 h-8 " />
                 </div>
-                <div className=" sm:flex sm:items-start">
+                <div className="mt-3 sm:flex sm:items-start">
                   <div className="min-w-full mt-4 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    {/* <Dialog.Title
-                      as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200"
-                    >
-                      {"Create Multi"}
-                    </Dialog.Title> */}
                     <div className="mt-3">
                       <div className="flex flex-wrap items-center gap-2 text-sm">
                         {subreddits.map((s, i) => (
@@ -147,8 +141,8 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                           >
                             <div
                               className={
-                                "flex items-center px-3 py-1 border rounded-full select-none dark:bg-trueGray-900 border-lightBorder bg-lightPost dark:border-2 cursor-pointer dark:border-darkPostHover hover:bg-lightHighlight dark:hover:bg-darkPostHover" +
-                                (subsForMulti.includes(s) ? " ring-2 " : " ")
+                                "flex items-center px-3 py-1 border rounded-full select-none bg-th-base border-th-border hover:bg-th-highlight cursor-pointer " +
+                                (subsForMulti.includes(s) ? " ring-2 ring-th-accent border-transparent " : " ")
                               }
                               onClick={() => toggleSubSelect(s)}
                             >
@@ -173,7 +167,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                           createMultiButton();
                         }}
                       >
-                        <div className="flex items-center py-2 border-b border-teal-500">
+                        <div className="flex items-center py-2 border-b border-th-border">
                           <input
                             className="w-full px-2 py-1 mr-3 leading-tight bg-transparent border-none appearance-none focus:outline-none"
                             type="text"
@@ -187,8 +181,8 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                             className={
                               (waiting
                                 ? " opacity-50 "
-                                : " hover:border-lightBorderHighlight dark:hover:border-lightBorder ") +
-                              " flex-shrink-0 px-2 py-1 bg-white border rounded-md border-lightBorder  dark:border-darkBorder  focus:outline-none dark:bg-darkBG"
+                                : " hover:border-th-borderHighlight ") +
+                              " flex-shrink-0 px-2 py-1  border-th-border hover:border-th-borderHighlight hover:bg-th-highlight border rounded-md   focus:outline-none "
                             }
                             type="button"
                           >
@@ -198,7 +192,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                       </form>
                       <div className="flex items-center justify-between text-xs">
                         {subsForMulti.length === 0 ? (
-                          <h1 className="italic text-red-500">
+                          <h1 className="italic text-th-red">
                             {"Select 1 Sub Minimum"}
                           </h1>
                         ) : subsForMulti.length > 1 ? (
@@ -208,7 +202,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                         ) : (
                           <h1 className="text-transparent select-none ">a</h1>
                         )}
-                        {err && <h1 className="italic text-red-500">{err}</h1>}
+                        {err && <h1 className="italic text-th-red">{err}</h1>}
                       </div>
                     </div>
                   </div>

@@ -401,7 +401,7 @@ const Media = ({
             >
               <TwitterTweetEmbed
                 placeholder={
-                  <div className="relative mx-auto my-5 bg-gray-300 border rounded-lg dark:border-darkBorder border-lightBorder w-60 h-96 animate-pulse dark:bg-gray-800">
+                  <div className="relative mx-auto my-5 border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
@@ -570,9 +570,10 @@ const Media = ({
             postMode) ? (
             <div
               className={
-                "p-1 overflow-y-auto select-text  overscroll-auto scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll" +
+                "p-1 overflow-y-auto select-text  overscroll-auto " +
+                "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full" +
                 (!imgFull
-                  ? " max-h-96 border-b dark:border-darkBorderHighlight"
+                  ? " max-h-96 border-b border-th-border"
                   : " ") +
                 (containerDims?.[1] ? " mx-4 my-2 " : "") +
                 (read && context.dimRead ? " opacity-50 " : "")

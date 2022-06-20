@@ -40,7 +40,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   useEffect(() => {
     if (allowHide && !context?.loading) {
       //console.log(scrollDirection, scrollY);
-      if (scrollDirection === "down") {
+      if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
       } else if (scrollY > 300 && scrollDirection === "up" && !hidden) {
         setHidden(true);
@@ -89,7 +89,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-        <nav className="flex flex-row items-center flex-grow h-full bg-white shadow-lg md:justify-between dark:bg-darkBG">
+        <nav className="flex flex-row items-center flex-grow h-full shadow-lg bg-th-background2 md:justify-between ">
           <CgMenu
             className="w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
@@ -131,7 +131,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </div>
             <div
               className={
-                "hidden w-20 h-full border border-white dark:hover:border-darkBorder hover:border-lightBorder dark:border-darkBG rounded-md md:block"
+                "hidden w-20 h-full border  hover:border-th-border border-transparent rounded-md md:block"
               }
               //onClick={() => plausible("login")}
             >

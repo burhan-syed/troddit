@@ -88,7 +88,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           currLocation !== "HOME" &&
           currLocation !== "ALL" &&
           currLocation !== "POPULAR" && (
-            <div className="py-2 pl-3 pr-4 hover:bg-lightHighlight dark:hover:bg-darkHighlight">
+            <div className="py-2 pl-3 pr-4 hover:bg-th-highlight">
               <DropdownSubCard
                 sub={{
                   kind: "t5",
@@ -107,7 +107,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             <MyLink href="/">
               <div
                 className={
-                  (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
+                  (active ? "bg-th-highlight " : " ") +
                   " flex flex-row items-center py-1.5 space-x-2  pl-4 cursor-pointer"
                 }
               >
@@ -122,7 +122,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             <MyLink href="/r/popular">
               <div
                 className={
-                  (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
+                  (active ? "bg-th-highlight " : " ") +
                   " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
                 }
               >
@@ -137,7 +137,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             <MyLink href="/r/all">
               <div
                 className={
-                  (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
+                  (active ? "bg-th-highlight " : " ") +
                   " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
                 }
               >
@@ -152,7 +152,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             <MyLink href="/subreddits">
               <div
                 className={
-                  (active ? "bg-lightHighlight dark:bg-darkHighlight " : " ") +
+                  (active ? "bg-th-highlight " : " ") +
                   " flex flex-row items-center py-1.5 h-9 space-x-2  pl-4 cursor-pointer"
                 }
               >
@@ -172,7 +172,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             onChange={(e) => {
               setFilter(e.target.value);
             }}
-            className="w-full mx-2 px-2 border py-1.5 outline-none text-sm rounded border-lightBorder bg-transparent dark:bg-darkBG dark:border-darkBorder dark:text-lightText"
+            className="w-full mx-2 px-2 border py-1.5 outline-none text-sm rounded  border-th-border  bg-transparent focus:border-th-borderHighlight"
           />
         </div>
       )}
@@ -183,7 +183,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div
                 onClick={() => setExpandMultis((m) => !m)}
                 className={
-                  "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+                  "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-th-highlight" +
                   (expandMultis ? " " : " mb-2")
                 }
               >
@@ -206,16 +206,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                 <div className="py-2">
                   {myLocalMultis
                     ? myLocalMultis
-                        // .filter(
-                        //   (multi) =>
-                        //     filter === "" ||
-                        //     multi.data?.display_name_prefixed
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase()) ||
-                        //     multi.data?.display_name
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase())
-                        // )
                         .map((multi, i) => {
                           return (
                             <Menu.Item
@@ -238,7 +228,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                   <div
                                     className={
                                       (active
-                                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                                        ? "bg-th-highlight"
                                         : " ") +
                                       " px-4 py-2" +
                                       (filter !== "" &&
@@ -271,7 +261,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div
                 onClick={() => setExpandSubs((m) => !m)}
                 className={
-                  "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+                  "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-th-highlight" +
                   (expandSubs ? " " : " mb-2")
                 }
               >
@@ -294,16 +284,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                 <div className="py-2">
                   {myLocalSubsFiltered
                     ? myLocalSubsFiltered
-                        // .filter(
-                        //   (sub) =>
-                        //     filter === "" ||
-                        //     sub.data?.display_name_prefixed
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase()) ||
-                        //     sub.data?.display_name
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase())
-                        // )
                         .map((sub, i) => {
                           return (
                             <Menu.Item
@@ -326,7 +306,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                   <div
                                     className={
                                       (active
-                                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                                        ? "bg-th-highlight"
                                         : " ") +
                                       " px-4 py-2" +
                                       (filter !== "" &&
@@ -357,7 +337,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                   <div
                     onClick={() => setExpandFollowing((m) => !m)}
                     className={
-                      "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+                      "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-th-highlight" +
                       (expandFollowing ? " " : " mb-2")
                     }
                   >
@@ -408,7 +388,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                     <div
                                       className={
                                         (active
-                                          ? "bg-lightHighlight dark:bg-darkHighlight"
+                                          ? "bg-th-highlight"
                                           : " ") +
                                         " px-4 py-2" +
                                         (filter !== "" &&
@@ -440,12 +420,12 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           ) : (
             <button
               className={
-                "p-2 m-2  border rounded-md  border-lightBorder dark:border-darkBorder hover:border-lightBorderHighlight dark:hover:border-darkBorderHighlight" +
+                "p-2 m-2  border rounded-md  border-th-border hover:border-th-borderHighlight " +
                 (hideExtra ? " w-full " : "")
               }
               onClick={() => signIn("reddit")}
             >
-              <span className="text-blue-300 dark:text-blue-600">Login</span> to
+              <span className="text-th-accent ">Login</span> to
               see your subs
             </button>
           )}
@@ -460,7 +440,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           <div
             onClick={() => setExpandMultis((m) => !m)}
             className={
-              "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-lightHighlight dark:hover:bg-darkHighlight" +
+              "px-2 py-0.5 flex justify-between items-center text-xs tracking-widest hover:font-semibold hover:cursor-pointer hover:bg-th-highlight" +
               (expandMultis ? " " : " mb-2")
             }
           >
@@ -490,12 +470,12 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                         <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                           {/* Image */}
                           <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                            <div className="w-6 h-6 text-center bg-red-400 rounded text-lightText ">
+                            <div className="w-6 h-6 text-center text-white bg-red-400 rounded ">
                               {"m"}
                             </div>
                           </div>
                           {/* Text */}
-                          <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
+                          <div className="w-full h-6 ml-2 rounded bg-th-highlight "></div>
                         </div>
                       </div>
                     ))}
@@ -507,13 +487,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                 <div className="py-2">
                   {myMultis
                     ? myMultis
-                        // .filter(
-                        //   (multi) =>
-                        //     filter === "" ||
-                        //     multi.data.display_name
-                        //       .toUpperCase()
-                        //       .includes(filter.toUpperCase())
-                        // )
                         .map((multi, i) => {
                           return (
                             <Menu.Item
@@ -531,7 +504,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                   <div
                                     className={
                                       (active
-                                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                                        ? "bg-th-highlight"
                                         : " ") +
                                       " px-4 py-2" +
                                       (filter !== "" &&
@@ -559,7 +532,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           <div
             onClick={() => setExpandSubs((e) => !e)}
             className={
-              "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-lightHighlight dark:hover:bg-darkHighlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
+              "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-th-highlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
               (expandSubs ? " " : " mb-2")
             }
           >
@@ -588,12 +561,12 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                         <div className="flex flex-row items-center text-sm text-center animate-pulse ">
                           {/* Image */}
                           <div className="flex flex-row items-center w-6 h-6 ml-1 ">
-                            <div className="w-6 h-6 text-center bg-blue-700 rounded-full text-lightText ">
+                            <div className="w-6 h-6 text-center text-white bg-blue-700 rounded-full ">
                               {"r/"}
                             </div>
                           </div>
                           {/* Text */}
-                          <div className="w-full h-6 ml-2 bg-gray-300 rounded dark:bg-gray-800 "></div>
+                          <div className="w-full h-6 ml-2 rounded bg-th-highlight "></div>
                         </div>
                       </div>
                     ))}
@@ -604,16 +577,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div className={"py-2"}>
                 {mySubs
                   ? mySubs
-                      //   .filter(
-                      //     (sub) =>
-                      //       filter === "" ||
-                      //       sub.data?.display_name_prefixed
-                      //         ?.toUpperCase()
-                      //         .includes(filter.toUpperCase()) ||
-                      //       sub.data?.display_name
-                      //         ?.toUpperCase()
-                      //         .includes(filter.toUpperCase())
-                      //   )
                       .map((sub, i) => {
                         return (
                           <Menu.Item
@@ -636,7 +599,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                 <div
                                   className={
                                     (active
-                                      ? "bg-lightHighlight dark:bg-darkHighlight"
+                                      ? "bg-th-highlight"
                                       : " ") +
                                     " px-4 py-2" +
                                     (filter !== "" &&
@@ -670,7 +633,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <div
                 onClick={() => setExpandFollowing((e) => !e)}
                 className={
-                  "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-lightHighlight dark:hover:bg-darkHighlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
+                  "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-th-highlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
                   (expandFollowing ? " " : " mb-2")
                 }
               >
@@ -693,16 +656,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                 <div className={"py-2"}>
                   {myFollowing
                     ? myFollowing
-                        // .filter(
-                        //   (sub) =>
-                        //     filter === "" ||
-                        //     sub.data?.display_name_prefixed
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase()) ||
-                        //     sub.data?.display_name
-                        //       ?.toUpperCase()
-                        //       .includes(filter.toUpperCase())
-                        // )
                         .map((user, i) => {
                           return (
                             <Menu.Item
@@ -720,7 +673,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                   <div
                                     className={
                                       (active
-                                        ? "bg-lightHighlight dark:bg-darkHighlight"
+                                        ? "bg-th-highlight"
                                         : " ") +
                                       " px-4 py-2" +
                                       (filter !== "" &&

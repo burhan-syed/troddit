@@ -4,7 +4,6 @@ import Link from "next/link";
 export default function LoginProfile() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
-  if (loading) return <div className="w-full h-full"></div>;
   if (!session && !loading)
     return (
       <button className="w-full h-full" onClick={() => signIn("reddit")}>
@@ -12,7 +11,7 @@ export default function LoginProfile() {
       </button>
     );
 
-  if (session)
+  if (session && !loading)
     return (
       <Link href={`/u/${session?.user?.name}/saved`}>
         <a>
@@ -22,4 +21,5 @@ export default function LoginProfile() {
         </a>
       </Link>
     );
+  return <div className="w-full h-full"></div>;
 }

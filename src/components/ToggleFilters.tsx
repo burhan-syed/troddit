@@ -71,13 +71,42 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
     //console.log(filter, f, context[f])
     context[f] ? setChecked(true) : setChecked(false);
   }, [context, filter]);
+
+  const [onHandleColor, setOnHandleColor] = useState<string>();
+  const [offHandleColor, setOffHandleColor] = useState<string>();
+  const [onColor, setOnColor] = useState<string>();
+  const [offColor, setOffColor] = useState<string>();
+  const [updateTheme, setUpdateTheme] = useState(0);
+  useEffect(() => {
+    setUpdateTheme((t) => t + 1);
+  }, [resolvedTheme]);
+  useEffect(() => {
+    let toggleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleColor")
+      .trim();
+    let toggleHandleColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--toggleHandleColor")
+      .trim();
+
+    setOnHandleColor(() => toggleHandleColor
+    );
+    setOffHandleColor(() => toggleHandleColor
+    );
+    setOnColor(() => toggleColor);
+    setOffColor(() =>toggleColor
+    );
+  }, [updateTheme]);
+
+
   if (!mounted) return null;
 
   return (
     <div
       title={title}
       onClick={(e) => e.stopPropagation()}
-      className="rounded-lg group dark:hover:bg-darkPostHover hover:bg-lightHighlight"
+      className="rounded-lg group hover:bg-th-highlight"
     >
       <label className="flex flex-row items-center justify-between p-2 cursor-pointer ">
         <span className="flex flex-col">
@@ -91,20 +120,20 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
           checked={checked}
           checkedHandleIcon={<div></div>}
           checkedIcon={
-            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
+            <div className="flex items-center justify-center h-full text-lg ">
               <BsCheck />
             </div>
           }
           uncheckedHandleIcon={<div></div>}
           uncheckedIcon={
-            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
+            <div className="flex items-center justify-center h-full text-lg ">
               <BsX />
             </div>
           }
-          offColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
-          onColor={resolvedTheme === "dark" ? "#4B5563" : "#D1D5DB"}
-          offHandleColor="#0284C7"
-          onHandleColor="#0284C7"
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
         />
       </label>
     </div>

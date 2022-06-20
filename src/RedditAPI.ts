@@ -12,7 +12,7 @@ let ratelimit_remaining = 600;
 const REDDIT = "https://www.reddit.com";
 
 const getToken = async () => {
-  const session =  await getSession();
+  const session = await getSession();
   if (session) {
     try {
       let tokendata = await (await axios.get("/api/reddit/mytoken")).data;
@@ -30,13 +30,17 @@ const getToken = async () => {
 };
 
 //to reduce serverless calls to refresh token
-const checkToken = async (loggedIn: boolean, token, skipCheck:boolean = false) => {
+const checkToken = async (
+  loggedIn: boolean,
+  token,
+  skipCheck: boolean = false
+) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
-    loggedIn && 
-    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires)
-    && !skipCheck
+    loggedIn &&
+    (!token?.expires || Math.floor(Date.now() / 1000) > token?.expires) &&
+    !skipCheck
   ) {
     returnToken = await getToken();
     accessToken = await returnToken?.accessToken;
@@ -55,9 +59,13 @@ export const loadFront = async (
   after?: string,
   count?: number,
   localSubs?: [string],
-  skipCheck:boolean = false
+  skipCheck: boolean = false
 ) => {
-  let { returnToken, accessToken } = await checkToken(loggedIn, token, skipCheck);
+  let { returnToken, accessToken } = await checkToken(
+    loggedIn,
+    token,
+    skipCheck
+  );
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       const res1 = await axios.get(`https://oauth.reddit.com/${sort}`, {
@@ -989,26 +997,18 @@ export const loadMoreComments = async (
   depth?,
   id?
 ) => {
-  //const token = await (await getToken())?.accessToken;
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (accessToken && ratelimit_remaining > 1) {
     try {
-      const res = await axios.get("https://oauth.reddit.com/api/morechildren", {
+      const res = await fetch(`https://oauth.reddit.com/api/morechildren`, {
+        method: "POST",
         headers: {
-          authorization: `bearer ${accessToken}`,
+          Authorization: `bearer ${accessToken}`,
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        params: {
-          api_type: "json",
-          children: children,
-          link_id: link_id,
-          sort: sort,
-          limit_children: false,
-          raw_json: 1,
-          profile_img: true,
-        },
+        body: `api_type=json&children=${children}&link_id=${link_id}&sort=${sort}&limit_children=${false}&raw_json=1&&id=${id}&profile_img=${true}`, //&category=${category}
       });
-      let data = await res.data;
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
+      let data = await res.json();
       return { data: data?.json?.data?.things, token: returnToken };
     } catch (err) {
       console.log(err);
@@ -1028,7 +1028,8 @@ export const loadPost = async (
   permalink,
   sort = "top",
   loggedIn = false,
-  token?
+  token?,
+  withcontext?
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -1041,29 +1042,28 @@ export const loadPost = async (
     accessToken = await returnToken?.accessToken;
   }
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
-
-    let path = permalink
+    let path = permalink;
     //handle direct link case
-    if(!permalink.includes("/comments/")){
-      try{
+    if (!permalink.includes("/comments/")) {
+      try {
         const res = await (
           await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
             params: { raw_json: 1, profile_img: true, sr_detail: true },
           })
         ).data;
-        path = res?.[0]?.data?.children?.[0].data?.permalink
-      } catch (err){}
+        path = res?.[0]?.data?.children?.[0].data?.permalink;
+      } catch (err) {}
     }
 
     try {
-        let res = await axios.get(`https://oauth.reddit.com${path}`, {
+      let res = await axios.get(`https://oauth.reddit.com${path}`, {
         headers: {
           authorization: `bearer ${accessToken}`,
         },
         params: {
           raw_json: 1,
           article: path.split("/")?.[4] ?? path,
-          context: 4,
+          context: withcontext ? 10000 : 1,
           showedits: true,
           showmedia: true,
           showmore: true,
@@ -1090,7 +1090,12 @@ export const loadPost = async (
     try {
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-          params: { raw_json: 1, profile_img: true, sr_detail: true },
+          params: {
+            raw_json: 1,
+            profile_img: true,
+            sr_detail: true,
+            context: withcontext ? 10000 : "",
+          },
         })
       ).data;
       const data = {

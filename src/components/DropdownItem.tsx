@@ -28,7 +28,7 @@ const DropdownItem = ({ sub, isUser = false }) => {
       let subinfo = await loadSubredditInfo(sub?.data?.display_name);
       findThumbnail({ data: subinfo?.data });
     };
-    if (sub?.kind == "t5" || sub?.kind == "t2") {
+    if (sub?.kind == "t5" || sub?.kind == "t2" || sub?.data?.icon_url) {
       findThumbnail(sub);
     } else if (
       sub?.data?.display_name &&
@@ -70,13 +70,13 @@ const DropdownItem = ({ sub, isUser = false }) => {
             <div
               className={
                 (isMulti
-                  ? "rounded bg-red-400"
-                  : "rounded-full bg-lightScroll dark:bg-darkScroll border-2 ") +
-                " w-6 h-6 text-center text-lightText overflow-clip flex items-center justify-center  text-lg"
+                  ? "rounded bg-th-red"
+                  : "rounded-full bg-th-accent border-2 ") +
+                " w-6 h-6 text-center text-white overflow-clip flex items-center justify-center  text-lg"
               }
             >
               <h4 className={isMulti ? "" : "" + "mb-0.5"}>
-                {isUser ? "u/" : isMulti ? "f/" : "r/"}
+                {isUser ? "u/" : isMulti ? "f" : "r/"}
               </h4>
             </div>
           )

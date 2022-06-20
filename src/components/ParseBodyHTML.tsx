@@ -1,4 +1,48 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react/display-name */
+import { useTheme } from "next-themes";
+import React, { useEffect, useRef, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import ParseATag from "./ParseATag";
+
+const HtmlToReact = require("html-to-react");
+const HtmlToReactParser = require("html-to-react").Parser;
+const htmlToReactParser = new HtmlToReactParser();
+const isValidNode = function () {
+  return true;
+};
+
+// Order matters. Instructions are processed in the order they're defined
+const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
+const processingInstructions = [
+  {
+    shouldProcessNode: function (node) {
+      let check =
+        node.parent &&
+        node.parent.name &&
+        node.parent.name === "a" &&
+        node.parent?.attribs?.href?.includes("https://");
+      return check;
+    },
+    processNode: function (node, children, index) {
+      return React.createElement(ParseATag, { key: index }, node); //node?.data?.toUpperCase();
+    },
+  },
+  {
+    // Anything else
+    shouldProcessNode: function (node) {
+      return true;
+    },
+    processNode: processNodeDefinitions.processDefaultNode,
+  },
+];
+
+const ErrorFallBack = () => {
+  return (
+    <div className="text-sm text-th-red">
+      {"<troddit encountered an issue rendering this text>"}
+    </div>
+  );
+};
 
 const ParseBodyHTML = ({
   html,
@@ -7,10 +51,17 @@ const ParseBodyHTML = ({
   rows = false,
   card = false,
   limitWidth = false,
-  comment = false
+  comment = false,
 }) => {
-  const [insertHTML, setInsertHTML] = useState(html);
-  const ref = useRef<HTMLDivElement>();
+  const { theme, resolvedTheme } = useTheme();
+  const [component, setComponent] = useState<any>();
+  const ref = useRef<any>();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     //formatting per Teddit
     const unescape = (s) => {
@@ -33,7 +84,6 @@ const ParseBodyHTML = ({
         });
         result = blankTargets(result);
         result = replaceDomains(result);
-
         return result;
       } else {
         return "";
@@ -50,12 +100,12 @@ const ParseBodyHTML = ({
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
       let splitstr = str.split("<a");
-      let replaceall = [];
+      let replaceall:string[] = [];
       splitstr.forEach((substr) => replaceall.push(replaceUserDomains(substr)));
       return replaceall.join("<a");
     };
 
-    const replaceUserDomains = (str: String) => {
+    const replaceUserDomains = (str: string) => {
       let redditRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))/gm;
       let matchRegex1 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/[ru]\/)/gm;
       let matchRegex2 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/user\/)/gm;
@@ -74,33 +124,55 @@ const ParseBodyHTML = ({
       return str;
     };
 
+    const parseHTML = (html) => {
+      const reactElement = htmlToReactParser.parseWithInstructions(
+        html,
+        isValidNode,
+        processingInstructions
+      );
+      return reactElement;
+    };
+
     let unescaped = unescape(html);
-    setInsertHTML(unescaped);
+    let reactElement = parseHTML(unescaped);
+    setComponent(reactElement);
   }, [html]);
 
   //allow single click to open links, posts..
   useEffect(() => {
-    if ( rows || card && !comment) {
+    if (rows || (card && !comment)) {
       ref?.current && ref.current.click();
     }
   }, [ref]);
 
+  if (!mounted) {
+    return <></>;
+  }
   return (
-    <div
-      ref={ref}
-      onClick={e => {if (post)  {e.stopPropagation();}}} //alternate to single click fix
-      className={
-        "dark:prose-invert prose prose-stone prose-headings:text-stone-900 text-stone-700 dark:text-lightText dark:prose-headings:text-lightText prose-headings:font-normal prose-h1:text-xl   dark:prose-strong:text-rose-400 dark:prose-strong:font-semibold  prose-p:my-0  prose-strong:text-rose-800  " +
-        (small && card
-          ? " prose-sm  "
-          : small
-          ? " prose-sm prose-h1:text-lg  prose-p:my-0 "
-          : "  ") +
-        (limitWidth ? " max-w-2xl " : " max-w-none")
-      }
-      id="innerhtml"
-      dangerouslySetInnerHTML={{ __html: insertHTML }}
-    ></div>
+    <ErrorBoundary FallbackComponent={ErrorFallBack}>
+      <div
+        ref={ref}
+        id="innerhtml"
+        onClick={(e) => {
+          if (post) {
+            e.stopPropagation();
+          }
+        }} //alternate to single click fix
+        className={
+          " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
+          "  prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody " +
+         ((resolvedTheme == "light" ) ? " " : " prose-invert  " ) +
+          (small && card
+            ? " prose-sm  "
+            : small
+            ? " prose-sm prose-h1:text-lg  prose-p:my-0 "
+            : "  ") +
+          (limitWidth ? " max-w-2xl " : " max-w-none")
+        }
+      >
+        {component}
+      </div>
+    </ErrorBoundary>
   );
 };
 

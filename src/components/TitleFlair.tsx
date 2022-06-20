@@ -14,7 +14,7 @@ const TitleFlair = ({ post }) => {
       <div
         className={`p-0.5 px-1 rounded-lg inline-block select-none ${
           post?.link_flair_text_color == "light"
-            ? " text-lightText "
+            ? " text-white "
             : "text-black"
         }`}
         style={{

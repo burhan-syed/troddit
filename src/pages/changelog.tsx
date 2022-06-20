@@ -1,13 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
 import fs from "fs";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { AiOutlineGithub } from "react-icons/ai";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 const ChangeLogPage = ({ changelog }) => {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    return <></>;
+  }
   return (
     <div className="flex items-center justify-center my-10 ">
       <div className="flex flex-col max-w-lg gap-10 lg:max-w-2xl">
-        <p className=" bg-lightPost border  prose-a:text-blue-700 prose-a:hover:underline prose-a:hover:text-blue-500 prose-a:dark:text-blue-400 prose-a:hover:dark:text-blue-300 border-lightBorder  dark:border-darkBorder hover:dark:border-darkBorderHighlight hover:bg-lightPostHover dark:hover:bg-darkPostHover dark:bg-darkBG p-4 rounded-lg shadow-xl prose-sm  prose prose-headings:text-stone-700 text-stone-700 dark:prose-headings:text-lightText  dark:text-lightText prose-h3:text-base prose-h2:text-xl prose-h3:font-light prose-ul:font-light prose-h2:mt-6 prose-h2:my-0.5 prose-h3:my-0 prose-h1:h-6">
+        <p
+          className={
+            " prose-headings:text-th-textHeading text-th-text " +
+            " border bg-th-post prose-a:text-th-link hover:prose-a:text-th-linkHover border-th-border2 prose-a:hover:underline p-4 rounded-lg  prose-sm  prose  prose-h3:text-base prose-h2:text-xl prose-h3:font-light prose-ul:font-light prose-h2:mt-6 prose-h2:my-0.5 prose-h3:my-0 prose-h1:h-6"
+            + ("  shadow-md hover:shadow-2xl " )
+          }
+        >
           <ReactMarkdown rehypePlugins={[rehypeRaw]}>{changelog}</ReactMarkdown>
         </p>
         <div className="flex items-center justify-between ">
@@ -19,7 +35,7 @@ const ChangeLogPage = ({ changelog }) => {
             <img
               src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11e22d8ff4a5b4a1b3346_Supportbutton-1-p-500.png"
               alt="Buy Me a Coffee at ko-fi.com"
-              className="h-10 transition-all rounded-md dark:border hover:scale-110"
+              className="h-10 transition-all border rounded-md border-th-border hover:scale-110"
             />
           </a>
           <a

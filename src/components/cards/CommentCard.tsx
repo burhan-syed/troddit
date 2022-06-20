@@ -15,11 +15,11 @@ const CommentCard = ({ data, postNum, handleClick }) => {
         context.cardStyle === "row1"
           ? `${
               (postNum === 0 ? " border-t rounded-t-md " : " ") +
-              "flex flex-row items-start py-4 pr-4 text-sm bg-lightPost dark:bg-[#212121] dark:hover:bg-darkPostHover group hover:bg-lightPostHover hover:border-l hover:border-r border-gray-300  dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-500  "
+              "flex flex-row items-start py-4 pr-4 text-sm bg-th-post2 hover:bg-th-postHover group  border-l border-r border-transparent hover:border-th-borderHighlight2 "
             }`
           : `${
               (context.cardStyle === "row1" ? "  " : " rounded-lg ") +
-              " text-sm shadow-md bg-lightPost hover:bg-lightPostHover dark:hover:bg-darkPostHover hover:shadow-2xl transition-colors border  group hover:cursor-pointer border-gray-300 shaadow-md dark:bg-darkBG dark:border-trueGray-700 dark:hover:border-trueGray-500 hover:border-gray-400 p-3"
+              " text-sm shadow-md bg-th-post hover:bg-th-postHover border-th-border2 hover:border-th-border2  hover:shadow-2xl transition-colors border  group hover:cursor-pointer  p-3"
             }`
       }
     >
@@ -48,7 +48,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
                   </h2>
                 </a>
               </Link>
-              <span className="text-gray-400 dark:text-gray-500">
+              <span className="text-th-textLight">
                 commented on
               </span>
               <Link href={data?.permalink}>
@@ -58,7 +58,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
                   </h2>
                 </a>
               </Link>
-              <span className="text-gray-400 dark:text-gray-500">in</span>
+              <span className="text-th-textLight">in</span>
               <Link href={`/${data?.subreddit_name_prefixed}`}>
                 <a
                   title={`go to ${data?.subreddit_name_prefixed}`}
@@ -72,7 +72,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
                   </h2>
                 </a>
               </Link>
-              <p className="text-gray-400 dark:text-gray-500">
+              <p className="text-th-textLight">
                 {secondsToTime(data?.created_utc, [
                   "s ago",
                   "min ago",
@@ -92,7 +92,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
               "flex-none " + (context.cardStyle === "row1" ? " w-14 " : "w-10")
             }
           ></div>
-          <div className="flex items-start justify-start pl-2 overflow-y-auto border-l select-text overscroll-auto scrollbar-thin scrollbar-thumb-lightScroll dark:scrollbar-thumb-darkScroll max-h-40">
+          <div className="flex items-start justify-start pl-2 overflow-y-auto border-l select-text border-th-border overscroll-auto max-h-40 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
             <ParseBodyHTML html={data?.body_html} small={true} card={true} comment={true} />
           </div>
         </div>

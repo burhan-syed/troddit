@@ -335,7 +335,7 @@ const Feed = ({
 
   if (loading) {
     return (
-      <div className="absolute top-0 w-screen h-16 bg-blue-700 animate-pulse"></div>
+      <div className="absolute top-0 w-screen h-16 bg-th-accent animate-pulse"></div>
     );
   }
   if (fetchPost) {
@@ -383,7 +383,7 @@ const Feed = ({
               ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
-              ? " bg-lightPost dark:bg-[#212121] rounded-t-md rounded-b-md border shadow-2xl border-gray-300  dark:border-trueGray-700"
+              ? " bg-th-post2 border-th-border rounded-t-md rounded-b-md border shadow-2xl "
               : " ")
           }
         >
@@ -428,7 +428,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
     >
       <p className="text-center">Something went wrong</p>
       <button
-        className="p-2 mb-2 border border-blue-700 rounded-lg hover:bg-lightHighlight dark:hover:bg-darkHighlight"
+        className="p-2 mb-2 border rounded-lg border-th-accent hover:bg-th-highlight"
         onClick={resetErrorBoundary}
       >
         Try again

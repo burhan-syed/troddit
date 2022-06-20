@@ -2,13 +2,8 @@ import { Fragment, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BsFilterRight } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
-import ToggleTheme from "./ToggleTheme";
-import ToggleNSFW from "./ToggleNSFW";
-import ToggleAutoplay from "./ToggleAutoplay";
 import Link from "next/link";
 import { useMainContext } from "../MainContext";
-import ToggleMediaOnly from "./ToggleMediaOnly";
-import ToggleAudioOnHover from "./ToggleAudioOnHover";
 import ToggleFilters from "./ToggleFilters";
 import FilterModal from "./FilterModal";
 
@@ -86,10 +81,10 @@ const FilterMenu = ({ hide = false }) => {
       >
         <div
           className={
-            "flex flex-row items-center justify-center w-full h-full bg-white  rounded-md  dark:bg-darkBG dark:border-darkBG focus:outline-none" +
+            "flex flex-row items-center justify-center w-full h-full  rounded-md  bg-th-background2 focus:outline-none" +
             (active
               ? " z-10 scale-90"
-              : " border border-white hover:border-lightBorder dark:hover:border-darkBorder")
+              : " border border-transparent hover:border-th-border")
           }
         >
           <FiFilter
@@ -100,7 +95,7 @@ const FilterMenu = ({ hide = false }) => {
           <div
             className="absolute z-0 w-full h-full rounded-md"
             style={{
-              backgroundImage: `linear-gradient(${deg}deg, rgb(96, 165, 250), rgb(255, 255, 255))`,
+              backgroundImage: `linear-gradient(${deg}deg, var(--accent), rgb(255, 255, 255))`,
             }}
           ></div>
         )}

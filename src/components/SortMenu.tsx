@@ -217,7 +217,7 @@ const SortMenu = ({ hide = false }) => {
           <div className="flex-grow w-full">
             <Menu.Button
               name="Sort Page By"
-              className="flex flex-row items-center justify-between w-full h-full px-2 bg-white border border-white rounded-md dark:border-darkBG hover:border-lightBorder dark:hover:border-darkBorder focus:outline-none dark:bg-darkBG"
+              className="flex flex-row items-center justify-between w-full h-full px-2 border border-transparent rounded-md hover:border-th-border focus:outline-none "
             >
               <BsChevronDown
                 className={
@@ -289,7 +289,7 @@ const SortMenu = ({ hide = false }) => {
           >
             <Menu.Items
               className={
-                "absolute right-0 w-40 mt-11 origin-top-right bg-white dark:bg-darkBG rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-lightBorder dark:border-darkBorder " +
+                "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border " +
                 (hide && " hidden")
               }
             >
@@ -303,7 +303,7 @@ const SortMenu = ({ hide = false }) => {
                         onClick={(e) => updateSort(e, "best")}
                         className={classNames(
                           active
-                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            ? "bg-th-highlight"
                             : "",
                           "block px-4 py-1 text-sm"
                         )}
@@ -327,7 +327,7 @@ const SortMenu = ({ hide = false }) => {
                       onTouchStart={(e) => setTopTouch(false)}
                       onClick={(e) => updateSort(e, "hot")}
                       className={classNames(
-                        active ? "bg-lightHighlight dark:bg-darkHighlight" : "",
+                        active ? "bg-th-highlight" : "",
                         "block px-4 py-1 text-sm"
                       )}
                     >
@@ -353,7 +353,7 @@ const SortMenu = ({ hide = false }) => {
                         }
                         className={classNames(
                           active
-                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            ? "bg-th-highlight"
                             : "",
                           "block px-4 py-1 text-sm"
                         )}
@@ -379,7 +379,7 @@ const SortMenu = ({ hide = false }) => {
                       <div
                         className={classNames(
                           active
-                            ? "bg-lightHighlight dark:bg-darkHighlight"
+                            ? "bg-th-highlight"
                             : "",
                           "block px-4 py-1 text-sm"
                         )}
@@ -395,7 +395,7 @@ const SortMenu = ({ hide = false }) => {
                         className={
                           (active || topTouch ? "block " : "hidden ") +
                           (isUser ? "top-12 " : "top-24 ") +
-                          "absolute  w-32 -left-32  bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                          "absolute  w-32 -left-32  bg-th-background2 rounded-md shadow-lg border border-th-border ring-1 ring-th-base text-right"
                         }
                       >
                         <li>
@@ -404,7 +404,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "hour" && sort === "top"
                                 ? `font-bold`
                                 : "") +
-                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                              " px-3 py-3.5 text-sm hover:bg-th-highlight mt-1 cursor-pointer"
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "hour")}
@@ -418,7 +418,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "day" && sort === "top"
                                 ? `font-bold`
                                 : "") +
-                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                              " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "day")}
@@ -432,7 +432,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "week" && sort === "top"
                                 ? `font-bold`
                                 : "") +
-                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                              " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "week")}
@@ -446,7 +446,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "month" && sort === "top"
                                 ? `font-bold`
                                 : "") +
-                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                              " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "month")}
@@ -460,7 +460,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "year" && sort === "top"
                                 ? `font-bold`
                                 : "") +
-                              " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                              " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "year")}
@@ -474,7 +474,7 @@ const SortMenu = ({ hide = false }) => {
                               (range === "all" && sort === "top"
                                 ? `font-bold `
                                 : "") +
-                              " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                              " px-3 py-3.5 text-sm mb-1 hover:bg-th-highlight cursor-pointer "
                             }
                             onTouchStart={(e) => setTopTouch(false)}
                             onClick={(e) => updateRange(e, "all")}
@@ -505,7 +505,7 @@ const SortMenu = ({ hide = false }) => {
                           onClick={(e) => updateRange(e, "all", "relevance")}
                           className={classNames(
                             active
-                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              ? "bg-th-highlight"
                               : "",
                             "block px-4 py-1 text-sm"
                           )}
@@ -526,7 +526,7 @@ const SortMenu = ({ hide = false }) => {
                             className={
                               (active ? "block " : "hidden ") +
                               (true && "top-36 ") +
-                              "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                              "absolute  w-32 -left-32  bg-th-background2 rounded-md shadow-lg border border-th-border ring-1 ring-th-base text-right"
                             }
                           >
                             <li>
@@ -535,7 +535,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "hour" && sort === "relevance"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight mt-1 cursor-pointer"
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "hour", "relevance")
@@ -550,7 +550,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "day" && sort === "relevance"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "day", "relevance")
@@ -565,7 +565,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "week" && sort === "relevance"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "week", "relevance")
@@ -580,7 +580,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "month" && sort === "relevance"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "month", "relevance")
@@ -595,7 +595,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "year" && sort === "relevance"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "year", "relevance")
@@ -610,7 +610,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "all" && sort === "relevance"
                                     ? `font-bold `
                                     : "") +
-                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "all", "relevance")
@@ -636,7 +636,7 @@ const SortMenu = ({ hide = false }) => {
                           onClick={(e) => updateRange(e, "all", "comments")}
                           className={classNames(
                             active
-                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              ? "bg-th-highlight"
                               : "",
                             "block px-4 py-1 text-sm"
                           )}
@@ -657,7 +657,7 @@ const SortMenu = ({ hide = false }) => {
                             className={
                               (active ? "block " : "hidden ") +
                               (true && "top-48 ") +
-                              "absolute  w-32 -left-32 group-hover:block group-focus:block bg-white dark:bg-darkBG rounded-md shadow-lg border border-lightBorder dark:border-darkBorder text-right"
+                              "absolute  w-32 -left-32  bg-th-background2 rounded-md shadow-lg border border-th-border ring-1 ring-th-base text-right"
                             }
                           >
                             <li>
@@ -666,7 +666,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "hour" && sort === "comments"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight mt-1 cursor-pointer"
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight mt-1 cursor-pointer"
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "hour", "comments")
@@ -681,7 +681,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "day" && sort === "comments"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "day", "comments")
@@ -696,7 +696,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "week" && sort === "comments"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "week", "comments")
@@ -711,7 +711,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "month" && sort === "comments"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "month", "comments")
@@ -726,7 +726,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "year" && sort === "comments"
                                     ? `font-bold`
                                     : "") +
-                                  " px-3 py-3.5 text-sm hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "year", "comments")
@@ -741,7 +741,7 @@ const SortMenu = ({ hide = false }) => {
                                   (range === "all" && sort === "comments"
                                     ? `font-bold `
                                     : "") +
-                                  " px-3 py-3.5 text-sm mb-1 hover:bg-lightHighlight dark:hover:bg-darkHighlight cursor-pointer "
+                                  " px-3 py-3.5 text-sm mb-1 hover:bg-th-highlight cursor-pointer "
                                 }
                                 onClick={(e) =>
                                   updateRange(e, "all", "comments")
@@ -776,7 +776,7 @@ const SortMenu = ({ hide = false }) => {
                           onClick={(e) => updateSort(e, "rising")}
                           className={classNames(
                             active
-                              ? "bg-lightHighlight dark:bg-darkHighlight"
+                              ? "bg-th-highlight"
                               : "",
                             "block px-4 py-1 text-sm "
                           )}
