@@ -120,7 +120,7 @@ const Collection = ({
                   " w-full h-full  text-white text-6xl items-center   justify-center flex overflow-hidden"
                 }
               >
-                {"f/"}
+                {"f"}
               </div>
             )}
           </div>

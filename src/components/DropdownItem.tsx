@@ -76,7 +76,7 @@ const DropdownItem = ({ sub, isUser = false }) => {
               }
             >
               <h4 className={isMulti ? "" : "" + "mb-0.5"}>
-                {isUser ? "u/" : isMulti ? "f/" : "r/"}
+                {isUser ? "u/" : isMulti ? "f" : "r/"}
               </h4>
             </div>
           )
