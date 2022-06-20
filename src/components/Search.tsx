@@ -253,7 +253,7 @@ const Search = ({ id }) => {
               </div>
               <div className="flex flex-col ml-4">
                 <div>{lastRequest.current}</div>
-                <div className="text-xs text-th-borderHighlight">
+                <div className="text-xs text-th-textLight">
                   {"?? followers "}
                 </div>
               </div>
@@ -364,7 +364,7 @@ const Search = ({ id }) => {
               </div>
               <div className="flex flex-col ml-4">
                 <div>{suggestion?.data?.display_name_prefixed}</div>
-                <div className="text-xs text-th-text opacity-70">
+                <div className="text-xs text-th-textLight opacity-70">
                   {suggestion?.data?.subscribers
                     ? suggestion.data.subscribers.toLocaleString("en-US") +
                       " followers "

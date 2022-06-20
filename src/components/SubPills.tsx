@@ -50,7 +50,7 @@ const SubPills = ({
     <div
       title={!expand ? "expand" : "collapse"}
       onClick={() => setExpand((e) => !e)}
-      className="flex items-center justify-center flex-none text-center border rounded-md cursor-pointer select-none h-9 w-7 border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent"
+      className="flex items-center justify-center flex-none text-center border rounded-md cursor-pointer select-none h-9 w-7 border-th-border bg-th-post ring-th-accent hover:bg-th-postHover hover:ring-2 hover:border-transparent"
     >
       {" "}
       <BsChevronDown className={expand ? "-rotate-180" : " rotate-0 "} />
@@ -78,8 +78,8 @@ const SubPills = ({
             <div
               title={`show only posts from r/${s}`}
               className={
-                "flex h-9 items-center px-3 py-1 space-x-2 border rounded-full select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent  " +
-                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2 ring-th-accent ")
+                "flex h-9 items-center px-3 py-1 space-x-2 border rounded-full select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent ring-th-accent  " +
+                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2  ")
               }
             >
               <h1 className="">{s}</h1>

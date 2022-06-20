@@ -6,8 +6,11 @@ const THEMES = {
   system: { name: "system" },
   light: { name: "light" },
   dark: { name: "dark" },
-  black: {name: "black"},
-  nord: {name: "nord"},
+  abyss: { name: "abyss" },
+  black: { name: "black" },
+  nord: { name: "nord" },
+  ocean: { name: "ocean" },
+  palenight: { name: "palenight" },
 };
 
 function classNames(...classes) {
