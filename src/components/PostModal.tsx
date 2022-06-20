@@ -1034,6 +1034,7 @@ const PostModal = ({
                           depth={0}
                           op={apost?.author}
                           portraitMode={usePortrait}
+                          sort={sort}
                         />
                       </div>
                     </div>

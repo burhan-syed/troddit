@@ -159,7 +159,7 @@ const ParseBodyHTML = ({
           }
         }} //alternate to single click fix
         className={
-          " prose prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
+          " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
           (resolvedTheme === "dark"
             ? " prose-invert prose-strong:font-semibold prose-strong:text-rose-400  "
             : " prose-stone prose-strong:text-rose-800  prose-headings:text-stone-900 text-stone-700 ") +

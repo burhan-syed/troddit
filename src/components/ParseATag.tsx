@@ -28,10 +28,12 @@ const ParseATag = (props) => {
     }
    
   };
+  if (!expandable){
+    return <>{props?.children?.data}</>
+  }
 
   return (
-    <div className={expand ? "bg-th-post rounded-md border border-th-border" : ""} onClick={handleClick}>
-      <div className="gap-2 "  >
+      <div className={expand ? "bg-th-post rounded-md border border-th-border overflow-hidden" : " inline-block"} onClick={handleClick}  >
         {props?.children?.data}
         {expandable && (
           <button
@@ -47,13 +49,13 @@ const ParseATag = (props) => {
             )}
           </button>
         )}
-      </div>
-      {expand && (
-        <div className="" onClick={e => {e.preventDefault(); e.stopPropagation(); }}>
-          <img className="max-h-[60vh] mx-auto" src={link} alt="" />
+           {expand && (
+        <div className="flex flex-col" onClick={e => {e.preventDefault(); e.stopPropagation(); }}>
+          <img className="max-h-[60vh] mx-auto py-0 my-0" src={link} alt="" />
         </div>
       )}
-    </div>
+      </div>
+   
   );
 };
 
