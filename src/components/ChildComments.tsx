@@ -141,6 +141,8 @@ const ChildComments = ({
     return count;
   }, [childcomments]);
 
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       ref={parentRef}
@@ -154,6 +156,8 @@ const ChildComments = ({
         (hide ? " hidden " : "") +
         " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
         className={"flex flex-row"}
@@ -175,7 +179,12 @@ const ChildComments = ({
             (portraitMode ? " w-2.5 " : " md:w-2  lg:w-4")
           }
         >
-          <div className="flex-none w-0.5  min-h-full  rounded-l-md bg-th-commentRibbon hover:bg-th-commentRibbonHover group-hover:bg-commentRibbonHover"></div>
+          <div
+            className={
+              "flex-none w-0.5  min-h-full  rounded-l-md bg-th-commentRibbon hover:bg-th-commentRibbonHover group-hover:bg-commentRibbonHover" +
+              (hovered ? " bg-th-commentRibbonHover " : " ")
+            }
+          ></div>
         </div>
         {/* Comment Body */}
         <div
@@ -407,6 +416,8 @@ const ChildComments = ({
               {/* Children */}
 
               <div
+                onMouseEnter={() => setHovered(false)}
+                onMouseLeave={() => setHovered(true)}
                 className={
                   "min-w-full py-2" +
                   (hideChildren &&
@@ -426,6 +437,8 @@ const ChildComments = ({
                               <>
                                 {childcomment.data?.count > 0 ? (
                                   <div
+                                    onMouseEnter={() => setHovered(true)}
+                                    onMouseLeave={() => setHovered(false)}
                                     className={
                                       (portraitMode ? "" : "") +
                                       (loadingComments && " animate-pulse ") +
@@ -450,7 +463,11 @@ const ChildComments = ({
                                   </div>
                                 ) : (
                                   <Link href={comment?.data?.permalink}>
-                                    <a className="flex items-center ml-3 text-sm select-none hover:font-semibold md:pl-0">
+                                    <a
+                                      className="flex items-center ml-3 text-sm select-none hover:font-semibold md:pl-0"
+                                      onMouseEnter={() => setHovered(true)}
+                                      onMouseLeave={() => setHovered(false)}
+                                    >
                                       Continue thread <BsArrowRightShort />
                                     </a>
                                   </Link>
