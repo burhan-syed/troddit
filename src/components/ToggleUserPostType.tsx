@@ -22,7 +22,7 @@ const ToggleUserPostType = () => {
           checked={userPostType === "links"}
           checkedHandleIcon={<div></div>}
           checkedIcon={
-            <div className="flex items-center justify-center h-full text-lg font-white dark:font-darkBG">
+            <div className="flex items-center justify-center h-full text-lg font-th-text ">
               <BiDetail />
             </div>
           }

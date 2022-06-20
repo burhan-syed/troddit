@@ -7,6 +7,7 @@ import ToggleFilters from "./ToggleFilters";
 import { useMainContext } from "../MainContext";
 import FilterSubs from "./FilterSubs";
 import { BsChevronDown } from "react-icons/bs";
+import FilterEntities from "./settings/FilterEntities";
 
 const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
@@ -15,7 +16,6 @@ const FilterModal = ({ toOpen }) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
-  const [advancedOpen, setAdvancedOpen] = useState(false);
   useEffect(() => {
     toOpen > 0 && setOpen(true);
     return () => {
@@ -41,7 +41,7 @@ const FilterModal = ({ toOpen }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-80" />
+            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-800 bg-opacity-80" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -87,39 +87,10 @@ const FilterModal = ({ toOpen }) => {
                         <ToggleFilters filter={"read"} />
                       </div>
                     </div>
-                    <div
-                      className="flex flex-row items-center justify-between py-1 mr-4 rounded-md cursor-pointer hover:bg-th-highlight "
-                      onClick={() => setAdvancedOpen((o) => !o)}
-                    >
-                      <h1>Advanced</h1>
+                    <div className="py-1 mr-4">
+                    <FilterEntities/>
 
-                      <BsChevronDown
-                        className={
-                          (advancedOpen ? "-rotate-180" : "rotate-0") +
-                          " transform transition duration-400 mr-4"
-                        }
-                      />
                     </div>
-                    {advancedOpen && (
-                      <div className={"flex flex-col gap-4 px-4"}>
-                        <div className="flex flex-col px-2">
-                          <h2>Subreddit Filters</h2>
-                          <h4 className="mb-1 text-xs opacity-70">
-                            Hide posts from specific subreddits except when
-                            directly viewing
-                          </h4>
-                          <FilterSubs mode="subs" />
-                        </div>
-                        <div className="flex flex-col px-2">
-                          <h2>User Filters</h2>
-                          <h4 className="mb-1 text-xs opacity-70">
-                            Hide posts from specific users everywhere except
-                            their user profile
-                          </h4>
-                          <FilterSubs mode="users" />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
                 <button

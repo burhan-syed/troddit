@@ -47,7 +47,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                     className={
                       " hover:underline font-semibold text-base mr-2 " +
                       (post?.distinguished == "moderator" || post?.stickied
-                        ? " text-lightGreen dark:text-darkGreen "
+                        ? " text-th-green "
                         : " ")
                         + (read && context.dimRead ? " opacity-50" : "")
                     }

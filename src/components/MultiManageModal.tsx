@@ -96,7 +96,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-80" />
+            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-800 bg-opacity-80" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}

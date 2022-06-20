@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ToastCustom from "../components/toast/ToastCustom";
-import { subredditFilters } from "../MainContext";
+import { subredditFilters, useMainContext } from "../MainContext";
 import { userFilters } from "../MainContext";
 const useFilterSubs = () => {
+  const context: any = useMainContext(); 
+  const {updateFilters, setUpdateFilters} = context; 
   const [filteredSubs, setFilteredSubs] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
 
@@ -22,7 +24,7 @@ const useFilterSubs = () => {
       setFilteredSubs([]);
       setFilteredUsers([]);
     };
-  }, []);
+  }, [updateFilters]);
 
   const addSubFilter = async (sub: string, showToast = true) => {
     if (sub.includes("/")) {
@@ -43,6 +45,7 @@ const useFilterSubs = () => {
           ),
           { position: "bottom-center", duration: 3000 }
         );
+        setUpdateFilters(n => n+1);
     } else if (sub.length > 0) {
       showToast &&
         toast.custom(
@@ -64,6 +67,7 @@ const useFilterSubs = () => {
       setFilteredSubs((f) =>
         f.filter((s) => s.toLowerCase() !== sub.toLowerCase())
       );
+      setUpdateFilters(n => n+1);
     }
   };
   const addUserFilter = async (user: string, showToast = true) => {
@@ -86,6 +90,8 @@ const useFilterSubs = () => {
           ),
           { position: "bottom-center", duration: 3000 }
         );
+        setUpdateFilters(n => n+1);
+
     } else if (user.length > 0) {
       showToast &&
         toast.custom(
@@ -107,6 +113,8 @@ const useFilterSubs = () => {
       setFilteredUsers((f) =>
         f.filter((u) => u.toLowerCase() !== user.toLowerCase())
       );
+      setUpdateFilters(n => n+1);
+
     }
   };
 

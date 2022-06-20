@@ -7,6 +7,9 @@
 :root{
 --text: theme('colors.gray.900');
 --textLight: theme('colors.gray.400');
+--textBody: theme('colors.stone.700');
+--textStrong: theme('colors.rose.700');
+--textHeading: theme('colors.stone.900');
 --accent1: theme('colors.cyan.500');
 --accent2: theme('colors.blue.400');
 --base: theme('colors.gray.200');
@@ -31,10 +34,15 @@
 --commentRibbonHover: theme('colors.blue.800');
 --backgroundComment: theme('colors.white');
 --backgroundCommentAlternate: theme('colors.gray.100');
+--toggleColor: theme('colors.gray.300');
+--toggleHandleColor: theme('colors.sky.600');
 }
 [data-theme='dark']{
 --text: theme('colors.stone.200');
 --textLight: theme('colors.gray.500');
+--textBody: theme('colors.stone.100');
+--textStrong: theme('colors.rose.400');
+--textHeading: theme('colors.stone.200');
 --accent1: theme('colors.blue.400');
 --accent2: theme('colors.blue.600');
 --base: theme('colors.black');
@@ -59,6 +67,8 @@
 --commentRibbonHover: theme('colors.red.600');
 --backgroundComment: #161616;
 --backgroundCommentAlternate: #1A1A1B;
+--toggleColor: theme('colors.gray.600');
+--toggleHandleColor: theme('colors.sky.600');
 }
 
 :root {

@@ -40,7 +40,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   useEffect(() => {
     if (allowHide && !context?.loading) {
       //console.log(scrollDirection, scrollY);
-      if (scrollDirection === "down") {
+      if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
       } else if (scrollY > 300 && scrollDirection === "up" && !hidden) {
         setHidden(true);

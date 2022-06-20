@@ -61,11 +61,11 @@ const ColumnCardOptions = ({ mode }: Mode) => {
   };
 
   return (
-    <Menu as={"div"} className="relative">
+    <Menu as={"div"} className="relative w-full">
       <Menu.Button
         title={"options"}
         name="Options"
-        className="w-24 py-2 capitalize border rounded-md focus:outline-none hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
+        className="w-full py-2 capitalize border rounded-md focus:outline-none hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
       >
         {mode === "columns"
           ? context.columnOverride == 0

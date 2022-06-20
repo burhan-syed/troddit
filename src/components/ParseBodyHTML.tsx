@@ -55,7 +55,7 @@ const ParseBodyHTML = ({
 }) => {
   const { theme, resolvedTheme } = useTheme();
   const [component, setComponent] = useState<any>();
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<any>();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -100,12 +100,12 @@ const ParseBodyHTML = ({
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
       let splitstr = str.split("<a");
-      let replaceall = [];
+      let replaceall:string[] = [];
       splitstr.forEach((substr) => replaceall.push(replaceUserDomains(substr)));
       return replaceall.join("<a");
     };
 
-    const replaceUserDomains = (str: String) => {
+    const replaceUserDomains = (str: string) => {
       let redditRegex = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))/gm;
       let matchRegex1 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/[ru]\/)/gm;
       let matchRegex2 = /([A-z.]+\.)?(reddit(\.com)|redd(\.it))+(\/user\/)/gm;
@@ -160,9 +160,7 @@ const ParseBodyHTML = ({
         }} //alternate to single click fix
         className={
           " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
-          (resolvedTheme === "dark"
-            ? " prose-invert prose-strong:font-semibold prose-strong:text-rose-400  "
-            : " prose-stone prose-strong:text-rose-800  prose-headings:text-stone-900 text-stone-700 ") +
+          "  prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody " +
           (small && card
             ? " prose-sm  "
             : small

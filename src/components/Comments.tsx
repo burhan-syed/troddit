@@ -74,7 +74,7 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
           {comment?.kind === "more" ? (
             <button
               className={
-                "text-sm text-semibold flex hover:font-semibold w-full " +
+                "text-sm pl-2 text-semibold flex hover:font-semibold w-full " +
                 (moreLoading ? " animate-pulse" : " ")
               }
               disabled={moreLoading}

@@ -4,7 +4,7 @@ import { MdOutlineClear } from "react-icons/md";
 import { AiOutlinePlus } from "react-icons/ai";
 
 const scrollbar =
-  " scrollbar-thin scrollbar-thumb-lightScroll scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full dark:scrollbar-thumb-darkScroll";
+  " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
 
 const FilterSubs = ({ mode = "subs" }) => {
   const {
