@@ -20,7 +20,7 @@ const SubCardPlaceHolder = ({ user = false, tall=false }) => {
           <div className="z-10 flex-none w-16 h-16 border-2 rounded-full bg-th-post ">
             <div
               className={
-                "rounded-full bg-th-accent2 " +
+                "rounded-full bg-th-accent " +
                 " w-full h-full  text-white text-6xl items-center justify-center flex overflow-hidden"
               }
             >

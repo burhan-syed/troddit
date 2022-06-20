@@ -246,7 +246,7 @@ const Search = ({ id }) => {
                     ></Image>
                   </div>
                 ) : (
-                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2">
+                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent">
                     r/
                   </div>
                 )}
@@ -277,7 +277,7 @@ const Search = ({ id }) => {
                       ></Image>
                     </div>
                   ) : (
-                    <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2 animate-pulse">
+                    <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent animate-pulse">
                       r/
                     </div>
                   )}
@@ -354,7 +354,7 @@ const Search = ({ id }) => {
                     ></Image>
                   </div>
                 ) : (
-                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent2">
+                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent">
                     r/
                   </div>
                 )}
@@ -393,7 +393,7 @@ const Search = ({ id }) => {
                       ? "Remove Selected"
                       : "Add to Selected"}
                   </span>
-                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 hover:ring-2 ring-th-accent2 hover:bg-th-highlight border-th-border ">
+                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 hover:ring-2 ring-th-accent hover:bg-th-highlight border-th-border ">
                     {addMode == "feeds" &&
                     selected.find(
                       (s) =>

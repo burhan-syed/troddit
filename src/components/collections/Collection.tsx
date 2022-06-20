@@ -19,7 +19,7 @@ const CheckBox = ({ toggled }) => {
       className={
         "flex h-full border rounded-md transition-all items-center justify-center  " +
         (toggled
-          ? "  bg-th-accent2 border-th-accent2 "
+          ? "  bg-th-accent border-th-accent "
           : " group-hover:bg-th-highlight border-th-border  ")
       }
     >

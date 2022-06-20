@@ -79,7 +79,7 @@ const FilterSubs = ({ mode = "subs" }) => {
                   }}
                 >
                   <h4 className="capitalize">{f?.toLowerCase()}</h4>
-                  <button className="p-0.5 rounded-md border-transparent group-hover:ring-2 hover:bg-th-highlight ring-th-accent2 border ">
+                  <button className="p-0.5 rounded-md border-transparent group-hover:ring-2 hover:bg-th-highlight ring-th-accent border ">
                     <MdOutlineClear className="w-5 h-5 transition-transform " />
                   </button>
                 </div>

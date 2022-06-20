@@ -530,7 +530,7 @@ const PostModal = ({
 
   if (wait && direct) {
     return (
-      <div className="fixed left-0 z-30 w-screen h-2 bg-th-accent2 top-[56px] animate-pulse"></div>
+      <div className="fixed left-0 z-30 w-screen h-2 bg-th-accent top-[56px] animate-pulse"></div>
     );
   }
 

@@ -71,7 +71,7 @@ const DropdownItem = ({ sub, isUser = false }) => {
               className={
                 (isMulti
                   ? "rounded bg-th-red"
-                  : "rounded-full bg-th-accent2 border-2 ") +
+                  : "rounded-full bg-th-accent border-2 ") +
                 " w-6 h-6 text-center text-white overflow-clip flex items-center justify-center  text-lg"
               }
             >

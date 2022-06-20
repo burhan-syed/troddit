@@ -95,7 +95,7 @@ const FilterMenu = ({ hide = false }) => {
           <div
             className="absolute z-0 w-full h-full rounded-md"
             style={{
-              backgroundImage: `linear-gradient(${deg}deg, var(--accent2), rgb(255, 255, 255))`,
+              backgroundImage: `linear-gradient(${deg}deg, var(--accent), rgb(255, 255, 255))`,
             }}
           ></div>
         )}

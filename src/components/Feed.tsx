@@ -335,7 +335,7 @@ const Feed = ({
 
   if (loading) {
     return (
-      <div className="absolute top-0 w-screen h-16 bg-th-accent2 animate-pulse"></div>
+      <div className="absolute top-0 w-screen h-16 bg-th-accent animate-pulse"></div>
     );
   }
   if (fetchPost) {
@@ -428,7 +428,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
     >
       <p className="text-center">Something went wrong</p>
       <button
-        className="p-2 mb-2 border rounded-lg border-th-accent2 hover:bg-th-highlight"
+        className="p-2 mb-2 border rounded-lg border-th-accent hover:bg-th-highlight"
         onClick={resetErrorBoundary}
       >
         Try again

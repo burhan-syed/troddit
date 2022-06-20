@@ -425,7 +425,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               }
               onClick={() => signIn("reddit")}
             >
-              <span className="text-th-accent2 ">Login</span> to
+              <span className="text-th-accent ">Login</span> to
               see your subs
             </button>
           )}

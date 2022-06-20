@@ -142,7 +142,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
                             <div
                               className={
                                 "flex items-center px-3 py-1 border rounded-full select-none bg-th-base border-th-border hover:bg-th-highlight cursor-pointer " +
-                                (subsForMulti.includes(s) ? " ring-2 ring-th-accent2 border-transparent " : " ")
+                                (subsForMulti.includes(s) ? " ring-2 ring-th-accent border-transparent " : " ")
                               }
                               onClick={() => toggleSubSelect(s)}
                             >

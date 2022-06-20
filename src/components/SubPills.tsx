@@ -38,7 +38,7 @@ const SubPills = ({
         <div
           className={
             "items-center flex h-9 px-4 py-1.5 text-center border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
-            (multiSub === "" && "  ring-2 border-transparent ring-th-accent2")
+            (multiSub === "" && "  ring-2 border-transparent ring-th-accent")
           }
         >
           {`${currMulti ? `${currMulti}` : "Feed"} (${subArray.length})`}
@@ -79,7 +79,7 @@ const SubPills = ({
               title={`show only posts from r/${s}`}
               className={
                 "flex h-9 items-center px-3 py-1 space-x-2 border rounded-full select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent  " +
-                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2 ring-th-accent2 ")
+                (s.toUpperCase() === multiSub.toUpperCase() && "  ring-2 ring-th-accent ")
               }
             >
               <h1 className="">{s}</h1>

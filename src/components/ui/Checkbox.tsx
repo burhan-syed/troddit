@@ -21,8 +21,8 @@ const Checkbox = ({toggled, clickEvent, labelText, reverse=false}) => {
       className={
         "w-7 h-7 p-0.5 border rounded-md transition-all flex items-center justify-center   " +
         (toggled
-          ? ` bg-th-accent2  border-th-accent2 ring-th-border  ${hovered ? " group-hover:ring-2 " : ""}  `
-          : ` hover:bg-th-highlight border-th-border  ring-th-accent2  ${hovered ? " group-hover:border-0 group-hover:ring-2" : ""}`)
+          ? ` bg-th-accent  border-th-accent ring-th-border  ${hovered ? " group-hover:ring-2 " : ""}  `
+          : ` hover:bg-th-highlight border-th-border  ring-th-accent  ${hovered ? " group-hover:border-0 group-hover:ring-2" : ""}`)
       }
     >
       <AiOutlineCheck

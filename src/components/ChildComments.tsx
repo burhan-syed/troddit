@@ -220,7 +220,7 @@ const ChildComments = ({
                     </div>
                   ) : (
                     context.showUserIcons && (
-                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-th-accent2">
+                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-th-accent">
                         <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
                       </div>
                     )
@@ -244,7 +244,7 @@ const ChildComments = ({
 
               {(comment?.data?.author == op || comment?.data?.is_submitter) && (
                 <>
-                  <p className="px-0.5 font-medium text-th-accent2 ">{"OP"}</p>
+                  <p className="px-0.5 font-medium text-th-accent ">{"OP"}</p>
                 </>
               )}
               {comment?.data?.distinguished == "moderator" && (

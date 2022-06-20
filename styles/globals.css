@@ -10,8 +10,7 @@
 --textBody: theme('colors.stone.700');
 --textStrong: theme('colors.rose.700');
 --textHeading: theme('colors.stone.900');
---accent1: theme('colors.cyan.500');
---accent2: theme('colors.blue.400');
+--accent: theme('colors.blue.400');
 --base: theme('colors.gray.200');
 --background: theme('colors.slate.100');
 --background2: theme('colors.white');
@@ -43,8 +42,7 @@
 --textBody: theme('colors.stone.100');
 --textStrong: theme('colors.rose.400');
 --textHeading: theme('colors.stone.200');
---accent1: theme('colors.blue.400');
---accent2: theme('colors.blue.600');
+--accent: theme('colors.blue.600');
 --base: theme('colors.black');
 --background: #1A1A1B;
 --background2: #1A1A1B;

@@ -94,7 +94,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
         "relative select-none flex-none " +
         (!miniMode
           ? " h-9 text-center flex justify-center items-center  border  focus:outline-none  bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight"
-          : " hover:bg-th-highlight hover:ring-2 ring-th-accent2 flex items-center justify-center h-full") +
+          : " hover:bg-th-highlight hover:ring-2 ring-th-accent flex items-center justify-center h-full") +
         " rounded-md cursor-pointer  "
       }
       onClick={(e) => {

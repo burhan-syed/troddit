@@ -85,7 +85,7 @@ const Login = () => {
               <div className="px-4 py-3 bg-th-background2 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium border border-transparent rounded-md shadow-sm bg-th-accent2 hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent2 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium border border-transparent rounded-md shadow-sm bg-th-accent hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => {
                     context.setLoginModal(false);
                     signIn("reddit");
@@ -95,7 +95,7 @@ const Login = () => {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-black bg-white border rounded-md shadow-sm border-th-border hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-black bg-white border rounded-md shadow-sm border-th-border hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => context.setLoginModal(false)}
                   ref={cancelButtonRef}
                 >
