@@ -328,13 +328,13 @@ const NavMenu = ({ hide = false }) => {
                 <div
                   className={classNames(
                     active ? "bg-th-highlight " : "",
-                    "block px-4 py-2 text-sm"
+                    "block px-4  text-sm"
                   )}
                 >
                   <Link href="/settings" passHref={true}>
-                    <div className="flex flex-row justify-center cursor-pointer select-none">
+                    <a className="flex flex-row justify-center py-2 cursor-pointer select-none">
                       Settings
-                    </div>
+                    </a>
                   </Link>
                 </div>
               )}
@@ -344,13 +344,13 @@ const NavMenu = ({ hide = false }) => {
                 <div
                   className={classNames(
                     active ? "bg-th-highlight " : "",
-                    "block px-4 py-2 text-sm"
+                    "block px-4  text-sm"
                   )}
                 >
                   <Link href="/about" passHref={true}>
-                    <div className="flex flex-row justify-center cursor-pointer select-none">
+                    <a className="flex flex-row justify-center py-2 cursor-pointer select-none">
                       About
-                    </div>
+                    </a>
                   </Link>
                 </div>
               )}
