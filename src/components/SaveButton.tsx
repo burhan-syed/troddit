@@ -24,7 +24,7 @@ const SaveButton = ({
     return () => {
       setIsSaved(false);
     };
-  }, [saved]);
+  }, [saved, id]);
 
   const save = async () => {
     if (session) {

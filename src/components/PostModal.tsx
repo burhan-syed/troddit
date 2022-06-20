@@ -847,7 +847,7 @@ const PostModal = ({
                                 saved={apost?.saved}
                                 post={true}
                                 isPortrait={usePortrait}
-                                postindex={postNum}
+                                postindex={context.postNum}
                               ></SaveButton>
                             </div>
                             <a
