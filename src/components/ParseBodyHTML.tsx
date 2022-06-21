@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ParseATag from "./ParseATag";
 
-const HtmlToReact = require("html-to-react");
-const HtmlToReactParser = require("html-to-react").Parser;
+import HtmlToReact from "html-to-react";
+const HtmlToReactParser = HtmlToReact.Parser;
 const htmlToReactParser = new HtmlToReactParser();
 const isValidNode = function () {
   return true;
@@ -100,7 +100,7 @@ const ParseBodyHTML = ({
     const replaceDomains = (str) => {
       if (typeof str == "undefined" || !str) return;
       let splitstr = str.split("<a");
-      let replaceall:string[] = [];
+      let replaceall: string[] = [];
       splitstr.forEach((substr) => replaceall.push(replaceUserDomains(substr)));
       return replaceall.join("<a");
     };
@@ -161,7 +161,7 @@ const ParseBodyHTML = ({
         className={
           " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
           "  prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody " +
-         ((resolvedTheme == "light" ) ? " " : " prose-invert  " ) +
+          (resolvedTheme == "light" ? " " : " prose-invert  ") +
           (small && card
             ? " prose-sm  "
             : small
