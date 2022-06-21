@@ -383,7 +383,7 @@ const Feed = ({
               ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
-              ? " bg-th-post2 border-th-border rounded-t-md rounded-b-md border shadow-2xl "
+              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl "
               : " ")
           }
         >

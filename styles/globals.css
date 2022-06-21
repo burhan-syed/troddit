@@ -117,7 +117,7 @@
 --border: #000000;
 --borderHighlight: #FFFFFF;
 --border2: #000000;
---borderHighlight2: #FFFFFF;
+--borderHighlight2: #000000;
 --green: #0FFF50;
 --upvote: #F75C1E;
 --downvote: #04D2F7;
@@ -181,7 +181,7 @@
 --border: #212634;
 --borderHighlight: #65CDC4;
 --border2: #212634;
---borderHighlight2: #65CDC4;
+--borderHighlight2: #1B1F2B;
 --green: #B9E981;
 --upvote: #FF7769;
 --downvote: #77ABFF;
@@ -213,7 +213,7 @@
 --border: #2D3244;
 --borderHighlight: #8555C8;
 --border2: #2D3244;
---borderHighlight2: #53288E;
+--borderHighlight2: #2D3244;
 --green: #6AE0FF;
 --upvote: #FF7769;
 --downvote: #72A5FC;

@@ -37,7 +37,7 @@ const Row1 = ({
       onClick={(e) => handleClick(e)}
       className={
         (postNum === 0 ? " border-t rounded-t-md " : " ") +
-        "flex flex-row items-start py-1 pb-2 text-sm bg-th-post2 hover:bg-th-postHover group  border-l border-r border-transparent hover:border-th-borderHighlight2   "
+        "flex flex-row items-start py-1 pb-2 text-sm bg-th-post2 hover:bg-th-postHover group border-l border-r border-transparent hover:border-th-borderHighlight2   "
       }
     >
       {/* Votes */}

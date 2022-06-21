@@ -17,8 +17,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
     <div onClick={(e) => handleClick(e)}>
       <div
         className={
-          (context?.columnOverride == 1 && "") +
-          " text-sm bg-th-post hover:bg-th-postHover group   hover:shadow-2xl transition-colors border hover:cursor-pointer border-th-border2 hover:border-th-border2  shadow-md " +
+          " text-sm bg-th-post hover:bg-th-postHover group  hover:shadow-2xl transition-colors border hover:cursor-pointer border-th-border2 hover:border-th-borderHighlight2  shadow-md " +
           " rounded-lg overflow-clip" 
         }
       >
