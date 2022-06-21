@@ -5,6 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import ParseATag from "./ParseATag";
 
 import HtmlToReact from "html-to-react";
+
 const HtmlToReactParser = HtmlToReact.Parser;
 const htmlToReactParser = new HtmlToReactParser();
 const isValidNode = function () {
@@ -20,7 +21,10 @@ const processingInstructions = [
         node.parent &&
         node.parent.name &&
         node.parent.name === "a" &&
-        node.parent?.attribs?.href?.includes("https://");
+        node.parent?.attribs?.href?.includes("https://") &&
+        node.name !== "img"; //leave comment gifs alone
+
+      check && console.log(node);
       return check;
     },
     processNode: function (node, children, index) {
@@ -52,6 +56,7 @@ const ParseBodyHTML = ({
   card = false,
   limitWidth = false,
   comment = false,
+  newTabLinks = true,
 }) => {
   const { theme, resolvedTheme } = useTheme();
   const [component, setComponent] = useState<any>();
@@ -64,31 +69,33 @@ const ParseBodyHTML = ({
 
   useEffect(() => {
     //formatting per Teddit
-    const unescape = (s) => {
-      if (s) {
-        var re = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g;
-        var unescaped = {
-          "&amp;": "&",
-          "&#38;": "&",
-          "&lt;": "<",
-          "&#60;": "<",
-          "&gt;": ">",
-          "&#62;": ">",
-          "&apos;": "'",
-          "&#39;": "'",
-          "&quot;": '"',
-          "&#34;": '"',
-        };
-        let result = s.replace(re, (m) => {
-          return unescaped[m];
-        });
-        result = blankTargets(result);
-        result = replaceDomains(result);
-        return result;
-      } else {
-        return "";
-      }
-    };
+    // const unescape = (s) => {
+    //   if (s) {
+    //     var re = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g;
+    //     var unescaped = {
+    //       "&amp;": "&",
+    //       "&#38;": "&",
+    //       "&lt;": "<",
+    //       "&#60;": "<",
+    //       "&gt;": ">",
+    //       "&#62;": ">",
+    //       "&apos;": "'",
+    //       "&#39;": "'",
+    //       "&quot;": '"',
+    //       "&#34;": '"',
+    //     };
+    //     let result = s.replace(re, (m) => {
+    //       return unescaped[m];
+    //     });
+    //     if (newTabLinks) {
+    //       result = blankTargets(result);
+    //     }
+    //     result = replaceDomains(result);
+    //     return result;
+    //   } else {
+    //     return "";
+    //   }
+    // };
 
     const blankTargets = (str) => {
       if (str?.includes("<a ")) {
@@ -133,8 +140,12 @@ const ParseBodyHTML = ({
       return reactElement;
     };
 
-    let unescaped = unescape(html);
-    let reactElement = parseHTML(unescaped);
+    //let unescaped = unescape(html); //no longer need this due to html-to-react
+    let result = replaceDomains(html);
+    if (newTabLinks) {
+      result = blankTargets(result);
+    }
+    let reactElement = parseHTML(result);
     setComponent(reactElement);
   }, [html]);
 

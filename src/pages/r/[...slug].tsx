@@ -9,13 +9,13 @@ import { getWikiContent } from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
 import PostModal from "../../components/PostModal";
-import LoginModal from '../../components/LoginModal'
+import LoginModal from "../../components/LoginModal";
 const SubredditPage = ({ query }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
-  const [commentThread, setCommentThread] = useState(false); 
-  const [withCommentContext, setWithCommentContext] = useState(false)
+  const [commentThread, setCommentThread] = useState(false);
+  const [withCommentContext, setWithCommentContext] = useState(false);
   useEffect(() => {
     const getWiki = async (wikiquery) => {
       const data = await getWikiContent(wikiquery);
@@ -33,10 +33,9 @@ const SubredditPage = ({ query }) => {
         .split("+")
     );
     if (query?.slug?.[1]?.toUpperCase() === "COMMENTS" && query?.slug?.[4]) {
-      query?.context && setWithCommentContext(true); 
-      setCommentThread(true); 
-    }
-    else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
+      query?.context && setWithCommentContext(true);
+      setCommentThread(true);
+    } else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
       setWikiMode(true);
       let wikiquery = query.slug;
       if (!wikiquery?.[2]) wikiquery[2] = "index";
@@ -44,14 +43,20 @@ const SubredditPage = ({ query }) => {
     }
     return () => {
       setWithCommentContext(false);
-      setCommentThread(false); 
+      setCommentThread(false);
       setWikiMode(false);
       setSubsArray([]);
     };
   }, [query]);
   return (
-    <div className={(subsArray?.[0]?.toUpperCase() !== "ALL" &&
-    subsArray?.[0]?.toUpperCase() !== "POPULAR" ? " -mt-2 " : "" ) + " overflow-x-hidden overflow-y-auto "}>
+    <div
+      className={
+        (subsArray?.[0]?.toUpperCase() !== "ALL" &&
+        subsArray?.[0]?.toUpperCase() !== "POPULAR"
+          ? " -mt-2 "
+          : "") + " overflow-x-hidden overflow-y-auto "
+      }
+    >
       <Head>
         <title>
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
@@ -74,20 +79,21 @@ const SubredditPage = ({ query }) => {
                 <h1 className="text-lg font-bold">Wiki</h1>
               </a>
             </Link>
-            <ParseBodyHTML html={wikiContent} />
+            <ParseBodyHTML html={wikiContent} newTabLinks={false} />
           </div>
-        ) : commentThread ? (      <div className="mt-10">
-        <LoginModal />
-        <PostModal
-          permalink={ "/r/" + query?.slug.join("/")
-          }
-          returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
-          setSelect={setCommentThread}
-          direct={true}
-          commentMode={true}
-          withcontext={withCommentContext}
-        />
-      </div>) : (
+        ) : commentThread ? (
+          <div className="mt-10">
+            <LoginModal />
+            <PostModal
+              permalink={"/r/" + query?.slug.join("/")}
+              returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
+              setSelect={setCommentThread}
+              direct={true}
+              commentMode={true}
+              withcontext={withCommentContext}
+            />
+          </div>
+        ) : (
           <Feed
             query={query}
             isSubFlair={query?.slug?.[1] === "search" && query?.q}
