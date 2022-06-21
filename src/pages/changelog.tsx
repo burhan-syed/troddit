@@ -20,8 +20,8 @@ const ChangeLogPage = ({ changelog }) => {
         <p
           className={
             " prose-headings:text-th-textHeading text-th-text " +
-            " border bg-th-post prose-a:text-th-link hover:prose-a:text-th-linkHover border-th-border2 prose-a:hover:underline p-4 rounded-lg  prose-sm  prose  prose-h3:text-base prose-h2:text-xl prose-h3:font-light prose-ul:font-light prose-h2:mt-6 prose-h2:my-0.5 prose-h3:my-0 prose-h1:h-6"
-            + ("  shadow-md hover:shadow-2xl " )
+            " border bg-th-post prose-a:text-th-link hover:prose-a:text-th-linkHover border-th-border2 prose-a:hover:underline p-4 rounded-lg  prose-sm  prose  prose-h3:text-base prose-h2:text-xl prose-h3:font-normal prose-ul:font-normal prose-h2:mt-6 prose-h2:my-0.5 prose-h3:my-0 prose-h1:h-6" +
+            "  shadow-md hover:shadow-2xl "
           }
         >
           <ReactMarkdown rehypePlugins={[rehypeRaw]}>{changelog}</ReactMarkdown>

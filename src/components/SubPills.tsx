@@ -37,8 +37,8 @@ const SubPills = ({
       <a href={`${subArray.join("+")}${currMulti ? `?m=${currMulti}` : ""}`}>
         <div
           className={
-            "items-center flex h-9 px-4 py-1.5 text-center border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
-            (multiSub === "" && "  ring-2 border-transparent ring-th-accent")
+            "items-center flex h-9 px-4 py-1.5 text-center ring-th-accent border rounded-md select-none border-th-border bg-th-post hover:bg-th-postHover hover:ring-2 hover:border-transparent " +
+            (multiSub === "" ? "  ring-2 border-transparent " : "")
           }
         >
           {`${currMulti ? `${currMulti}` : "Feed"} (${subArray.length})`}
