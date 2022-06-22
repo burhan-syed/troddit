@@ -108,7 +108,7 @@ const Gallery = ({
 
   // Tailwind styles. Most importantly notice position absolute, this will sit relative to the carousel's outer div.
   const arrowStyle =
-    "absolute text-lightText text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center bg-opacity-50";
+    "absolute text-white text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center bg-opacity-50";
 
   const sliderControl = (isLeft) => (
     <>
