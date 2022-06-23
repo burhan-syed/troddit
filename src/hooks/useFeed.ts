@@ -61,9 +61,11 @@ const useFeed = (params?: Params) => {
     console.log(router, router.query);
     const query = router?.query;
     if (
-      (query?.slug?.[1] === "comments" && router.pathname !== "/u/[...slug]") ||
-      (query?.slug?.[1] === "p") ||
-      (router.pathname === "/search" && router.asPath.substring(0,3) === "/r/")
+      // (query?.slug?.[1] === "comments" && router.pathname !== "/u/[...slug]") ||
+      // (query?.slug?.[1] === "p") ||
+      // (router.pathname === "/search" && router.asPath.substring(0,3) === "/r/")
+      // /router.asPath?.substring(0,3) === "/r/" &&
+       router.asPath?.includes("/comments/")
     ) {
       //ignore these route changes to prevent feed fetch
       console.log("CHANGE NOTHING");

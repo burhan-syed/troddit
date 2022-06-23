@@ -97,10 +97,7 @@ const SubredditPage = ({ query }) => {
             />
           </div>
         ) : (
-          <Feed
-            query={query}
-            isSubFlair={query?.slug?.[1] === "search" && query?.q}
-          />
+          <Feed/>
         )}
       </main>
     </div>

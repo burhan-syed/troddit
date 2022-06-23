@@ -8,6 +8,7 @@ import { getSession, useSession } from "next-auth/react";
 import { loadFront } from "../RedditAPI";
 import { useMainContext } from "../MainContext";
 import { getToken } from "next-auth/jwt";
+import { useRouter } from "next/router";
 
 interface Props {
   session;
@@ -18,10 +19,12 @@ interface Props {
 
 const index = ({ session, query, postData, user }) => {
   const [initialData, setInitialData] = useState({});
-
   const [ready, setReady] = useState(false);
   const data = useSession();
   const isloading = data.status === "loading";
+  const router = useRouter(); 
+
+ 
 
   useEffect(() => {
     if (!isloading) {
@@ -48,7 +51,7 @@ const index = ({ session, query, postData, user }) => {
       </Head>
       <main>
         {ready && (
-          <Feed query={query} initialData={initialData} session={session} />
+          <Feed  initialData={initialData} />
         )}
       </main>
     </div>

@@ -69,27 +69,34 @@ const Post = ({ post, postNum = 0 }) => {
       setSelect(true);
       if (router.query?.frontsort) {
         router.push("", post?.data.id, { shallow: true });
-      } else if (
+      } 
+      else if (
         router.pathname.includes("/u/") &&
         session?.user?.name?.toUpperCase() ===
           router?.query?.slug?.[0]?.toUpperCase()
       ) {
         router.push(
           "",
-          `/u/${router.query?.slug?.[0]}/${
-            router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-          }${post?.data.id}`,
+          // `/u/${router.query?.slug?.[0]}/${
+          //   router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
+          // }${post?.data.id}`,
+          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}`,
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
-        if (router.query?.slug?.[1]?.toUpperCase() === "M") {
-          //no routing
-        } else {
-          router.push("", `/u/${post?.data.author}/p/${post?.data.id}`, {
+        if (router.query?.slug?.[1]?.toUpperCase() === "M" && router?.query?.slug?.[2]) {
+          router.push("", `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}`, {
             shallow: true,
           });
+        } else {
+
+          router.push("", `/u/${post?.data.author}/${post.data.permalink}`, {
+            shallow: true,
+          });
+         // router.push(`/u/${post?.data.author}`, `${post?.data?.permalink}`, {shallow: true})
         }
-      } else {
+      } 
+      else {
         router.push("", post?.data.permalink, { shallow: true });
       }
     } else {

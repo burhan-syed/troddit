@@ -9,6 +9,7 @@ import { getUserMultiSubs } from "../../RedditAPI";
 import { getSession } from "next-auth/react";
 import { useSession } from "next-auth/react";
 const Sort = ({ query }) => {
+  const router = useRouter(); 
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const [loaded, setLoaded] = useState(false);
@@ -28,6 +29,18 @@ const Sort = ({ query }) => {
     //?m=${query.slug[2]}
     setLoaded(true);
   };
+
+  //to handle direct routes (ie from going back)
+  useEffect(() => {
+    if (query.slug?.[1] === "r" && query.slug?.[3] === "comments"){
+      console.log(">>>>REPLACING USER<<<<<<",`/${query.slug?.slice(1)?.join('/')}`)
+      router.replace(`/${query.slug?.slice(1)?.join('/')}`)
+    }
+    //multi case
+    else if (query.slug?.[3] === "r" && query.slug?.[5] === "comments"){
+      router.replace(`/${query.slug?.slice(3)?.join('/')}`)
+    }
+  }, [])
 
   useEffect(() => {
     const sessionLoad = async (user, mode) => {
@@ -131,17 +144,7 @@ const Sort = ({ query }) => {
               ) : (
                 <div></div>
               )}
-              <Feed
-                query={feedQuery}
-                isUser={isUser}
-
-                isSelf={
-                  username?.toUpperCase() === session?.user?.name?.toUpperCase()
-                }
-                session={session}
-                userPostMode={mode}
-                isMulti={isMulti}
-              />
+              <Feed/>
             </div>
           )
         )}

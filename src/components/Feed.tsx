@@ -24,29 +24,31 @@ import type { Session } from "next-auth/core/types";
 import useFeed from "../hooks/useFeed";
 
 const Feed = ({
-  query,
   initialData = {} as any,
-  session = {} as Session,
-  isUser = false,
-  isMulti = false,
-  isSubFlair = false,
-  isSearch = false,
   safeSearch = false,
-  userPostMode = "",
-  isSelf = false,
 }) => {
   //const { data: session, status } = useSession();
   //const sessloading = status === "loading";
   const [loading, setLoading] = useState(true);
-  const { key, feed } = useFeed({safeSearch: safeSearch});
+  const { key, feed } = useFeed({ safeSearch: safeSearch });
   useEffect(() => {
     // console.log(key, feed)
   }, [key, feed]);
 
   // const [nothingHere, setNothingHere] = useState(false);
   // const [error, setError] = useState(false);
-  // const [fetchPost, setFetchPost] = useState(false);
+  const [fetchPost, setFetchPost] = useState(false);
   const context: any = useMainContext();
+  const router = useRouter();
+
+
+  useEffect(() => {
+    if (router.asPath?.substring(0,3) === "/r/" && router.asPath.includes('/comments') ){
+      console.log(">>>>>>>>>REPLACING<<<<<<<<<<<<", router.asPath);
+     router.replace(router.asPath, undefined, {shallow: true});
+    }
+  }, [])
+
   // let {
   //   readFilter,
   //   imgFilter,
@@ -348,9 +350,10 @@ const Feed = ({
   //       <LoginModal />
   //       <PostModal
   //         permalink={
-  //           query?.frontsort
-  //             ? `/${query?.frontsort}`
-  //             : "/r/" + query?.slug.join("/")
+  //           // query?.frontsort
+  //           //   ? `/${query?.frontsort}`
+  //           //   : "/r/" + query?.slug.join("/")
+  //           router.asPath
   //         }
   //         returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
   //         setSelect={setFetchPost}
@@ -382,6 +385,19 @@ const Feed = ({
         </>
       )}
       <LoginModal />
+      {/* {fetchPost && (
+        <PostModal
+          permalink={
+            // query?.frontsort
+            //   ? `/${query?.frontsort}`
+            //   : "/r/" + query?.slug.join("/")
+            router.asPath
+          }
+          returnRoute={undefined}//{query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
+          setSelect={setFetchPost}
+          direct={true}
+        />
+      )} */}
       <div className="flex flex-col items-center flex-none w-screen">
         <div
           className={
