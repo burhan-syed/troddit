@@ -436,9 +436,9 @@ const MyMasonic = ({
       {!feed.isLoading && !feed.hasNextPage && (
         <div className="flex flex-row items-center justify-center my-6 text-sm font-light">
           <h1>
-            Loaded {items?.length} post{items?.length === 1 ? "" : "s"} on {feed.data?.pages.length}{" "}
+            Loaded {items?.length} post{items?.length === 1 ? "" : "s"} on {feed.data?.pages?.length}{" "}
             page
-            {feed.data?.pages.length === 1 ? "" : "s"}.{" "}
+            {feed.data?.pages?.length === 1 ? "" : "s"}.{" "}
           </h1>
         </div>
       )}

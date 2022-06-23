@@ -1184,7 +1184,7 @@ export const hideLink = async (id, isHidden) => {
 export const postVote = async (dir: number, id) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
-    try {
+    //try {
       const res = await fetch("https://oauth.reddit.com/api/vote", {
         method: "POST",
         headers: {
@@ -1194,15 +1194,14 @@ export const postVote = async (dir: number, id) => {
         body: `id=${id}&dir=${dir}&rank=3`,
       });
       if (res.ok) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-  }
+        return {vote: dir, id: id};
+      } 
+    // } catch (err) {
+    //   return err;
+    // }
+  } 
+  throw new Error("Unable to vote")
+
 };
 
 export const postComment = async (parent, text) => {

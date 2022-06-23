@@ -133,13 +133,13 @@ const PostModal = ({
     };
   }, []);
 
-  useEffect(() => {
-    context.setPostOpen(true);
+  // useEffect(() => {
+  //   context.setPostOpen(true);
 
-    return () => {
-      context.setPostOpen(false);
-    };
-  }, []);
+  //   return () => {
+  //     context.setPostOpen(false);
+  //   };
+  // }, []);
 
   useEffect(() => {
     let asynccheck = true;
