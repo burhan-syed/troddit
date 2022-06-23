@@ -24,7 +24,7 @@ const processingInstructions = [
         node.parent?.attribs?.href?.includes("https://") &&
         node.name !== "img"; //leave comment gifs alone
 
-      check && console.log(node);
+      //check && console.log(node);
       return check;
     },
     processNode: function (node, children, index) {

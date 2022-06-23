@@ -15,6 +15,7 @@ const SubredditPage = ({ query }) => {
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
   const [commentThread, setCommentThread] = useState(false);
+  const [postThread, setPostThread] = useState(false);
   const [withCommentContext, setWithCommentContext] = useState(false);
   useEffect(() => {
     const getWiki = async (wikiquery) => {
@@ -32,9 +33,10 @@ const SubredditPage = ({ query }) => {
         .join("+")
         .split("+")
     );
-    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS" && query?.slug?.[4]) {
+    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS" ) {
+      setPostThread(true); 
       query?.context && setWithCommentContext(true);
-      setCommentThread(true);
+      query?.slug?.[4] && setCommentThread(true);
     } else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
       setWikiMode(true);
       let wikiquery = query.slug;
@@ -42,6 +44,7 @@ const SubredditPage = ({ query }) => {
       getWiki(wikiquery);
     }
     return () => {
+      setPostThread(false);
       setWithCommentContext(false);
       setCommentThread(false);
       setWikiMode(false);
@@ -81,7 +84,7 @@ const SubredditPage = ({ query }) => {
             </Link>
             <ParseBodyHTML html={wikiContent} newTabLinks={false} />
           </div>
-        ) : commentThread ? (
+        ) : postThread ? (
           <div className="mt-10">
             <LoginModal />
             <PostModal
@@ -89,7 +92,7 @@ const SubredditPage = ({ query }) => {
               returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
               setSelect={setCommentThread}
               direct={true}
-              commentMode={true}
+              commentMode={commentThread}
               withcontext={withCommentContext}
             />
           </div>

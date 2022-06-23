@@ -4,17 +4,20 @@ import { ThemeProvider } from "next-themes";
 import { MainProvider } from "../MainContext";
 import { MySubsProvider } from "../MySubs";
 import { MyCollectionsProvider } from "../components/collections/CollectionContext";
-
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from 'react-query/devtools'
 import Script from "next/script";
 import Head from "next/head";
 
 import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
 import { useEffect } from "react";
-import packageInfo from "../../package.json"
+import packageInfo from "../../package.json";
 import { checkVersion } from "../../lib/utils";
 import ToastCustom from "../components/toast/ToastCustom";
-const VERSION = packageInfo.version
+
+const VERSION = packageInfo.version;
+const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const curVersion = VERSION;
@@ -48,14 +51,17 @@ function MyApp({ Component, pageProps }) {
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <SessionProvider session={pageProps.session}>
-        <ThemeProvider  defaultTheme="system">
+        <ThemeProvider defaultTheme="system">
           <MainProvider>
             <MySubsProvider>
               <MyCollectionsProvider>
-                <NavBar />
-                <div className="mb-16"></div>
-                <Component {...pageProps} />
-                <Toaster position="bottom-center" />
+                <QueryClientProvider client={queryClient}>
+                  <NavBar />
+                  <div className="mb-16"></div>
+                  <Component {...pageProps} />
+                  <Toaster position="bottom-center" />
+                  <ReactQueryDevtools initialIsOpen={false} />
+                </QueryClientProvider>
               </MyCollectionsProvider>
             </MySubsProvider>
           </MainProvider>

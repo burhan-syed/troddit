@@ -232,6 +232,8 @@ export const getRedditSearch = async (
     raw_json: 1,
     sr_detail: true,
   };
+  console.log("PARAMS?",subreddit,include_over_18,p)
+
   let oathsearch = `https://oauth.reddit.com/search`;
   let noauthsearch = `${REDDIT}/search.json`;
   if (p?.q?.substring(0, 5)?.toUpperCase() === "FLAIR") {

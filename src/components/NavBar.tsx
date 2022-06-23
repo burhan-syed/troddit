@@ -18,6 +18,7 @@ import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
+import useFeed from "../hooks/useFeed";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
@@ -31,6 +32,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const plausible = usePlausible();
 
   const { scrollY, scrollX, scrollDirection } = useScroll();
+  const {feed} = useFeed(); 
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
     return () => {

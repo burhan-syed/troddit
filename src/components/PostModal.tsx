@@ -1007,7 +1007,7 @@ const PostModal = ({
                                 You are viewing a single comment's thread
                               </span>
                               <span className="text-xs">
-                                <Link href={`${apost.permalink}`} passHref>
+                                <Link href={`/${apost.permalink}`} passHref>
                                   <a className="font-semibold text-th-link hover:text-th-linkHover">
                                     Click to view all comments
                                   </a>
