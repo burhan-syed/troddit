@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.14.2
+### New
+- Added Dracula theme
+### Fixes
+- For those self hosting, Reddit links will now be replaced with the current hostname instead of troddit.com. 
 ## v0.14.1
 
 ### Fixes
