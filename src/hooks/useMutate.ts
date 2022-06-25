@@ -1,10 +1,12 @@
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { postVote } from "../RedditAPI";
 
 const useMutate = (mutationAction) => {
   const queryClient = useQueryClient();
+  const router = useRouter(); 
   const { data: session, status } = useSession();
 
   const voteMutation = useMutation(({ vote, id }: any) => postVote(vote, id), {
@@ -65,6 +67,18 @@ const useMutate = (mutationAction) => {
           console.log("ERR NO USER");
           queryClient.invalidateQueries(["feed"]);
         }
+      } else if (data.id.substring(0,3) === "t1_"){
+        console.log("COMMENT VOTE");
+        console.log(router);
+        const path = router?.asPath?.split("/");
+        const cIndex = path?.indexOf("comments")
+        let postId;
+        if (cIndex){
+         postId  = path?.[cIndex + 1] as string;
+        }
+        //this check could be better
+        postId?.match(/[A-z0-9]/g)?.length === 6 ? queryClient.invalidateQueries(['thread', postId]) : queryClient.invalidateQueries(['thread']);
+        
       }
     },
     onError: (err, update, context: any) => {
