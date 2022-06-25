@@ -227,7 +227,7 @@ const Feed = ({
         updateLoading(false);
       }
     };
-
+    const DOMAIN = window?.location?.hostname ?? 'www.troddit.com';
     const manageData = async (data) => {
       if (asynccheck) {
         data?.token && context.setToken(data?.token);
@@ -250,7 +250,8 @@ const Feed = ({
           },
           {},
           filterSubs,
-          isUser ? false : true
+          isUser ? false : true,
+          DOMAIN
         );
         setPostNames(
           filtered.reduce((obj, post, index) => {

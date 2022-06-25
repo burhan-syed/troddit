@@ -84,7 +84,6 @@ const MyMasonic = ({
   const [items, setItems] = useState([]);
   const [end, setEnd] = useState(false);
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
-
   // const plausible = usePlausible();
   const prevAfter = useRef(null);
   const prevAfters = useRef({});
@@ -169,6 +168,13 @@ const MyMasonic = ({
     windowHeight,
     context.postOpen,
   ]);
+
+  const [domain, setDomain] = useState("www.troddit.com");
+  useEffect(() => {
+    setDomain(window?.location?.hostname ?? "www.troddit.com")
+  
+  }, [])
+  
 
   useEffect(() => {
     context.setColumns(cols);
@@ -342,7 +348,8 @@ const MyMasonic = ({
         },
         postnames,
         filterSubs,
-        isUser ? false : true
+        isUser ? false : true,
+        domain
       );
       setPostNames((prev) => ({
         ...prev,
