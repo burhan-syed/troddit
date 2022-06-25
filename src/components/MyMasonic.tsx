@@ -45,6 +45,7 @@ let loadonce = 0;
 
 interface MyMasonicProps {
   initItems:any[],
+  curKey:any,
   feed: UseInfiniteQueryResult<{
     filtered: any;
     after: any;
@@ -57,6 +58,7 @@ const MyMasonic = ({
   // query,
   initItems,
   feed,
+  curKey,
   // initAfter,
   // filterSubs,
   // postCount,
@@ -191,7 +193,7 @@ const MyMasonic = ({
   useEffect(() => {
     const posts = feed?.data?.pages
       ?.map((page) => page.filtered)
-      ?.flat() as any[];
+      ?.flat()?.map(post => {return {...post, curKey: curKey, fetchMore: feed.fetchNextPage}}) as any[];
     if (posts?.length > 0) {
       console.log("infinitequery?", posts);
       setItems(posts);
@@ -505,7 +507,7 @@ const MyMasonic = ({
 const PostCard = (props) => {
   return (
     <div className={""}>
-      <Post post={props.data} postNum={props.index} />
+      <Post post={props.data} postNum={props.index}  />
     </div>
   );
 };

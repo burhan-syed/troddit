@@ -20,7 +20,6 @@ const Post = ({ post, postNum = 0 }) => {
   const [margin, setMargin] = useState("m-1");
   const {read} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
-
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
       ? setHideNSFW(true)
@@ -147,6 +146,8 @@ const Post = ({ post, postNum = 0 }) => {
           postNum={postNum}
           commentMode={post?.kind === "t1"}
           commentsDirect={commentsDirect}
+          curKey={post?.curKey}
+          fetchMore={post?.fetchMore}
         />
       )}
 

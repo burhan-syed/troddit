@@ -130,7 +130,7 @@ const ChildComments = ({
 
   const childCommentCount = useMemo(() => {
     let count = 0;
-    childcomments.forEach((c) => {
+    childcomments?.forEach((c) => {
       if (c?.data?.count) {
         count += c?.data?.count;
       } else {

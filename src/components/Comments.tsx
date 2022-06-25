@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
@@ -7,7 +7,11 @@ import ChildComments from "./ChildComments";
 const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, }) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
-  const [commentsData, setCommentsData] = useState(comments);
+  const [commentsData, setCommentsData] = useState(() => comments);
+  useEffect(() => {
+  setCommentsData(comments);
+  }, [comments])
+  
   const [moreLoading, setMoreLoading] = useState(false);
   const fixformat = useCallback(async (comments) => {
     if (comments?.length > 0) {

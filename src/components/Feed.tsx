@@ -427,6 +427,7 @@ const Feed = ({
                 // filterSubs={filterSubs}
                 //initAfter={after}
                 feed={feed}
+                curKey={key}
                 // isUser={isUser}
                 // isSelf={isSelf}
                 // userPostMode={userPostMode}
