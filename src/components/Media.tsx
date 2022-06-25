@@ -101,6 +101,7 @@ const Media = ({
   ]);
 
   useEffect(() => {
+    const DOMAIN = window?.location?.hostname ?? 'www.troddit.com'
     const shouldLoad = () => {
       if (!post) return false;
       if (!post.url) return false;
@@ -111,7 +112,7 @@ const Media = ({
 
     const initialize = async () => {
       if (!post?.["mediaInfo"]) {
-        let m = await findMediaInfo(post);
+        let m = await findMediaInfo(post, false, DOMAIN);
         post["mediaInfo"] = m;
       }
       let a, b, c;

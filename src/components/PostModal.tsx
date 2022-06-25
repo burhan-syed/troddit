@@ -185,6 +185,7 @@ const PostModal = ({
 
   const [mediaInfo, setMediaInfo] = useState<any>();
   useEffect(() => {
+    const DOMAIN = window?.location?.hostname ?? 'www.troddit.com';
     const checkPortrait = async () => {
       if (
         apost?.mediaInfo?.isPortrait === true ||
@@ -194,7 +195,7 @@ const PostModal = ({
         setUsePortrait(apost?.mediaInfo?.isPortrait);
         //setimgFull(apost?.mediaInfo?.isPortrait);
       } else {
-        let check = await findMediaInfo(apost);
+        let check = await findMediaInfo(apost,false, DOMAIN);
         setMediaInfo(check);
         check?.isPortrait ? setUsePortrait(true) : undefined;
       }
