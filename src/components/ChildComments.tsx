@@ -103,6 +103,14 @@ const ChildComments = ({
     return comments;
   }, []);
 
+  const filterExisting = (comments) => {
+    return comments.filter((comment: any) => {
+      return !childcomments.find((cComment: any) => {
+       return cComment?.kind === "more" ? false :  cComment?.data?.name === comment?.data?.name;
+      });
+    });
+  };
+
   const loadChildComments = useCallback(
     async (children, link_id) => {
       let childrenstring = children.join();
@@ -118,7 +126,10 @@ const ChildComments = ({
       data?.token && context?.setToken(data?.token);
       let morecomments = data?.data;
       if (morecomments?.[0]?.data?.replies?.data?.children) {
-        setMoreComments(morecomments?.[0]?.data?.replies?.data?.children);
+        const filtered = filterExisting(
+          morecomments?.[0]?.data?.replies?.data?.children
+        );
+        setMoreComments(filtered);
       } else {
         setMoreComments(await fixformat(morecomments));
       }
@@ -306,7 +317,7 @@ const ChildComments = ({
               )}
               {hideChildren &&
                 !context.collapseChildrenOnly &&
-                childcomments.length > 0 && (
+                childcomments?.length > 0 && (
                   <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
                     +{childCommentCount}
                   </div>
@@ -390,7 +401,7 @@ const ChildComments = ({
                 </div>
                 {hideChildren &&
                   context.collapseChildrenOnly &&
-                  childcomments.length > 0 && (
+                  childcomments?.length > 0 && (
                     <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
                       +{childCommentCount}
                     </div>
@@ -400,7 +411,7 @@ const ChildComments = ({
               {/* Comment Reply */}
               {hideChildren &&
                 context.collapseChildrenOnly &&
-                childcomments.length > 0 && <div className="py-1"></div>}
+                childcomments?.length > 0 && <div className="py-1"></div>}
               {openReply && (
                 <div
                   className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
@@ -422,7 +433,7 @@ const ChildComments = ({
                   "min-w-full py-2" +
                   (hideChildren &&
                   context.collapseChildrenOnly &&
-                  childcomments.length > 0
+                  childcomments?.length > 0
                     ? " hidden "
                     : "")
                 }
@@ -476,7 +487,7 @@ const ChildComments = ({
                             ) : (
                               moreComments?.map((morecomment, i) => (
                                 <ChildComments
-                                  key={i + morecomment?.data?.id}
+                                  key={morecomment?.data?.id}
                                   comment={morecomment}
                                   depth={morecomment?.data?.depth ?? depth + 1}
                                   hide={hideChildren}
