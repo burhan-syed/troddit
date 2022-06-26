@@ -40,7 +40,7 @@ const Vote = ({
 
   useEffect(() => {
     setLiked(() => {
-      if (likes) return 1;
+      if (likes === 1 || likes === true) return 1;
       if (likes === false || likes === -1) return -1;
       return undefined;
     });

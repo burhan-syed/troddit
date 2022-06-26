@@ -1143,15 +1143,17 @@ export const saveLink = async (category, id, isSaved) => {
         }
       );
       if (res?.ok) {
-        return true;
+        return {saved: isSaved ? false : true, id: id};
       } else {
-        return false;
+        throw new Error("Unable to save");
       }
     } catch (err) {
       console.log(err);
-      return false;
+      throw new Error("Unable to save");
     }
   }
+  throw new Error("Unable to save");
+
 };
 
 export const hideLink = async (id, isHidden) => {

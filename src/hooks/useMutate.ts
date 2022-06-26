@@ -2,45 +2,65 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { postVote } from "../RedditAPI";
+import { postVote, saveLink } from "../RedditAPI";
 
 const useMutate = (mutationAction) => {
   const queryClient = useQueryClient();
-  const router = useRouter(); 
+  const router = useRouter();
   const { data: session, status } = useSession();
+
+  interface Change {
+    property: string;
+    value: any;
+  }
+  const optimisticUpdate = async (
+    key: string[],
+    id: string,
+    change: Change
+  ) => {
+    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries();
+    // Snapshot the previous value
+    const previousData = queryClient.getQueriesData(key);
+
+    // Optimistically update to the new value
+    queryClient.setQueriesData(["feed"], (oldData: any) => {
+      console.log(change);
+      let newData = oldData;
+      if (newData) {
+        let newPages = oldData?.pages?.map((page) => {
+          return {
+            ...page,
+            filtered: page?.filtered?.map((post) => {
+              if (id === post?.data?.name) {
+                console.log(
+                  "FOUND!",
+                  post?.data?.title,
+                  post.data[change.property],
+                  change.value
+                );
+                post.data[change.property] = change.value;
+              }
+              return post;
+            }),
+          };
+        });
+        newData = { ...newData, pages: newPages };
+        console.log("newData", newData);
+      }
+      return newData;
+    });
+
+    return { previousData };
+  };
 
   const voteMutation = useMutation(({ vote, id }: any) => postVote(vote, id), {
     onMutate: async (update) => {
       if (update.id.substring(0, 3) === "t3_") {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries();
-        // Snapshot the previous value
-        const previousData = queryClient.getQueriesData(["feed"]);
-
-        // Optimistically update to the new value
-        queryClient.setQueriesData(["feed"], (oldData: any) => {
-          console.log(update, update.id, oldData);
-          let newData = oldData;
-          if (newData) {
-            let newPages = oldData?.pages?.map((page) => {
-              return {
-                ...page,
-                filtered: page?.filtered?.map((post) => {
-                  if (update.id === post?.data?.name) {
-                    console.log("FOUND!", post?.data?.title);
-                    post.data["likes"] = update.vote;
-                  }
-                  return post;
-                }),
-              };
-            });
-            newData = { ...newData, pages: newPages };
-            console.log("newData", newData);
-          }
-          return newData;
+        return optimisticUpdate(["feed"], update.id, {
+          property: "likes",
+          value: update.vote,
         });
-
-        return { previousData };
       }
     },
     onSuccess: (data: any) => {
@@ -67,18 +87,19 @@ const useMutate = (mutationAction) => {
           console.log("ERR NO USER");
           queryClient.invalidateQueries(["feed"]);
         }
-      } else if (data.id.substring(0,3) === "t1_"){
+      } else if (data.id.substring(0, 3) === "t1_") {
         console.log("COMMENT VOTE");
         console.log(router);
         const path = router?.asPath?.split("/");
-        const cIndex = path?.indexOf("comments")
+        const cIndex = path?.indexOf("comments");
         let postId;
-        if (cIndex){
-         postId  = path?.[cIndex + 1] as string;
+        if (cIndex) {
+          postId = path?.[cIndex + 1] as string;
         }
         //this check could be better
-        postId?.match(/[A-z0-9]/g)?.length === 6 ? queryClient.invalidateQueries(['thread', postId]) : queryClient.invalidateQueries(['thread']);
-        
+        postId?.match(/[A-z0-9]/g)?.length === 6
+          ? queryClient.invalidateQueries(["thread", postId])
+          : queryClient.invalidateQueries(["thread"]);
       }
     },
     onError: (err, update, context: any) => {
@@ -89,7 +110,43 @@ const useMutate = (mutationAction) => {
     },
   });
 
-  return { voteMutation };
+  const saveMutation = useMutation(
+    ({ id, isSaved }: any) => saveLink("", id, isSaved),
+    {
+      onMutate: async (update) => {
+        if (update.id.substring(0, 3) === "t3_") {
+          return optimisticUpdate(["feed"], update.id, {
+            property: "saved",
+            value: update.isSaved ? false : true,
+          });
+        }
+      },
+      onSuccess: (data: any) => {
+        console.log(router, router.asPath)
+        if (
+          data?.id?.substring(0, 3) === "t3_" &&
+          session?.user?.name &&
+          router.asPath !== `/u/${session.user.name}/saved`
+        ) {
+          console.log("INVALIDATE")
+          queryClient.invalidateQueries([
+            "feed",
+            session.user.name,
+            "SELF",
+            session.user.name,
+            "saved",
+          ]);
+        }
+      },
+      onError: (err, update, context: any) => {
+        if (update.id.substring(0, 3) === "t3_") {
+          queryClient.setQueriesData(["feed"], context.previousData);
+        }
+      },
+    }
+  );
+
+  return { voteMutation, saveMutation };
 };
 
 export default useMutate;
