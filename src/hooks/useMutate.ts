@@ -2,9 +2,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { postVote, saveLink } from "../RedditAPI";
+import { hideLink, postVote, saveLink } from "../RedditAPI";
 
-const useMutate = (mutationAction) => {
+const useMutate = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -122,13 +122,13 @@ const useMutate = (mutationAction) => {
         }
       },
       onSuccess: (data: any) => {
-        console.log(router, router.asPath)
+        console.log(router, router.asPath);
         if (
           data?.id?.substring(0, 3) === "t3_" &&
           session?.user?.name &&
           router.asPath !== `/u/${session.user.name}/saved`
         ) {
-          console.log("INVALIDATE")
+          console.log("INVALIDATE");
           queryClient.invalidateQueries([
             "feed",
             session.user.name,
@@ -146,7 +146,36 @@ const useMutate = (mutationAction) => {
     }
   );
 
-  return { voteMutation, saveMutation };
+  const hideMutation = useMutation(
+    ({ id, isHidden }: any) => hideLink(id, isHidden),
+    {
+      onMutate: async (update) => {
+        return optimisticUpdate(["feed"], update.id, {
+          property: "hidden",
+          value: update.isHidden ? false : true,
+        });
+      },
+      onSuccess: (data: any) => {
+        if (
+          session?.user?.name &&
+          router.asPath !== `/u/${session.user.name}/hidden`
+        ) {
+          queryClient.invalidateQueries([
+            "feed",
+            session.user.name,
+            "SELF",
+            session.user.name,
+            "hidden",
+          ]);
+        }
+      },
+      onError: (err, update, context: any) => {
+        queryClient.setQueriesData(["feed"], context.previousData);
+      },
+    }
+  );
+
+  return { voteMutation, saveMutation, hideMutation };
 };
 
 export default useMutate;

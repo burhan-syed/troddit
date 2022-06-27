@@ -1172,15 +1172,17 @@ export const hideLink = async (id, isHidden) => {
         }
       );
       if (res?.ok) {
-        return true;
+        return {hidden: isHidden ? false : true, id: id};
       } else {
-        return false;
+        throw new Error("Unable to hide");
       }
     } catch (err) {
-      console.log(err);
+      throw new Error("Unable to hide");
       return false;
     }
   }
+  throw new Error("Unable to hide");
+
 };
 
 export const postVote = async (dir: number, id) => {
