@@ -44,7 +44,6 @@ const PostModal = ({
   curKey,
   fetchMore = () => {},
   postData = {},
-  postId,
   postNum,
   direct = false,
   commentsDirect = false,
@@ -136,7 +135,7 @@ const PostModal = ({
         router.replace(
           "",
           router.query?.frontsort
-            ? nextPost?.id
+            ? nextPost?.id 
             : // : router.route === "/u/[...slug]" &&
             //   session?.user?.name?.toUpperCase() ===
             //     router?.query?.slug?.[0]?.toUpperCase()
@@ -147,13 +146,13 @@ const PostModal = ({
             //   }${flattenedPosts[curPostNum + 1]?.data?.id}`
             router.route === "/u/[...slug]"
             ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}`
-            : flattenedPosts[curPostNum + 1]?.data?.permalink,
+            : nextPost.permalink,
           {
             shallow: true,
           }
         );
       }
-      setCurPostNum((p) => p + move);
+      setCurPostNum((p) =>  p + move);
     }
   };
 

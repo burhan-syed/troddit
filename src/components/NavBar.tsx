@@ -18,11 +18,11 @@ import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
-import useFeed from "../hooks/useFeed";
+import useRefresh from "../hooks/useRefresh";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
-  const { setForceRefresh } = context;
+  const { invalidateKey } = useRefresh();
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
   const { data: session, status } = useSession();
@@ -32,7 +32,6 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const plausible = usePlausible();
 
   const { scrollY, scrollX, scrollDirection } = useScroll();
-  const {feed} = useFeed(); 
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
     return () => {
@@ -44,13 +43,13 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       //console.log(scrollDirection, scrollY);
       if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
-      } else if (scrollY > 300 && scrollDirection === "up" && !hidden) {
+      } else if (scrollY > 300 && scrollDirection === "up") {
         setHidden(true);
       } else if (scrollY <= 300) {
         setHidden(false);
       }
     } else {
-      hidden && setHidden(false);
+      setHidden(false);
     }
   }, [scrollDirection, allowHide, scrollY]);
 
@@ -79,7 +78,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   }, [router]);
 
   const homeClick = () => {
-    router?.route === "/" && setForceRefresh((p) => p + 1);
+    router?.route === "/" && invalidateKey(["feed", "HOME"]); // setForceRefresh((p) => p + 1);
   };
 
   return (

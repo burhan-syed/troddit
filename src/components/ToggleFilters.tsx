@@ -3,8 +3,10 @@ import ReactSwitch from "react-switch";
 import { BsX, BsCheck } from "react-icons/bs";
 import { useMainContext } from "../MainContext";
 import { useEffect, useState } from "react";
-const ToggleFilters = ({ filter, withSubtext = false }) => {
+import useRefresh from "../hooks/useRefresh";
+const ToggleFilters = ({ filter, withSubtext = false, quickToggle = false}) => {
   const context: any = useMainContext();
+  const {invalidateKey} = useRefresh(); 
   const { theme, resolvedTheme } = useTheme();
   const [checked, setChecked] = useState(false);
   const [title, setTitle] = useState("filter toggle");
@@ -13,6 +15,9 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const [filterName, setFilterName] = useState("");
+
   useEffect(() => {
     //console.log(filter, context.filters, context.filters.filter)
     let f = "";
@@ -68,9 +73,22 @@ const ToggleFilters = ({ filter, withSubtext = false }) => {
           : filter
       } `
     );
-    //console.log(filter, f, context[f])
-    context[f] ? setChecked(true) : setChecked(false);
-  }, [context, filter]);
+    setFilterName(f);
+
+ 
+  }, [filter]);
+
+  useEffect(() => {
+    if (filterName){
+      context[filterName] ? setChecked(true) : setChecked(false);
+      if (quickToggle){
+        context.applyFilters(); 
+        invalidateKey(["feed"]); 
+      }
+    }
+  
+  }, [context?.[filterName]])
+  
 
   const [onHandleColor, setOnHandleColor] = useState<string>();
   const [offHandleColor, setOffHandleColor] = useState<string>();

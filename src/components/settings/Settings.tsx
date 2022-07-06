@@ -155,7 +155,7 @@ const Settings = () => {
           "read",
         ].map((f, i) => (
           <div key={f}>
-            <ToggleFilters filter={f} withSubtext={true} />
+            <ToggleFilters filter={f} withSubtext={true} quickToggle={true} />
           </div>
         )),
         <div key={"other_filters"} className={"py-1 "}>

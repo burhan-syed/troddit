@@ -9,6 +9,8 @@ import SubOptButton from "../SubOptButton";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
 import Login from "../Login";
 import SubIcon from "../SubIcon";
+import useRefresh from "../../hooks/useRefresh";
+import { useSession } from "next-auth/react";
 
 const SubCard = ({
   data,
@@ -17,10 +19,12 @@ const SubCard = ({
   subInfo = undefined,
   currMulti = undefined,
   subArray = undefined,
-  openDescription = undefined,
+  openDescription = () => {},
   isSelf = false,
 }) => {
   const context: any = useMainContext();
+  const session = useSession();
+  const { invalidateKey } = useRefresh();
   const [thumbURL, setThumbURL] = useState("");
   const [subBanner, setBanner] = useState<any>({});
   const [hideNSFW, setHideNSFW] = useState(false);
@@ -80,9 +84,7 @@ const SubCard = ({
     <div
       className={
         "relative  transition-colors bg-contain border  shadow-md bg-th-post  " +
-        (tall
-          ? "  "
-          : " rounded-lg ") +
+        (tall ? "  " : " rounded-lg ") +
         (tall
           ? " border-transparent  border-b-th-border "
           : " group hover:bg-th-postHover border-th-border hover:shadow-2xl  hover:cursor-pointer ")
@@ -91,9 +93,7 @@ const SubCard = ({
       <div
         className={
           ` absolute  w-full  bg-cover bg-center  ` +
-          ( tall
-            ? " "
-            : " rounded-t-lg ") +
+          (tall ? " " : " rounded-t-lg ") +
           (tall ? " h-[121px] border-b " : " h-16") +
           (hideNSFW ||
           (subBanner?.backgroundImage?.length < 9 &&
@@ -144,7 +144,10 @@ const SubCard = ({
               >
                 {data?.kind === "t2" ? "u/" : data?.kind === "t5" ? "r/" : " "}
                 {hideNSFW && (
-                  <span className="absolute right-0 opacity-70 " style={{fontSize: '0.5rem'}}>
+                  <span
+                    className="absolute right-0 opacity-70 "
+                    style={{ fontSize: "0.5rem" }}
+                  >
                     {"18+"}
                   </span>
                 )}
@@ -181,7 +184,17 @@ const SubCard = ({
                           (tall ? " " : " ")
                         }
                         onClick={() => {
-                          !link && context.setForceRefresh((p) => p + 1);
+                          !link && data?.kind === "t2"
+                            ? invalidateKey([
+                                "feed",
+                                session?.data?.user?.name === data?.data?.name ? "SELF" : "USER",
+                                data?.data?.name,
+                              ])
+                            : invalidateKey([
+                                "feed",
+                                "SUBREDDIT",
+                                data?.data?.display_name,
+                              ]); //context.setForceRefresh((p) => p + 1);
                         }}
                       >
                         {data?.kind === "t2"
@@ -230,9 +243,7 @@ const SubCard = ({
                   )}
                   {(data?.data?.over18 || data?.data?.subreddit?.over_18) && (
                     <>
-                      <span className="text-xs text-th-red pb-0.5">
-                        NSFW
-                      </span>
+                      <span className="text-xs text-th-red pb-0.5">NSFW</span>
                     </>
                   )}
                 </>

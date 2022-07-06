@@ -5,6 +5,7 @@ import { ImSpinner2 } from "react-icons/im";
 import { useSubsContext } from "../MySubs";
 import { localSubInfoCache } from "../MainContext";
 import { loadSubredditInfo } from "../RedditAPI";
+import useRefresh from "../hooks/useRefresh";
 
 const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
@@ -13,6 +14,7 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const subsContext: any = useSubsContext();
+  const {invalidateKey} = useRefresh();
   const {
     mySubs,
     myFollowing,
@@ -74,7 +76,10 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
       //console.log("attempting", session?.user?.name, action, sub2sub);
 
       let s = await subscribe(action, sub2sub, session);
-      s && setSubbed((p) => !p);
+      if (s){
+        setSubbed((p) => !p);
+        invalidateKey(["feed", "HOME"])
+      }
       setloadAPI(false);
     }
   };

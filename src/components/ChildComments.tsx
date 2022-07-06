@@ -14,6 +14,7 @@ import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
 import Image from "next/image";
 import { BsArrowRightShort } from "react-icons/bs";
+import useMutate from "../hooks/useMutate";
 
 const ChildComments = ({
   comment,
@@ -25,11 +26,28 @@ const ChildComments = ({
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
-  const [hideChildren, setHideChildren] = useState(false);
+  const [hideChildren, setHideChildren] = useState(
+    comment?.data?.collapsed ?? false
+  );
+  const { commentCollapse, loadCommentsMutation } = useMutate();
+  const toggleHidden = (override?) => {
+    setHideChildren((h) => {
+      let collapsed = !h;
+      if (override !== undefined) {
+        collapsed = override;
+      }
+      commentCollapse.mutate({
+        name: comment?.data?.name,
+        thread: comment?.data?.link_id?.substring(3),
+        collapse: collapsed,
+      });
+      return collapsed;
+    });
+  };
   const context: any = useMainContext();
 
   useEffect(() => {
-    context?.defaultCollapseChildren && setHideChildren(true);
+    context?.defaultCollapseChildren && toggleHidden(true);
   }, [context?.defaultCollapseChildren]);
 
   const { data: session, status } = useSession();
@@ -103,36 +121,49 @@ const ChildComments = ({
     return comments;
   }, []);
 
-  const filterExisting = (comments) => {
+  const filterExisting = (comments, childcomments) => {
     return comments.filter((comment: any) => {
       return !childcomments.find((cComment: any) => {
-       return cComment?.kind === "more" ? false :  cComment?.data?.name === comment?.data?.name;
+        return cComment?.kind === "more"
+          ? false
+          : cComment?.data?.name === comment?.data?.name;
       });
     });
   };
 
   const loadChildComments = useCallback(
     async (children, link_id) => {
-      let childrenstring = children.join();
-      //console.log(childrenstring);
-      //console.log(link_id);
-      const data = await loadMoreComments(
-        childrenstring,
-        link_id,
-        comment?.data?.permalink,
-        session ? true : false,
-        context?.token
-      );
-      data?.token && context?.setToken(data?.token);
-      let morecomments = data?.data;
-      if (morecomments?.[0]?.data?.replies?.data?.children) {
-        const filtered = filterExisting(
-          morecomments?.[0]?.data?.replies?.data?.children
-        );
-        setMoreComments(filtered);
-      } else {
-        setMoreComments(await fixformat(morecomments));
-      }
+      let newComments = await loadCommentsMutation.mutateAsync({
+        parentName: comment?.data?.name,
+        children: children,
+        link_id: link_id,
+        permalink: comment?.data?.permalink,
+        childcomments: childcomments,
+        token: context?.token,
+      });
+
+      // let childrenstring = children.join();
+      // //console.log(childrenstring);
+      // //console.log(link_id);
+      // const data = await loadMoreComments(
+      //   childrenstring,
+      //   link_id,
+      //   comment?.data?.permalink,
+      //   session ? true : false,
+      //   context?.token
+      // );
+      // data?.token && context?.setToken(data?.token);
+      // let morecomments = data?.data;
+      // if (morecomments?.[0]?.data?.replies?.data?.children) {
+      //   const filtered = filterExisting(
+      //     morecomments?.[0]?.data?.replies?.data?.children
+      //   );
+      //   setMoreComments(filtered);
+      // } else {
+      //   setMoreComments(await fixformat(morecomments));
+      // }
+      setMoreComments(newComments?.newComments);
+      newComments?.newToken && context?.setToken(newComments?.newToken); 
       setMoreLoaded(true);
       setLoadingComments(false);
     },
@@ -174,7 +205,8 @@ const ChildComments = ({
         className={"flex flex-row"}
         onClick={(e) => {
           e.stopPropagation();
-          setHideChildren((h) => !h);
+          toggleHidden();
+          //setHideChildren((h) => !h);
           executeScroll();
         }}
       >
@@ -182,7 +214,8 @@ const ChildComments = ({
         <div
           onClick={(e) => {
             e.stopPropagation();
-            setHideChildren((h) => !h);
+            toggleHidden();
+            //setHideChildren((h) => !h);
             executeScroll();
           }}
           className={
@@ -209,7 +242,8 @@ const ChildComments = ({
           }
           onClick={(e) => {
             e.stopPropagation();
-            setHideChildren((h) => !h);
+            toggleHidden();
+            //setHideChildren((h) => !h);
             executeScroll();
           }}
         >
@@ -378,7 +412,7 @@ const ChildComments = ({
                   className={
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
-                    comment?.myreply ||
+                    //comment?.myreply ||
                     comment?.data?.archived
                       ? "hidden"
                       : "block hover:underline")
@@ -420,6 +454,7 @@ const ChildComments = ({
                   <CommentReply
                     parent={comment?.data?.name}
                     getResponse={updateMyReplies}
+                    postName={comment?.data?.link_id?.substring(3)}
                   />
                 </div>
               )}

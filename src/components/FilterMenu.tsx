@@ -18,27 +18,9 @@ const FilterMenu = ({ hide = false }) => {
   const [deg, setDeg] = useState(0);
   const [degIntervalID, setDegIntervalID] = useState<any>();
   useEffect(() => {
-    let {
-      readFilter,
-      imgFilter,
-      vidFilter,
-      selfFilter,
-      galFilter,
-      linkFilter,
-      imgPortraitFilter,
-      imgLandscapeFilter,
-    } = context;
     if (
-      !readFilter ||
-      !imgFilter ||
-      !vidFilter ||
-      !selfFilter ||
-      // !galFilter ||
-      !linkFilter ||
-      !imgPortraitFilter ||
-      !imgLandscapeFilter
+      context.filtersApplied > 0
     ) {
-      //console.log("active");
       setActive(true);
     } else {
       setActive(false);
@@ -46,7 +28,7 @@ const FilterMenu = ({ hide = false }) => {
     return () => {
       setActive(false);
     };
-  }, [context]);
+  }, [context.filtersApplied]);
 
   useEffect(() => {
     if (active) {

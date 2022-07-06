@@ -11,14 +11,8 @@ import ReactDOM from "react-dom";
 import useWindowScroll from "@react-hook/window-scroll";
 import { useWindowSize } from "@react-hook/window-size";
 import {
-  MasonryScroller,
   Masonry,
-  useContainerPosition,
-  usePositioner,
-  useScroller,
-  useScrollToIndex,
   useInfiniteLoader,
-  List,
 } from "masonic";
 import {
   getRedditSearch,
@@ -138,12 +132,9 @@ const MyMasonic = ({
 
   // const getPostsPromise = (start, end) => Promise.resolve(getPosts(start, end));
 
-  const containerRef = React.useRef(null);
   const [windowWidth, windowHeight] = useWindowSize();
-  const { offset, width } = useContainerPosition(containerRef, [
-    windowWidth,
-    windowHeight,
-  ]);
+
+
 
   useEffect(() => {
     if (context.cardStyle == "row1") {
@@ -452,7 +443,7 @@ const MyMasonic = ({
       {true && (
         <>
           <Masonry
-            //key={key as Key}
+            key={curKey}
             onRender={maybeLoadMorePosts}
             columnGutter={0}
             columnCount={cols}
@@ -464,6 +455,7 @@ const MyMasonic = ({
             render={PostCard}
             className="outline-none"
             ssrWidth={500}
+            
           />
           {!context?.infiniteLoading && feed.hasNextPage && (
             <div className="flex items-center justify-center mt-6 mb-6">

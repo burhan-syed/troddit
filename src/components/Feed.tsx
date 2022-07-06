@@ -22,6 +22,7 @@ import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 import type { Session } from "next-auth/core/types";
 import useFeed from "../hooks/useFeed";
+import useRefresh from "../hooks/useRefresh";
 
 const Feed = ({
   initialData = {} as any,
@@ -31,6 +32,7 @@ const Feed = ({
   //const sessloading = status === "loading";
   const [loading, setLoading] = useState(true);
   const { key, feed } = useFeed({ safeSearch: safeSearch });
+  const {invalidateAll} = useRefresh(); 
   useEffect(() => {
     // console.log(key, feed)
   }, [key, feed]);
@@ -416,7 +418,7 @@ const Feed = ({
           {!feed.isLoading && (
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
-              onReset={() => context.setForceRefresh((i) => i + 1)}
+              onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
             >
               <MyMasonic
                 //page={`${subreddits}_${sort}_${range}_${imgFilter}_${vidFilter}_${selfFilter}_${galFilter}_${linkFilter}`}
@@ -437,7 +439,7 @@ const Feed = ({
                 // isSubFlair={isSubFlair}
                 // filterNum={filterCount}
                 // safeSearch={safeSearch}
-                key={`${key}_${context.fastRefresh}`}
+                key={`${key}_${context.fastRefresh}_${context.progressKey}`}
               />
             </ErrorBoundary>
           )}

@@ -13,7 +13,7 @@ const SubOptButton = ({
   subInfo,
   subArray,
   currMulti,
-  openDescription = undefined,
+  openDescription = () => {},
 }) => {
   const { data: session, status } = useSession();
   const loading = status === "loading";
@@ -117,7 +117,7 @@ const SubOptButton = ({
     //console.log(session);
 
     if (session) {
-      deleteRedditMulti(currMulti, session.user.name);
+      deleteRedditMulti(currMulti, session?.user?.name);
     } else if (!loading) {
       deleteLocalMulti(currMulti);
     }

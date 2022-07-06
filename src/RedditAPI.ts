@@ -1225,13 +1225,13 @@ export const postComment = async (parent, text) => {
       if (res.ok) {
         return data;
       } else {
-        return false;
+        throw new Error("Unable to comment")
       }
     } catch (err) {
-      return false;
+      throw new Error("Unable to comment")
     }
   }
-  return false;
+  throw new Error("Unable to comment")
 };
 
 export const getUserVotes = async () => {

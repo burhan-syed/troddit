@@ -29,7 +29,9 @@ export const MainProvider = ({ children }) => {
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
-  const [forceRefresh, setForceRefresh] = useState(0);
+  //const [forceRefresh, setForceRefresh] = useState(0);
+  //update key whenever items may change for Masonic component
+  const [progressKey, setProgressKey] = useState(0);
   const [fastRefresh, setFastRefresh] = useState(0);
 
   //settings. Initialized to undefined but defaults loaded in initial useEffect if previous setting not found
@@ -58,12 +60,12 @@ export const MainProvider = ({ children }) => {
   const [showFlairs, setShowFlairs] = useState<boolean>();
   const [showUserFlairs, setShowUserFlairs] = useState<boolean>();
   const [expandedSubPane, setExpandedSubPane] = useState<boolean>();
-  const [infiniteLoading, setInfinitLoading] = useState<boolean>(); 
-  const [dimRead, setDimRead] = useState<boolean>(); 
+  const [infiniteLoading, setInfinitLoading] = useState<boolean>();
+  const [dimRead, setDimRead] = useState<boolean>();
   const [autoRead, setAutoRead] = useState<boolean>();
   const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
-  const [preferEmbeds, setPreferEmbeds] = useState<boolean>(); 
-  const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>(); 
+  const [preferEmbeds, setPreferEmbeds] = useState<boolean>();
+  const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>();
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -91,39 +93,39 @@ export const MainProvider = ({ children }) => {
     setExpandedSubPane((e) => !e);
   };
   const toggleInfiniteLoading = () => {
-    setInfinitLoading(i => !i)
-  }
+    setInfinitLoading((i) => !i);
+  };
   const toggleDimRead = () => {
-    setDimRead(d => !d)
-  }
+    setDimRead((d) => !d);
+  };
   const toggleAutoRead = () => {
-    setAutoRead(r => !r)
-  }
+    setAutoRead((r) => !r);
+  };
   const toggleDisableEmbeds = () => {
-    setDisableEmbeds(d => {
-      if (!d){
-        setPreferEmbeds(false); 
-        setEmbedsEveryWhere(false); 
+    setDisableEmbeds((d) => {
+      if (!d) {
+        setPreferEmbeds(false);
+        setEmbedsEveryWhere(false);
       }
       return !d;
-      })
-  }
+    });
+  };
   const togglePreferEmbeds = () => {
-    setPreferEmbeds(p => {
-      if (!p){
+    setPreferEmbeds((p) => {
+      if (!p) {
         setDisableEmbeds(false);
       }
       return !p;
-    })
-  }
+    });
+  };
   const toggleEmbedsEverywhere = () => {
-    setEmbedsEveryWhere(e => {
-      if (!e){
-        setDisableEmbeds(false); 
+    setEmbedsEveryWhere((e) => {
+      if (!e) {
+        setDisableEmbeds(false);
       }
-      return !e; 
-    })
-  }
+      return !e;
+    });
+  };
 
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
@@ -139,7 +141,7 @@ export const MainProvider = ({ children }) => {
   const addReadPost = (postid) => {
     localRead.setItem(postid, new Date());
     setReadPosts((read) => {
-      setReadPostsChange(n => n+1);
+      setReadPostsChange((n) => n + 1);
 
       if (Object.keys(read).length < 1000) {
         read[postid] = new Date();
@@ -150,7 +152,6 @@ export const MainProvider = ({ children }) => {
       newread[postid] = new Date();
       return newread;
     });
-    
   };
   const toggleReadPost = async (postid) => {
     setReadPosts((read) => {
@@ -162,12 +163,12 @@ export const MainProvider = ({ children }) => {
         localRead.setItem(postid, new Date());
       }
       //localStorage.setItem("readPosts", JSON.stringify(read));
-      setReadPostsChange(n => n+1);
+      setReadPostsChange((n) => n + 1);
 
       return read;
     });
   };
- 
+
   //filters in the inverse sense, true = allowed
   const [readFilter, setReadFilter] = useState<boolean>();
   const [imgFilter, setImgFilter] = useState<boolean>();
@@ -189,6 +190,7 @@ export const MainProvider = ({ children }) => {
   const [scoreGreater, setScoreGreater] = useState(true);
 
   const [replyFocus, setReplyFocus] = useState(false);
+  /*To keep subreddit/user filters responsive */
   const [updateFilters, setUpdateFilters] = useState(0);
   const toggleFilter = (filter) => {
     switch (filter) {
@@ -280,6 +282,49 @@ export const MainProvider = ({ children }) => {
     }
   };
 
+  const [filtersApplied, setApplyFilters] = useState(0);
+  const applyFilters = (
+    filters = {
+      readFilter,
+      imgFilter,
+      vidFilter,
+      selfFilter,
+      linkFilter,
+      imgPortraitFilter,
+      imgLandscapeFilter,
+    }
+  ) => {
+    //need filtersapplied number to be unique each time filters are applied to prevent shortening items array for Masonic when react-query updates stale feed
+    //positive will be used to determine if any filters are active
+
+    setApplyFilters((f) => {
+      //any filter on
+      const {
+        readFilter,
+        imgFilter,
+        vidFilter,
+        selfFilter,
+        linkFilter,
+        imgPortraitFilter,
+        imgLandscapeFilter,
+      } = filters;
+      if (
+        readFilter === false ||
+        imgFilter === false ||
+        vidFilter === false ||
+        selfFilter === false ||
+        // !galFilter &&
+        linkFilter === false ||
+        imgPortraitFilter === false ||
+        imgLandscapeFilter === false
+      ) {
+        return Math.abs(f) + 1;
+      }
+      return (Math.abs(f) + 1) * -1;
+    });
+    setProgressKey(p => p+1);
+  };
+
   const updateLikes = (i, like) => {
     if (posts?.[i]?.data) {
       setPosts((p) => {
@@ -358,7 +403,12 @@ export const MainProvider = ({ children }) => {
   }, [wideUI]);
 
   const toggleSyncWideUI = () => {
-    setSyncWideUI((w) => {if (!w){setPostWideUI(saveWideUI)} return !w});
+    setSyncWideUI((w) => {
+      if (!w) {
+        setPostWideUI(saveWideUI);
+      }
+      return !w;
+    });
   };
 
   const togglePostWideUI = () => {
@@ -558,17 +608,35 @@ export const MainProvider = ({ children }) => {
         }
       };
 
+      let filters = {
+        readFilter: true,
+        imgFilter: true,
+        vidFilter: true,
+        selfFilter: true,
+        linkFilter: true,
+        imgPortraitFilter: true,
+        imgLandscapeFilter: true,
+      };
+
       const loadImgFilter = async () => {
         let saved_imgFilter = await localForage.getItem("imgFilter");
         if (saved_imgFilter !== null) {
-          saved_imgFilter === false ? setImgFilter(false) : setImgFilter(true);
+          if (saved_imgFilter === false) {
+            filters.imgFilter = false;
+            setImgFilter(false);
+          } else {
+            setImgFilter(true);
+          }
           localStorage.removeItem("imgFilter");
         } else {
           fallback = true;
           let local_imgFilter = localStorage.getItem("imgFilter");
-          local_imgFilter?.includes("false")
-            ? setImgFilter(false)
-            : setImgFilter(true);
+          if (local_imgFilter?.includes("false")) {
+            filters.imgFilter = false;
+            setImgFilter(false);
+          } else {
+            setImgFilter(true);
+          }
         }
       };
       const loadImgPortraitFilter = async () => {
@@ -576,17 +644,23 @@ export const MainProvider = ({ children }) => {
           "imgPortraitFilter"
         );
         if (saved_imgPortraitFilter !== null) {
-          saved_imgPortraitFilter === false
-            ? setImgPortraitFilter(false)
-            : setImgPortraitFilter(true);
+          if (saved_imgPortraitFilter === false) {
+            filters.imgPortraitFilter = false;
+            setImgPortraitFilter(false);
+          } else {
+            setImgPortraitFilter(true);
+          }
           localStorage.removeItem("imgPortraitFilter");
         } else {
           fallback = true;
           let local_imgPortraitFilter =
             localStorage.getItem("imgPortraitFilter");
-          local_imgPortraitFilter?.includes("false")
-            ? setImgPortraitFilter(false)
-            : setImgPortraitFilter(true);
+          if (local_imgPortraitFilter?.includes("false")) {
+            setImgPortraitFilter(false);
+            filters.imgPortraitFilter = false;
+          } else {
+            setImgPortraitFilter(true);
+          }
         }
       };
 
@@ -595,79 +669,111 @@ export const MainProvider = ({ children }) => {
           "imgLandscapeFilter"
         );
         if (saved_imgLandscapeFilter !== null) {
-          saved_imgLandscapeFilter === false
-            ? setImgLandScapeFilter(false)
-            : setImgLandScapeFilter(true);
+          if (saved_imgLandscapeFilter === false) {
+            filters.imgLandscapeFilter = false;
+            setImgLandScapeFilter(false);
+          } else {
+            setImgLandScapeFilter(true);
+          }
           localStorage.removeItem("imgLandscapeFilter");
         } else {
           fallback = true;
           let local_imgLandscapeFilter =
             localStorage.getItem("imgLandscapeFilter");
-          local_imgLandscapeFilter?.includes("false")
-            ? setImgLandScapeFilter(false)
-            : setImgLandScapeFilter(true);
+          if (local_imgLandscapeFilter?.includes("false")) {
+            filters.imgLandscapeFilter = false;
+            setImgLandScapeFilter(false);
+          } else {
+            setImgLandScapeFilter(true);
+          }
         }
       };
 
       const loadVidFilter = async () => {
         let saved_vidFilter = await localForage.getItem("vidFilter");
         if (saved_vidFilter !== null) {
-          saved_vidFilter === false ? setVidFilter(false) : setVidFilter(true);
+          if (saved_vidFilter === false) {
+            filters.vidFilter = false;
+            setVidFilter(false);
+          } else {
+            setVidFilter(true);
+          }
           localStorage.removeItem("vidFilter");
         } else {
           fallback = true;
           let local_vidFilter = localStorage.getItem("vidFilter");
-          local_vidFilter?.includes("false")
-            ? setVidFilter(false)
-            : setVidFilter(true);
+          if (local_vidFilter?.includes("false")) {
+            filters.vidFilter = false;
+            setVidFilter(false);
+          } else {
+            setVidFilter(true);
+          }
         }
       };
 
       const loadLinkFilter = async () => {
         let saved_linkFilter = await localForage.getItem("linkFilter");
         if (saved_linkFilter !== null) {
-          saved_linkFilter === false
-            ? setLinkFilter(false)
-            : setLinkFilter(true);
+          if (saved_linkFilter === false) {
+            filters.linkFilter = false;
+            setLinkFilter(false);
+          } else {
+            setLinkFilter(true);
+          }
           localStorage.removeItem("linkFilter");
         } else {
           fallback = true;
           let local_linkFilter = localStorage.getItem("linkFilter");
-          local_linkFilter?.includes("false")
-            ? setLinkFilter(false)
-            : setLinkFilter(true);
+          if (local_linkFilter?.includes("false")) {
+            filters.linkFilter = false;
+            setLinkFilter(false);
+          } else {
+            setLinkFilter(true);
+          }
         }
       };
 
       const loadSelfFilter = async () => {
         let saved_selfFilter = await localForage.getItem("selfFilter");
         if (saved_selfFilter !== null) {
-          saved_selfFilter === false
-            ? setSelfFilter(false)
-            : setSelfFilter(true);
+          if (saved_selfFilter === false) {
+            filters.selfFilter = false;
+            setSelfFilter(false);
+          } else {
+            setSelfFilter(true);
+          }
           localStorage.removeItem("selfFilter");
         } else {
           fallback = true;
           let local_selfFilter = localStorage.getItem("selfFilter");
-          local_selfFilter?.includes("false")
-            ? setSelfFilter(false)
-            : setSelfFilter(true);
+          if (local_selfFilter?.includes("false")) {
+            filters.selfFilter = false;
+            setSelfFilter(false);
+          } else {
+            setSelfFilter(true);
+          }
         }
       };
 
       const loadReadFilter = async () => {
         let saved_readFilter = await localForage.getItem("readFilter");
         if (saved_readFilter !== null) {
-          saved_readFilter === false
-            ? setReadFilter(false)
-            : setReadFilter(true);
+          if (saved_readFilter === false) {
+            filters.readFilter = false;
+            setReadFilter(false);
+          } else {
+            setReadFilter(true);
+          }
           localStorage.removeItem("readFilter");
         } else {
           fallback = true;
           let local_readFilter = localStorage.getItem("readFilter");
-          local_readFilter?.includes("false")
-            ? setReadFilter(false)
-            : setReadFilter(true);
+          if (local_readFilter?.includes("false")) {
+            filters.readFilter = false;
+            setReadFilter(false);
+          } else {
+            setReadFilter(true);
+          }
         }
       };
 
@@ -716,30 +822,30 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("expandedSubPane");
         saved === true ? setExpandedSubPane(true) : setExpandedSubPane(false);
       };
-      const loadInfiniteLoading = async() => {
+      const loadInfiniteLoading = async () => {
         let saved = await localForage.getItem("infiniteLoading");
-        saved === false ? setInfinitLoading(false) : setInfinitLoading(true); 
-      }
-      const loadDimRead = async() => {
+        saved === false ? setInfinitLoading(false) : setInfinitLoading(true);
+      };
+      const loadDimRead = async () => {
         let saved = await localForage.getItem("dimRead");
-        saved === false ? setDimRead(false) : setDimRead(true); 
-      }
-      const loadAutoRead = async() => {
+        saved === false ? setDimRead(false) : setDimRead(true);
+      };
+      const loadAutoRead = async () => {
         let saved = await localForage.getItem("autoRead");
-        saved === false ? setAutoRead(false) : setAutoRead(true); 
-      }
-      const loadDisableEmbeds = async() => {
+        saved === false ? setAutoRead(false) : setAutoRead(true);
+      };
+      const loadDisableEmbeds = async () => {
         let saved = await localForage.getItem("disableEmbeds");
-        saved === true ? setDisableEmbeds(true) : setDisableEmbeds(false); 
-      }
-      const loadPreferEmbeds = async() => {
+        saved === true ? setDisableEmbeds(true) : setDisableEmbeds(false);
+      };
+      const loadPreferEmbeds = async () => {
         let saved = await localForage.getItem("preferEmbeds");
-        saved === true ? setPreferEmbeds(true) : setPreferEmbeds(false); 
-      }
-      const loadEmbedsEverywhere = async() => {
+        saved === true ? setPreferEmbeds(true) : setPreferEmbeds(false);
+      };
+      const loadEmbedsEverywhere = async () => {
         let saved = await localForage.getItem("embedsEverywhere");
-        saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false); 
-      }
+        saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false);
+      };
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -747,7 +853,10 @@ export const MainProvider = ({ children }) => {
       loadShowUserIcons();
       loadShowUserFlairs();
       loadExpandedSubPane();
-      loadAutoRead(); 
+      loadAutoRead();
+
+     
+
 
       //things we need loaded before posts are rendered
       let nsfw = loadNSFW();
@@ -771,11 +880,11 @@ export const MainProvider = ({ children }) => {
       let readfilter = loadReadFilter();
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
-      let infiniteLoading = loadInfiniteLoading(); 
-      let dimread = loadDimRead(); 
-      let disableembeds = loadDisableEmbeds(); 
-      let preferembeds = loadPreferEmbeds(); 
-      let loadembedseverywhere = loadEmbedsEverywhere(); 
+      let infiniteLoading = loadInfiniteLoading();
+      let dimread = loadDimRead();
+      let disableembeds = loadDisableEmbeds();
+      let preferembeds = loadPreferEmbeds();
+      let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
         nsfw,
         autoplay,
@@ -800,10 +909,12 @@ export const MainProvider = ({ children }) => {
         showawardings,
         infiniteLoading,
         dimread,
-        disableembeds, 
-        preferembeds, 
-        loadembedseverywhere
+        disableembeds,
+        preferembeds,
+        loadembedseverywhere,
       ]);
+
+      applyFilters(filters);
 
       //Not doing this as all read posts shoudn't be loaded into memory. Instead read posts are loaded into memory as needed in PostOptButton component or in filter in utils
       // let saved_readPosts = await localForage.getItem("readPosts");
@@ -1038,8 +1149,8 @@ export const MainProvider = ({ children }) => {
         updateLikes,
         updateSaves,
         updateHidden,
-        forceRefresh,
-        setForceRefresh,
+        //forceRefresh,
+        //setForceRefresh,
         fastRefresh,
         setFastRefresh,
         ready,
@@ -1066,7 +1177,7 @@ export const MainProvider = ({ children }) => {
         userPostType,
         toggleUserPostType,
         readPosts,
-        readPostsChange, 
+        readPostsChange,
         addReadPost,
         toggleReadPost,
         postOpen,
@@ -1085,20 +1196,24 @@ export const MainProvider = ({ children }) => {
         toggleShowUserFlairs,
         expandedSubPane,
         toggleExpandedSubPane,
-        infiniteLoading, 
+        infiniteLoading,
         toggleInfiniteLoading,
-        dimRead, 
-        toggleDimRead, 
-        autoRead, 
+        dimRead,
+        toggleDimRead,
+        autoRead,
         toggleAutoRead,
-        disableEmbeds, 
-        toggleDisableEmbeds, 
-        preferEmbeds, 
-        togglePreferEmbeds, 
-        embedsEverywhere, 
+        disableEmbeds,
+        toggleDisableEmbeds,
+        preferEmbeds,
+        togglePreferEmbeds,
+        embedsEverywhere,
         toggleEmbedsEverywhere,
-        updateFilters, 
+        updateFilters,
         setUpdateFilters,
+        applyFilters,
+        filtersApplied,
+        progressKey, 
+        setProgressKey
       }}
     >
       {children}

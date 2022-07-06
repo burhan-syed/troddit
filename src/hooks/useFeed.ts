@@ -35,8 +35,45 @@ const useFeed = (params?: Params) => {
     imgPortraitFilter,
     imgLandscapeFilter,
   } = context;
-  const contextReady = context.ready;
-  const contextForceRefresh = context.forceRefresh;
+
+  const [filters, setFilters] = useState({
+    readFilter: true,
+    imgFilter: true,
+    vidFilter: true,
+    selfFilter: true,
+    galFilter: true,
+    linkFilter: true,
+    imgPortraitFilter: true,
+    imgLandscapeFilter: true,
+  });
+  useEffect(() => {
+    if (context.ready && context.filtersApplied > 0) {
+      setFilters({
+        readFilter,
+        imgFilter,
+        vidFilter,
+        selfFilter,
+        galFilter,
+        linkFilter,
+        imgPortraitFilter,
+        imgLandscapeFilter,
+      });
+    }
+    return () => {
+      setFilters({
+        readFilter: true,
+        imgFilter: true,
+        vidFilter: true,
+        selfFilter: true,
+        galFilter: true,
+        linkFilter: true,
+        imgPortraitFilter: true,
+        imgLandscapeFilter: true,
+      })
+    }
+  }, [context.ready, context.filtersApplied]);
+
+  //const contextForceRefresh = context.forceRefresh;
 
   const [sort, setSort] = useState<string>("");
   const [range, setRange] = useState<string>("");
@@ -65,7 +102,7 @@ const useFeed = (params?: Params) => {
       // (query?.slug?.[1] === "p") ||
       // (router.pathname === "/search" && router.asPath.substring(0,3) === "/r/")
       // /router.asPath?.substring(0,3) === "/r/" &&
-       router.asPath?.includes("/comments/")
+      router.asPath?.includes("/comments/")
     ) {
       //ignore these route changes to prevent feed fetch
       console.log("CHANGE NOTHING");
@@ -84,14 +121,11 @@ const useFeed = (params?: Params) => {
       }
     } else if (query?.slug) {
       if (router.pathname == "/u/[...slug]") {
-        if (query?.slug?.[1] === "m" && query?.slug?.[2]
-
-        ){
+        if (query?.slug?.[1] === "m" && query?.slug?.[2]) {
           setMode("MULTI");
           setUserMode(query.slug[2]);
           setSort(query?.slug?.[3] ?? "hot");
-        }
-        else if (
+        } else if (
           query?.slug?.[0]?.toUpperCase() == session?.user?.name?.toUpperCase()
         ) {
           setMode("SELF");
@@ -137,14 +171,15 @@ const useFeed = (params?: Params) => {
     //console.log(mode, searchQuery)
     if (
       !sessloading &&
-      contextReady &&
+      context.ready &&
       sort &&
       mode &&
       (subreddits || mode === "HOME" || mode === "SEARCH") &&
       (searchQuery || (mode !== "FLAIR" && mode !== "SEARCH"))
     ) {
       console.log("SAFESEARCH?", params?.safeSearch);
-      const filters = [
+      console.log("FILTERS??", filters)
+      const {
         readFilter,
         imgFilter,
         vidFilter,
@@ -153,67 +188,91 @@ const useFeed = (params?: Params) => {
         linkFilter,
         imgPortraitFilter,
         imgLandscapeFilter,
-      ]?.join();
+      } = filters;
+      //force unique strings on filter change.. nested objects don't do the trick with masonic
+      const filtersString = [
+        readFilter,
+        imgFilter,
+        vidFilter,
+        selfFilter,
+        galFilter,
+        linkFilter,
+        imgPortraitFilter,
+        imgLandscapeFilter,
+        context.filtersApplied,
+      ].join(",");
 
-      if (mode === "MULTI"){
+      if (mode === "MULTI") {
         setKey([
           "feed",
-          status,
-          mode, 
+          mode,
           subreddits,
           userMode, //refers to multi name..
           sort,
           range,
-          filters
-        ])
-      }
-      else if (mode === "USER") {
+          status,
+          filtersString,
+          filters,
+        ]);
+      } else if (mode === "USER") {
         setKey([
           "feed",
-          status,
           mode,
           subreddits,
           userMode,
           sort,
           range,
+          status,
+          filtersString,
           filters,
         ]);
       } else if (mode === "SELF") {
         setKey([
           "feed",
-          session?.user?.name,
           mode,
-          subreddits,
+          subreddits, //this would be the username
           userMode,
           context.userPostType,
           sort,
           range,
+          filtersString,
           filters,
         ]);
       } else if (mode === "SEARCH") {
         setKey([
           "feed",
-          status,
           mode,
           searchQuery,
           params?.safeSearch,
           sort,
           range,
+          status,
+          filtersString,
           filters,
         ]);
       } else if (mode === "FLAIR") {
         setKey([
           "feed",
-          status,
           mode,
           subreddits,
           searchQuery,
           sort,
           range,
+          status,
+          filtersString,
           filters,
         ]);
       } else {
-        setKey(["feed", status, mode, subreddits, sort, range, filters]);
+        setKey([
+          "feed",
+          mode,
+          subreddits,
+          sort,
+          range,
+          status,
+          filtersString,
+          filters,
+        ]);
       }
       setReady(true);
     }
@@ -223,8 +282,8 @@ const useFeed = (params?: Params) => {
       setReady(false);
     };
   }, [
-    contextReady,
-    contextForceRefresh,
+    context.ready,
+    //contextForceRefresh,
     mode,
     sort,
     range,
@@ -234,6 +293,7 @@ const useFeed = (params?: Params) => {
     userMode,
     sessloading,
     context.userPostType,
+    filters,
   ]);
 
   interface FeedParams {
@@ -278,16 +338,7 @@ const useFeed = (params?: Params) => {
       searchQuery: searchQuery,
       safeSearch: params?.safeSearch ? undefined : true,
       prevPosts: fetchParams.pageParam?.prevPosts ?? {},
-      filters: {
-        readFilter,
-        imgFilter,
-        vidFilter,
-        selfFilter,
-        galFilter,
-        linkFilter,
-        imgPortraitFilter,
-        imgLandscapeFilter,
-      },
+      filters: fetchParams?.queryKey?.[fetchParams?.queryKey?.length - 1],
     };
     console.log("fetchParams?", fetchParams);
     console.log("feedParms", feedParams);
@@ -337,15 +388,15 @@ const useFeed = (params?: Params) => {
         context.token,
         feedParams.safeSearch
       );
-    } else if (mode === "MULTI"){
+    } else if (mode === "MULTI") {
       data = await getUserMultiPosts(
         feedParams.subreddits,
         feedParams.userMode,
         feedParams.sort,
         feedParams.range,
         feedParams.after
-      )
-    }else if (mode === "SELF") {
+      );
+    } else if (mode === "SELF") {
       data = await loadUserSelf(
         context.token,
         feedParams.loggedIn,

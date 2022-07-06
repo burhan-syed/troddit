@@ -588,6 +588,7 @@ const Thread = ({
                 <CommentReply
                   parent={post?.name}
                   getResponse={updateMyReplies}
+                  postName={post?.name}
                 />
               </div>
             )}
