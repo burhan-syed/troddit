@@ -69,8 +69,8 @@ const useFeed = (params?: Params) => {
         linkFilter: true,
         imgPortraitFilter: true,
         imgLandscapeFilter: true,
-      })
-    }
+      });
+    };
   }, [context.ready, context.filtersApplied]);
 
   //const contextForceRefresh = context.forceRefresh;
@@ -178,7 +178,7 @@ const useFeed = (params?: Params) => {
       (searchQuery || (mode !== "FLAIR" && mode !== "SEARCH"))
     ) {
       console.log("SAFESEARCH?", params?.safeSearch);
-      console.log("FILTERS??", filters)
+      console.log("FILTERS??", filters);
       const {
         readFilter,
         imgFilter,
@@ -325,6 +325,42 @@ const useFeed = (params?: Params) => {
   //   }
   //  }
 
+  const formatInitialData = () => {
+    const initialData = params?.initialPosts;
+    console.log("INITIALDATA?", initialData);
+    if (initialData?.children?.length > 0) {
+      return {
+        pages: [
+          {
+            filtered: initialData.children,
+            after: "",
+            count: initialData.children.length,
+            prevPosts: {
+              ...initialData.children.reduce((obj, post, index) => {
+                obj[post?.data?.name] = 1;
+                return obj;
+              }, {}),
+            },
+          },
+        ],
+        pageParams: [
+          
+            {
+              after: "",
+              count: 0,
+              prevPosts: {
+                ...initialData.children.reduce((obj, post, index) => {
+                  obj[post?.data?.name] = 1;
+                  return obj;
+                }, {}),
+              },
+            },
+          
+        ],
+      };
+    }
+  };
+
   const fetchFeed = async (fetchParams: QueryFunctionContext) => {
     const feedParams = {
       loggedIn: status === "authenticated" ? true : false,
@@ -352,7 +388,7 @@ const useFeed = (params?: Params) => {
         feedParams.range,
         feedParams.after,
         feedParams.count,
-        context?.localSubs //need this in key
+        context?.localSubs //home feed is invalidated on subs change
       );
     } else if (mode === "SUBREDDIT") {
       data = await loadSubreddits(
@@ -368,7 +404,7 @@ const useFeed = (params?: Params) => {
     } else if (mode === "FLAIR") {
       console.log("getting Reddit Search");
       data = await getRedditSearch(
-        { q: feedParams.searchQuery }, //{ q: feedParams.searchQuery },router.query,
+        { q: feedParams.searchQuery }, 
         feedParams.after,
         feedParams.sort,
         feedParams.loggedIn,
@@ -379,7 +415,7 @@ const useFeed = (params?: Params) => {
       );
     } else if (mode === "SEARCH") {
       data = await getRedditSearch(
-        { q: feedParams.searchQuery }, //{ q: feedParams.searchQuery },router.query,
+        { q: feedParams.searchQuery }, 
         feedParams.after,
         feedParams.sort,
         feedParams.loggedIn,
@@ -408,7 +444,6 @@ const useFeed = (params?: Params) => {
         context.userPostType === "comments" ? "comments" : "links"
       );
     }
-    //TODO: add multi mode
     else if (mode === "USER") {
       data = await loadUserPosts(
         feedParams.subreddits as string,
@@ -487,7 +522,7 @@ const useFeed = (params?: Params) => {
     staleTime: Infinity,
     getNextPageParam: (lastPage) => {
       //console.log('lastPage?ß', lastPage)
-      if (lastPage.after) {
+      if (lastPage.after || lastPage.after === "") {
         return {
           after: lastPage?.after ?? "",
           count: lastPage?.count ?? 0,
@@ -495,6 +530,9 @@ const useFeed = (params?: Params) => {
         };
       }
       return undefined;
+    },
+    initialData: () => {
+      return formatInitialData();
     },
   });
 

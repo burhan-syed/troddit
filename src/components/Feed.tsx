@@ -31,7 +31,7 @@ const Feed = ({
   //const { data: session, status } = useSession();
   //const sessloading = status === "loading";
   const [loading, setLoading] = useState(true);
-  const { key, feed } = useFeed({ safeSearch: safeSearch });
+  const { key, feed } = useFeed({ safeSearch: safeSearch, initialPosts: initialData });
   const {invalidateAll} = useRefresh(); 
   useEffect(() => {
     // console.log(key, feed)
