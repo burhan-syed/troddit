@@ -1,11 +1,14 @@
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
 const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, }) => {
   const { data: session, status } = useSession();
+  const queryClient = useQueryClient();
+
   const context: any = useMainContext();
   const [commentsData, setCommentsData] = useState(() => comments);
   useEffect(() => {
@@ -66,6 +69,15 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
         ...c.filter((comment) => comment?.kind !== "more"),
         ...morecomments,
       ]);
+      queryClient.setQueriesData(["thread", comments?.[0]?.data?.link_id?.substring(3)], ((prevData:any) => {
+        let newCommentData = prevData?.pages?.map((page: any) => {
+          return {
+            ...page, 
+            comments: [...page.comments.filter(comments => comments.kind === "t1"), ...morecomments]
+          }
+        })
+        return {...prevData, pages: newCommentData}
+      }))
       setMoreLoading(false);
     } else {
       context.toggleLoginModal();
