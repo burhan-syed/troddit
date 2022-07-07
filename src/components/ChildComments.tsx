@@ -23,13 +23,17 @@ const ChildComments = ({
   op = "",
   portraitMode = false,
 }) => {
+  const context: any = useMainContext();
+  const { commentCollapse, loadCommentsMutation } = useMutate();
+  const { data: session, status } = useSession();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [hideChildren, setHideChildren] = useState(
     comment?.data?.collapsed ?? false
   );
-  const { commentCollapse, loadCommentsMutation } = useMutate();
   const toggleHidden = (override?) => {
     setHideChildren((h) => {
       let collapsed = !h;
@@ -44,24 +48,22 @@ const ChildComments = ({
       return collapsed;
     });
   };
-  const context: any = useMainContext();
 
   useEffect(() => {
-    context?.defaultCollapseChildren && toggleHidden(true);
+    context?.defaultCollapseChildren && setHideChildren(true);
   }, [context?.defaultCollapseChildren]);
 
-  const { data: session, status } = useSession();
-  const parentRef = useRef(null);
+ 
   const executeScroll = () => {
-    if (parentRef.current.getBoundingClientRect().top < 0) {
+    if (parentRef.current && parentRef.current.getBoundingClientRect().top < 0) {
       return parentRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
   };
-  const [childcomments, setchildcomments] = useState([]);
-  const [myReplies, setmyReplies] = useState([]);
+  const [childcomments, setchildcomments] = useState<any[]>([]);
+  const [myReplies, setmyReplies] = useState<any[]>([]);
   const [openReply, setopenReply] = useState(false);
   const updateMyReplies = (resdata) => {
     const newreply = {
@@ -79,96 +81,12 @@ const ChildComments = ({
 
   useEffect(() => {
     if (childcomments?.length > 0) {
-      setchildcomments((p) => p.filter((pr) => pr?.myreply !== true));
+      setchildcomments((p) => p.filter((pr:any) => pr?.myreply !== true));
       setchildcomments((p) => [...myReplies, ...p]);
     } else if (!comment?.data?.replies?.data?.children) {
       setchildcomments(myReplies);
     }
   }, [myReplies]);
-
-  const fixformat = useCallback(async (comments) => {
-    if (comments?.length > 0) {
-      let basedepth = comments[0].data.depth;
-
-      let idIndex = new Map();
-      comments.forEach((comment) => {
-        idIndex.set(`t1_${comment.data.id}`, comment);
-      });
-      await comments.forEach((comment, i) => {
-        let c = idIndex.get(comment.data.parent_id);
-        if (c && c.data.replies?.data?.children) {
-          c.data.replies.data.children.push(comment);
-        } else if (c) {
-          c.data.replies = {
-            kind: "Listing",
-            data: {
-              children: [comment],
-            },
-          };
-        }
-        c && idIndex.set(comment.data.parent_id, c);
-      });
-
-      let fixedcomments = [];
-      idIndex.forEach((comment, i) => {
-        if (comment?.data?.depth === basedepth) {
-          fixedcomments.push(comment);
-        } else {
-        }
-      });
-      return fixedcomments;
-    }
-    return comments;
-  }, []);
-
-  const filterExisting = (comments, childcomments) => {
-    return comments.filter((comment: any) => {
-      return !childcomments.find((cComment: any) => {
-        return cComment?.kind === "more"
-          ? false
-          : cComment?.data?.name === comment?.data?.name;
-      });
-    });
-  };
-
-  const loadChildComments = useCallback(
-    async (children, link_id) => {
-      let newComments = await loadCommentsMutation.mutateAsync({
-        parentName: comment?.data?.name,
-        children: children,
-        link_id: link_id,
-        permalink: comment?.data?.permalink,
-        childcomments: childcomments,
-        token: context?.token,
-      });
-
-      // let childrenstring = children.join();
-      // //console.log(childrenstring);
-      // //console.log(link_id);
-      // const data = await loadMoreComments(
-      //   childrenstring,
-      //   link_id,
-      //   comment?.data?.permalink,
-      //   session ? true : false,
-      //   context?.token
-      // );
-      // data?.token && context?.setToken(data?.token);
-      // let morecomments = data?.data;
-      // if (morecomments?.[0]?.data?.replies?.data?.children) {
-      //   const filtered = filterExisting(
-      //     morecomments?.[0]?.data?.replies?.data?.children
-      //   );
-      //   setMoreComments(filtered);
-      // } else {
-      //   setMoreComments(await fixformat(morecomments));
-      // }
-      setMoreComments(newComments?.newComments);
-      newComments?.newToken && context?.setToken(newComments?.newToken); 
-      setMoreLoaded(true);
-      setLoadingComments(false);
-    },
-    [comment?.data?.permalink, session, context, fixformat]
-  );
 
   const childCommentCount = useMemo(() => {
     let count = 0;
@@ -183,7 +101,26 @@ const ChildComments = ({
     return count;
   }, [childcomments]);
 
-  const [hovered, setHovered] = useState(false);
+
+  const loadChildComments = useCallback(
+    async (children, link_id) => {
+      let newComments = await loadCommentsMutation.mutateAsync({
+        parentName: comment?.data?.name,
+        children: children,
+        link_id: link_id,
+        permalink: comment?.data?.permalink,
+        childcomments: childcomments,
+        token: context?.token,
+      });
+      setMoreComments(newComments?.newComments);
+      newComments?.newToken && context?.setToken(newComments?.newToken);
+      setMoreLoaded(true);
+      setLoadingComments(false);
+    },
+    [comment?.data?.permalink, session, context]
+  );
+
+
 
   return (
     <div
@@ -334,7 +271,13 @@ const ChildComments = ({
                   />
                 </>
               )}
+               {hideChildren && comment?.data?.collapsed_reason && (
+                <span className="text-xs italic ">
+                  [{comment.data.collapsed_reason}]
+                </span>
+              )}
             </div>
+           
             <div className="flex items-center mt-1">
               {comment?.data?.edited && (
                 <p className="pr-4 text-xs italic ">
@@ -349,6 +292,7 @@ const ChildComments = ({
                   ])}
                 </p>
               )}
+             
               {hideChildren &&
                 !context.collapseChildrenOnly &&
                 childcomments?.length > 0 && (
@@ -475,7 +419,7 @@ const ChildComments = ({
               >
                 {childcomments && (
                   <>
-                    {childcomments.map((childcomment, i) => (
+                    {childcomments.map((childcomment:any, i) => (
                       <div key={`${i}_${childcomment?.data?.id}`}>
                         {childcomment.kind == "more" ? (
                           <div className={hideChildren ? "hidden" : " "}>
@@ -520,7 +464,7 @@ const ChildComments = ({
                                 )}
                               </>
                             ) : (
-                              moreComments?.map((morecomment, i) => (
+                              moreComments?.map((morecomment:any, i) => (
                                 <ChildComments
                                   key={morecomment?.data?.id}
                                   comment={morecomment}
