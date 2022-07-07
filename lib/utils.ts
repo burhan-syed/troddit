@@ -83,13 +83,28 @@ export const checkVersion = (a, b) => {
   return y.length > x.length ? -1 : 0;
 };
 
+export function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+      var context = this, args = arguments;
+      var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+  };
+};
+
 export const findMediaInfo = async (post, quick = false) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];
   let thumbnailInfo;
   let iFrameHTML;
   let gallery; // = [];
-  let isPortrait = undefined;
+  let isPortrait = undefined as unknown as boolean;
   let isImage = false;
   let isGallery = false;
   let isVideo = false;
@@ -392,7 +407,7 @@ export const findMediaInfo = async (post, quick = false) => {
   const stringToHTML = function (str) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(str, "text/html");
-    return doc.body.firstElementChild;
+    return doc.body.firstElementChild as Element;
   };
 
   const findIframe = async (post) => {

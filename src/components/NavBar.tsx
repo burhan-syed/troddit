@@ -19,19 +19,22 @@ import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
 import useRefresh from "../hooks/useRefresh";
+import useFeed from "../hooks/useFeed";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
   const { invalidateKey } = useRefresh();
+  const plausible = usePlausible();
+  const {feed} = useFeed(); 
+  const router = useRouter();
+
+
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
-  const { data: session, status } = useSession();
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const router = useRouter();
-  const [prevScrollpos, setScrollpos] = useState(0);
-  const plausible = usePlausible();
 
-  const { scrollY, scrollX, scrollDirection } = useScroll();
+  const { scrollY, scrollDirection } = useScroll();
+
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
     return () => {
@@ -39,11 +42,10 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [toggleSideNav]);
   useEffect(() => {
-    if (allowHide && !context?.loading) {
-      //console.log(scrollDirection, scrollY);
+    if (allowHide) {
       if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
-      } else if (scrollY > 300 && scrollDirection === "up") {
+      } else if (scrollY > 300 && scrollDirection === "up" && !(feed.isFetching && !feed.isFetchingNextPage)) {
         setHidden(true);
       } else if (scrollY <= 300) {
         setHidden(false);
@@ -53,19 +55,15 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     }
   }, [scrollDirection, allowHide, scrollY]);
 
-  const forceShow = () => {
-    if (hidden) {
-      //console.log("forceshow");
 
-      setHidden(false);
-    }
-  };
 
   useEffect(() => {
-    forceShow();
+    setHidden(false);
     if (
-      router.query?.slug?.[1] === "comments" ||
+      router.pathname.includes("/comments/") ||
       router.pathname.includes("/about") ||
+      router.pathname.includes("/settings") ||
+      router.pathname.includes("/changelog") ||
       router.pathname.includes("/subreddits")
     ) {
       setallowHide(false);
@@ -75,18 +73,33 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     return () => {
       //setallowHide(true);
     };
-  }, [router]);
+  }, [router.query, router.pathname]);
+
+  useEffect(() => {
+    if (feed.isFetching && !feed.isFetchingNextPage){
+      setHidden(false); 
+    }
+  }, [feed.isFetching, feed.isFetchingNextPage])
+    
 
   const homeClick = () => {
-    router?.route === "/" && invalidateKey(["feed", "HOME"]); // setForceRefresh((p) => p + 1);
+    router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
   };
 
   return (
     <>
+    {(feed.isFetching && !feed.isFetchingNextPage) && (
+        <>
+          <div className="fixed top-0 z-50 w-screen h-16 bg-th-accent animate-pulse"></div>
+          <div className="fixed top-0 z-40 w-screen h-16 bg-th-base"></div>
+
+        </>
+      )}
       <header
         className={
           `${hidden ? "-translate-y-full" : ""}` +
-          " z-50 fixed top-0 transition duration-500 ease-in-out transform h-14 w-screen "
+          " z-50 fixed top-0 transition ease-in-out transform h-14 w-screen "
+          + (scrollDirection === "up" ? " duration-500" : " duration-0")
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
@@ -149,7 +162,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         </nav>
       </header>
       <div
-        onMouseOver={(e) => forceShow()}
+        onMouseOver={(e) => setHidden(false)}
         className="fixed top-0 z-40 w-full bg-transparent h-14 opacity-10 "
       ></div>
     </>

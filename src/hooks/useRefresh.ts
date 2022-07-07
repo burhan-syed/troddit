@@ -10,9 +10,9 @@ const useRefresh = () => {
     queryClient.invalidateQueries();
     context.setProgressKey((p) => p + 1);
   };
-  const invalidateKey = (key: string[]) => {
+  const invalidateKey = (key: string[], updateFeedKey=false) => {
     queryClient.invalidateQueries(key);
-    context.setProgressKey((p) => p + 1);
+    updateFeedKey && context.setProgressKey((p) => p + 1);
   };
   return {
     invalidateAll,

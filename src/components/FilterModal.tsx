@@ -104,7 +104,7 @@ const FilterModal = ({ toOpen }) => {
                     onClick={(e) => {
                       e.preventDefault();
                       context.applyFilters();
-                      invalidateKey(["feed"]);
+                      invalidateKey(["feed"], true);
                       setOpen(false);
                     }}
                   >

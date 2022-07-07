@@ -79,8 +79,15 @@ const useFeed = (params?: Params) => {
   const [range, setRange] = useState<string>("");
   const [subreddits, setSubreddits] = useState("");
   const [mode, setMode] = useState<
-    "HOME" | "SUBREDDIT" | "USER" | "SELF" | "SEARCH" | "FLAIR" | "MULTI"
-  >("HOME");
+    | "HOME"
+    | "SUBREDDIT"
+    | "USER"
+    | "SELF"
+    | "SEARCH"
+    | "FLAIR"
+    | "MULTI"
+    | "NONE"
+  >("NONE");
   const [userMode, setUserMode] = useState<
     | string
     | "overview"
@@ -95,7 +102,7 @@ const useFeed = (params?: Params) => {
 
   //monitor route
   useEffect(() => {
-    console.log(router, router.query);
+    //console.log(router, router.query);
     const query = router?.query;
     if (
       // (query?.slug?.[1] === "comments" && router.pathname !== "/u/[...slug]") ||
@@ -105,7 +112,7 @@ const useFeed = (params?: Params) => {
       router.asPath?.includes("/comments/")
     ) {
       //ignore these route changes to prevent feed fetch
-      console.log("CHANGE NOTHING");
+      //console.log("CHANGE NOTHING");
     } else if (query?.frontsort) {
       if (
         query?.frontsort == "" ||
@@ -152,8 +159,10 @@ const useFeed = (params?: Params) => {
       if (router.pathname == "/search") {
         setSearchQuery(query?.q as string);
         setMode("SEARCH");
-      } else {
+      } else if (router.pathname === "/") {
         setMode("HOME");
+      } else {
+        setMode("NONE");
       }
       setSort((query?.frontsort as string) ?? query?.sort ?? "hot");
       setRange((query?.t as string) ?? "");
@@ -174,11 +183,12 @@ const useFeed = (params?: Params) => {
       context.ready &&
       sort &&
       mode &&
+      mode !== "NONE" &&
       (subreddits || mode === "HOME" || mode === "SEARCH") &&
       (searchQuery || (mode !== "FLAIR" && mode !== "SEARCH"))
     ) {
-      console.log("SAFESEARCH?", params?.safeSearch);
-      console.log("FILTERS??", filters);
+      //console.log("SAFESEARCH?", params?.safeSearch);
+      //console.log("FILTERS??", filters);
       const {
         readFilter,
         imgFilter,
@@ -262,6 +272,8 @@ const useFeed = (params?: Params) => {
           filtersString,
           filters,
         ]);
+      } else if (mode === "HOME") {
+        setKey(["feed", mode, "", sort, range, status, filtersString, filters]);
       } else {
         setKey([
           "feed",
@@ -327,7 +339,7 @@ const useFeed = (params?: Params) => {
 
   const formatInitialData = () => {
     const initialData = params?.initialPosts;
-    console.log("INITIALDATA?", initialData);
+    //console.log("INITIALDATA?", initialData);
     if (initialData?.children?.length > 0) {
       return {
         pages: [
@@ -344,18 +356,16 @@ const useFeed = (params?: Params) => {
           },
         ],
         pageParams: [
-          
-            {
-              after: "",
-              count: 0,
-              prevPosts: {
-                ...initialData.children.reduce((obj, post, index) => {
-                  obj[post?.data?.name] = 1;
-                  return obj;
-                }, {}),
-              },
+          {
+            after: "",
+            count: 0,
+            prevPosts: {
+              ...initialData.children.reduce((obj, post, index) => {
+                obj[post?.data?.name] = 1;
+                return obj;
+              }, {}),
             },
-          
+          },
         ],
       };
     }
@@ -376,8 +386,8 @@ const useFeed = (params?: Params) => {
       prevPosts: fetchParams.pageParam?.prevPosts ?? {},
       filters: fetchParams?.queryKey?.[fetchParams?.queryKey?.length - 1],
     };
-    console.log("fetchParams?", fetchParams);
-    console.log("feedParms", feedParams);
+    //console.log("fetchParams?", fetchParams);
+    //console.log("feedParms", feedParams);
 
     let data;
     if (feedParams.mode === "HOME") {
@@ -402,9 +412,8 @@ const useFeed = (params?: Params) => {
         true
       );
     } else if (mode === "FLAIR") {
-      console.log("getting Reddit Search");
       data = await getRedditSearch(
-        { q: feedParams.searchQuery }, 
+        { q: feedParams.searchQuery },
         feedParams.after,
         feedParams.sort,
         feedParams.loggedIn,
@@ -415,7 +424,7 @@ const useFeed = (params?: Params) => {
       );
     } else if (mode === "SEARCH") {
       data = await getRedditSearch(
-        { q: feedParams.searchQuery }, 
+        { q: feedParams.searchQuery },
         feedParams.after,
         feedParams.sort,
         feedParams.loggedIn,
@@ -443,8 +452,7 @@ const useFeed = (params?: Params) => {
         session?.user?.name,
         context.userPostType === "comments" ? "comments" : "links"
       );
-    }
-    else if (mode === "USER") {
+    } else if (mode === "USER") {
       data = await loadUserPosts(
         feedParams.subreddits as string,
         feedParams.sort,
@@ -510,7 +518,7 @@ const useFeed = (params?: Params) => {
       },
     };
 
-    console.log("returnData?", returnData);
+    //console.log("returnData?", returnData);
 
     return returnData;
   };
@@ -519,7 +527,8 @@ const useFeed = (params?: Params) => {
     enabled: ready && key?.[0] == "feed",
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    staleTime: Infinity,
+    staleTime: 0,
+    refetchInterval: sort === "new" ? 60 * 1000 : 30 * 60 * 1000,
     getNextPageParam: (lastPage) => {
       //console.log('lastPage?ß', lastPage)
       if (lastPage.after || lastPage.after === "") {

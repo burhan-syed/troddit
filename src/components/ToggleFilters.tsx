@@ -78,12 +78,14 @@ const ToggleFilters = ({ filter, withSubtext = false, quickToggle = false}) => {
  
   }, [filter]);
 
+  const [toggled,setToggled] = useState(false);
+
   useEffect(() => {
     if (filterName){
       context[filterName] ? setChecked(true) : setChecked(false);
-      if (quickToggle){
+      if (quickToggle && toggled){
         context.applyFilters(); 
-        invalidateKey(["feed"]); 
+        invalidateKey(["feed"], true); 
       }
     }
   
@@ -134,7 +136,7 @@ const ToggleFilters = ({ filter, withSubtext = false, quickToggle = false}) => {
           )}
         </span>
         <ReactSwitch
-          onChange={() => context.toggleFilter(filter)}
+          onChange={() => {setToggled(true);context.toggleFilter(filter);}}
           checked={checked}
           checkedHandleIcon={<div></div>}
           checkedIcon={
