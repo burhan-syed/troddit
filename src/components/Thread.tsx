@@ -60,6 +60,7 @@ const Thread = ({
   const { sub } = useSubreddit(post?.subreddit);
 
   const [postComments, setPostComments] = useState<any[]>([]);
+  const [commentsReady, setCommentsReady] = useState(false);
   const [prevCount, setPrevCount] = useState<number>();
   const [mediaInfo, setMediaInfo] = useState<any>();
   const [usePortrait, setUsePortrait] = useState(false);
@@ -90,6 +91,8 @@ const Thread = ({
         (c, i) => c?.kind === "t1" || comments?.length - 1 === i
       );
       setPostComments(comments);
+    } else if (thread?.data?.pages?.[0]) {
+      setCommentsReady(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread.data?.pages]);
@@ -183,7 +186,7 @@ const Thread = ({
               <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
                 <Vote likes={0} name={""} score={0} size={7} archived={false} />
               </div>
-              <div className="my-6"></div>              
+              <div className="my-6"></div>
             </div>
           </div>
         </div>
@@ -662,13 +665,13 @@ const Thread = ({
                   <div className="flex flex-row items-baseline mb-1 space-x-1">
                     <h1 className="">{`${post?.num_comments ?? "??"}`}</h1>
                     <h1 className="hidden md:block">
-                      {`${post?.num_comments === 1 ? "comment" : "comments"}`}
+                      {`comment${post?.num_comments == 1 ? "" : "s"}`}
                     </h1>
-                    {prevCount && post?.num_comments - prevCount > 0 && (
+                    {(prevCount && post?.num_comments && post.num_comments - prevCount > 0) ? (
                       <h2 className="text-xs italic text-th-textLight">{`(${
-                        post?.num_comments - prevCount
+                        post.num_comments - prevCount
                       } new)`}</h2>
-                    )}
+                    ) : <></>}
                   </div>
                 </div>
                 <div className="flex items-center h-full gap-2">
@@ -691,9 +694,7 @@ const Thread = ({
                 </div>
               </div>
               {/* Loading Comments */}
-              {!thread.isFetched ||
-              (thread.data?.pages?.[0]?.comments?.length > 0 &&
-                !(postComments?.length > 0)) ? (
+              {!commentsReady && (
                 // Comment Loader
                 <>
                   {[
@@ -706,43 +707,46 @@ const Thread = ({
                     <div key={i}>{commentPlaceHolder}</div>
                   ))}{" "}
                 </>
-              ) : (
-                <div className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden">
-                  <h1 className="">
-                    {thread.data?.pages?.[0]?.comments?.length > 0
-                      ? ""
-                      : "no comments :("}
-                  </h1>
-                  {/* Open All Comments */}
+              )}
 
-                  {commentMode && (
-                    <div className="flex-grow w-full px-2 mt-1 text-sm">
-                      <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border2">
-                        <p className="flex flex-col mx-3 text-sm font-normal ">
-                          <span>You are viewing a single comment's thread</span>
-                          <span className="text-xs">
-                            <Link href={`/${post?.permalink}`} passHref>
-                              <a className="font-semibold text-th-link hover:text-th-linkHover">
-                                Click to view all comments
+              <div className="w-full mb-5 ">
+                <h1 className="text-center">
+                  {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
+                  thread.isFetched
+                    ? "no comments :("
+                    : ""}
+                </h1>
+                {/* Open All Comments */}
+
+                {commentMode && (
+                  <div className="flex-grow w-full px-2 mt-1 text-sm">
+                    <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border2">
+                      <p className="flex flex-col mx-3 text-sm font-normal ">
+                        <span>You are viewing a single comment's thread</span>
+                        <span className="text-xs">
+                          <Link href={`/${post?.permalink}`} passHref>
+                            <a className="font-semibold text-th-link hover:text-th-linkHover">
+                              Click to view all comments
+                            </a>
+                          </Link>
+                          {!withContext && (
+                            <Link
+                              href={`${postComments?.[0]?.data?.permalink}?context=10000`}
+                              passHref
+                            >
+                              <a className="ml-2 font-semibold text-th-link hover:text-th-linkHover">
+                                view context
                               </a>
                             </Link>
-                            {!withContext && (
-                              <Link
-                                href={`${postComments?.[0]?.data?.permalink}?context=10000`}
-                                passHref
-                              >
-                                <a className="ml-2 font-semibold text-th-link hover:text-th-linkHover">
-                                  view context
-                                </a>
-                              </Link>
-                            )}
-                          </span>
-                        </p>
-                      </div>
+                          )}
+                        </span>
+                      </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  <div className={"flex-grow  w-full px-2  "}>
+                <div className={"w-full px-2  "}>
+                  {postComments?.length > 0 && (
                     <Comments
                       comments={postComments}
                       depth={0}
@@ -752,10 +756,11 @@ const Thread = ({
                       thread={thread}
                       locked={post?.locked}
                       scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
+                      setCommentsReady={setCommentsReady}
                     />
-                  </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <div onClick={goBack} className="flex-grow"></div>
           </div>

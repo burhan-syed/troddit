@@ -6,13 +6,17 @@ import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
-const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0 }) => {
+const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0, setCommentsReady }) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const [commentsData, setCommentsData] = useState<any[]>();
   useEffect(() => {
     comments && setCommentsData(comments); 
   }, [comments])
+  useEffect(() => {
+    commentsData && setCommentsReady(true);
+  }, [commentsData])
+  
   
   const loadChildComments = async () => {
 
