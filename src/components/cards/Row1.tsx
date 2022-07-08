@@ -55,6 +55,7 @@ const Row1 = ({
               name={post?.name}
               postindex={postNum}
               archived={post?.archived}
+              postTime={post?.created_utc}
             />
           </div>
         </div>

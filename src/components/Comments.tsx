@@ -6,7 +6,7 @@ import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
-const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false }) => {
+const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0 }) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const [commentsData, setCommentsData] = useState<any[]>();
@@ -50,6 +50,7 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
                 op={op}
                 portraitMode={portraitMode}
                 locked={locked}
+                scoreHideMins={scoreHideMins}
               />
             </>
           )}

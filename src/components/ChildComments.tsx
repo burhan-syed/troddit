@@ -22,7 +22,8 @@ const ChildComments = ({
   hide,
   op = "",
   portraitMode = false,
-  locked=false
+  locked = false,
+  scoreHideMins = 0,
 }) => {
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
@@ -118,7 +119,10 @@ const ChildComments = ({
         childcomments: childcomments,
         token: context?.token,
       });
-      setchildcomments((c) => [...c?.filter(k => k?.kind !== "more"), ...newComments?.newComments]);
+      setchildcomments((c) => [
+        ...c?.filter((k) => k?.kind !== "more"),
+        ...newComments?.newComments,
+      ]);
       newComments?.newToken && context?.setToken(newComments?.newToken);
       setMoreLoaded(true);
       setLoadingComments(false);
@@ -357,6 +361,8 @@ const ChildComments = ({
                     likes={comment?.data?.likes}
                     score={comment?.data?.score}
                     archived={comment?.data?.archived}
+                    scoreHideMins={scoreHideMins}
+                    postTime={comment?.data?.created_utc}
                   />
                 </div>
                 <button
@@ -365,7 +371,8 @@ const ChildComments = ({
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
                     //comment?.myreply ||
-                    comment?.data?.archived || locked
+                    comment?.data?.archived ||
+                    locked
                       ? "hidden"
                       : "block hover:underline")
                   }
@@ -436,6 +443,7 @@ const ChildComments = ({
                             hide={hideChildren}
                             portraitMode={portraitMode}
                             locked={locked}
+                            scoreHideMins={scoreHideMins}
                           />
                         )}
                         {childcomment.kind == "more" && (

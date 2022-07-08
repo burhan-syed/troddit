@@ -33,6 +33,7 @@ import { GoRepoForked } from "react-icons/go";
 import SubIcon from "./SubIcon";
 import useThread from "../hooks/useThread";
 import { QueryClient, useQueryClient } from "react-query";
+import useSubreddit from "../hooks/useSubreddit";
 
 const Thread = ({
   permalink,
@@ -56,6 +57,8 @@ const Thread = ({
   const [post, setPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
   );
+  const {sub} = useSubreddit(post?.subreddit)
+
   const [postComments, setPostComments] = useState<any[]>([]);
   const [prevCount, setPrevCount] = useState<number>();
   const [mediaInfo, setMediaInfo] = useState<any>();
@@ -331,6 +334,8 @@ const Thread = ({
                       postindex={context.postNum}
                       postMode={true}
                       archived={post?.archived}
+                      scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
+                      postTime={post?.created_utc}
                     />
                   </div>
                   {/* Main Media Column */}
@@ -465,6 +470,8 @@ const Thread = ({
                           score={post?.score}
                           size={7}
                           archived={post?.archived}
+                          scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
+                          postTime={post?.created_utc}
                         />
                       </div>
                       <div className="flex flex-row items-center justify-start space-x-1">
@@ -773,6 +780,7 @@ const Thread = ({
                       sort={sort}
                       thread={thread}
                       locked={post?.locked}
+                      scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
                     />
                   </div>
                 </div>

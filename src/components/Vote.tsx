@@ -1,5 +1,5 @@
 import { BiUpvote, BiDownvote } from "react-icons/bi";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
@@ -25,6 +25,8 @@ const Vote = ({
   hideScore = false,
   postindex = undefined,
   postMode = false,
+  scoreHideMins = 0,
+  postTime = 0
 }) => {
   const context: any = useMainContext();
   const { data: session, status } = useSession();
@@ -34,7 +36,8 @@ const Vote = ({
   const [voteScore, setVoteScore] = useState("");
 
 
-  const { voteMutation } = useMutate(postVote);
+  const { voteMutation } = useMutate();
+
 
   const [liked, setLiked] = useState<number | undefined>();
 
@@ -89,6 +92,19 @@ const Vote = ({
 
     return () => {};
   }, [aPress, zPress, context.replyFocus]);
+
+  const voteDisplay = useMemo(() => {
+    let display = voteScore ?? "0"
+
+
+    if (scoreHideMins > 0 && postTime > 0){
+      const now = new Date().getTime()/1000; 
+      if ((postTime + (scoreHideMins * 60)) > now){
+        display = "Vote"
+      }
+    }
+    return display; 
+  }, [voteScore, postTime, scoreHideMins])
 
   const VoteFilledUp = (
     <svg
@@ -178,7 +194,7 @@ const Vote = ({
                 : " ") + " text-sm"
             }
           >
-            {voteScore ?? "0"}
+            {voteDisplay ?? "Vote"}
           </p>
         </>
       )}
