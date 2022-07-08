@@ -1082,11 +1082,11 @@ export const loadPost = async (
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
-        comments: data?.[1]?.data?.children,
+        post_comments: data?.[1]?.data?.children,
       };
       return { ...post, token: returnToken };
     } catch (err) {
-      return { post: undefined, comments: undefined, token: returnToken };
+      return { post: undefined, post_comments: undefined, token: returnToken };
     }
   } else {
     try {
@@ -1102,14 +1102,14 @@ export const loadPost = async (
       ).data;
       const data = {
         post: res?.[0]?.data?.children?.[0].data,
-        comments: res?.[1]?.data?.children,
+        post_comments: res?.[1]?.data?.children,
         token: returnToken,
       };
       //console.log(data);
       return data;
     } catch (err) {
       console.log(err);
-      return { post: undefined, comments: undefined, token: returnToken };
+      return { post: undefined, post_comments: undefined, token: returnToken };
     }
   }
 };

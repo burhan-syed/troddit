@@ -22,6 +22,7 @@ const ChildComments = ({
   hide,
   op = "",
   portraitMode = false,
+  locked=false
 }) => {
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
@@ -53,9 +54,11 @@ const ChildComments = ({
     context?.defaultCollapseChildren && setHideChildren(true);
   }, [context?.defaultCollapseChildren]);
 
- 
   const executeScroll = () => {
-    if (parentRef.current && parentRef.current.getBoundingClientRect().top < 0) {
+    if (
+      parentRef.current &&
+      parentRef.current.getBoundingClientRect().top < 0
+    ) {
       return parentRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -81,7 +84,7 @@ const ChildComments = ({
 
   useEffect(() => {
     if (childcomments?.length > 0) {
-      setchildcomments((p) => p.filter((pr:any) => pr?.myreply !== true));
+      setchildcomments((p) => p.filter((pr: any) => pr?.myreply !== true));
       setchildcomments((p) => [...myReplies, ...p]);
     } else if (!comment?.data?.replies?.data?.children) {
       setchildcomments(myReplies);
@@ -89,18 +92,21 @@ const ChildComments = ({
   }, [myReplies]);
 
   const childCommentCount = useMemo(() => {
-    let count = 0;
-    childcomments?.forEach((c) => {
+    let count = -1;
+    const counter = (c) => {
       if (c?.data?.count) {
         count += c?.data?.count;
       } else {
         count += 1;
       }
-    });
+      for (let i = 0; i < c?.data?.replies?.data?.children?.length ?? 0; i++) {
+        counter(c?.data?.replies?.data?.children[i]);
+      }
+    };
+    hideChildren && counter(comment);
 
     return count;
-  }, [childcomments]);
-
+  }, [childcomments, hideChildren]);
 
   const loadChildComments = useCallback(
     async (children, link_id) => {
@@ -112,15 +118,13 @@ const ChildComments = ({
         childcomments: childcomments,
         token: context?.token,
       });
-      setMoreComments(newComments?.newComments);
+      setchildcomments((c) => [...c?.filter(k => k?.kind !== "more"), ...newComments?.newComments]);
       newComments?.newToken && context?.setToken(newComments?.newToken);
       setMoreLoaded(true);
       setLoadingComments(false);
     },
     [comment?.data?.permalink, session, context]
   );
-
-
 
   return (
     <div
@@ -133,6 +137,7 @@ const ChildComments = ({
           ? " bg-th-backgroundComment "
           : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
+        (comment?.data?.new ? " bg-th-highlight " : " ") +
         " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
       onMouseEnter={() => setHovered(true)}
@@ -271,16 +276,19 @@ const ChildComments = ({
                   />
                 </>
               )}
-               {hideChildren && comment?.data?.collapsed_reason && (
+              {hideChildren && comment?.data?.collapsed_reason && (
                 <span className="text-xs italic ">
                   [{comment.data.collapsed_reason}]
                 </span>
               )}
             </div>
-           
-            <div className="flex items-center mt-1">
+
+            <div className="flex items-center gap-1 pr-4 mt-1">
+              {comment?.data?.new && (
+                <p className="text-xs italic">{"(new)"}</p>
+              )}
               {comment?.data?.edited && (
-                <p className="pr-4 text-xs italic ">
+                <p className="text-xs italic ">
                   edited{" "}
                   {secondsToTime(comment?.data?.edited, [
                     "s ago",
@@ -292,11 +300,11 @@ const ChildComments = ({
                   ])}
                 </p>
               )}
-             
+
               {hideChildren &&
                 !context.collapseChildrenOnly &&
                 childcomments?.length > 0 && (
-                  <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
+                  <div className="text-xs cursor-pointer select-none opacity-70">
                     +{childCommentCount}
                   </div>
                 )}
@@ -352,12 +360,12 @@ const ChildComments = ({
                   />
                 </div>
                 <button
-                  disabled={comment?.data?.archived}
+                  disabled={comment?.data?.archived || locked}
                   className={
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
                     //comment?.myreply ||
-                    comment?.data?.archived
+                    comment?.data?.archived || locked
                       ? "hidden"
                       : "block hover:underline")
                   }
@@ -419,11 +427,20 @@ const ChildComments = ({
               >
                 {childcomments && (
                   <>
-                    {childcomments.map((childcomment:any, i) => (
+                    {childcomments.map((childcomment: any, i) => (
                       <div key={`${i}_${childcomment?.data?.id}`}>
-                        {childcomment.kind == "more" ? (
+                        {childcomment.kind === "t1" && (
+                          <ChildComments
+                            comment={childcomment}
+                            depth={depth + 1}
+                            hide={hideChildren}
+                            portraitMode={portraitMode}
+                            locked={locked}
+                          />
+                        )}
+                        {childcomment.kind == "more" && (
                           <div className={hideChildren ? "hidden" : " "}>
-                            {!moreLoaded ? (
+                            {true && (
                               <>
                                 {childcomment.data?.count > 0 ? (
                                   <div
@@ -437,16 +454,11 @@ const ChildComments = ({
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-
-                                      if (true) {
-                                        setLoadingComments(true);
-                                        loadChildComments(
-                                          childcomment?.data?.children,
-                                          comment?.data?.link_id
-                                        );
-                                      } else {
-                                        context.setLoginModal(true);
-                                      }
+                                      setLoadingComments(true);
+                                      loadChildComments(
+                                        childcomment?.data?.children,
+                                        comment?.data?.link_id
+                                      );
                                     }}
                                   >
                                     {`Load ${childcomment.data?.count} More... `}
@@ -463,25 +475,8 @@ const ChildComments = ({
                                   </Link>
                                 )}
                               </>
-                            ) : (
-                              moreComments?.map((morecomment:any, i) => (
-                                <ChildComments
-                                  key={morecomment?.data?.id}
-                                  comment={morecomment}
-                                  depth={morecomment?.data?.depth ?? depth + 1}
-                                  hide={hideChildren}
-                                  portraitMode={portraitMode}
-                                />
-                              ))
                             )}
                           </div>
-                        ) : (
-                          <ChildComments
-                            comment={childcomment}
-                            depth={depth + 1}
-                            hide={hideChildren}
-                            portraitMode={portraitMode}
-                          />
                         )}
                       </div>
                     ))}

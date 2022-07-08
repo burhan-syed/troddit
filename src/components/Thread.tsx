@@ -9,7 +9,8 @@ import { BiComment, BiExit } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
 import { ImReddit } from "react-icons/im";
-import { BsReply, BsArchive } from "react-icons/bs";
+import { IoMdRefresh } from "react-icons/io";
+import { BsReply, BsArchive, BsShieldX, BsLock } from "react-icons/bs";
 // import { usePlausible } from "next-plausible";
 
 import { useKeyPress } from "../hooks/KeyPress";
@@ -31,6 +32,7 @@ import PostOptButton from "./PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 import SubIcon from "./SubIcon";
 import useThread from "../hooks/useThread";
+import { QueryClient, useQueryClient } from "react-query";
 
 const Thread = ({
   permalink,
@@ -47,9 +49,15 @@ const Thread = ({
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [windowWidth, windowHeight] = useWindowSize();
 
-  const [post, setPost] = useState<any>(() => initialData?.name?.includes("t3_") ? initialData : {});
+  //initPost so later refetches will keep media (ie videos) stable
+  const [initPost, setInitPost] = useState<any>(() =>
+    initialData?.name?.includes("t3_") ? initialData : {}
+  );
+  const [post, setPost] = useState<any>(() =>
+    initialData?.name?.includes("t3_") ? initialData : {}
+  );
   const [postComments, setPostComments] = useState<any[]>([]);
-
+  const [prevCount, setPrevCount] = useState<number>();
   const [mediaInfo, setMediaInfo] = useState<any>();
   const [usePortrait, setUsePortrait] = useState(false);
   const [imgFull, setimgFull] = useState(false);
@@ -61,15 +69,32 @@ const Thread = ({
   useEffect(() => {
     if (thread?.data?.pages?.[0]?.post?.name) {
       //only set post if it's not already set from initialData or if it's overwriting another type of post eg. ("t1_" from direct opening a comment)
-      !post?.name?.includes("t3_") && setPost(thread?.data?.pages?.[0].post); 
+      if (!initPost?.name?.includes("t3_")) {
+        setInitPost(thread?.data?.pages?.[0].post);
+      }
+      console.log(
+        post?.num_comments,
+        thread?.data?.pages?.[0].post?.num_comments
+      );
+      setPrevCount(post?.num_comments);
+      setPost(thread?.data?.pages?.[0].post);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thread.data?.pages?.[0]?.post]);
+  }, [thread.data?.pages]);
+
   useEffect(() => {
-    setPostComments(thread.data?.pages?.[0]?.comments);
+    if (thread?.data?.pages?.[0]?.comments?.length > 0) {
+      let comments =
+        thread.data?.pages?.map((page) => page.comments)?.flat() ?? [];
+      comments = comments?.filter(
+        (c, i) => c?.kind === "t1" || comments?.length - 1 === i
+      );
+      console.log("postcomments", comments);
+      setPostComments(comments);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thread.data?.pages?.[0]?.comments]);
+  }, [thread.data?.pages]);
 
   useEffect(() => {
     const getMediaInfo = async (post) => {
@@ -260,7 +285,7 @@ const Thread = ({
                 <div className={"block relative   "}>
                   <MediaWrapper
                     hideNSFW={hideNSFW}
-                    post={post}
+                    post={initPost}
                     forceMute={false}
                     imgFull={imgFull}
                     postMode={true}
@@ -421,7 +446,7 @@ const Thread = ({
                         <div className={"block relative md:ml-4"}>
                           <MediaWrapper
                             hideNSFW={hideNSFW}
-                            post={post}
+                            post={initPost}
                             forceMute={false}
                             imgFull={imgFull}
                             postMode={true}
@@ -478,16 +503,16 @@ const Thread = ({
                       <div className="flex flex-row items-center justify-end gap-1 text-sm">
                         <div>
                           <button
-                            disabled={post?.archived}
+                            disabled={post?.archived || post?.locked}
                             onClick={(e) => {
                               e.preventDefault();
-                              session && !post?.archived
+                              session && !post?.archived && !post?.locked
                                 ? setopenReply((r) => !r)
                                 : !session && context.toggleLoginModal();
                             }}
                             className={
                               "flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border  " +
-                              (post?.archived
+                              (post?.archived || post?.locked
                                 ? " opacity-50"
                                 : " hover:border-th-borderHighlight ")
                             }
@@ -593,15 +618,42 @@ const Thread = ({
               </div>
             )}
 
-            {post?.archived && (
+            {(post?.archived ||
+              post?.removed_by_category === "moderator" ||
+              post?.locked) && (
               <div className="flex-grow w-full">
                 <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
-                  <BsArchive />
+                  {post?.archived && <BsArchive />}
+                  {post?.removed_by_category === "moderator" && <BsShieldX />}
+                  {post?.locked && <BsLock />}
                   <p className="flex flex-col text-sm font-normal ">
-                    <span>This is an archived post.</span>
-                    <span className="text-xs">
-                      New comments cannot be posted and votes cannot be cast
-                    </span>
+                    {post?.archived && (
+                      <>
+                        <span>This is an archived post.</span>
+                        <span className="text-xs">
+                          New comments cannot be posted and votes cannot be cast
+                        </span>
+                      </>
+                    )}
+                    {post?.removed_by_category === "moderator" && (
+                      <>
+                        <span>
+                          This post has been removed by the moderators.
+                        </span>
+                        <span className="text-xs">
+                          It won't show up in the subreddit anymore. Just mods
+                          doing mod things.
+                        </span>
+                      </>
+                    )}
+                    {post?.locked && (
+                      <>
+                        <span>This post is locked.</span>
+                        <span className="text-xs">
+                          New comments cannot be posted
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
@@ -628,21 +680,41 @@ const Thread = ({
                   className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2"
                 >
                   <BiComment className="flex-none w-6 h-6 " />
-                  <div className="flex flex-row items-center mb-1 space-x-1">
+                  <div className="flex flex-row items-baseline mb-1 space-x-1">
                     <h1 className="">{`${post?.num_comments ?? "??"}`}</h1>
                     <h1 className="hidden md:block">
                       {`${post?.num_comments === 1 ? "comment" : "comments"}`}
                     </h1>
+                    {prevCount && post?.num_comments - prevCount > 0 && (
+                      <h2 className="text-xs italic text-th-textLight">{`(${
+                        post?.num_comments - prevCount
+                      } new)`}</h2>
+                    )}
                   </div>
                 </div>
-                {!commentMode && (
-                  <div className="z-10 flex-none mb-1">
-                    <CommentSort updateSort={updateSort} sortBy={sort} />
-                  </div>
-                )}
+                <div className="flex items-center h-full gap-2">
+                  <button
+                    disabled={thread.isFetching}
+                    onClick={() => thread.refetch()}
+                  >
+                    <IoMdRefresh
+                      className={
+                        (thread.isFetching ? "animate-spin" : " ") +
+                        " w-5 h-5 flex-none"
+                      }
+                    />
+                  </button>
+                  {!commentMode && (
+                    <div className="z-10 flex-none mb-1 h-9">
+                      <CommentSort updateSort={updateSort} sortBy={sort} />
+                    </div>
+                  )}
+                </div>
               </div>
               {/* Loading Comments */}
-              {thread.isLoading || !postComments ? (
+              {!thread.isFetched ||
+              (thread.data?.pages?.[0]?.comments?.length > 0 &&
+                !(postComments?.length > 0)) ? (
                 // Comment Loader
                 <>
                   {[
@@ -658,7 +730,9 @@ const Thread = ({
               ) : (
                 <div className="flex flex-col items-center justify-center w-full mb-5 overflow-x-hidden">
                   <h1 className="">
-                    {postComments?.[0] ? "" : "no comments :("}
+                    {thread.data?.pages?.[0]?.comments?.length > 0
+                      ? ""
+                      : "no comments :("}
                   </h1>
                   {/* Open All Comments */}
 
@@ -697,6 +771,8 @@ const Thread = ({
                       op={post?.author}
                       portraitMode={usePortrait}
                       sort={sort}
+                      thread={thread}
+                      locked={post?.locked}
                     />
                   </div>
                 </div>

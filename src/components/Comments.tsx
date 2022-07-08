@@ -1,84 +1,23 @@
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
+import { fixCommentFormat } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
-const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, }) => {
+const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false }) => {
   const { data: session, status } = useSession();
-  const queryClient = useQueryClient();
-
   const context: any = useMainContext();
-  const [commentsData, setCommentsData] = useState(() => comments);
+  const [commentsData, setCommentsData] = useState<any[]>();
   useEffect(() => {
-  setCommentsData(comments);
+    comments && setCommentsData(comments); 
   }, [comments])
   
-  const [moreLoading, setMoreLoading] = useState(false);
-  const fixformat = useCallback(async (comments) => {
-    if (comments?.length > 0) {
-      let basedepth = comments[0].data.depth;
+  const loadChildComments = async () => {
 
-      let idIndex = new Map();
-      comments.forEach((comment) => {
-        idIndex.set(`t1_${comment.data.id}`, comment);
-      });
-      await comments.forEach((comment, i) => {
-        let c = idIndex.get(comment.data.parent_id);
-        if (c && c.data.replies?.data?.children) {
-          c.data.replies.data.children.push(comment);
-        } else if (c) {
-          c.data.replies = {
-            kind: "Listing",
-            data: {
-              children: [comment],
-            },
-          };
-        }
-        c && idIndex.set(comment.data.parent_id, c);
-      });
-
-      let fixedcomments = [];
-      idIndex.forEach((comment, i) => {
-        if (comment?.data?.depth === basedepth) {
-          fixedcomments.push(comment);
-        } else {
-        }
-      });
-      return fixedcomments;
-    }
-    return comments;
-  }, []);
-
-  const loadChildComments = async (children: string[], link_id) => {
-    let childrenstring = children.join(",");
     if (session) {
-      setMoreLoading(true);
-      const data = await loadMoreComments(
-        childrenstring,
-        link_id,
-        undefined,
-        session ? true : false,
-        context?.token,
-        sort
-      );
-      data?.token && context?.setToken(data?.token);
-      let morecomments = await fixformat(data?.data);
-      setCommentsData((c) => [
-        ...c.filter((comment) => comment?.kind !== "more"),
-        ...morecomments,
-      ]);
-      queryClient.setQueriesData(["thread", comments?.[0]?.data?.link_id?.substring(3)], ((prevData:any) => {
-        let newCommentData = prevData?.pages?.map((page: any) => {
-          return {
-            ...page, 
-            comments: [...page.comments.filter(comments => comments.kind === "t1"), ...morecomments]
-          }
-        })
-        return {...prevData, pages: newCommentData}
-      }))
-      setMoreLoading(false);
+      thread.fetchNextPage(); 
     } else {
       context.toggleLoginModal();
     }
@@ -91,16 +30,13 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
             <button
               className={
                 "text-sm pl-2 text-semibold flex hover:font-semibold w-full " +
-                (moreLoading ? " animate-pulse" : " ")
+                (thread.isFetching ? " animate-pulse" : " ")
               }
-              disabled={moreLoading}
+              disabled={thread.isFetching}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                loadChildComments(
-                  comment?.data?.children,
-                  comment?.data?.parent_id
-                );
+                loadChildComments(); 
               }}
             >
               Load {comment?.data?.count} More...
@@ -113,6 +49,7 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
                 hide={false}
                 op={op}
                 portraitMode={portraitMode}
+                locked={locked}
               />
             </>
           )}

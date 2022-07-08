@@ -154,7 +154,7 @@ MyMasonicProps) => {
             } available`}
             mode={"alert"}
             action={overwritePosts}
-            actionLabel={`Load new post${newPostsCount===1 ? "":"s"}?`}
+            actionLabel={`Update feed?`}
           />
         ),
         { position: "bottom-center", duration: 10 * 1000 }
@@ -222,8 +222,8 @@ MyMasonicProps) => {
           <span>
             {newPostsCount} new post{newPostsCount === 1 ? "" : "s"} available
           </span>
-          <div className="p-1 px-3 text-sm border rounded-lg border-th-border group-hover:border-th-borderHighlight group-hover:bg-th-highlight">
-            Load New Post{newPostsCount === 1 ? "" : "s"}
+          <div className="p-1 px-3 text-sm border rounded-md border-th-border group-hover:border-th-borderHighlight group-hover:bg-th-highlight">
+            {"Update Feed?"}
           </div>
         </button>
       )}

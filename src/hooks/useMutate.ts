@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
+import { fixCommentFormat } from "../../lib/utils";
 import {
   hideLink,
   loadMoreComments,
@@ -31,7 +32,6 @@ const useMutate = () => {
 
     // Optimistically update to the new value
     queryClient.setQueriesData(["feed"], (oldData: any) => {
-      console.log(change);
       let newData = oldData;
       if (newData) {
         let newPages = oldData?.pages?.map((page) => {
@@ -39,12 +39,6 @@ const useMutate = () => {
             ...page,
             filtered: page?.filtered?.map((post) => {
               if (id === post?.data?.name) {
-                console.log(
-                  "FOUND!",
-                  post?.data?.title,
-                  post.data[change.property],
-                  change.value
-                );
                 post.data[change.property] = change.value;
               }
               return post;
@@ -52,7 +46,6 @@ const useMutate = () => {
           };
         });
         newData = { ...newData, pages: newPages };
-        console.log("newData", newData);
       }
       return newData;
     });
@@ -71,7 +64,6 @@ const useMutate = () => {
     },
     onSuccess: (data: any) => {
       if (data.id.substring(0, 3) === "t3_") {
-        console.log("SUCCESS VOTE", session?.user?.name, data);
         if (session?.user?.name) {
           data.vote == 1 &&
             queryClient.invalidateQueries([
@@ -88,12 +80,9 @@ const useMutate = () => {
               "downvoted",
             ]);
         } else {
-          console.log("ERR NO USER");
           queryClient.invalidateQueries(["feed"]);
         }
       } else if (data.id.substring(0, 3) === "t1_") {
-        console.log("COMMENT VOTE");
-        console.log(router);
         const path = router?.asPath?.split("/");
         const cIndex = path?.indexOf("comments");
         let postId;
@@ -107,7 +96,6 @@ const useMutate = () => {
       }
     },
     onError: (err, update, context: any) => {
-      console.log("err", err);
       if (update.id.substring(0, 3) === "t3_") {
         queryClient.setQueriesData(["feed"], context.previousData);
       }
@@ -126,13 +114,11 @@ const useMutate = () => {
         }
       },
       onSuccess: (data: any) => {
-        console.log(router, router.asPath);
         if (
           data?.id?.substring(0, 3) === "t3_" &&
           session?.user?.name &&
           router.asPath !== `/u/${session.user.name}/saved`
         ) {
-          console.log("INVALIDATE");
           queryClient.invalidateQueries([
             "feed",
             "SELF",
@@ -183,7 +169,6 @@ const useMutate = () => {
     ({ parent, textValue, postName }: any) => postComment(parent, textValue),
     {
       onSuccess: (data: any) => {
-        console.log("COMMENT SUCCESS!", data);
         if (session?.user?.name) {
           queryClient.invalidateQueries([
             "feed",
@@ -199,7 +184,6 @@ const useMutate = () => {
           queryClient.setQueriesData(
             ["thread", data?.parent_id?.substring?.(3)],
             (pCommentsData: any) => {
-              console.log(pCommentsData);
               let newCommentsData = pCommentsData?.pages?.map((page: any) => {
                 return {
                   ...page,
@@ -222,7 +206,6 @@ const useMutate = () => {
                     { kind: "t1", data: data },
                     ...comment?.data?.replies?.data?.children,
                   ];
-                  console.log("FOUND!", comment);
                 }
                 if (
                   comment.kind === "t1" &&
@@ -240,7 +223,6 @@ const useMutate = () => {
                     );
                   }
                 }
-                console.log(comment);
                 return comment;
               };
 
@@ -256,7 +238,6 @@ const useMutate = () => {
                         ...comment?.data?.replies?.data?.children,
                       ];
                       found = true;
-                      console.log("FOUND2!", comment);
 
                       return comment;
                     }
@@ -289,7 +270,6 @@ const useMutate = () => {
                   }),
                 };
               });
-              console.log("NEWCOMENTS?", newCommentsData);
               return { ...pCommentsData, pages: newCommentsData };
             }
           );
@@ -321,7 +301,6 @@ const useMutate = () => {
         comment["data"][property] = value;
 
       }
-      console.log("FOUND!", comment);
       found = true;
     }
     if (
@@ -363,7 +342,6 @@ const useMutate = () => {
         }),
       };
     });
-    console.log("NEWCOMENTS?", newCommentsData);
     return { ...pCommentsData, pages: newCommentsData };
   };
   const commentCollapse = useMutation(
@@ -392,50 +370,7 @@ const useMutate = () => {
     childcomments,
     token?
   ) => {
-    console.log(
-      "LOADING..",
-      parentName,
-      children,
-      link_id,
-      permalink,
-      childcomments,
-      token
-    );
-
-    const fixformat = async (comments) => {
-      if (comments?.length > 0) {
-        let basedepth = comments[0].data.depth;
-
-        let idIndex = new Map();
-        comments.forEach((comment) => {
-          idIndex.set(`t1_${comment.data.id}`, comment);
-        });
-        await comments.forEach((comment, i) => {
-          let c = idIndex.get(comment.data.parent_id);
-          if (c && c.data.replies?.data?.children) {
-            c.data.replies.data.children.push(comment);
-          } else if (c) {
-            c.data.replies = {
-              kind: "Listing",
-              data: {
-                children: [comment],
-              },
-            };
-          }
-          c && idIndex.set(comment.data.parent_id, c);
-        });
-
-        let fixedcomments = [] as any[];
-        idIndex.forEach((comment, i) => {
-          if (comment?.data?.depth === basedepth) {
-            fixedcomments.push(comment);
-          } else {
-          }
-        });
-        return fixedcomments;
-      }
-      return comments;
-    };
+  
 
     const filterExisting = (comments, childcomments) => {
       return comments.filter((comment: any) => {
@@ -455,7 +390,6 @@ const useMutate = () => {
       session ? true : false,
       token
     );
-    console.log("LOADMOREDATA?", data);
     let morecomments = data?.data;
     let formatted;
     if (morecomments?.[0]?.data?.replies?.data?.children) {
@@ -465,9 +399,8 @@ const useMutate = () => {
       );
       formatted = filtered;
     } else {
-      formatted = await fixformat(morecomments);
+      formatted = await fixCommentFormat(morecomments);
     }
-    console.log("FORMATTED?", formatted, data?.token);
     return {
       link_id: link_id,
       parentName: parentName,
@@ -487,7 +420,6 @@ const useMutate = () => {
       ),
     {
       onSuccess: (data) => {
-        console.log("NEW COMMENTS", data);
         queryClient.setQueriesData(
           ["thread", data?.link_id?.substring(3)],
           (pCommentsData: any) =>
