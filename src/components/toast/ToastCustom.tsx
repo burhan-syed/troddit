@@ -12,7 +12,7 @@ import { Toast } from "react-hot-toast/dist/core/types";
 interface ToastCustomParams {
   t: Toast;
   message: string;
-  mode?: "loading" | "error" | "version" | "alert";
+  mode?: "loading" | "error" | "version" | "alert" | "success";
   action?: Function;
   actionLabel?: string;
 }
