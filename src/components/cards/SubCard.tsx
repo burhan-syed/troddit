@@ -11,6 +11,8 @@ import Login from "../Login";
 import SubIcon from "../SubIcon";
 import useRefresh from "../../hooks/useRefresh";
 import { useSession } from "next-auth/react";
+import { GrRefresh } from "react-icons/gr";
+import { IoMdRefresh } from "react-icons/io";
 
 const SubCard = ({
   data,
@@ -24,7 +26,7 @@ const SubCard = ({
 }) => {
   const context: any = useMainContext();
   const session = useSession();
-  const { invalidateKey } = useRefresh();
+  const { invalidateKey, refreshCurrent, numFetching } = useRefresh();
   const [thumbURL, setThumbURL] = useState("");
   const [subBanner, setBanner] = useState<any>({});
   const [hideNSFW, setHideNSFW] = useState(false);
@@ -180,14 +182,16 @@ const SubCard = ({
                     <a>
                       <h1
                         className={
-                          "font-semibold  hover:cursor-pointer hover:underline group-hover:underline" +
-                          (tall ? " " : " ")
+                          "font-semibold hover:cursor-pointer hover:underline group-hover:underline" +
+                          (tall ? " mb-[-0.1rem] " : " ")
                         }
                         onClick={() => {
                           !link && data?.kind === "t2"
                             ? invalidateKey([
                                 "feed",
-                                session?.data?.user?.name === data?.data?.name ? "SELF" : "USER",
+                                session?.data?.user?.name === data?.data?.name
+                                  ? "SELF"
+                                  : "USER",
                                 data?.data?.name,
                               ])
                             : invalidateKey([
@@ -216,9 +220,25 @@ const SubCard = ({
                       rel="noreferrer"
                       className="mb-3 ml-2 rounded hover:bg-th-postHover"
                     >
-                      <BsBoxArrowInUpRight className="w-3 h-3 -ml-1" />
+                      <BsBoxArrowInUpRight className="w-3 h-3 -ml-1 hover:scale-110 " />
                     </a>
                   )}
+                  {tall && (
+                    <button
+                      disabled={numFetching > 0}
+                      onClick={() => {
+                        refreshCurrent();
+                      }}
+                      className=""
+                    >
+                      <IoMdRefresh
+                        className={
+                          (numFetching ? "animate-spin " : " hover:scale-110 ") + " w-5 h-5 "
+                        }
+                      />
+                    </button>
+                  )}
+
                   <h1 className="text-xs font-semibold pb-0.5">
                     {data?.kind === "t2" &&
                     (data?.data?.comment_karma || data?.data?.link_karma) ? (

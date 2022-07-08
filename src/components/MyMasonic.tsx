@@ -226,7 +226,7 @@ MyMasonicProps) => {
             {newPostsCount} new post{newPostsCount === 1 ? "" : "s"} available
           </span>
           <div className="p-1 px-3 text-sm border rounded-md border-th-border group-hover:border-th-borderHighlight group-hover:bg-th-highlight">
-            {"Update Feed?"}
+            {"Update Feed"}
           </div>
         </button>
       )}
