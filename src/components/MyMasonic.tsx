@@ -158,6 +158,13 @@ MyMasonicProps) => {
       setToastId(tId);
     }
   }, [newPostsCount]);
+  useEffect(() => {
+  
+    return () => {
+      toast.remove(toastId);
+    }
+  }, [])
+  
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     feed?.fetchNextPage();

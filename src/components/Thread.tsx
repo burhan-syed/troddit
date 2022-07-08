@@ -183,32 +183,7 @@ const Thread = ({
               <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
                 <Vote likes={0} name={""} score={0} size={7} archived={false} />
               </div>
-              <div></div>
-              <div className="flex flex-row items-center justify-end space-x-1">
-                <div>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight "
-                  >
-                    <BsReply className="flex-none w-6 h-6 md:pr-2 scale-x-[-1]" />
-                    <h1 className="hidden md:block">Reply</h1>
-                  </button>
-                </div>
-                <a href={``} target="_blank" rel="noreferrer">
-                  <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
-                    <BiExit className="flex-none w-6 h-6 md:pr-2" />
-                    <h1 className="hidden md:block">Source</h1>
-                  </div>
-                </a>
-                <a href={``} target="_blank" rel="noreferrer">
-                  <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
-                    <ImReddit className="flex-none w-6 h-6 md:pr-2" />
-                    <h1 className="hidden md:block ">Original</h1>
-                  </div>
-                </a>
-              </div>
+              <div className="my-6"></div>              
             </div>
           </div>
         </div>

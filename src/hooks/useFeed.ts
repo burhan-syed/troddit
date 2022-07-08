@@ -524,7 +524,7 @@ const useFeed = (params?: Params) => {
 
   const feed = useInfiniteQuery(key, fetchFeed, {
     enabled: ready && key?.[0] == "feed",
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchOnMount: false,
     staleTime: 0,
     refetchInterval: sort === "new" ? 60 * 1000 : 30 * 60 * 1000,
