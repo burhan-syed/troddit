@@ -140,7 +140,7 @@ MyMasonicProps) => {
   };
   useEffect(() => {
     if (newPostsCount > 0) {
-      toast.remove(toastId);
+      toastId && toast.remove(toastId);
       const tId = toast.custom(
         (t) => (
           <ToastCustom
@@ -161,7 +161,7 @@ MyMasonicProps) => {
   useEffect(() => {
   
     return () => {
-      toast.remove(toastId);
+      toastId && toast.remove(toastId);
     }
   }, [])
   
