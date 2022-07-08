@@ -103,11 +103,10 @@ MyMasonicProps) => {
         return { ...post, curKey: curKey, fetchMore: feed.fetchNextPage };
       }) as any[];
     if (posts?.length > 0) {
-      console.log("infinitequery?", posts);
+     //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
         setItems(posts);
       } else {
-        console.log("REFETCH??");
         setItems((pposts) => {
           let newPostCount = 0;
           let updatedPosts = pposts.map((post) => {
@@ -119,19 +118,16 @@ MyMasonicProps) => {
             }
             return foundPost;
           });
-          console.log("NEW POSTS?", newPostCount);
+          //console.log("NEW POSTS?", newPostCount);
           setNewPostsCount(newPostCount);
           setNewPosts(() => (newPostCount > 0 ? posts : []));
           return updatedPosts;
         });
       }
-      //setItems([...posts])
     } else if (feed.hasNextPage) {
-      console.log("nodata.. fetching more");
-
+      //console.log("nodata.. fetching more");
       feed.fetchNextPage();
     }
-    // console.log('infinitequery?', [...feed.data?.pages.map(page => page.filtered)])
   }, [feed?.data?.pages]);
 
   const [toastId, setToastId] = useState<string>();

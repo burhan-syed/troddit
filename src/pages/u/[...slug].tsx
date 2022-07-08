@@ -25,7 +25,7 @@ const Sort = ({ query }) => {
     let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
     // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
 
-    subs?.length > 0 && router.push(`/r/${subs.join("+")}`);
+    subs && subs?.length > 0 && router.push(`/r/${subs.join("+")}`);
     //?m=${query.slug[2]}
     setLoaded(true);
   };
@@ -33,7 +33,6 @@ const Sort = ({ query }) => {
   //to handle direct routes (ie from going back)
   useEffect(() => {
     if (query.slug?.[1] === "r" && query.slug?.[3] === "comments"){
-      console.log(">>>>REPLACING USER<<<<<<",`/${query.slug?.slice(1)?.join('/')}`)
       router.replace(`/${query.slug?.slice(1)?.join('/')}`)
     }
     //multi case

@@ -38,7 +38,6 @@ const Feed = ({
 
   useEffect(() => {
     if (router.asPath?.substring(0,3) === "/r/" && router.asPath.includes('/comments') ){
-      console.log(">>>>>>>>>REPLACING<<<<<<<<<<<<", router.asPath);
      router.replace(router.asPath, undefined, {shallow: true});
     }
   }, [])

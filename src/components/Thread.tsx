@@ -57,7 +57,7 @@ const Thread = ({
   const [post, setPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
   );
-  const {sub} = useSubreddit(post?.subreddit)
+  const { sub } = useSubreddit(post?.subreddit);
 
   const [postComments, setPostComments] = useState<any[]>([]);
   const [prevCount, setPrevCount] = useState<number>();
@@ -75,10 +75,6 @@ const Thread = ({
       if (!initPost?.name?.includes("t3_")) {
         setInitPost(thread?.data?.pages?.[0].post);
       }
-      console.log(
-        post?.num_comments,
-        thread?.data?.pages?.[0].post?.num_comments
-      );
       setPrevCount(post?.num_comments);
       setPost(thread?.data?.pages?.[0].post);
     }
@@ -93,7 +89,6 @@ const Thread = ({
       comments = comments?.filter(
         (c, i) => c?.kind === "t1" || comments?.length - 1 === i
       );
-      console.log("postcomments", comments);
       setPostComments(comments);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -470,7 +465,9 @@ const Thread = ({
                           score={post?.score}
                           size={7}
                           archived={post?.archived}
-                          scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
+                          scoreHideMins={
+                            sub?.data?.data?.comment_score_hide_mins
+                          }
                           postTime={post?.created_utc}
                         />
                       </div>
@@ -771,7 +768,6 @@ const Thread = ({
                   )}
 
                   <div className={"flex-grow  w-full px-2  "}>
-                    {/* <Comments comments={myReplies} depth={0} /> */}
                     <Comments
                       comments={postComments}
                       depth={0}

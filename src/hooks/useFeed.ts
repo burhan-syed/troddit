@@ -289,7 +289,6 @@ const useFeed = (params?: Params) => {
       setReady(true);
     }
     return () => {
-      console.log("reset");
       setKey([""]);
       setReady(false);
     };

@@ -7,7 +7,6 @@ const useFeedGallery = (curKey) => {
  
   const curFeed:any = queryClient.getQueryData(curKey);
   const flattenedPosts = useMemo(() => {
-    console.log("FLATTENING");
     const flattened = curFeed?.pages?.map(page => page?.filtered)?.flat();
     return flattened; 
   }, [curFeed])

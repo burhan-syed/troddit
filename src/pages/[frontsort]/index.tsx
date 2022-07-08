@@ -7,7 +7,6 @@ import PostModal from "../../components/PostModal";
 import LoginModal from "../../components/LoginModal";
 
 const Subs = ({ query }) => {
-  console.log(query);
   return (
     <div>
       <Head>
@@ -34,6 +33,8 @@ const Subs = ({ query }) => {
                 returnRoute={query?.slug?.[0] ? `/r/${query?.slug[0]}` : "/"}
                 setSelect={() => {}}
                 direct={true}
+                curKey={""}
+                postNum={0}
               />
             </div>
           </>
