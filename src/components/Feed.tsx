@@ -23,24 +23,27 @@ import { ErrorBoundary } from "react-error-boundary";
 import type { Session } from "next-auth/core/types";
 import useFeed from "../hooks/useFeed";
 import useRefresh from "../hooks/useRefresh";
+import { IoMdRefresh } from "react-icons/io";
 
-const Feed = ({
-  initialData = {} as any,
-  safeSearch = false,
-}) => {
-  const { key, feed } = useFeed({ safeSearch: safeSearch, initialPosts: initialData });
-  const {invalidateAll} = useRefresh(); 
-
+const Feed = ({ initialData = {} as any, safeSearch = false }) => {
+  const { key, feed } = useFeed({
+    safeSearch: safeSearch,
+    initialPosts: initialData,
+  });
+  const { invalidateAll, invalidateKey, refreshCurrent, fetchingCount } =
+    useRefresh();
 
   const context: any = useMainContext();
   const router = useRouter();
 
-
   useEffect(() => {
-    if (router.asPath?.substring(0,3) === "/r/" && router.asPath.includes('/comments') ){
-     router.replace(router.asPath, undefined, {shallow: true});
+    if (
+      router.asPath?.substring(0, 3) === "/r/" &&
+      router.asPath.includes("/comments")
+    ) {
+      router.replace(router.asPath, undefined, { shallow: true });
     }
-  }, [])
+  }, []);
 
   if (feed.error) {
     return (
@@ -58,25 +61,55 @@ const Feed = ({
     );
   }
   return (
-    <main>    
+    <main>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen">
-      
-          {/* + (context?.maximize ? " " : " md:w-5/6") */}
-          {!feed.isLoading && (
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
-            >
-              <MyMasonic
-                initItems={[]}
-                feed={feed}
-                curKey={key}
-                key={`${key}_${context.fastRefresh}_${context.progressKey}`}
-              />
-            </ErrorBoundary>
-          )}
+        <div
+          className={
+            "w-full " +
+            (context.columnOverride === 1 &&
+            context.cardStyle !== "row1" &&
+            !context.wideUI
+              ? " max-w-2xl "
+              : " md:w-11/12 ") +
+            (context.cardStyle === "row1"
+              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl "
+              : " ")
+          }
+        >        {/* + (context?.maximize ? " " : " md:w-5/6") */}
+        {!feed.isLoading && (
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
+          >
+            <MyMasonic
+              initItems={[]}
+              feed={feed}
+              curKey={key}
+              key={`${key}_${context.fastRefresh}_${context.progressKey}`}
+            />
+            <div className="relative w-full"></div>
+        
+          </ErrorBoundary>
+        )}
+        </div>
       </div>
+      <button
+          disabled={feed.isFetching}
+          onClick={() => {
+            refreshCurrent();
+          }}
+          className={"hidden md:block fixed bottom-0 left-0"}
+        >
+          <IoMdRefresh
+            className={
+              (feed.isFetching && !feed.isFetchingNextPage
+                ? "animate-spin "
+                : " hover:scale-110 opacity-20 hover:opacity-100 ") +
+              " w-6 h-6 "
+            }
+          />
+        </button>
     </main>
   );
 };

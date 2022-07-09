@@ -19,15 +19,13 @@ import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
 import useRefresh from "../hooks/useRefresh";
-import { useIsFetching } from "react-query";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
-  const { invalidateKey } = useRefresh();
+  const { invalidateKey, refreshCurrent, fetchingCount  } = useRefresh();
   const plausible = usePlausible();
   const router = useRouter();
 
-  const fetchingCount = useIsFetching();
 
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
@@ -64,7 +62,6 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   useEffect(() => {
     setTimeSinceNav(() => new Date().getTime());
     setHidden(false);
-    console.log(router.asPath);
     if (
       router.asPath.includes("/comments/") ||
       router.asPath.includes("/about") ||

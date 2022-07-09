@@ -1,20 +1,16 @@
 /* eslint-disable react/no-children-prop */
-import React, {
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { useWindowSize } from "@react-hook/window-size";
 import { Masonry, useInfiniteLoader } from "masonic";
 
 import Post from "./Post";
 import { useMainContext } from "../MainContext";
 // import { usePlausible } from "next-plausible";
-import { useRouter } from "next/router";
 import { UseInfiniteQueryResult } from "react-query";
 
-import toast from "react-hot-toast";
+import toast, { ToastIcon } from "react-hot-toast";
 import ToastCustom from "./toast/ToastCustom";
+import useRefresh from "../hooks/useRefresh";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -30,20 +26,14 @@ interface MyMasonicProps {
   >;
 }
 
-const MyMasonic = ({
-  initItems,
-  feed,
-  curKey,
-}: 
-MyMasonicProps) => {
+const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const context: any = useMainContext();
-
+ 
 
   const [cols, setCols] = useState(3);
   const [items, setItems] = useState<any[]>([]);
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [masonicKey, setMasonicKey] = useState(curKey);
-
 
   const [windowWidth, windowHeight] = useWindowSize();
 
@@ -103,7 +93,7 @@ MyMasonicProps) => {
         return { ...post, curKey: curKey, fetchMore: feed.fetchNextPage };
       }) as any[];
     if (posts?.length > 0) {
-     //console.log("infinitequery?", posts);
+      //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
         setItems(posts);
       } else {
@@ -130,41 +120,39 @@ MyMasonicProps) => {
     }
   }, [feed?.data?.pages]);
 
-  const [toastId, setToastId] = useState<string>();
 
   const overwritePosts = () => {
-    toast.remove(toastId);
     setMasonicKey((k) => `${k}_${Math.random()}`);
     setNewPostsCount(0);
     setItems(newPosts);
   };
   useEffect(() => {
     if (newPostsCount > 0) {
-      toastId && toast.remove(toastId);
-      const tId = toast.custom(
+      toast.remove("new_post");
+       let tId = toast.custom(
         (t) => (
           <ToastCustom
             t={t}
             message={`${newPostsCount} new post${
-              newPostsCount === 1 ? " is" : "s are"
-            } available`}
-            mode={"alert"}
+              newPostsCount === 1 ? "" : "s"
+            }`}
+            mode={"new_posts"}
             action={overwritePosts}
             actionLabel={`Update feed?`}
           />
         ),
-        { position: "bottom-center", duration: 10 * 1000 }
+        { position: "bottom-right", duration: Infinity, id: "new_post" }
       );
-      setToastId(tId);
+    }
+    () => {
+      toast.remove("new_post");
     }
   }, [newPostsCount]);
   useEffect(() => {
-  
     return () => {
-      toastId && toast.remove(toastId);
-    }
-  }, [])
-  
+       toast.remove("new_post");
+    };
+  }, []);
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     feed?.fetchNextPage();
@@ -206,82 +194,45 @@ MyMasonicProps) => {
   );
 
   return (
-    <div
-      className={
-        "" +
-        (cols === 1 && context.cardStyle !== "row1" && !context.wideUI
-          ? " w-screen  "
-          : " w-screen md:w-11/12 ")
-      }
-    >
-      {newPostsCount > 0 && (
-        <button
-          onClick={overwritePosts}
-          className={
-            (context.cardStyle === "row1" ? "" : "mx-1") +
-            " group  flex min-w-full justify-between items-center flex-grow p-2 mb-2 border rounded-lg bg-th-post border-th-border2 hover:border-th-borderHighlight2"
-          }
-        >
-          <span>
-            {newPostsCount} new post{newPostsCount === 1 ? "" : "s"} available
-          </span>
-          <div className="p-1 px-3 text-sm border rounded-md border-th-border group-hover:border-th-borderHighlight group-hover:bg-th-highlight">
-            {"Update Feed"}
-          </div>
-        </button>
+    <div>
+      <Masonry
+        key={masonicKey}
+        onRender={maybeLoadMorePosts}
+        columnGutter={0}
+        columnCount={cols}
+        items={items}
+        itemHeightEstimate={cols === 1 ? 0 : itemheightestimate} //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
+        overscanBy={2}
+        render={PostCard}
+        className="outline-none"
+        ssrWidth={500}
+      />
+
+      {!context?.infiniteLoading && feed.hasNextPage && (
+        <div className="flex items-center justify-center mt-6 mb-6">
+          <button
+            disabled={feed.isLoading || feed.isFetchingNextPage}
+            onClick={() => {
+              loadMoreItems(items.length, items.length + 20);
+            }}
+            className={
+              (feed.isLoading || feed.isFetchingNextPage
+                ? " animate-pulse "
+                : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
+              "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
+            }
+          >
+            <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
+          </button>
+        </div>
       )}
-      <div
-        className={
-          context.cardStyle === "row1"
-            ? " bg-th-post2 min-h-screen border-th-border2 rounded-t-md rounded-b-md border shadow-2xl "
-            : `${!context.wideUI ? " max-w-2xl mx-auto" : " "}`
-        }
-      >
-        <Masonry
-          key={masonicKey}
-          onRender={maybeLoadMorePosts}
-          columnGutter={0}
-          columnCount={cols}
-          items={items}
-          itemHeightEstimate={cols === 1 ? 0 : itemheightestimate} //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
-          overscanBy={2}
-          render={PostCard}
-          className="outline-none"
-          ssrWidth={500}
-        />
-        {!context?.infiniteLoading && feed.hasNextPage && (
-          <div className="flex items-center justify-center mt-6 mb-6">
-            <button
-              disabled={feed.isLoading || feed.isFetchingNextPage}
-              onClick={() => {
-                loadMoreItems(items.length, items.length + 20);
-              }}
-              className={
-                (feed.isLoading || feed.isFetchingNextPage
-                  ? " animate-pulse "
-                  : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
-                "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
-              }
-            >
-              <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
-            </button>
-          </div>
-        )}
-        {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
-          <h1 className="text-center">
-            Loading page {(feed?.data?.pages?.length ?? 1) + 1}...
-          </h1>
-        )}
-        {/* {filterCount > 0 && (
-            <div className="fixed bottom-0 left-0 flex-col text-xs select-none">
-              <h1>
-                {pageCount} page{pageCount === 1 ? "" : "s"}
-              </h1>
-              <h1>{filterCount} filtered</h1>
-            </div>
-          )} */}
-        {loadInfo}
-      </div>
+      {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
+        <h1 className="text-center">
+          Loading page {(feed?.data?.pages?.length ?? 1) + 1}...
+        </h1>
+      )}
+
+      {loadInfo}
     </div>
   );
 };

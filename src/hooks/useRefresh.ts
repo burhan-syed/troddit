@@ -19,14 +19,13 @@ const useRefresh = () => {
   const refreshCurrent = () => {
     queryClient.refetchQueries(key)
   }
-  const numFetching = useIsFetching(key);
+  const fetchingCount = useIsFetching(key);
   
   return {
     invalidateAll,
     invalidateKey,
     refreshCurrent,
-    numFetching
-    
+    fetchingCount
   };
 };
 

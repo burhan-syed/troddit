@@ -183,7 +183,7 @@ const SubCard = ({
                       <h1
                         className={
                           "font-semibold hover:cursor-pointer hover:underline group-hover:underline" +
-                          (tall ? " mb-[-0.1rem] " : " ")
+                          (tall ? ` ${data?.kind ? "mb-[-0.075rem]" : ""} ` : " ")
                         }
                         onClick={() => {
                           !link && data?.kind === "t2"
@@ -223,22 +223,7 @@ const SubCard = ({
                       <BsBoxArrowInUpRight className="w-3 h-3 -ml-1 hover:scale-110 " />
                     </a>
                   )}
-                  {tall && (
-                    <button
-                      disabled={numFetching > 0}
-                      onClick={() => {
-                        refreshCurrent();
-                      }}
-                      className=""
-                    >
-                      <IoMdRefresh
-                        className={
-                          (numFetching ? "animate-spin " : " hover:scale-110 ") + " w-5 h-5 "
-                        }
-                      />
-                    </button>
-                  )}
-
+                 
                   <h1 className="text-xs font-semibold pb-0.5">
                     {data?.kind === "t2" &&
                     (data?.data?.comment_karma || data?.data?.link_karma) ? (
