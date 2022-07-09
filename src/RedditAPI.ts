@@ -232,7 +232,7 @@ export const getRedditSearch = async (
     raw_json: 1,
     sr_detail: true,
   };
-  console.log("PARAMS?",subreddit,include_over_18,p)
+  //console.log("PARAMS?",subreddit,include_over_18,p)
 
   let oathsearch = `https://oauth.reddit.com/search`;
   let noauthsearch = `${REDDIT}/search.json`;
@@ -1251,7 +1251,7 @@ export const getUserVotes = async () => {
         }
       );
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      console.log(res);
+      //console.log(res);
     } catch (err) {
       console.log(err);
       return false;
