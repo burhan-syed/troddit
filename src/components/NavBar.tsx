@@ -22,10 +22,9 @@ import useRefresh from "../hooks/useRefresh";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
-  const { invalidateKey, refreshCurrent, fetchingCount  } = useRefresh();
+  const { invalidateKey, refreshCurrent, fetchingCount } = useRefresh();
   const plausible = usePlausible();
   const router = useRouter();
-
 
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);

@@ -27,10 +27,9 @@ import { IoMdRefresh } from "react-icons/io";
 import ErrMessage from "./ErrMessage";
 import useLocation from "../hooks/useLocation";
 
-const Feed = ({ initialData = {} as any, safeSearch = false }) => {
+const Feed = ({ initialData = {} as any }) => {
   const { mode, subreddits } = useLocation();
   const { key, feed } = useFeed({
-    safeSearch: safeSearch,
     initialPosts: initialData,
   });
   const { invalidateAll, invalidateKey, refreshCurrent, fetchingCount } =

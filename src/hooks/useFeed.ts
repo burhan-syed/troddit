@@ -16,7 +16,6 @@ import useLocation from "./useLocation";
 
 interface Params {
   initialPosts?: any;
-  safeSearch?: boolean;
 }
 
 const useFeed = (params?: Params) => {
@@ -63,7 +62,7 @@ const useFeed = (params?: Params) => {
       subreddits: subreddits,
       userMode: userMode,
       searchQuery: searchQuery,
-      safeSearch: params?.safeSearch ? undefined : true,
+      safeSearch: context?.safeSearch ? undefined : true,
       prevPosts: fetchParams.pageParam?.prevPosts ?? {},
       filters: fetchParams?.queryKey?.[fetchParams?.queryKey?.length - 1],
     };

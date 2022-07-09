@@ -12,11 +12,11 @@ const SearchPage = ({ query }) => {
   const router = useRouter();
   const context: any = useMainContext();
   const [loading, setLoading] = useState(true);
-  const [subs, setSubs] = useState([]);
+  const [subs, setSubs] = useState<any[]>([]);
   const [after, setAfter] = useState("");
   const [expand, setExpand] = useState(false);
   const [searchUsers, setSearchUsers] = useState(false);
-  const [safeSearch, setSafeSearch] = useState(true);
+  const {safeSearch, setSafeSearch} = context; 
   const loadMore = async () => {
     let subs = await getRedditSearch(
       { q: query?.q },
@@ -340,7 +340,7 @@ const SearchPage = ({ query }) => {
       </div>
       {!expand && (
         <div className="">
-          <Feed query={query} isSearch={true} safeSearch={safeSearch} />
+          <Feed  />
         </div>
       )}
     </div>

@@ -29,6 +29,7 @@ export const MainProvider = ({ children }) => {
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
+  const [safeSearch, setSafeSearch] = useState(true); 
   //const [forceRefresh, setForceRefresh] = useState(0);
   //update key whenever items may change for Masonic component
   const [progressKey, setProgressKey] = useState(0);
@@ -1213,7 +1214,9 @@ export const MainProvider = ({ children }) => {
         applyFilters,
         filtersApplied,
         progressKey, 
-        setProgressKey
+        setProgressKey,
+        safeSearch, 
+        setSafeSearch
       }}
     >
       {children}
