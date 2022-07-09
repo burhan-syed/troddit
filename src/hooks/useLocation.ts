@@ -161,8 +161,6 @@ const useLocation = (params?) => {
   //monitor keys to control query
   const [key, setKey] = useState<string | any[]>([""]);
   useEffect(() => {
-    //console.log(mode, sort, range, sessloading, sessloading);
-    //console.log(mode, searchQuery)
     if (
       !sessloading &&
       context.ready &&
@@ -197,6 +195,8 @@ const useLocation = (params?) => {
         context.filtersApplied,
       ].join(",");
 
+      const sessStatus = status === "authenticated" ? session.user?.name : status
+
       if (mode === "MULTI") {
         setKey([
           "feed",
@@ -205,7 +205,7 @@ const useLocation = (params?) => {
           userMode, //refers to multi name..
           sort,
           range,
-          status,
+          sessStatus,
           filtersString,
           filters,
         ]);
@@ -217,7 +217,7 @@ const useLocation = (params?) => {
           userMode,
           sort,
           range,
-          status,
+          sessStatus,
           filtersString,
           filters,
         ]);
@@ -241,7 +241,7 @@ const useLocation = (params?) => {
           params?.safeSearch,
           sort,
           range,
-          status,
+          sessStatus,
           filtersString,
           filters,
         ]);
@@ -253,12 +253,12 @@ const useLocation = (params?) => {
           searchQuery,
           sort,
           range,
-          status,
+          sessStatus,
           filtersString,
           filters,
         ]);
       } else if (mode === "HOME") {
-        setKey(["feed", mode, "", sort, range, status, filtersString, filters]);
+        setKey(["feed", mode, "", sort, range, sessStatus, filtersString, filters]);
       } else {
         setKey([
           "feed",
@@ -266,7 +266,7 @@ const useLocation = (params?) => {
           subreddits,
           sort,
           range,
-          status,
+          sessStatus,
           filtersString,
           filters,
         ]);
@@ -301,7 +301,6 @@ const useLocation = (params?) => {
     subreddits,
     userMode,
     searchQuery,
-
   }
 }
 

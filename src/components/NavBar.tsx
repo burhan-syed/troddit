@@ -25,7 +25,6 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
   const { invalidateKey } = useRefresh();
   const plausible = usePlausible();
-  const {feed} = useFeed(); 
   const router = useRouter();
 
 
@@ -45,7 +44,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     if (allowHide) {
       if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
-      } else if (scrollY > 300 && scrollDirection === "up" && !(feed.isFetching && !feed.isFetchingNextPage)) {
+      } else if (scrollY > 300 && scrollDirection === "up") {
         setHidden(true);
       } else if (scrollY <= 300) {
         setHidden(false);
@@ -75,11 +74,11 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [router.query, router.pathname]);
 
-  useEffect(() => {
-    if (feed.isFetching && !feed.isFetchingNextPage){
-      setHidden(false); 
-    }
-  }, [feed.isFetching, feed.isFetchingNextPage])
+  // useEffect(() => {
+  //   if (feed.isFetching && !feed.isFetchingNextPage){
+  //     setHidden(false); 
+  //   }
+  // }, [feed.isFetching, feed.isFetchingNextPage])
     
 
   const homeClick = () => {
@@ -88,13 +87,13 @@ const NavBar = ({ toggleSideNav = 0 }) => {
 
   return (
     <>
-    {(feed.isFetching && !feed.isFetchingNextPage) && (
+    {/* {(fetching) && (
         <>
           <div className="fixed top-0 z-50 w-screen h-16 bg-th-accent animate-pulse"></div>
           <div className="fixed top-0 z-40 w-screen h-16 bg-th-base"></div>
 
         </>
-      )}
+      )} */}
       <header
         className={
           `${hidden ? "-translate-y-full" : ""}` +

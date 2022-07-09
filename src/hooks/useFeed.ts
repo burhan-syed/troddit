@@ -52,54 +52,6 @@ const useFeed = (params?: Params) => {
     filters: object;
   }
 
-  // feedParams: FeedParams|any = {
-
-  //   filters:  {
-  //     readFilter,
-  //     imgFilter,
-  //     vidFilter,
-  //     selfFilter,
-  //     galFilter,
-  //     linkFilter,
-  //     imgPortraitFilter,
-  //     imgLandscapeFilter,
-  //   }
-  //  }
-
-  const formatInitialData = () => {
-    const initialData = params?.initialPosts;
-    //console.log("INITIALDATA?", initialData);
-    if (initialData?.children?.length > 0) {
-      return {
-        pages: [
-          {
-            filtered: initialData.children,
-            after: "",
-            count: initialData.children.length,
-            prevPosts: {
-              ...initialData.children.reduce((obj, post, index) => {
-                obj[post?.data?.name] = 1;
-                return obj;
-              }, {}),
-            },
-          },
-        ],
-        pageParams: [
-          {
-            after: "",
-            count: 0,
-            prevPosts: {
-              ...initialData.children.reduce((obj, post, index) => {
-                obj[post?.data?.name] = 1;
-                return obj;
-              }, {}),
-            },
-          },
-        ],
-      };
-    }
-  };
-
   const fetchFeed = async (fetchParams: QueryFunctionContext) => {
     const feedParams = {
       loggedIn: status === "authenticated" ? true : false,
@@ -115,11 +67,16 @@ const useFeed = (params?: Params) => {
       prevPosts: fetchParams.pageParam?.prevPosts ?? {},
       filters: fetchParams?.queryKey?.[fetchParams?.queryKey?.length - 1],
     };
-    //console.log("fetchParams?", fetchParams);
+    console.log("fetchParams?", fetchParams);
     //console.log("feedParms", feedParams);
 
     let data;
-    if (feedParams.mode === "HOME") {
+    //short circuiting with initialData here instead of using param in infinite query hook..
+    if (params?.initialPosts?.children?.length > 0 && fetchParams?.pageParam === undefined ){
+      data = params?.initialPosts;
+      data["after"] = ""
+    }
+    else if (feedParams.mode === "HOME") {
       data = await loadFront(
         feedParams.loggedIn,
         context.token,
@@ -237,7 +194,7 @@ const useFeed = (params?: Params) => {
     let returnData = {
       filtered,
       after: data.after,
-      count: feedParams.count + data?.children?.length,
+      count: fetchParams?.pageParam === undefined ? 0 : feedParams.count + data?.children?.length,
       prevPosts: {
         ...feedParams.prevPosts,
         ...filtered.reduce((obj, post, index) => {
@@ -269,9 +226,10 @@ const useFeed = (params?: Params) => {
       }
       return undefined;
     },
-    initialData: () => {
-      return formatInitialData();
-    },
+    // setting initial data directly in fetchFeed() instead
+    // initialData: () => {
+    //   return formatInitialData();
+    // },
   });
 
   return {
