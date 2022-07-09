@@ -34,6 +34,7 @@ import SubIcon from "./SubIcon";
 import useThread from "../hooks/useThread";
 import { QueryClient, useQueryClient } from "react-query";
 import useSubreddit from "../hooks/useSubreddit";
+import ErrMessage from "./ErrMessage";
 
 const Thread = ({
   permalink,
@@ -241,7 +242,11 @@ const Thread = ({
             " z-10 flex items-center justify-center w-full h-96 border rounded-lg border-th-border2 bg-th-background2"
           }
         >
+          <div className="flex flex-col gap-2 px-4">
           <h1 className="">{"unable to load post"}</h1>
+          <ErrMessage/>
+          </div>
+         
         </div>
       </div>
     );

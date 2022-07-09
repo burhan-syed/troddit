@@ -24,8 +24,11 @@ import type { Session } from "next-auth/core/types";
 import useFeed from "../hooks/useFeed";
 import useRefresh from "../hooks/useRefresh";
 import { IoMdRefresh } from "react-icons/io";
+import ErrMessage from "./ErrMessage";
+import useLocation from "../hooks/useLocation";
 
 const Feed = ({ initialData = {} as any, safeSearch = false }) => {
+  const { mode, subreddits } = useLocation();
   const { key, feed } = useFeed({
     safeSearch: safeSearch,
     initialPosts: initialData,
@@ -45,24 +48,21 @@ const Feed = ({ initialData = {} as any, safeSearch = false }) => {
     }
   }, []);
 
-  if (feed.error) {
-    return (
-      <div className="flex flex-col items-center justify-center mt-16 text-center">
-        <div>{"Oops something went wrong :("}</div>
-        <div>
-          {"Please assure traffic from Reddit is not blocked and refresh"}
-        </div>
-        {/* {subreddits !== "" && (
-          <div>{`Otherwise, this ${
-            isUser ? "user" : "subreddit"
-          } may not exist`}</div>
-        )} */}
-      </div>
-    );
+  if (feed.error && (mode === "USER" || mode === "SUBREDDIT") && subreddits) {
+    router.replace(`/search?q=${subreddits}`);
   }
   return (
     <main>
       <LoginModal />
+      {feed.error && (
+        <div className="fixed z-50 max-w-lg p-2 mx-auto -translate-x-1/2 -translate-y-1/2 border rounded-lg top-1/2 left-1/2 bg-th-post border-th-border2">
+          <p className="mb-2 text-center">
+            {"Oops something went wrong :("}
+          </p>
+
+          <ErrMessage />
+        </div>
+      )}
       <div className="flex flex-col items-center flex-none w-screen">
         <div
           className={
@@ -73,43 +73,43 @@ const Feed = ({ initialData = {} as any, safeSearch = false }) => {
               ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
-              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl "
+              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl h-screen "
               : " ")
           }
-        >        {/* + (context?.maximize ? " " : " md:w-5/6") */}
-        {!feed.isLoading && (
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
-          >
-            <MyMasonic
-              initItems={[]}
-              feed={feed}
-              curKey={key}
-              key={`${key}_${context.fastRefresh}_${context.progressKey}`}
-            />
-            <div className="relative w-full"></div>
-        
-          </ErrorBoundary>
-        )}
+        >
+          {" "}
+          {/* + (context?.maximize ? " " : " md:w-5/6") */}
+          {!feed.isLoading && (
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
+            >
+              <MyMasonic
+                initItems={[]}
+                feed={feed}
+                curKey={key}
+                key={`${key}_${context.fastRefresh}_${context.progressKey}`}
+              />
+              <div className="relative w-full"></div>
+            </ErrorBoundary>
+          )}
         </div>
       </div>
       <button
-          disabled={feed.isFetching}
-          onClick={() => {
-            refreshCurrent();
-          }}
-          className={"hidden md:block fixed bottom-0 left-0"}
-        >
-          <IoMdRefresh
-            className={
-              (feed.isFetching && !feed.isFetchingNextPage
-                ? "animate-spin "
-                : " hover:scale-110 opacity-20 hover:opacity-100 ") +
-              " w-6 h-6 "
-            }
-          />
-        </button>
+        disabled={feed.isFetching}
+        onClick={() => {
+          refreshCurrent();
+        }}
+        className={"hidden md:block fixed bottom-0 left-0"}
+      >
+        <IoMdRefresh
+          className={
+            (feed.isFetching && !feed.isFetchingNextPage
+              ? "animate-spin "
+              : " hover:scale-110 opacity-20 hover:opacity-100 ") + " w-6 h-6 "
+          }
+        />
+      </button>
     </main>
   );
 };

@@ -181,7 +181,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   const loadInfo = (
     <>
-      {!feed.isFetching && !feed.hasNextPage && feed.isFetched && (
+      {!feed.isFetching && !feed.hasNextPage && feed.isFetched && !feed.error && (
         <div className="flex flex-row items-center justify-center my-6 text-sm font-light">
           <h1>
             Loaded {items?.length} post{items?.length === 1 ? "" : "s"} on{" "}
