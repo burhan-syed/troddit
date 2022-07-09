@@ -30,6 +30,7 @@ export const MainProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
   const [safeSearch, setSafeSearch] = useState(true); 
+  const [volume, setVolume] = useState(0.5);
   //const [forceRefresh, setForceRefresh] = useState(0);
   //update key whenever items may change for Masonic component
   const [progressKey, setProgressKey] = useState(0);
@@ -1216,7 +1217,9 @@ export const MainProvider = ({ children }) => {
         progressKey, 
         setProgressKey,
         safeSearch, 
-        setSafeSearch
+        setSafeSearch,
+        volume, 
+        setVolume
       }}
     >
       {children}
