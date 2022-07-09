@@ -67,7 +67,7 @@ const useFeed = (params?: Params) => {
       prevPosts: fetchParams.pageParam?.prevPosts ?? {},
       filters: fetchParams?.queryKey?.[fetchParams?.queryKey?.length - 1],
     };
-    console.log("fetchParams?", fetchParams);
+    //console.log("fetchParams?", fetchParams);
     //console.log("feedParms", feedParams);
 
     let data;

@@ -19,7 +19,7 @@ import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
 import useRefresh from "../hooks/useRefresh";
-import useFeed from "../hooks/useFeed";
+import { useIsFetching } from "react-query";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
@@ -27,11 +27,13 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const plausible = usePlausible();
   const router = useRouter();
 
+  const fetchingCount = useIsFetching();
 
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
+  //add some delay before navbar can be hidden again.. resolves some issues with immediate hide after navigation
+  const [timeSinceNav, setTimeSinceNav] = useState(() => new Date().getTime());
   const { scrollY, scrollDirection } = useScroll();
 
   useEffect(() => {
@@ -42,9 +44,14 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   }, [toggleSideNav]);
   useEffect(() => {
     if (allowHide) {
+      const now = new Date().getTime();
       if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
-      } else if (scrollY > 300 && scrollDirection === "up") {
+      } else if (
+        scrollY > 300 &&
+        scrollDirection === "up" &&
+        now > timeSinceNav + 1000
+      ) {
         setHidden(true);
       } else if (scrollY <= 300) {
         setHidden(false);
@@ -54,16 +61,16 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     }
   }, [scrollDirection, allowHide, scrollY]);
 
-
-
   useEffect(() => {
+    setTimeSinceNav(() => new Date().getTime());
     setHidden(false);
+    console.log(router.asPath);
     if (
-      router.pathname.includes("/comments/") ||
-      router.pathname.includes("/about") ||
-      router.pathname.includes("/settings") ||
-      router.pathname.includes("/changelog") ||
-      router.pathname.includes("/subreddits")
+      router.asPath.includes("/comments/") ||
+      router.asPath.includes("/about") ||
+      router.asPath.includes("/settings") ||
+      router.asPath.includes("/changelog") ||
+      router.asPath.includes("/subreddits")
     ) {
       setallowHide(false);
     } else {
@@ -72,14 +79,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     return () => {
       //setallowHide(true);
     };
-  }, [router.query, router.pathname]);
-
-  // useEffect(() => {
-  //   if (feed.isFetching && !feed.isFetchingNextPage){
-  //     setHidden(false); 
-  //   }
-  // }, [feed.isFetching, feed.isFetchingNextPage])
-    
+  }, [router.asPath]);
 
   const homeClick = () => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
@@ -87,18 +87,11 @@ const NavBar = ({ toggleSideNav = 0 }) => {
 
   return (
     <>
-    {/* {(fetching) && (
-        <>
-          <div className="fixed top-0 z-50 w-screen h-16 bg-th-accent animate-pulse"></div>
-          <div className="fixed top-0 z-40 w-screen h-16 bg-th-base"></div>
-
-        </>
-      )} */}
       <header
         className={
           `${hidden ? "-translate-y-full" : ""}` +
-          " z-50 fixed top-0 transition ease-in-out transform h-14 w-screen "
-          + (scrollDirection === "up" ? " duration-500" : " duration-0")
+          " z-50 fixed top-0 transition ease-in-out transform h-14 w-screen" +
+          (hidden ? " duration-500" : " duration-0")
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
@@ -159,6 +152,12 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </div>
           </div>
         </nav>
+        {fetchingCount > 0 && (
+          <div className="relative">
+            <div className="absolute top-0 z-50 w-screen h-1 bg-th-accent animate-pulse"></div>
+            <div className="absolute top-0 z-40 w-screen h-1 bg-th-base"></div>
+          </div>
+        )}
       </header>
       <div
         onMouseOver={(e) => setHidden(false)}
