@@ -11,6 +11,7 @@ import { UseInfiniteQueryResult } from "react-query";
 import toast, { ToastIcon } from "react-hot-toast";
 import ToastCustom from "./toast/ToastCustom";
 import useRefresh from "../hooks/useRefresh";
+import useFeedGallery from "../hooks/useFeedGallery";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -28,7 +29,7 @@ interface MyMasonicProps {
 
 const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const context: any = useMainContext();
- 
+  const {setFeedData} = useFeedGallery(); 
 
   const [cols, setCols] = useState(3);
   const [items, setItems] = useState<any[]>([]);
@@ -86,6 +87,25 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const [newPostsCount, setNewPostsCount] = useState(0);
 
   useEffect(() => {
+    const tryUpdatePostsInPlace = (newPosts) => {
+      setItems((pposts) => {
+        let newPostCount = 0;
+        let pPostMap = new Map(); 
+        pposts.forEach(p => pPostMap.set(p?.data?.name, p));
+        newPosts.forEach(np => {
+          let prevPost = pPostMap.get(np?.data?.name); 
+          if (prevPost?.data?.name){
+            pPostMap.set(prevPost?.data?.name, np); 
+          } else {
+            newPostCount += 1; 
+          }
+        })
+        setNewPostsCount(newPostCount);
+        setNewPosts(() => (newPostCount > 0 ? newPosts : []));
+        return Array.from(pPostMap.values());
+      });
+    };
+
     const posts = feed?.data?.pages
       ?.map((page) => page.filtered)
       ?.flat()
@@ -94,32 +114,16 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       }) as any[];
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
-      if ((posts?.length > items?.length) || !context.askToUpdateFeed) {
+      if (posts?.length > items?.length || !context.askToUpdateFeed) {
         setItems(posts);
       } else {
-        setItems((pposts) => {
-          let newPostCount = 0;
-          let updatedPosts = pposts.map((post) => {
-            let foundPost;
-            foundPost = posts.find((p) => p?.data?.name === post?.data?.name);
-            if (!foundPost) {
-              newPostCount += 1;
-              return post;
-            }
-            return foundPost;
-          });
-          //console.log("NEW POSTS?", newPostCount);
-          setNewPostsCount(newPostCount);
-          setNewPosts(() => (newPostCount > 0 ? posts : []));
-          return updatedPosts;
-        });
+        tryUpdatePostsInPlace(posts);
       }
     } else if (feed.hasNextPage) {
       //console.log("nodata.. fetching more");
       feed.fetchNextPage();
     }
   }, [feed?.data?.pages]);
-
 
   const overwritePosts = () => {
     setMasonicKey((k) => `${k}_${Math.random()}`);
@@ -129,7 +133,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     if (newPostsCount > 0) {
       toast.remove("new_post");
-       let tId = toast.custom(
+      let tId = toast.custom(
         (t) => (
           <ToastCustom
             t={t}
@@ -146,13 +150,21 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     }
     () => {
       toast.remove("new_post");
-    }
+    };
   }, [newPostsCount]);
   useEffect(() => {
     return () => {
-       toast.remove("new_post");
+      toast.remove("new_post");
     };
   }, []);
+  useEffect(() => {
+    if (items) {
+      setFeedData(items);
+    }
+    return () => {
+      setFeedData([]);
+    }
+  }, [items])
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     feed?.fetchNextPage();

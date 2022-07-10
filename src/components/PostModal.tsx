@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Comments from "./Comments";
 import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
@@ -43,6 +43,7 @@ const PostModal = ({
   permalink,
   curKey,
   fetchMore = () => {},
+  allPosts = [] as any[],
   postData = {},
   postNum,
   direct = false,
@@ -53,7 +54,8 @@ const PostModal = ({
 
   const router = useRouter();
   const context:any = useMainContext(); 
-  const { flattenedPosts } = useFeedGallery(curKey);
+  const { getFeedData } = useFeedGallery();
+  const [flattenedPosts, setFlattenedPosts] = useState(() => getFeedData() as any[]);
 
   
   const [sort, setSort] = useState<string>(router?.query?.sort as string ?? "top");
@@ -120,6 +122,8 @@ const PostModal = ({
 
   useEffect(() => {
     if (curPostNum + 5 > flattenedPosts?.length) fetchMore();
+    let feedData = getFeedData() as any[]; 
+    if (feedData?.length !== flattenedPosts?.length) setFlattenedPosts(feedData); 
   }, [curPostNum]);
 
   const changePost = (move: 1 | -1) => {
@@ -241,6 +245,7 @@ const PostModal = ({
         sort={sort}
         commentsDirect={commentsDirect}
         goBack={handleBack}
+        withContext={withcontext}
       />
       {/* context.posts?.length > 0 */}
       {flattenedPosts?.[curPostNum + 1]?.data && (

@@ -1,18 +1,18 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useQueryClient } from 'react-query';
 
-const useFeedGallery = (curKey) => {
+const useFeedGallery = () => {
   const queryClient = useQueryClient();
 
+  const setFeedData = (items) => {
+    queryClient.setQueryData(["feedGallery"], () => (items) ); 
+  }
+  const getFeedData = () => queryClient.getQueriesData(["feedGallery"])?.[0]?.[1]
  
-  const curFeed:any = queryClient.getQueryData(curKey);
-  const flattenedPosts = useMemo(() => {
-    const flattened = curFeed?.pages?.map(page => page?.filtered)?.flat();
-    return flattened; 
-  }, [curFeed])
 
   return {
-    flattenedPosts, 
+    setFeedData, 
+    getFeedData,
   }
 }
 
