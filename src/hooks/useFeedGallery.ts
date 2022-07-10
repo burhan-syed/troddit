@@ -5,7 +5,8 @@ const useFeedGallery = () => {
   const queryClient = useQueryClient();
 
   const setFeedData = (items) => {
-    queryClient.setQueryData(["feedGallery"], () => (items) ); 
+    queryClient.setQueriesData(["feedGallery"], () => (items))
+    queryClient.fetchQuery(["feedGallery"], () => (items), {staleTime: 0, cacheTime: Infinity} ); 
   }
   const getFeedData = () => queryClient.getQueriesData(["feedGallery"])?.[0]?.[1]
  
