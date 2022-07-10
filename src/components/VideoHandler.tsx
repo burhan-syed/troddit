@@ -7,6 +7,7 @@ import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowSize } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
+import { ImSpinner2 } from "react-icons/im";
 const VideoHandler = ({
   thumbnail,
   placeholder,
@@ -535,7 +536,7 @@ const VideoHandler = ({
                         muted || volume === 0
                           ? { bottom: 0 }
                           : {
-                              bottom: `${(volume * 100)-10}%`,
+                              bottom: `${volume * 100 - 10}%`,
                             }
                       }
                       onMouseDown={() => setVolMouseDown(true)}
@@ -616,7 +617,9 @@ const VideoHandler = ({
         }
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
-          <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
+          <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+            <ImSpinner2 className="w-8 h-8 animate-spin" />
+          </div>
         )}
 
         <div

@@ -9,7 +9,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
-import { ImEmbed } from "react-icons/im";
+import { ImEmbed, ImSpinner2 } from "react-icons/im";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -332,7 +332,9 @@ const Media = ({
   useEffect(() => {
     //console.log(postMode, context.columns, imgFull)
     let cropamount = 0.95;
-    if (postMode ){cropamount=0.5} else if(context?.columns == 1 && !imgFull) {
+    if (postMode) {
+      cropamount = 0.5;
+    } else if (context?.columns == 1 && !imgFull) {
       cropamount = 0.75;
     }
     let imgheight = imageInfo.height;
@@ -396,9 +398,7 @@ const Media = ({
           )}
 
           {isTweet && allowIFrame && (
-            <div
-              className={ " bg-transparent"}
-            >
+            <div className={" bg-transparent"}>
               <TwitterTweetEmbed
                 placeholder={
                   <div className="relative mx-auto my-5 border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
@@ -453,14 +453,14 @@ const Media = ({
           )}
 
           {isGallery && (
-              <Gallery
-                images={galleryInfo}
-                maxheight={imgFull ? 0 : maxheightnum}
-                postMode={postMode}
-                mediaRef={mediaRef}
-                uniformHeight={containerDims ? false : true}
-              />
-          ) }
+            <Gallery
+              images={galleryInfo}
+              maxheight={imgFull ? 0 : maxheightnum}
+              postMode={postMode}
+              mediaRef={mediaRef}
+              uniformHeight={containerDims ? false : true}
+            />
+          )}
 
           {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
             <div
@@ -482,8 +482,10 @@ const Media = ({
                   : {}
               }
             >
-              {!mediaLoaded && (
-                <div className="absolute w-8 h-8 -mt-8 -ml-8 border-b-2 rounded-full top-1/2 left-1/2 animate-spin"></div>
+              {!false && (
+                <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                  <ImSpinner2 className="w-8 h-8 animate-spin" />
+                </div>
               )}
               {post?.mediaInfo?.isTweet && (
                 <div className="absolute flex w-full h-full bg-[#1A8CD8] rounded-lg  ">
@@ -568,9 +570,7 @@ const Media = ({
               className={
                 "p-1 overflow-y-auto select-text  overscroll-auto " +
                 "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full" +
-                (!imgFull
-                  ? " max-h-96 border-b border-th-border"
-                  : " ") +
+                (!imgFull ? " max-h-96 border-b border-th-border" : " ") +
                 (containerDims?.[1] ? " mx-4 my-2 " : "") +
                 (read && context.dimRead ? " opacity-50 " : "")
               }
