@@ -1,6 +1,6 @@
 import { localRead, subredditFilters, userFilters } from "../src/MainContext";
 
-const TWITCH_PARENT = "www.troddit.com";
+const DOMAIN = "www.troddit.com";
 export const secondsToTime = (
   seconds,
   verbiage = [
@@ -133,7 +133,7 @@ export const fixCommentFormat =  async (comments) => {
   return comments;
 };
 
-export const findMediaInfo = async (post, quick = false) => {
+export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];
   let thumbnailInfo;
@@ -457,9 +457,9 @@ export const findMediaInfo = async (post, quick = false) => {
             "src",
             `https://clips.twitch.tv/embed?clip=${
               post?.url.split("/")?.[3]
-            }&parent=${TWITCH_PARENT}`
+            }&parent=${domain}`
           );
-        }
+        } 
         iFrameHTML = html;
         return true;
       }
@@ -475,7 +475,8 @@ export const filterPosts = async (
   filters,
   prevposts = {},
   checkSubs = false,
-  checkUsers = true
+  checkUsers = true,
+  domain=DOMAIN
 ) => {
   let {
     readFilter,
@@ -490,7 +491,7 @@ export const filterPosts = async (
   } = filters;
   let filtercount = 0;
 
-  const filterChildren = async (data: Array<any>) => {
+  const filterChildren = async (data: Array<any>, domain=DOMAIN) => {
     async function filter(arr, callback) {
       const fail = Symbol();
       return (
@@ -529,7 +530,7 @@ export const filterPosts = async (
         quick = false;
       }
 
-      let mediaInfo = d?.mediaInfo ?? (await findMediaInfo(d, quick));
+      let mediaInfo = d?.mediaInfo ?? (await findMediaInfo(d, quick, domain));
       //orientation check
       if (!imgPortraitFilter || !imgLandscapeFilter) {
         //only check on videos or images (galleries consider images)
@@ -581,7 +582,7 @@ export const filterPosts = async (
     };
 
     let f = await filter(data, async (d) => {
-      let mediaInfo = await findMediaInfo(d.data);
+      let mediaInfo = await findMediaInfo(d.data, false, domain);
       d.data["mediaInfo"] = mediaInfo;
       let r = await filterCheck(d.data);
       //console.log(d, r);
@@ -594,7 +595,7 @@ export const filterPosts = async (
   if (
     true //always going to do this to get mediaInfo initally, additional filter steps decided in filterCheck()
   ) {
-    filtered = await filterChildren(posts);
+    filtered = await filterChildren(posts, domain);
   }
   return {
     filtered: filtered,

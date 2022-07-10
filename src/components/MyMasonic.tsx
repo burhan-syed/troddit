@@ -35,7 +35,6 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const [items, setItems] = useState<any[]>([]);
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [masonicKey, setMasonicKey] = useState(curKey);
-
   const [windowWidth, windowHeight] = useWindowSize();
 
   useEffect(() => {
@@ -78,6 +77,13 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     windowHeight,
     context.postOpen,
   ]);
+
+  const [domain, setDomain] = useState("www.troddit.com");
+  useEffect(() => {
+    setDomain(window?.location?.hostname ?? "www.troddit.com")
+  
+  }, [])
+  
 
   useEffect(() => {
     context.setColumns(cols);

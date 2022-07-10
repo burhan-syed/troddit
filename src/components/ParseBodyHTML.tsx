@@ -94,6 +94,7 @@ const ParseBodyHTML = ({
     //     return "";
     //   }
     // };
+    const DOMAIN = window?.location?.host ?? "troddit.com"; 
 
     const blankTargets = (str) => {
       if (str?.includes("<a ")) {
@@ -124,7 +125,7 @@ const ParseBodyHTML = ({
         str.match(matchRegex2) ||
         str.match(matchRegex3)
       ) {
-        str = str.replace(redditRegex, "troddit.com");
+        str = str.replace(redditRegex, DOMAIN);
       }
       return str;
     };

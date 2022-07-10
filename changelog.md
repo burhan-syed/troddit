@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.15.0
+
 ### New
 - Cached feeds and comments: 
   - Now when navigating between pages previously loaded data will be shown immediately and updated in the background. This means less time waiting for posts and comments to load. 
@@ -22,6 +23,15 @@
 - Consistent video volumes: changing a video's volume will update other videos as well. 
 - New comment scores will be hidden if the subreddit hides scores sometime after posting.
 - Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal. 
+
+## v0.14.2
+
+### New
+- Added Dracula theme
+
+### Fixes
+- For those self hosting, Reddit links will now be replaced with the current hostname instead of troddit.com. 
+
 ## v0.14.1
 
 ### Fixes

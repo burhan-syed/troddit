@@ -8,6 +8,7 @@ const THEMES = {
   dark: { name: "dark" },
   abyss: { name: "abyss" },
   black: { name: "black" },
+  dracula: { name: "dracula" },
   nord: { name: "nord" },
   ocean: { name: "ocean" },
   palenight: { name: "palenight" },
