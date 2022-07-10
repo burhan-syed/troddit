@@ -68,6 +68,17 @@ export const MainProvider = ({ children }) => {
   const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
   const [preferEmbeds, setPreferEmbeds] = useState<boolean>();
   const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>();
+
+  const [autoRefreshFeed, setAutoRefreshFeed] = useState<boolean>(); 
+  const [autoRefreshComments, setAutoRefreshComments] = useState<boolean>(); 
+  const [askToUpdateFeed, setAskToUpdateFeed] = useState<boolean>(); 
+  const [refreshOnFocus, setRefreshOnFocus] = useState<boolean>(); 
+  const [fastRefreshInterval, setFastRefreshInterval] = useState<number>(); 
+  const [slowRefreshInterval, setSlowRefreshInterval] = useState<number>(); 
+
+
+
+
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -849,6 +860,41 @@ export const MainProvider = ({ children }) => {
         saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false);
       };
 
+      const autoRefreshFeed = async () => {
+        let saved = await localForage.getItem("autoRefreshFeed");
+        saved === false ? setAutoRefreshFeed(false) : setAutoRefreshFeed(true);
+      };
+      const autoRefreshComments = async () => {
+        let saved = await localForage.getItem("autoRefreshComments");
+        saved === false ? setAutoRefreshComments(false) : setAutoRefreshComments(true);
+      };
+      const askToUpdateFeed = async () => {
+        let saved = await localForage.getItem("askToUpdateFeed");
+        saved === false ? setAskToUpdateFeed(false) : setAskToUpdateFeed(true);
+      };
+      const refreshOnFocus = async () => {
+        let saved = await localForage.getItem("refreshOnFocus");
+        saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
+      };
+      const fastRefreshInterval = async () => {
+        let saved = await localForage.getItem("fastRefreshInterval") as number;
+        if (typeof saved === "number" && saved >= 10 * 1000){
+          setFastRefreshInterval(saved);
+        } else {
+          setFastRefreshInterval(30 * 1000)
+        }
+      };
+      const slowRefreshInterval = async () => {
+        let saved = await localForage.getItem("slowRefreshInterval") as number;
+        if (typeof saved === "number" && saved >= 10 * 1000){
+          setSlowRefreshInterval(saved);
+        } else {
+          setSlowRefreshInterval(30 * 60 * 1000)
+        }
+      };
+
+
+
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
       loadDefaultCollapseChildren();
@@ -861,6 +907,12 @@ export const MainProvider = ({ children }) => {
 
 
       //things we need loaded before posts are rendered
+      let autorefreshfeed = autoRefreshFeed(); 
+      let autorefreshcomments = autoRefreshComments(); 
+      let asktoupdatefeed = askToUpdateFeed(); 
+      let refreshonfocus = refreshOnFocus(); 
+      let fastrefreshinterval = fastRefreshInterval(); 
+      let slowrefreshinterval = slowRefreshInterval(); 
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
       let hoverplay = loadHoverPlay();
@@ -888,6 +940,12 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
+        autorefreshfeed, 
+        autorefreshcomments,
+        asktoupdatefeed,
+        refreshonfocus,
+        fastrefreshinterval,
+        slowrefreshinterval,
         nsfw,
         autoplay,
         hoverplay,
@@ -929,6 +987,36 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (slowRefreshInterval !== undefined) {
+      localForage.setItem("slowRefreshInterval", slowRefreshInterval);
+    }
+  }, [slowRefreshInterval]);
+  useEffect(() => {
+    if (fastRefreshInterval !== undefined) {
+      localForage.setItem("fastRefreshInterval", fastRefreshInterval);
+    }
+  }, [fastRefreshInterval]);
+  useEffect(() => {
+    if (refreshOnFocus !== undefined) {
+      localForage.setItem("refreshOnFocus", refreshOnFocus);
+    }
+  }, [refreshOnFocus]);
+  useEffect(() => {
+    if (askToUpdateFeed !== undefined) {
+      localForage.setItem("askToUpdateFeed", askToUpdateFeed);
+    }
+  }, [askToUpdateFeed]);
+  useEffect(() => {
+    if (autoRefreshComments !== undefined) {
+      localForage.setItem("autoRefreshComments", autoRefreshComments);
+    }
+  }, [autoRefreshComments]);
+  useEffect(() => {
+    if (autoRefreshFeed !== undefined) {
+      localForage.setItem("autoRefreshFeed", autoRefreshFeed);
+    }
+  }, [autoRefreshFeed]);
   useEffect(() => {
     if (disableEmbeds !== undefined) {
       localForage.setItem("disableEmbeds", disableEmbeds);
@@ -1219,7 +1307,19 @@ export const MainProvider = ({ children }) => {
         safeSearch, 
         setSafeSearch,
         volume, 
-        setVolume
+        setVolume,
+        autoRefreshComments,
+        setAutoRefreshComments,
+        autoRefreshFeed,
+        setAutoRefreshFeed,
+        askToUpdateFeed, 
+        setAskToUpdateFeed,
+        refreshOnFocus,
+        setRefreshOnFocus,
+        fastRefreshInterval,
+        setFastRefreshInterval,
+        slowRefreshInterval,
+        setSlowRefreshInterval
       }}
     >
       {children}

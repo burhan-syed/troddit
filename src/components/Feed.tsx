@@ -72,7 +72,7 @@ const Feed = ({ initialData = {} as any }) => {
               ? " max-w-2xl "
               : " md:w-11/12 ") +
             (context.cardStyle === "row1"
-              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl h-screen "
+              ? " bg-th-post2 border-th-border2 rounded-t-md rounded-b-md border shadow-2xl min-h-screen "
               : " ")
           }
         >

@@ -19,22 +19,12 @@ interface Params {
 }
 
 const useFeed = (params?: Params) => {
-
   const { data: session, status } = useSession();
   const sessloading = status === "loading";
   const context: any = useMainContext();
- 
-  const {
-    key,
-    ready,
-    mode,
-    sort,
-    range,
-    subreddits,
-    userMode,
-    searchQuery,
-    
-  } = useLocation(params);
+
+  const { key, ready, mode, sort, range, subreddits, userMode, searchQuery } =
+    useLocation(params);
 
   interface FeedParams {
     loggedIn: boolean;
@@ -71,11 +61,13 @@ const useFeed = (params?: Params) => {
 
     let data;
     //short circuiting with initialData here instead of using param in infinite query hook..
-    if (params?.initialPosts?.children?.length > 0 && fetchParams?.pageParam === undefined ){
+    if (
+      params?.initialPosts?.children?.length > 0 &&
+      fetchParams?.pageParam === undefined
+    ) {
       data = params?.initialPosts;
-      data["after"] = ""
-    }
-    else if (feedParams.mode === "HOME") {
+      data["after"] = "";
+    } else if (feedParams.mode === "HOME") {
       data = await loadFront(
         feedParams.loggedIn,
         context.token,
@@ -193,7 +185,10 @@ const useFeed = (params?: Params) => {
     let returnData = {
       filtered,
       after: data.after,
-      count: fetchParams?.pageParam === undefined ? 0 : feedParams.count + data?.children?.length,
+      count:
+        fetchParams?.pageParam === undefined
+          ? 0
+          : feedParams.count + data?.children?.length,
       prevPosts: {
         ...feedParams.prevPosts,
         ...filtered.reduce((obj, post, index) => {
@@ -210,10 +205,14 @@ const useFeed = (params?: Params) => {
 
   const feed = useInfiniteQuery(key, fetchFeed, {
     enabled: ready && key?.[0] == "feed",
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: context?.refreshOnFocus ?? true ? true : false,
     refetchOnMount: false,
     staleTime: 0,
-    refetchInterval: sort === "new" ? 60 * 1000 : 30 * 60 * 1000,
+    refetchInterval: context?.autoRefreshFeed
+      ? (sort === "new" || sort === "rising")
+        ? context?.fastRefreshInterval ?? 10 * 1000
+        : context?.slowRefreshInterval ?? 30 * 60 * 1000
+      : Infinity,
     getNextPageParam: (lastPage) => {
       //console.log('lastPage?ß', lastPage)
       if (lastPage.after || lastPage.after === "") {

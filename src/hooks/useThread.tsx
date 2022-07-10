@@ -178,7 +178,7 @@ const useThread = (permalink, sort, initialData?, withContext = false) => {
     fetchThread,
     {
       enabled: threadId && !loading,
-      staleTime: 0, // 5 * 60 * 1000, //5 min
+      staleTime: context?.autoRefreshComments ? 0 : Infinity, // 5 * 60 * 1000, //5 min
       getNextPageParam: (lastpage: any) => {
         const lastComment =
           lastpage?.comments?.[lastpage?.comments?.length - 1];

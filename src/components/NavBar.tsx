@@ -75,7 +75,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     return () => {
       //setallowHide(true);
     };
-  }, [router.asPath]);
+  }, [router]);
 
   const homeClick = () => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
@@ -150,8 +150,8 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         </nav>
         {fetchingCount > 0 && (
           <div className="relative">
-            <div className="absolute top-0 z-50 w-screen h-1 bg-th-accent animate-pulse"></div>
-            <div className="absolute top-0 z-40 w-screen h-1 bg-th-base"></div>
+            <div className="absolute top-0 z-40 w-screen h-1 bg-th-accent animate-pulse"></div>
+            <div className="absolute top-0 z-30 w-screen h-1 bg-th-base"></div>
           </div>
         )}
       </header>

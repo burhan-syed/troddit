@@ -94,7 +94,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       }) as any[];
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
-      if (posts?.length > items?.length) {
+      if ((posts?.length > items?.length) || !context.askToUpdateFeed) {
         setItems(posts);
       } else {
         setItems((pposts) => {
