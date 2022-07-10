@@ -196,6 +196,7 @@ const useFeed = (params?: Params) => {
           return obj;
         }, {}),
       },
+      filterCount : filtercount
     };
 
     //console.log("returnData?", returnData);

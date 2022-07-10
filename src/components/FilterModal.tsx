@@ -2,11 +2,8 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useSession } from "next-auth/react";
 import ToggleFilters from "./ToggleFilters";
 import { useMainContext } from "../MainContext";
-import FilterSubs from "./FilterSubs";
-import { BsChevronDown } from "react-icons/bs";
 import FilterEntities from "./settings/FilterEntities";
 import useRefresh from "../hooks/useRefresh";
 
@@ -14,6 +11,7 @@ const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
 const FilterModal = ({ toOpen }) => {
   const context: any = useMainContext();
+
   const { invalidateKey } = useRefresh();
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
