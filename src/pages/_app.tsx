@@ -21,23 +21,28 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const curVersion = VERSION;
-    let compare = checkVersion(
-      curVersion,
-      localStorage.getItem("trodditVersion") ?? ""
-    );
-    if (compare === 1) {
-      localStorage.setItem("trodditVersion", curVersion);
-      const toastId = toast.custom(
-        (t) => (
-          <ToastCustom
-            t={t}
-            message={`Troddit has updated! Click to see changelog`}
-            mode={"version"}
-          />
-        ),
-        { position: "bottom-center", duration: 8000 }
+    const prevVersion = localStorage.getItem("trodditVersion");
+    if (prevVersion){
+      let compare = checkVersion(
+        curVersion,
+        prevVersion
       );
+      if (compare === 1) {
+        const toastId = toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`Troddit has updated! Click to see changelog`}
+              mode={"version"}
+            />
+          ),
+          { position: "bottom-center", duration: 8000 }
+        );
+      }
     }
+    localStorage.setItem("trodditVersion", curVersion);
+
+   
   }, []);
   return (
     <>

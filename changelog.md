@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.15.0
+### New
+- Cached feeds and comments: 
+  - Now when navigating between pages previously loaded data will be shown immediately and updated in the background. This means less time waiting for posts and comments to load. 
+- Auto-updating feeds: 
+  - Feeds will now automatically update posts periodically with the latest score, comment count, and awards.
+  - A prompt will appear to update the feed if any new posts are found
+  - New options to configure this behavior in the settings page: 
+    - Monitor Feed: To toggle checking for feed updates.
+    - Refresh Intervals: To set the number of seconds between checking for updates. Different intervals for "new" and "rising" compared to other sorts can be set. 
+    - Ask To Update: To update the feed with new posts immediately without a prompt this can be disabled. 
+    - Check on Focus: Control whether the feed is checked when returning to troddit from another window
+- Auto-updating threads: 
+  - Similar to feeds, comment threads will be checked for new comments when a post is re-opened or the window re-focused. Any new comments will be highlighted and marked "new". 
+  - This behavior can be disabled with the "Monitor Comments" setting.
+- 'New Comment' counts: 
+  - A count for new comments since the thread was last read will now appear next to the comment count
+
+### Changes
+- Consistent video volumes: changing a video's volume will update other videos as well. 
+- New comment scores will be hidden if the subreddit hides scores sometime after posting.
+- Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal. 
 ## v0.14.1
 
 ### Fixes
