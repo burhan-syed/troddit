@@ -120,7 +120,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       }) as any[];
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
-      if (posts?.length > items?.length || !context.askToUpdateFeed) {
+      if (posts?.length > items?.length) {
         setItems(posts);
       } else {
         tryUpdatePostsInPlace(posts);
@@ -139,20 +139,25 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     if (newPostsCount > 0) {
       toast.remove("new_post");
-      let tId = toast.custom(
-        (t) => (
-          <ToastCustom
-            t={t}
-            message={`${newPostsCount} new post${
-              newPostsCount === 1 ? "" : "s"
-            }`}
-            mode={"new_posts"}
-            action={overwritePosts}
-            actionLabel={`Update feed?`}
-          />
-        ),
-        { position: "bottom-right", duration: Infinity, id: "new_post" }
-      );
+      if (!context.askToUpdateFeed){
+        overwritePosts();
+      } else {
+        let tId = toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${newPostsCount} new post${
+                newPostsCount === 1 ? "" : "s"
+              }`}
+              mode={"new_posts"}
+              action={overwritePosts}
+              actionLabel={`Update feed?`}
+            />
+          ),
+          { position: "bottom-right", duration: Infinity, id: "new_post" }
+        );
+      }
+   
     }
     () => {
       toast.remove("new_post");
