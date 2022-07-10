@@ -18,9 +18,9 @@ const Post = ({ post, postNum = 0 }) => {
   const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
-  const {read} = useRead(post?.data?.name)
+  const {read, readCount} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
-
+  const [origCommentCount, setOrigCommentCount] = useState<number>(); 
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
       ? setHideNSFW(true)
@@ -69,27 +69,34 @@ const Post = ({ post, postNum = 0 }) => {
       setSelect(true);
       if (router.query?.frontsort) {
         router.push("", post?.data.id, { shallow: true });
-      } else if (
+      } 
+      else if (
         router.pathname.includes("/u/") &&
         session?.user?.name?.toUpperCase() ===
           router?.query?.slug?.[0]?.toUpperCase()
       ) {
         router.push(
           "",
-          `/u/${router.query?.slug?.[0]}/${
-            router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-          }${post?.data.id}`,
+          // `/u/${router.query?.slug?.[0]}/${
+          //   router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
+          // }${post?.data.id}`,
+          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}`,
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
-        if (router.query?.slug?.[1]?.toUpperCase() === "M") {
-          //no routing
-        } else {
-          router.push("", `/u/${post?.data.author}/p/${post?.data.id}`, {
+        if (router.query?.slug?.[1]?.toUpperCase() === "M" && router?.query?.slug?.[2]) {
+          router.push("", `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}`, {
             shallow: true,
           });
+        } else {
+
+          router.push("", `/u/${post?.data.author}/${post.data.permalink}`, {
+            shallow: true,
+          });
+         // router.push(`/u/${post?.data.author}`, `${post?.data?.permalink}`, {shallow: true})
         }
-      } else {
+      } 
+      else {
         router.push("", post?.data.permalink, { shallow: true });
       }
     } else {
@@ -125,6 +132,11 @@ const Post = ({ post, postNum = 0 }) => {
     }
   };
 
+  useEffect(() => {
+    if (read && (readCount || readCount === 0)) {setOrigCommentCount(readCount)} else {setOrigCommentCount(undefined)};
+   
+  }, [readCount])
+
   return (
     <div className={margin + " "}>
       {select && (
@@ -140,6 +152,8 @@ const Post = ({ post, postNum = 0 }) => {
           postNum={postNum}
           commentMode={post?.kind === "t1"}
           commentsDirect={commentsDirect}
+          curKey={post?.curKey}
+          fetchMore={post?.fetchMore}
         />
       )}
 
@@ -156,6 +170,7 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
@@ -166,6 +181,8 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
+
           />
         ) : (
           <Card1
@@ -176,6 +193,8 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
+
           />
         )}
       </div>

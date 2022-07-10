@@ -8,6 +8,7 @@ import { postComment } from "../RedditAPI";
 import { draftToMarkdown } from "markdown-draft-js"; // import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import { ImSpinner2 } from "react-icons/im";
+import useMutate from "../hooks/useMutate";
 
 const Editor: any = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -54,15 +55,15 @@ const editor = {
   },
 };
 
-const CommentReply = ({ parent, getResponse }) => {
+const CommentReply = ({ parent, postName, getResponse }) => {
   const maincontext: any = useMainContext();
   const { replyFocus, setReplyFocus } = maincontext;
   //const [editorState, setEditorState] = useState(EditorState.createEmpty());
   //const [html, setHtml] = useState("");
   const { data: session, status } = useSession();
   const [err, setErr] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const EditorRef = useRef(null);
+  //const [loading, setLoading] = useState(false);
+  const EditorRef = useRef<HTMLTextAreaElement>(null);
 
   const [textValue, setTextValue] = useState("");
   const handleTextChange = (e) => {
@@ -73,6 +74,8 @@ const CommentReply = ({ parent, getResponse }) => {
   // const editorStateChange = async (editorState) => {
   //   setEditorState(editorState);
   // };
+
+  const {postCommentMutation} = useMutate();
 
   const submit = (e) => {
     e.preventDefault();
@@ -108,19 +111,35 @@ const CommentReply = ({ parent, getResponse }) => {
     // };
     //session && run();
     const submitComment = async () => {
-      setLoading(true);
-      const res = await postComment(parent, textValue);
-      setLoading(false);
-      if (res) {
-        getResponse(res);
-        setErr(false);
-        setTextValue("");
+      // setLoading(true);
+      // const res = await postComment(parent, textValue);
+      // setLoading(false);
+      // if (res) {
+      //   getResponse(res);
+      //   setErr(false);
+      //   setTextValue("");
+      // } else {
+      //   setErr(true);
+      // }
+      if (parent.substring(0,3) === "t3_"){
+        postCommentMutation.mutate({parent: parent, textValue: textValue, postName:postName})
       } else {
-        setErr(true);
+        try{
+          setErr(false);
+          let res = await postCommentMutation.mutateAsync({parent: parent, textValue: textValue, postName:postName});
+          res && getResponse(res);
+        } catch (err){
+          setErr(true);
+        }
+       
       }
     };
     session && submitComment();
   };
+
+  useEffect(() => {
+    if(postCommentMutation.isSuccess) setTextValue("");
+  }, [postCommentMutation.isSuccess])
 
   useEffect(() => {
     EditorRef?.current?.focus();
@@ -134,17 +153,17 @@ const CommentReply = ({ parent, getResponse }) => {
 
   return (
     <div className="relative ">
-      {session && (
+      {session?.user?.name && (
         <>
           <div className="flex flex-row justify-between w-full select-none text-th-textLight">
             <h1>Commenting as {session.user.name}</h1>
-            {err && (
+            {(postCommentMutation.isError || err) && (
               <h1 className="text-xs text-th-red">
                 Something went wrong
               </h1>
             )}
           </div>
-          {/* Retiring this until reddit markddown can be fully properly supported */}
+          {/* Retiring this until reddit markdown can be fully properly supported */}
           {/* <Editor
             editorRef={(ref) => (EditorRef.current = ref)}
             onFocus={() => {
@@ -181,13 +200,14 @@ const CommentReply = ({ parent, getResponse }) => {
               using markdown editor
             </p>
             <button
-              onClick={(e) => !loading && submit(e)}
+            disabled={postCommentMutation.isLoading}
+              onClick={(e) =>  submit(e)}
               className={
                 "flex items-center relative justify-center px-4 py-1.5 ml-auto text-center border border-th-border hover:border-th-borderHighlight hover:bg-th-highlight rounded-md cursor-pointer  "
               }
             >
-              <h1 className={loading ? " opacity-50 " : " mx-3 "}>Comment</h1>
-              {loading && (
+              <h1 className={postCommentMutation.isLoading ? " opacity-50 " : " mx-3 "}>Comment</h1>
+              {postCommentMutation.isLoading && (
                 <div className="flex flex-none ">
                   <ImSpinner2 className="ml-2 animate-spin" />
                 </div>

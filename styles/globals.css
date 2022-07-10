@@ -295,7 +295,7 @@
 }
 
 .react-autosuggest__suggestions-container--open {
-  @apply flex flex-col items-center w-full mt-1 bg-th-background2 text-th-text  border rounded-lg border-th-border py-1.5 ring-1 ring-th-base;
+  @apply flex flex-col items-center w-full mt-1 bg-th-background2 text-th-text  border rounded-lg border-th-border py-1.5 ring-1 ring-th-base z-[99];
 }
 .react-autosuggest__suggestions-list {
   @apply w-full overflow-auto list-none;

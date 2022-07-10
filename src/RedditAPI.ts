@@ -232,6 +232,8 @@ export const getRedditSearch = async (
     raw_json: 1,
     sr_detail: true,
   };
+  //console.log("PARAMS?",subreddit,include_over_18,p)
+
   let oathsearch = `https://oauth.reddit.com/search`;
   let noauthsearch = `${REDDIT}/search.json`;
   if (p?.q?.substring(0, 5)?.toUpperCase() === "FLAIR") {
@@ -1080,11 +1082,11 @@ export const loadPost = async (
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
-        comments: data?.[1]?.data?.children,
+        post_comments: data?.[1]?.data?.children,
       };
       return { ...post, token: returnToken };
     } catch (err) {
-      return { post: undefined, comments: undefined, token: returnToken };
+      return { post: undefined, post_comments: undefined, token: returnToken };
     }
   } else {
     try {
@@ -1100,14 +1102,14 @@ export const loadPost = async (
       ).data;
       const data = {
         post: res?.[0]?.data?.children?.[0].data,
-        comments: res?.[1]?.data?.children,
+        post_comments: res?.[1]?.data?.children,
         token: returnToken,
       };
       //console.log(data);
       return data;
     } catch (err) {
       console.log(err);
-      return { post: undefined, comments: undefined, token: returnToken };
+      return { post: undefined, post_comments: undefined, token: returnToken };
     }
   }
 };
@@ -1141,15 +1143,17 @@ export const saveLink = async (category, id, isSaved) => {
         }
       );
       if (res?.ok) {
-        return true;
+        return {saved: isSaved ? false : true, id: id};
       } else {
-        return false;
+        throw new Error("Unable to save");
       }
     } catch (err) {
       console.log(err);
-      return false;
+      throw new Error("Unable to save");
     }
   }
+  throw new Error("Unable to save");
+
 };
 
 export const hideLink = async (id, isHidden) => {
@@ -1168,21 +1172,23 @@ export const hideLink = async (id, isHidden) => {
         }
       );
       if (res?.ok) {
-        return true;
+        return {hidden: isHidden ? false : true, id: id};
       } else {
-        return false;
+        throw new Error("Unable to hide");
       }
     } catch (err) {
-      console.log(err);
+      throw new Error("Unable to hide");
       return false;
     }
   }
+  throw new Error("Unable to hide");
+
 };
 
 export const postVote = async (dir: number, id) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
-    try {
+    //try {
       const res = await fetch("https://oauth.reddit.com/api/vote", {
         method: "POST",
         headers: {
@@ -1192,15 +1198,14 @@ export const postVote = async (dir: number, id) => {
         body: `id=${id}&dir=${dir}&rank=3`,
       });
       if (res.ok) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-  }
+        return {vote: dir, id: id};
+      } 
+    // } catch (err) {
+    //   return err;
+    // }
+  } 
+  throw new Error("Unable to vote")
+
 };
 
 export const postComment = async (parent, text) => {
@@ -1220,13 +1225,13 @@ export const postComment = async (parent, text) => {
       if (res.ok) {
         return data;
       } else {
-        return false;
+        throw new Error("Unable to comment")
       }
     } catch (err) {
-      return false;
+      throw new Error("Unable to comment")
     }
   }
-  return false;
+  throw new Error("Unable to comment")
 };
 
 export const getUserVotes = async () => {
@@ -1246,7 +1251,7 @@ export const getUserVotes = async () => {
         }
       );
       ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      console.log(res);
+      //console.log(res);
     } catch (err) {
       console.log(err);
       return false;

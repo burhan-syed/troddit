@@ -7,6 +7,7 @@ import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
 import { useWindowSize } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
+import { ImSpinner2 } from "react-icons/im";
 const VideoHandler = ({
   thumbnail,
   placeholder,
@@ -20,6 +21,7 @@ const VideoHandler = ({
 }) => {
   const context: any = useMainContext();
   const video: any = useRef();
+  const volControls = useRef<HTMLDivElement>(null);
   const audioRef: any = useRef();
   const fullWidthRef: any = useRef();
   const seekRef: any = useRef();
@@ -31,9 +33,8 @@ const VideoHandler = ({
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [manualPlay, setmanualPlay] = useState(false);
   const [muted, setMuted] = useState(!(context?.audioOnHover && postMode));
-  const [volume, setVolume] = useState(
-    !(context?.audioOnHover && postMode) ? 0 : 0.5
-  );
+
+  const { volume, setVolume } = context;
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
   const [currentTime, setCurrentTime] = useState(0.0);
@@ -67,7 +68,6 @@ const VideoHandler = ({
   }, [videoLoaded, show]);
 
   const onLoadedData = () => {
-    setVolume(0.5);
     setVideoDuration(video?.current?.duration);
 
     setVideoLoaded(true);
@@ -163,7 +163,6 @@ const VideoHandler = ({
     }
   }, [context.autoplay, context.pauseAll]);
   useEffect(() => {
-
     if (context.pauseAll) {
       pauseAll();
     }
@@ -321,27 +320,21 @@ const VideoHandler = ({
     }
   };
 
-  const [volumeOffset, setvolumeOffset] = useState(-1);
   const [volMouseDown, setVolMouseDown] = useState(false);
   const [showVolSlider, setShowVolSlider] = useState(false);
   const updateVolume = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    //console.log(e, e.nativeEvent.offsetX, e.nativeEvent.target.clientWidth);
-    //console.log(video.current);
     let r = Math.abs(
       1 - e.nativeEvent.offsetY / e.nativeEvent.target.clientHeight
     );
-    //console.log(e.nativeEvent.offsetY);
-    setvolumeOffset(e.nativeEvent.offsetY);
-    //console.log(r, videoDuration, r * videoDuration);
-    //console.log(r);
     if (r >= 1) r = 1;
     if (r <= 0.1) r = 0;
     r > 0 ? setMuted(false) : setMuted(true);
     setManualAudio(true);
     setVolume(r);
   };
+
   const updateVolumeDrag = (e) => {
     if (volMouseDown) {
       updateVolume(e);
@@ -529,6 +522,7 @@ const VideoHandler = ({
                   <div
                     //range controls
                     className="absolute z-30 w-full h-full"
+                    ref={volControls}
                     onClick={(e) => updateVolume(e)}
                     onMouseMove={(e) => {
                       updateVolumeDrag(e);
@@ -542,9 +536,7 @@ const VideoHandler = ({
                         muted || volume === 0
                           ? { bottom: 0 }
                           : {
-                              transform: `translateY(${
-                                volumeOffset === -1 ? 48 : volumeOffset
-                              }px)`,
+                              bottom: `${volume * 100 - 10}%`,
                             }
                       }
                       onMouseDown={() => setVolMouseDown(true)}
@@ -625,7 +617,9 @@ const VideoHandler = ({
         }
       >
         {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
-          <div className="absolute z-10 w-8 h-8 -mt-4 -ml-4 border-b-2 border-gray-200 rounded-full top-1/2 left-1/2 animate-spin"></div>
+          <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+            <ImSpinner2 className="w-8 h-8 animate-spin" />
+          </div>
         )}
 
         <div

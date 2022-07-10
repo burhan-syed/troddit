@@ -14,6 +14,7 @@ import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
 import Image from "next/image";
 import { BsArrowRightShort } from "react-icons/bs";
+import useMutate from "../hooks/useMutate";
 
 const ChildComments = ({
   comment,
@@ -21,29 +22,52 @@ const ChildComments = ({
   hide,
   op = "",
   portraitMode = false,
+  locked = false,
+  scoreHideMins = 0,
 }) => {
+  const context: any = useMainContext();
+  const { commentCollapse, loadCommentsMutation } = useMutate();
+  const { data: session, status } = useSession();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
-  const [hideChildren, setHideChildren] = useState(false);
-  const context: any = useMainContext();
+  const [hideChildren, setHideChildren] = useState(
+    comment?.data?.collapsed ?? false
+  );
+  const toggleHidden = (override?) => {
+    setHideChildren((h) => {
+      let collapsed = !h;
+      if (override !== undefined) {
+        collapsed = override;
+      }
+      commentCollapse.mutate({
+        name: comment?.data?.name,
+        thread: comment?.data?.link_id?.substring(3),
+        collapse: collapsed,
+      });
+      return collapsed;
+    });
+  };
 
   useEffect(() => {
     context?.defaultCollapseChildren && setHideChildren(true);
   }, [context?.defaultCollapseChildren]);
 
-  const { data: session, status } = useSession();
-  const parentRef = useRef(null);
   const executeScroll = () => {
-    if (parentRef.current.getBoundingClientRect().top < 0) {
+    if (
+      parentRef.current &&
+      parentRef.current.getBoundingClientRect().top < 0
+    ) {
       return parentRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
   };
-  const [childcomments, setchildcomments] = useState([]);
-  const [myReplies, setmyReplies] = useState([]);
+  const [childcomments, setchildcomments] = useState<any[]>([]);
+  const [myReplies, setmyReplies] = useState<any[]>([]);
   const [openReply, setopenReply] = useState(false);
   const updateMyReplies = (resdata) => {
     const newreply = {
@@ -61,87 +85,50 @@ const ChildComments = ({
 
   useEffect(() => {
     if (childcomments?.length > 0) {
-      setchildcomments((p) => p.filter((pr) => pr?.myreply !== true));
+      setchildcomments((p) => p.filter((pr: any) => pr?.myreply !== true));
       setchildcomments((p) => [...myReplies, ...p]);
     } else if (!comment?.data?.replies?.data?.children) {
       setchildcomments(myReplies);
     }
   }, [myReplies]);
 
-  const fixformat = useCallback(async (comments) => {
-    if (comments?.length > 0) {
-      let basedepth = comments[0].data.depth;
-
-      let idIndex = new Map();
-      comments.forEach((comment) => {
-        idIndex.set(`t1_${comment.data.id}`, comment);
-      });
-      await comments.forEach((comment, i) => {
-        let c = idIndex.get(comment.data.parent_id);
-        if (c && c.data.replies?.data?.children) {
-          c.data.replies.data.children.push(comment);
-        } else if (c) {
-          c.data.replies = {
-            kind: "Listing",
-            data: {
-              children: [comment],
-            },
-          };
-        }
-        c && idIndex.set(comment.data.parent_id, c);
-      });
-
-      let fixedcomments = [];
-      idIndex.forEach((comment, i) => {
-        if (comment?.data?.depth === basedepth) {
-          fixedcomments.push(comment);
-        } else {
-        }
-      });
-      return fixedcomments;
-    }
-    return comments;
-  }, []);
-
-  const loadChildComments = useCallback(
-    async (children, link_id) => {
-      let childrenstring = children.join();
-      //console.log(childrenstring);
-      //console.log(link_id);
-      const data = await loadMoreComments(
-        childrenstring,
-        link_id,
-        comment?.data?.permalink,
-        session ? true : false,
-        context?.token
-      );
-      data?.token && context?.setToken(data?.token);
-      let morecomments = data?.data;
-      if (morecomments?.[0]?.data?.replies?.data?.children) {
-        setMoreComments(morecomments?.[0]?.data?.replies?.data?.children);
-      } else {
-        setMoreComments(await fixformat(morecomments));
-      }
-      setMoreLoaded(true);
-      setLoadingComments(false);
-    },
-    [comment?.data?.permalink, session, context, fixformat]
-  );
-
   const childCommentCount = useMemo(() => {
-    let count = 0;
-    childcomments.forEach((c) => {
+    let count = -1;
+    const counter = (c) => {
       if (c?.data?.count) {
         count += c?.data?.count;
       } else {
         count += 1;
       }
-    });
+      for (let i = 0; i < c?.data?.replies?.data?.children?.length ?? 0; i++) {
+        counter(c?.data?.replies?.data?.children[i]);
+      }
+    };
+    hideChildren && counter(comment);
 
     return count;
-  }, [childcomments]);
+  }, [childcomments, hideChildren]);
 
-  const [hovered, setHovered] = useState(false);
+  const loadChildComments = useCallback(
+    async (children, link_id) => {
+      let newComments = await loadCommentsMutation.mutateAsync({
+        parentName: comment?.data?.name,
+        children: children,
+        link_id: link_id,
+        permalink: comment?.data?.permalink,
+        childcomments: childcomments,
+        token: context?.token,
+      });
+      setchildcomments((c) => [
+        ...c?.filter((k) => k?.kind !== "more"),
+        ...newComments?.newComments,
+      ]);
+      newComments?.newToken && context?.setToken(newComments?.newToken);
+      setMoreLoaded(true);
+      setLoadingComments(false);
+    },
+    [comment?.data?.permalink, session, context]
+  );
 
   return (
     <div
@@ -154,6 +141,7 @@ const ChildComments = ({
           ? " bg-th-backgroundComment "
           : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
+        (comment?.data?.new ? " bg-th-highlight " : " ") +
         " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
       onMouseEnter={() => setHovered(true)}
@@ -163,7 +151,8 @@ const ChildComments = ({
         className={"flex flex-row"}
         onClick={(e) => {
           e.stopPropagation();
-          setHideChildren((h) => !h);
+          toggleHidden();
+          //setHideChildren((h) => !h);
           executeScroll();
         }}
       >
@@ -171,7 +160,8 @@ const ChildComments = ({
         <div
           onClick={(e) => {
             e.stopPropagation();
-            setHideChildren((h) => !h);
+            toggleHidden();
+            //setHideChildren((h) => !h);
             executeScroll();
           }}
           className={
@@ -198,7 +188,8 @@ const ChildComments = ({
           }
           onClick={(e) => {
             e.stopPropagation();
-            setHideChildren((h) => !h);
+            toggleHidden();
+            //setHideChildren((h) => !h);
             executeScroll();
           }}
         >
@@ -289,10 +280,19 @@ const ChildComments = ({
                   />
                 </>
               )}
+              {hideChildren && comment?.data?.collapsed_reason && (
+                <span className="text-xs italic ">
+                  [{comment.data.collapsed_reason}]
+                </span>
+              )}
             </div>
-            <div className="flex items-center mt-1">
+
+            <div className="flex items-center gap-1 pr-4 mt-1">
+              {comment?.data?.new && (
+                <p className="text-xs italic">{"(new)"}</p>
+              )}
               {comment?.data?.edited && (
-                <p className="pr-4 text-xs italic ">
+                <p className="text-xs italic ">
                   edited{" "}
                   {secondsToTime(comment?.data?.edited, [
                     "s ago",
@@ -304,10 +304,11 @@ const ChildComments = ({
                   ])}
                 </p>
               )}
+
               {hideChildren &&
                 !context.collapseChildrenOnly &&
-                childcomments.length > 0 && (
-                  <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
+                childcomments?.length > 0 && (
+                  <div className="text-xs cursor-pointer select-none opacity-70">
                     +{childCommentCount}
                   </div>
                 )}
@@ -360,15 +361,18 @@ const ChildComments = ({
                     likes={comment?.data?.likes}
                     score={comment?.data?.score}
                     archived={comment?.data?.archived}
+                    scoreHideMins={scoreHideMins}
+                    postTime={comment?.data?.created_utc}
                   />
                 </div>
                 <button
-                  disabled={comment?.data?.archived}
+                  disabled={comment?.data?.archived || locked}
                   className={
                     "text-sm " +
                     ((hideChildren && !context.collapseChildrenOnly) ||
-                    comment?.myreply ||
-                    comment?.data?.archived
+                    //comment?.myreply ||
+                    comment?.data?.archived ||
+                    locked
                       ? "hidden"
                       : "block hover:underline")
                   }
@@ -390,7 +394,7 @@ const ChildComments = ({
                 </div>
                 {hideChildren &&
                   context.collapseChildrenOnly &&
-                  childcomments.length > 0 && (
+                  childcomments?.length > 0 && (
                     <div className="ml-auto mr-4 text-xs cursor-pointer select-none opacity-70">
                       +{childCommentCount}
                     </div>
@@ -400,7 +404,7 @@ const ChildComments = ({
               {/* Comment Reply */}
               {hideChildren &&
                 context.collapseChildrenOnly &&
-                childcomments.length > 0 && <div className="py-1"></div>}
+                childcomments?.length > 0 && <div className="py-1"></div>}
               {openReply && (
                 <div
                   className={openReply ? "block mr-2 ml-4 md:ml-0" : "hidden"}
@@ -409,6 +413,7 @@ const ChildComments = ({
                   <CommentReply
                     parent={comment?.data?.name}
                     getResponse={updateMyReplies}
+                    postName={comment?.data?.link_id?.substring(3)}
                   />
                 </div>
               )}
@@ -422,18 +427,28 @@ const ChildComments = ({
                   "min-w-full py-2" +
                   (hideChildren &&
                   context.collapseChildrenOnly &&
-                  childcomments.length > 0
+                  childcomments?.length > 0
                     ? " hidden "
                     : "")
                 }
               >
                 {childcomments && (
                   <>
-                    {childcomments.map((childcomment, i) => (
+                    {childcomments.map((childcomment: any, i) => (
                       <div key={`${i}_${childcomment?.data?.id}`}>
-                        {childcomment.kind == "more" ? (
+                        {childcomment.kind === "t1" && (
+                          <ChildComments
+                            comment={childcomment}
+                            depth={depth + 1}
+                            hide={hideChildren}
+                            portraitMode={portraitMode}
+                            locked={locked}
+                            scoreHideMins={scoreHideMins}
+                          />
+                        )}
+                        {childcomment.kind == "more" && (
                           <div className={hideChildren ? "hidden" : " "}>
-                            {!moreLoaded ? (
+                            {true && (
                               <>
                                 {childcomment.data?.count > 0 ? (
                                   <div
@@ -447,16 +462,11 @@ const ChildComments = ({
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-
-                                      if (true) {
-                                        setLoadingComments(true);
-                                        loadChildComments(
-                                          childcomment?.data?.children,
-                                          comment?.data?.link_id
-                                        );
-                                      } else {
-                                        context.setLoginModal(true);
-                                      }
+                                      setLoadingComments(true);
+                                      loadChildComments(
+                                        childcomment?.data?.children,
+                                        comment?.data?.link_id
+                                      );
                                     }}
                                   >
                                     {`Load ${childcomment.data?.count} More... `}
@@ -473,25 +483,8 @@ const ChildComments = ({
                                   </Link>
                                 )}
                               </>
-                            ) : (
-                              moreComments?.map((morecomment, i) => (
-                                <ChildComments
-                                  key={i + morecomment?.data?.id}
-                                  comment={morecomment}
-                                  depth={morecomment?.data?.depth ?? depth + 1}
-                                  hide={hideChildren}
-                                  portraitMode={portraitMode}
-                                />
-                              ))
                             )}
                           </div>
-                        ) : (
-                          <ChildComments
-                            comment={childcomment}
-                            depth={depth + 1}
-                            hide={hideChildren}
-                            portraitMode={portraitMode}
-                          />
                         )}
                       </div>
                     ))}

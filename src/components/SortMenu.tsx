@@ -289,7 +289,7 @@ const SortMenu = ({ hide = false }) => {
           >
             <Menu.Items
               className={
-                "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border " +
+                "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border z-50 " +
                 (hide && " hidden")
               }
             >

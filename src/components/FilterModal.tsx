@@ -8,11 +8,13 @@ import { useMainContext } from "../MainContext";
 import FilterSubs from "./FilterSubs";
 import { BsChevronDown } from "react-icons/bs";
 import FilterEntities from "./settings/FilterEntities";
+import useRefresh from "../hooks/useRefresh";
 
 const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
 const FilterModal = ({ toOpen }) => {
   const context: any = useMainContext();
+  const { invalidateKey } = useRefresh();
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
@@ -88,21 +90,27 @@ const FilterModal = ({ toOpen }) => {
                       </div>
                     </div>
                     <div className="py-1 mr-4">
-                    <FilterEntities/>
-
+                      <FilterEntities />
                     </div>
                   </div>
                 </div>
-                <button
-                  className="flex items-center justify-center px-4 py-1.5 ml-auto mr-4 text-center border border-th-border hover:bg-th-highlight hover:border-th-borderHighlight rounded-md cursor-pointer  "
-                  onClick={(e) => {
-                    e.preventDefault();
-                    context.setForceRefresh((f) => f + 1);
-                    setOpen(false);
-                  }}
-                >
-                  <h1 className="mb-0.5 text-sm">Apply</h1>
-                </button>
+                <div className="flex flex-row items-center justify-between">
+                  <h4 className="text-xs italic text-th-textLight">
+                    Press Apply to refresh feed with selected filters
+                  </h4>
+
+                  <button
+                    className="flex items-center justify-center px-4 py-1.5 mr-4 text-center border border-th-border hover:bg-th-highlight hover:border-th-borderHighlight rounded-md cursor-pointer  "
+                    onClick={(e) => {
+                      e.preventDefault();
+                      context.applyFilters();
+                      invalidateKey(["feed"], true);
+                      setOpen(false);
+                    }}
+                  >
+                    <h1 className="mb-0.5 text-sm">Apply</h1>
+                  </button>
+                </div>
               </div>
             </div>
           </Transition.Child>

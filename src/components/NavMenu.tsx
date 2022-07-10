@@ -89,7 +89,7 @@ const NavMenu = ({ hide = false }) => {
       >
         <Menu.Items
           className={
-            "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg focus:outline-none border border-th-border ring-1 ring-th-base ring-opacity-5  " +
+            "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg focus:outline-none border border-th-border ring-1 ring-th-base ring-opacity-5 z-50  " +
             (hide && " hidden")
           }
         >
