@@ -51,17 +51,18 @@ const PostModal = ({
   commentMode = false,
   withcontext = false,
 }) => {
-
   const router = useRouter();
-  const context:any = useMainContext(); 
+  const context: any = useMainContext();
   const { getFeedData } = useFeedGallery();
-  const [flattenedPosts, setFlattenedPosts] = useState(() => getFeedData() as any[]);
+  const [flattenedPosts, setFlattenedPosts] = useState(
+    () => getFeedData() as any[]
+  );
 
-  
-  const [sort, setSort] = useState<string>(router?.query?.sort as string ?? "top");
+  const [sort, setSort] = useState<string>(
+    (router?.query?.sort as string) ?? "top"
+  );
   const [curPost, setCurPost] = useState<any>(postData);
   const [curPostNum, setCurPostNum] = useState(postNum);
-
 
   //prevent scrolling on main body when open
   useEffect(() => {
@@ -80,32 +81,10 @@ const PostModal = ({
     };
   }, []);
 
-  // useEffect(() => {
-  //   context.setPostOpen(true);
-
-  //   return () => {
-  //     context.setPostOpen(false);
-  //   };
-  // }, []);
-
-
-  // const updateMyReplies = (resdata) => {
-  //   const newreply = {
-  //     myreply: true,
-  //     kind: "t1",
-  //     data: resdata,
-  //   };
-  //   setmyReplies((replies) => [newreply, ...replies]);
-  //   setopenReply(false);
-  // };
-
-
-
   const updateSort = async (e, sort) => {
     e.preventDefault();
     setSort(sort);
   };
-
 
   const handleBack = () => {
     setSelect(false);
@@ -119,11 +98,11 @@ const PostModal = ({
     }
   };
 
-
   useEffect(() => {
     if (curPostNum + 5 > flattenedPosts?.length) fetchMore();
-    let feedData = getFeedData() as any[]; 
-    if (feedData?.length !== flattenedPosts?.length) setFlattenedPosts(feedData); 
+    let feedData = getFeedData() as any[];
+    if (feedData?.length !== flattenedPosts?.length)
+      setFlattenedPosts(feedData);
   }, [curPostNum]);
 
   const changePost = (move: 1 | -1) => {
@@ -139,16 +118,8 @@ const PostModal = ({
         router.replace(
           "",
           router.query?.frontsort
-            ? nextPost?.id 
-            : // : router.route === "/u/[...slug]" &&
-            //   session?.user?.name?.toUpperCase() ===
-            //     router?.query?.slug?.[0]?.toUpperCase()
-            // ? `/u/${router.query?.slug?.[0]}/${
-            //     router?.query?.slug?.[1]
-            //       ? `${router?.query?.slug?.[1]}/`
-            //       : `p/`
-            //   }${flattenedPosts[curPostNum + 1]?.data?.id}`
-            router.route === "/u/[...slug]"
+            ? nextPost?.id
+            : router.route === "/u/[...slug]"
             ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}`
             : nextPost.permalink,
           {
@@ -156,7 +127,7 @@ const PostModal = ({
           }
         );
       }
-      setCurPostNum((p) =>  p + move);
+      setCurPostNum((p) => p + move);
     }
   };
 
@@ -215,7 +186,7 @@ const PostModal = ({
       ></div>
       <div
         className={
-          "fixed z-50 right-8 bottom-12 md:left-4 md:top-16 md:bottom-auto  " +
+          "fixed z-50 right-5 bottom-5 md:left-4 md:top-16 md:bottom-auto  " +
           " bg-th-border/40  backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
         }
       >

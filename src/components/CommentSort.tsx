@@ -27,7 +27,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
               name="Sort Comments By"
               className="flex flex-row items-center justify-between h-full px-2 border rounded-md border-th-border bg-th-background2 focus:outline-none hover:border-th-borderHighlight"
             >
-              <div className="mr-2">{`sort comments by ${sort}`}</div>
+              <div className="flex gap-1 mr-2"><span className="hidden sm:block">{"sort comments by"}</span><span className="block sm:hidden">{"sort by"}</span><span>{sort}</span></div>
               <BsChevronDown
                 className={
                   open

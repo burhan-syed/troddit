@@ -64,7 +64,9 @@ const Thread = ({
   const [commentsReady, setCommentsReady] = useState(false);
   const [prevCount, setPrevCount] = useState<number>();
   const [mediaInfo, setMediaInfo] = useState<any>();
-  const [usePortrait, setUsePortrait] = useState(false);
+  const [usePortrait, setUsePortrait] = useState<boolean | undefined>(
+    undefined
+  );
   const [imgFull, setimgFull] = useState(false);
 
   const portraitDivRef = useRef<any>(null);
@@ -104,7 +106,12 @@ const Thread = ({
       setMediaInfo(mInfo);
     };
 
-    context?.autoRead && context.addReadPost({postId: post?.name, numComments: post?.num_comments});
+    context?.autoRead &&
+      context.addReadPost({
+        postId: post?.name,
+        numComments: post?.num_comments,
+      });
+
     if (post?.mediaInfo) {
       setMediaInfo(post?.mediaInfo);
     } else if (post) {
@@ -114,10 +121,21 @@ const Thread = ({
   }, [post]);
 
   useLayoutEffect(() => {
-    if (windowWidth > 1300 && windowHeight < windowWidth && context?.postWideUI)
-      setUsePortrait(mediaInfo?.isPortrait);
+    if (
+      windowWidth > 1300 &&
+      windowHeight < windowWidth &&
+      context?.postWideUI &&
+      mediaInfo
+    ) {
+      usePortrait === undefined &&
+        setUsePortrait(mediaInfo?.isPortrait ? true : false);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaInfo]);
+  useEffect(() => {
+    if (windowWidth < 1300 && usePortrait) setUsePortrait(false);
+  }, [windowWidth]);
 
   useEffect(() => {
     if (usePortrait) {
@@ -237,16 +255,15 @@ const Thread = ({
             (!context?.postWideUI && !usePortrait && windowWidth > 768
               ? " max-w-3xl w-[768px]"
               : !usePortrait
-              ? "w-full md:w-10/12 lg:w-3/4 "
+              ? " w-full md:w-10/12 lg:w-3/4 "
               : " md:w-4/12 ") +
             " z-10 flex items-center justify-center w-full h-96 border rounded-lg border-th-border2 bg-th-background2"
           }
         >
           <div className="flex flex-col gap-2 px-4">
-          <h1 className="">{"unable to load post"}</h1>
-          <ErrMessage/>
+            <h1 className="">{"unable to load post"}</h1>
+            <ErrMessage />
           </div>
-         
         </div>
       </div>
     );
@@ -257,24 +274,29 @@ const Thread = ({
       <div className={"flex flex-row justify-center h-full"}>
         {/* Portrait Media */}
         {usePortrait && (
-          <div
-            ref={portraitDivRef}
-            className="relative z-10 flex items-center justify-center mt-16 mr-3 overflow-y-auto border rounded-lg bg-th-background2 border-th-border2 md:w-6/12 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
-          >
-            {pHeight && pWidth && (
-              <div className={"flex-grow " + (imgFull ? " my-auto" : "")}>
-                <div className={"block relative   "}>
+          <div className="z-10 mt-16 mr-3 md:w-6/12">
+            <div
+              ref={portraitDivRef}
+              className="flex items-center justify-center max-h-full min-h-full overflow-y-auto border rounded-lg bg-th-background2 border-th-border2 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+            >
+              {pHeight && pWidth && (
+                <div
+                  className={
+                    "min-h-full min-w-full relative" +
+                    (mediaInfo?.isSelf ? " mb-auto" : "")
+                  }
+                >
                   <MediaWrapper
                     hideNSFW={hideNSFW}
                     post={initPost}
                     forceMute={false}
-                    imgFull={imgFull}
+                    imgFull={mediaInfo?.isSelf ? true : imgFull}
                     postMode={true}
                     containerDims={[pWidth, pHeight]}
                   />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 
@@ -284,14 +306,14 @@ const Thread = ({
             (!context?.postWideUI && !usePortrait && windowWidth > 768
               ? " max-w-3xl w-[768px]"
               : !usePortrait
-              ? "w-full md:w-10/12 lg:w-3/4 "
+              ? " w-full md:w-10/12 lg:w-3/4 "
               : " md:w-4/12 ") +
-            " z-10 pt-2  md:flex md:flex-col md:items-center "
+            " z-10 pt-2  md:flex md:flex-col md:items-center md:justify-start  "
           }
         >
           {/* Content container */}
           <div
-            className="flex flex-col w-full h-screen overflow-y-auto border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+            className="flex flex-col w-full h-screen overflow-x-hidden overflow-y-auto break-words border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
             onClick={(e) => e.stopPropagation()}
           >
             {/* LOADING POST CARD */}
@@ -299,7 +321,7 @@ const Thread = ({
               <>{postPlaceHolder}</>
             ) : (
               // Loaded Media Card
-              <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border2 ">
+              <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border2">
                 {/* Flex container */}
                 <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                   {/* Upvote column */}
@@ -317,7 +339,7 @@ const Thread = ({
                     />
                   </div>
                   {/* Main Media Column */}
-                  <div className="flex-grow border-th-border2 md:border-l ">
+                  <div className="w-full border-th-border2 md:border-l">
                     {/* Title etc*/}
                     <div className="flex flex-row items-start  pt-1.5 text-sm md:pl-3">
                       <div className="flex flex-row flex-wrap items-start group">
@@ -426,7 +448,7 @@ const Thread = ({
                     {/* Image/Video/Text Body */}
                     {!usePortrait && (
                       <>
-                        <div className={"block relative md:ml-4"}>
+                        <div className={"block relative md:ml-3 "}>
                           <MediaWrapper
                             hideNSFW={hideNSFW}
                             post={initPost}
@@ -439,7 +461,7 @@ const Thread = ({
                     )}
                     {/* Bottom Buttons */}
 
-                    <div className="flex flex-row items-center justify-between mt-2 space-x-2 select-none">
+                    <div className="flex flex-row flex-wrap items-center justify-between mt-2 space-x-2 select-none">
                       {/* Vote buttons for mobiles */}
                       <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
                         <Vote
@@ -454,7 +476,7 @@ const Thread = ({
                           postTime={post?.created_utc}
                         />
                       </div>
-                      <div className="flex flex-row items-center justify-start space-x-1">
+                      <div className="flex flex-row flex-wrap items-center justify-start space-x-1">
                         {windowWidth > 1300 && (
                           <>
                             <button
@@ -487,7 +509,7 @@ const Thread = ({
                           </button>
                         )}
                       </div>
-                      <div className="flex flex-row items-center justify-end gap-1 text-sm">
+                      <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm">
                         <div>
                           <button
                             disabled={post?.archived || post?.locked}
@@ -521,7 +543,7 @@ const Thread = ({
                         </div>
                         <div
                           className={
-                            "flex flex-row items-center cursor-pointer p-2  border rounded-md border-th-border hover:border-th-borderHighlight"
+                            "flex flex-row flex-wrap items-center cursor-pointer p-2  border rounded-md border-th-border hover:border-th-borderHighlight"
                           }
                         >
                           <SaveButton
@@ -608,7 +630,7 @@ const Thread = ({
             {(post?.archived ||
               post?.removed_by_category === "moderator" ||
               post?.locked) && (
-              <div className="flex-grow w-full">
+              <div className="w-full ">
                 <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
                   {post?.archived && <BsArchive />}
                   {post?.removed_by_category === "moderator" && <BsShieldX />}
@@ -661,7 +683,7 @@ const Thread = ({
                   left: 0,
                 }}
               ></div>
-              <div className="flex flex-row justify-between h-10 px-2 mt-2 ">
+              <div className="flex flex-row flex-wrap justify-between px-2 mt-2 ">
                 <div
                   ref={commentsRef}
                   className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2"
@@ -672,11 +694,15 @@ const Thread = ({
                     <h1 className="hidden md:block">
                       {`comment${post?.num_comments == 1 ? "" : "s"}`}
                     </h1>
-                    {(prevCount && post?.num_comments && post.num_comments - prevCount > 0) ? (
+                    {prevCount &&
+                    post?.num_comments &&
+                    post.num_comments - prevCount > 0 ? (
                       <h2 className="text-xs italic text-th-textLight">{`(${
                         post.num_comments - prevCount
                       } new)`}</h2>
-                    ) : <></>}
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center h-full gap-2">
