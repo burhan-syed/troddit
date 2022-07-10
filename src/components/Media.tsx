@@ -332,7 +332,7 @@ const Media = ({
   useEffect(() => {
     //console.log(postMode, context.columns, imgFull)
     let cropamount = 0.95;
-    if (postMode || (context?.columns == 1 && !imgFull)) {
+    if (postMode ){cropamount=0.5} else if(context?.columns == 1 && !imgFull) {
       cropamount = 0.75;
     }
     let imgheight = imageInfo.height;
@@ -452,8 +452,7 @@ const Media = ({
             ""
           )}
 
-          {isGallery ? (
-            <div className="flex flex-col items-center">
+          {isGallery && (
               <Gallery
                 images={galleryInfo}
                 maxheight={imgFull ? 0 : maxheightnum}
@@ -461,10 +460,7 @@ const Media = ({
                 mediaRef={mediaRef}
                 uniformHeight={containerDims ? false : true}
               />
-            </div>
-          ) : (
-            ""
-          )}
+          ) }
 
           {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
             <div
