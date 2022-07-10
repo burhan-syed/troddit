@@ -27,7 +27,7 @@ const SaveButton = ({
     };
   }, [saved, id]);
 
-  const { saveMutation } = useMutate(saveLink);
+  const { saveMutation } = useMutate();
 
   useEffect(() => {
     setIsSaved(saved);

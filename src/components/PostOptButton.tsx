@@ -29,7 +29,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
   const { read } = useRead(post?.name);
 
   const toggleRead = async () => {
-    context?.toggleReadPost(post?.name);
+    context?.toggleReadPost({postId: post?.name, numComments: post?.num_comments});
   };
 
   return (

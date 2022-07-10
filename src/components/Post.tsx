@@ -18,8 +18,9 @@ const Post = ({ post, postNum = 0 }) => {
   const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
-  const {read} = useRead(post?.data?.name)
+  const {read, readCount} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
+  const [origCommentCount, setOrigCommentCount] = useState<number>(); 
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
       ? setHideNSFW(true)
@@ -131,6 +132,11 @@ const Post = ({ post, postNum = 0 }) => {
     }
   };
 
+  useEffect(() => {
+    if (read && (readCount || readCount === 0)) {setOrigCommentCount(readCount)} else {setOrigCommentCount(undefined)};
+   
+  }, [readCount])
+
   return (
     <div className={margin + " "}>
       {select && (
@@ -164,6 +170,7 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2
@@ -174,6 +181,8 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
+
           />
         ) : (
           <Card1
@@ -184,6 +193,8 @@ const Post = ({ post, postNum = 0 }) => {
             postNum={postNum}
             read={read}
             handleClick={handleClick}
+            origCommentCount={origCommentCount}
+
           />
         )}
       </div>

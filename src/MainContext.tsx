@@ -151,31 +151,31 @@ export const MainProvider = ({ children }) => {
 
   const [readPosts, setReadPosts] = useState<{}>({});
   const [readPostsChange, setReadPostsChange] = useState<number>(0);
-  const addReadPost = (postid) => {
-    localRead.setItem(postid, new Date());
+  const addReadPost = ({postId, numComments}) => {
+    localRead.setItem(postId, {postId, numComments, time: new Date()});
     setReadPosts((read) => {
       setReadPostsChange((n) => n + 1);
 
-      if (Object.keys(read).length < 1000) {
-        read[postid] = new Date();
+      if (Object.keys(read).length < 10000) {
+        read[postId] = {postId, numComments, time: new Date()};
         return read;
       }
       //resetting object if space becomes too large
       let newread = {};
-      newread[postid] = new Date();
+      newread[postId] = {postId, numComments, time: new Date()}
+
       return newread;
     });
   };
-  const toggleReadPost = async (postid) => {
+  const toggleReadPost = async ({postId, numComments}) => {
     setReadPosts((read) => {
-      if (read?.[postid]) {
-        localRead.removeItem(postid);
-        delete read[postid];
+      if (read?.[postId]) {
+        localRead.removeItem(postId);
+        delete read[postId];
       } else {
-        read[postid] = new Date();
-        localRead.setItem(postid, new Date());
+        read[postId] = {postId, numComments, time: new Date()}
+        localRead.setItem(postId, {postId, numComments, time: new Date()});
       }
-      //localStorage.setItem("readPosts", JSON.stringify(read));
       setReadPostsChange((n) => n + 1);
 
       return read;

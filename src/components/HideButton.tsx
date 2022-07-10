@@ -37,7 +37,7 @@ const HideButton = ({
     if (session) {
       let pstatus = isHidden;
       setIsHidden((s) => !s);
-      hideMutation.mutate({id: 'dfd', isHidden: isHidden});
+      hideMutation.mutate({id: id, isHidden: isHidden});
     } else if (!loading) {
       context.setLoginModal(true);
     }

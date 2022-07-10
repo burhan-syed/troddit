@@ -20,6 +20,7 @@ const Card1 = ({
   postNum,
   read,
   handleClick,
+  origCommentCount
 }) => {
   const context: any = useMainContext();
   const [hovered, setHovered] = useState(false);
@@ -286,8 +287,8 @@ const Card1 = ({
                     }
                   >
                     {`${numToString(post.num_comments, 1000)} ${
-                      post.num_comments === 1 ? "comment" : "comments"
-                    }`}
+                      post.num_comments === 1 ?  "comment" : "comments"
+                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
                   </h1>
                 </a>
                 <PostOptButton post={post} postNum={postNum} mode="" />
@@ -435,7 +436,7 @@ const Card1 = ({
                   >
                     {`${numToString(post.num_comments, 1000)} ${
                       post.num_comments === 1 ? "comment" : "comments"
-                    }`}
+                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
                   </h1>
                 </a>
               </div>

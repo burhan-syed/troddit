@@ -104,7 +104,7 @@ const Thread = ({
       setMediaInfo(mInfo);
     };
 
-    context?.autoRead && context.addReadPost(post?.name);
+    context?.autoRead && context.addReadPost({postId: post?.name, numComments: post?.num_comments});
     if (post?.mediaInfo) {
       setMediaInfo(post?.mediaInfo);
     } else if (post) {

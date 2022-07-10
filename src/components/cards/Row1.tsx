@@ -28,6 +28,7 @@ const Row1 = ({
   postNum,
   read,
   handleClick,
+  origCommentCount
 }) => {
   const context: any = useMainContext();
   const [expand, setexpand] = useState(false);
@@ -265,7 +266,7 @@ const Row1 = ({
                 }`}</h1>
                 <h1 className="hidden md:block">{`${
                   post?.num_comments === 1 ? "comment" : "comments"
-                }`}</h1>
+                }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}</h1>
               </button>
             </a>
             <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">
