@@ -166,7 +166,6 @@ const SubredditBanner = ({
     };
 
     if (!loading && subreddits && multi) {
-      console.log("subs?", multi)
       const currSubs: string[] = multiSub
         ? subArray?.map((s) => s?.toUpperCase())
         : subreddits?.map((s) => s?.toUpperCase());

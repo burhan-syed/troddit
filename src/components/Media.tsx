@@ -10,6 +10,7 @@ import { findMediaInfo } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
 import { ImEmbed, ImSpinner2 } from "react-icons/im";
+import { BsBoxArrowInUpRight } from "react-icons/bs";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -101,7 +102,7 @@ const Media = ({
   ]);
 
   useEffect(() => {
-    const DOMAIN = window?.location?.hostname ?? 'www.troddit.com'
+    const DOMAIN = window?.location?.hostname ?? "www.troddit.com";
     const shouldLoad = () => {
       if (!post) return false;
       if (!post.url) return false;
@@ -380,6 +381,18 @@ const Media = ({
   }, [imageInfo, mediaRef?.current?.clientWidth]);
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
+  const externalLink = (   <a
+    onClick={(e) => e.stopPropagation()}
+    className="flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover group-hover:bg-black/80   bg-opacity-50 "
+    target={"_blank"}
+    rel="noreferrer"
+    href={post?.url}
+  >
+    <span className="ml-2 opacity-0 group-hover:opacity-100">{post?.url?.split("?")?.[0]}</span>
+    <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto mr-2 text-white group-hover:scale-110 " />
+
+  </a>)
+
   return (
     <div className="block select-none group" ref={mediaRef}>
       {loaded ? (
@@ -493,6 +506,11 @@ const Media = ({
                   <AiOutlineTwitter className="absolute right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
                 </div>
               )}
+              {post?.mediaInfo?.isLink && (
+                <div className="absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all ">
+                  {externalLink}
+                </div>
+              )}
               <Image
                 src={imageInfo.url}
                 height={
@@ -564,6 +582,8 @@ const Media = ({
             ""
           )}
 
+          
+
           {post?.selftext_html &&
           ((!context.mediaOnly && context.cardStyle !== "card2") ||
             postMode) ? (
@@ -599,6 +619,22 @@ const Media = ({
       ) : (
         <div></div>
       )}
+      {post?.mediaInfo?.isLink  && !isImage && !isMP4 && !isIFrame && !isGallery && (
+            <div className="">
+                <a
+               onClick={(e) => e.stopPropagation()}
+               className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover "
+               target={"_blank"}
+               rel="noreferrer"
+               href={post?.url}
+             >
+               <span className="opacity-100 ">{post?.url?.split("?")?.[0]}</span>
+               <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto text-white group-hover:scale-110 " />
+
+             </a>
+            </div>
+             
+          )}
     </div>
   );
 };
