@@ -23,6 +23,7 @@
 - Consistent video volumes: changing a video's volume will update other videos as well. 
 - New comment scores will be hidden if the subreddit hides scores sometime after posting.
 - Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal. 
+- Miscellaneous style changes
 
 ## v0.14.2
 

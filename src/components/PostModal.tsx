@@ -76,6 +76,9 @@ const PostModal = ({
   }, [curPostNum]);
 
   const changePost = (move: 1 | -1) => {
+    const multi = router?.asPath?.includes("m=")
+      ? router.asPath.split("m=")?.join("&")?.split("&")?.[1]
+      : "";
     if (flattenedPosts?.[curPostNum + move]?.data) {
       const nextPost = flattenedPosts?.[curPostNum + move]?.data;
       setCurPost(nextPost);
@@ -90,8 +93,10 @@ const PostModal = ({
           router.query?.frontsort
             ? nextPost?.id
             : router.route === "/u/[...slug]"
-            ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}`
-            : nextPost.permalink,
+            ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}${
+                multi ? `?m=${multi}` : ""
+              }`
+            : `${nextPost.permalink}${multi ? `?m=${multi}` : ""}`,
           {
             shallow: true,
           }
@@ -154,28 +159,36 @@ const PostModal = ({
         onClick={() => handleBack()}
         className="fixed top-0 left-0 w-screen h-full bg-black/75 opacity-80 backdrop-filter backdrop-blur-lg overscroll-none"
       ></div>
-      <div
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleBack();
+        }}
         className={
-          "fixed z-50 right-5 bottom-5 md:left-4 md:top-16 md:bottom-auto  " +
-          " bg-th-border/40  backdrop-opacity-10 backdrop-blur-lg rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
+          "fixed z-50 right-5 bottom-10 md:left-4 md:top-16 md:bottom-auto  " +
+          " outline-none select-none rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
         }
       >
         <RiArrowGoBackLine
           title={"back (esc)"}
-          onClick={() => handleBack()}
           className={
             "w-8 h-8 md:mt-1  md:text-gray-400 cursor-pointer md:hover:text-gray-300"
           }
         />
-      </div>
+      </button>
       {flattenedPosts?.[curPostNum - 1]?.data && (
-        <div
+        <button
           title={`previous post (left arrow)`}
-          onClick={(e) => changePost(-1)}
-          className="fixed hidden p-2 text-gray-400 cursor-pointer md:block left-4 hover:text-gray-300 top-1/2"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            changePost(-1);
+          }}
+          className="fixed hidden p-2 text-gray-400 outline-none cursor-pointer select-none md:block left-4 hover:text-gray-300 top-1/2"
         >
           <AiOutlineLeft className="w-10 h-10" />
-        </div>
+        </button>
       )}
       <Thread
         key={curPost?.name ?? curPostNum}
@@ -190,13 +203,17 @@ const PostModal = ({
       />
       {/* context.posts?.length > 0 */}
       {flattenedPosts?.[curPostNum + 1]?.data && (
-        <div
+        <button
           title={`next post (right arrow)`}
-          onClick={(e) => changePost(1)}
-          className="fixed hidden p-2 text-gray-400 cursor-pointer md:block right-4 hover:text-gray-300 top-1/2"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            changePost(1);
+          }}
+          className="fixed hidden p-2 text-gray-400 outline-none cursor-pointer select-none md:block right-4 hover:text-gray-300 top-1/2"
         >
           <AiOutlineRight className="w-10 h-10" />
-        </div>
+        </button>
       )}
     </div>
   );

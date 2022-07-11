@@ -124,8 +124,8 @@ const SubredditBanner = ({
   };
 
   const [myMultiInfo, setMyMultiInfo] = useState<any>();
-  useEffect(() => {
 
+  useEffect(() => {
     const matchMulti = (myMulti, currSubs, currMulti) => {
       if (myMulti?.data?.name?.toUpperCase() !== currMulti?.toUpperCase())
         return false;
@@ -166,10 +166,12 @@ const SubredditBanner = ({
     };
 
     if (!loading && subreddits && multi) {
+      console.log("subs?", multi)
       const currSubs: string[] = multiSub
         ? subArray?.map((s) => s?.toUpperCase())
         : subreddits?.map((s) => s?.toUpperCase());
       let matched = checkIsMyMulti(currSubs, multi);
+      if ((!matched || matched?.[0] === false) && !multi || multi==="Feed") {setMyMultiInfo(undefined)}
       // if (
       //   router?.query?.m &&
       //   router?.query?.m?.toString()?.toUpperCase() !==
@@ -179,9 +181,9 @@ const SubredditBanner = ({
       //   //router.push(`${subreddits.join("+")}`);
       // }
     }
-    return () => {
-      setMyMultiInfo(undefined);
-    };
+    // return () => {
+    //   setMyMultiInfo(undefined);
+    // };
   }, [subreddits, multi, myMultis, myLocalMultis, loading]);
 
   //kick out of multi if the multi is changed..

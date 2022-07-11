@@ -335,8 +335,8 @@ const Thread = ({
                       postindex={context.postNum}
                       postMode={true}
                       archived={post?.archived}
-                      scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
-                      postTime={post?.created_utc}
+                      //scoreHideMins={sub?.data?.data?.comment_score_hide_mins} //only hide score for comments.. not posts
+                      //postTime={post?.created_utc}
                     />
                   </div>
                   {/* Main Media Column */}
@@ -471,10 +471,10 @@ const Thread = ({
                           score={post?.score}
                           size={7}
                           archived={post?.archived}
-                          scoreHideMins={
-                            sub?.data?.data?.comment_score_hide_mins
-                          }
-                          postTime={post?.created_utc}
+                          // scoreHideMins={
+                          //   sub?.data?.data?.comment_score_hide_mins
+                          // }
+                          // postTime={post?.created_utc}
                         />
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start space-x-1">

@@ -59,7 +59,7 @@ const Post = ({ post, postNum = 0 }) => {
 
   const handleClick = (e, toComments) => {
     e.stopPropagation();
-    // plausible("postOpen");
+    const multi = router.query?.m ?? ""
     if (toComments){
       setCommentsDirect(true); 
     }
@@ -77,27 +77,23 @@ const Post = ({ post, postNum = 0 }) => {
       ) {
         router.push(
           "",
-          // `/u/${router.query?.slug?.[0]}/${
-          //   router?.query?.slug?.[1] ? `${router?.query?.slug?.[1]}/` : `p/`
-          // }${post?.data.id}`,
-          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}`,
+          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}${multi ? `?m=${multi}` : ""}`,
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
         if (router.query?.slug?.[1]?.toUpperCase() === "M" && router?.query?.slug?.[2]) {
-          router.push("", `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}`, {
+          router.push("", `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}${multi ? `?m=${multi}` : ""}`, {
             shallow: true,
           });
         } else {
 
-          router.push("", `/u/${post?.data.author}/${post.data.permalink}`, {
+          router.push("", `/u/${post?.data.author}/${post.data.permalink}${multi ? `?m=${multi}` : ""}`, {
             shallow: true,
           });
-         // router.push(`/u/${post?.data.author}`, `${post?.data?.permalink}`, {shallow: true})
         }
       } 
       else {
-        router.push("", post?.data.permalink, { shallow: true });
+        router.push("", `${post?.data.permalink}${multi ? `?m=${multi}` : ""}`, { shallow: true });
       }
     } else {
       window.open(`${post?.data.permalink}`, "_blank");
