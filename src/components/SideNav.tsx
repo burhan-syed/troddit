@@ -58,12 +58,12 @@ const SideNav = ({ visible, toggle }) => {
     >
       <div
         className={
-          "absolute h-screen inset-y-0 left-0  space-y-6 z-50 transition duration-200 ease-in-out transform -translate-x-full sidebar py-7" +
+          "absolute h-screen inset-y-0 left-0  space-y-6 z-[99] transition duration-200 ease-in-out transform -translate-x-full sidebar py-7" +
           `${visible ? "relative translate-x-0 w-screen" : ""}`
         }
       >
         <div className="flex flex-row flex-none h-screen overscroll-y-contain">
-          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-th-background2 ">
+          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-th-background2 border-th-border ">
             <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
               <div className="flex flex-row items-center justify-between w-full ">
                 <div className="">
