@@ -462,25 +462,22 @@ const Thread = ({
                     )}
                     {/* Bottom Buttons */}
 
-                    <div className="flex flex-row flex-wrap items-center justify-between mt-2 space-x-2 select-none">
+                    <div className="flex flex-row flex-wrap items-center justify-end mt-2 space-x-1 select-none md:justify-between">
                       {/* Vote buttons for mobiles */}
-                      <div className="flex flex-row items-center self-center justify-start h-full py-1 space-x-2 md:hidden">
+                      <div className="flex flex-row items-center self-center justify-start h-full py-1 mr-auto space-x-2 md:hidden">
                         <Vote
                           likes={post?.likes}
                           name={post?.name}
                           score={post?.score}
                           size={7}
                           archived={post?.archived}
-                          // scoreHideMins={
-                          //   sub?.data?.data?.comment_score_hide_mins
-                          // }
-                          // postTime={post?.created_utc}
                         />
                       </div>
-                      <div className="flex flex-row flex-wrap items-center justify-start space-x-1">
-                        {windowWidth > 1300 && (
+                      <div className="flex flex-row flex-wrap items-center justify-start space-x-1 ">
+                        {windowWidth >= 1300 && (
                           <>
                             <button
+                            autoFocus={true}
                               onClick={(e) => {
                                 setUsePortrait((p) => !p);
                               }}
@@ -494,9 +491,9 @@ const Thread = ({
                         )}
                         {true && (
                           <button
-                            autoFocus
+                            autoFocus={windowWidth < 1300}
                             onClick={(e) => setimgFull((p) => !p)}
-                            className="flex-row items-center hidden p-2 border rounded-md md:flex border-th-border hover:border-th-borderHighlight"
+                            className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
                           >
                             {imgFull ? (
                               <>
@@ -510,7 +507,7 @@ const Thread = ({
                           </button>
                         )}
                       </div>
-                      <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm">
+                      <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm ">
                         <div>
                           <button
                             disabled={post?.archived || post?.locked}

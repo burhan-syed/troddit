@@ -3,10 +3,9 @@
 ## v0.15.0
 
 ### New
-- Cached feeds and comments: 
-  - Now when navigating between pages previously loaded data will be shown immediately and updated in the background. This means less time waiting for posts and comments to load. 
+
 - Auto-updating feeds: 
-  - Feeds will now automatically update posts periodically with the latest score, comment count, and awards.
+  - Feeds now automatically update posts periodically with the latest score, comment count, and awards.
   - A prompt will appear to update the feed if any new posts are found
   - New options to configure this behavior in the settings page: 
     - Monitor Feed: To toggle checking for feed updates.
@@ -20,9 +19,14 @@
   - A count for new comments since the thread was last read will now appear next to the comment count
 
 ### Changes
-- Consistent video volumes: changing a video's volume will update other videos as well. 
-- New comment scores will be hidden if the subreddit hides scores sometime after posting.
+- Cached feeds and comments: 
+  - Now feeds and comments will load immediately if they have been previously loaded.
+  - Any recently collapsed comments or more loaded comments will remain collapsed or loaded
+- Comment scores will now be hidden if the subreddit hides scores sometime after posting.
+- Comments will now appear collapsed if they're collapsed on Reddit. If available, the collapse reason is shown. 
+- Consistent video volumes: changing a video's volume will now update other videos as well. 
 - Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal. 
+- Switching to portrait mode in a thread will now auto expand and align any text in self posts to the top
 - Miscellaneous style changes
 
 ## v0.14.2
