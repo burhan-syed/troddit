@@ -23,7 +23,7 @@ const useFeed = (params?: Params) => {
   const sessloading = status === "loading";
   const context: any = useMainContext();
 
-  const { key, ready, mode, sort, range, subreddits, userMode, searchQuery } =
+  const { key, ready, mode, sort, range, subreddits, userMode, searchQuery, domain } =
     useLocation(params);
 
   interface FeedParams {
@@ -153,7 +153,8 @@ const useFeed = (params?: Params) => {
         filters,
         prevPosts,
         filterSubs,
-        feedParams.mode === "USER" ? false : true
+        feedParams.mode === "USER" ? false : true,
+        domain
       );
 
       return {
@@ -205,7 +206,7 @@ const useFeed = (params?: Params) => {
   };
 
   const feed = useInfiniteQuery(key, fetchFeed, {
-    enabled: ready && key?.[0] == "feed",
+    enabled: ready && key?.[0] == "feed" && !!domain,
     refetchOnWindowFocus: context?.refreshOnFocus ?? true ? true : false,
     refetchOnMount: false,
     staleTime: 0,

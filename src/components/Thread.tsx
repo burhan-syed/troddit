@@ -102,7 +102,8 @@ const Thread = ({
 
   useEffect(() => {
     const getMediaInfo = async (post) => {
-      const mInfo = await findMediaInfo(post);
+      const domain = window?.location?.hostname ?? 'www.troddit.com';
+      const mInfo = await findMediaInfo(post, false, domain);
       setMediaInfo(mInfo);
     };
 

@@ -5,7 +5,7 @@ import { useMainContext } from '../MainContext';
 
 const useLocation = (params?) => {
   const [ready, setReady] = useState(false);
-
+  const [domain, setDomain] = useState<string>(); 
   const { data: session, status } = useSession();
   const sessloading = status === "loading";
   const router = useRouter();
@@ -31,6 +31,13 @@ const useLocation = (params?) => {
     imgPortraitFilter: true,
     imgLandscapeFilter: true,
   });
+
+  useEffect(() => {
+   const domain = window?.location?.hostname ?? 'www.troddit.com'
+   setDomain(domain); 
+  }, [])
+  
+
   useEffect(() => {
     if (context.ready && context.filtersApplied > 0) {
       setFilters({
@@ -56,6 +63,7 @@ const useLocation = (params?) => {
         imgLandscapeFilter: true,
       });
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context.ready, context.filtersApplied]);
 
   //const contextForceRefresh = context.forceRefresh;
@@ -90,10 +98,6 @@ const useLocation = (params?) => {
     //console.log(router, router.query);
     const query = router?.query;
     if (
-      // (query?.slug?.[1] === "comments" && router.pathname !== "/u/[...slug]") ||
-      // (query?.slug?.[1] === "p") ||
-      // (router.pathname === "/search" && router.asPath.substring(0,3) === "/r/")
-      // /router.asPath?.substring(0,3) === "/r/" &&
       router.asPath?.includes("/comments/")
     ) {
       //ignore these route changes to prevent feed fetch
@@ -156,6 +160,7 @@ const useLocation = (params?) => {
     return () => {
       //
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, sessloading]);
 
   //monitor keys to control query
@@ -277,9 +282,9 @@ const useLocation = (params?) => {
       setKey([""]);
       setReady(false);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     context.ready,
-    //contextForceRefresh,
     mode,
     sort,
     range,
@@ -301,6 +306,7 @@ const useLocation = (params?) => {
     subreddits,
     userMode,
     searchQuery,
+    domain
   }
 }
 
