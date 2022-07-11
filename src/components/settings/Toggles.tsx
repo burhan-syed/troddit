@@ -18,7 +18,7 @@ import {
 import { useMainContext } from "../../MainContext";
 import ThemeSelector from "./ThemeSelector";
 
-type ComponentProps = {
+interface ToggleProps  {
   setting:
     | "theme"
     | "nsfw"
@@ -41,7 +41,11 @@ type ComponentProps = {
     | "disableEmbeds"
     | "preferEmbeds"
     | "embedsEverywhere"
-    | "userPostType";
+    | "userPostType"
+    | "autoRefreshFeed"
+    | "autoRefreshComments"
+    | "askToUpdateFeed"
+    | "refreshOnFocus";
 
   label?: string;
   externalStyles?: string;
@@ -55,7 +59,7 @@ const Toggles = ({
   externalStyles,
   withSubtext = false,
   subtext,
-}: ComponentProps) => {
+}: ToggleProps) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const context: any = useMainContext();
@@ -133,7 +137,7 @@ const Toggles = ({
         !label && setSwitchLabel("NSFW");
         !subtext &&
           setSwitchSubtext(
-            context.nsfw ? "18+ posts shown as normal" : "Blurring 18+ posts"
+            context.nsfw ? "18+ posts shown as normal" : "18+ posts are blurred"
           );
         setTitle("blur 18+ posts");
         setCheckedIcon(<VscEye />);
@@ -143,7 +147,7 @@ const Toggles = ({
         !label && setSwitchLabel("Autoplay");
         !subtext &&
           setSwitchSubtext(
-            "Autoplay videos and gifs when they enter into view or when opening a post"
+            "Autoplay videos and gifs when they enter into view"
           );
         setTitle("autoplay videos & gifs");
         setCheckedIcon(<BsPlay />);
@@ -160,7 +164,7 @@ const Toggles = ({
         !label && setSwitchLabel("Audio");
         !subtext &&
           setSwitchSubtext(
-            "Auto unmute audio on hover or post open. Will also unmute audio when a post scrolls into view in single column mode."
+            "Auto unmute audio on mouse hover or post open. Will also unmute audio when a post scrolls into view in single column mode."
           );
         setTitle("unmute on post open or video hover");
         setCheckedIcon(<BsVolumeUp />);
@@ -234,10 +238,7 @@ const Toggles = ({
         break;
       case "infiniteLoading":
         !label && setSwitchLabel("Infinite Loading");
-        !subtext &&
-          setSwitchSubtext(
-            "Switches between infinite loaded or paginated feeds"
-          );
+        !subtext && setSwitchSubtext("Disable to load new feed pages manually");
         break;
       case "dimRead":
         !label && setSwitchLabel("Dim Read");
@@ -278,6 +279,34 @@ const Toggles = ({
         !label && setSwitchLabel("Post Type");
         !subtext &&
           setSwitchSubtext("Switch between showing comments or posts");
+        break;
+      case "autoRefreshFeed":
+        !label && setSwitchLabel("Monitor Feed");
+        !subtext &&
+          setSwitchSubtext(
+            "Enable to automatically check for new posts periodically"
+          );
+        break;
+      case "autoRefreshComments":
+        !label && setSwitchLabel("Monitor Comments");
+        !subtext &&
+          setSwitchSubtext(
+            "Enable to check for new comments when a thread is opened or window refocused"
+          );
+        break;
+      case "askToUpdateFeed":
+        !label && setSwitchLabel("Ask to Update");
+        !subtext &&
+          setSwitchSubtext(
+            "Enable to be prompted before updating feed with new posts. If disabled feed will update automatically with no prompt. "
+          );
+        break;
+      case "refreshOnFocus":
+        !label && setSwitchLabel("Check on Focus");
+        !subtext &&
+          setSwitchSubtext(
+            "Enable to check for new posts when the window is refocused"
+          );
         break;
       default:
         break;
@@ -363,6 +392,18 @@ const Toggles = ({
       case "userPostType":
         context.toggleUserPostType();
         break;
+      case "autoRefreshFeed":
+        context.setAutoRefreshFeed((f) => !f);
+        break;
+      case "askToUpdateFeed":
+        context.setAskToUpdateFeed((f) => !f);
+        break;
+      case "refreshOnFocus":
+        context.setRefreshOnFocus((f) => !f);
+        break;
+      case "autoRefreshComments":
+        context.setAutoRefreshComments((f) => !f);
+        break;
       default:
         break;
     }
@@ -379,7 +420,7 @@ const Toggles = ({
       className={
         "flex flex-row items-center justify-between " +
         externalStyles +
-        (disabled ? " opacity-50 " : " ")
+        (disabled ? " opacity-50 pointer-events-none" : " ")
       }
       title={title}
       onClick={(e) => e.stopPropagation()}

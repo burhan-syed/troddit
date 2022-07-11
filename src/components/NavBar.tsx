@@ -18,19 +18,21 @@ import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
+import useRefresh from "../hooks/useRefresh";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
-  const { setForceRefresh } = context;
+  const { invalidateKey, refreshCurrent, fetchingCount } = useRefresh();
+  const plausible = usePlausible();
+  const router = useRouter();
+
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
-  const { data: session, status } = useSession();
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const router = useRouter();
-  const [prevScrollpos, setScrollpos] = useState(0);
-  const plausible = usePlausible();
+  //add some delay before navbar can be hidden again.. resolves some issues with immediate hide after navigation
+  const [timeSinceNav, setTimeSinceNav] = useState(() => new Date().getTime());
+  const { scrollY, scrollDirection } = useScroll();
 
-  const { scrollY, scrollX, scrollDirection } = useScroll();
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
     return () => {
@@ -38,34 +40,33 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [toggleSideNav]);
   useEffect(() => {
-    if (allowHide && !context?.loading) {
-      //console.log(scrollDirection, scrollY);
+    if (allowHide) {
+      const now = new Date().getTime();
       if (scrollDirection === "down" || !scrollY) {
         setHidden(false);
-      } else if (scrollY > 300 && scrollDirection === "up" && !hidden) {
+      } else if (
+        scrollY > 300 &&
+        scrollDirection === "up" &&
+        now > timeSinceNav + 1000
+      ) {
         setHidden(true);
       } else if (scrollY <= 300) {
         setHidden(false);
       }
     } else {
-      hidden && setHidden(false);
+      setHidden(false);
     }
   }, [scrollDirection, allowHide, scrollY]);
 
-  const forceShow = () => {
-    if (hidden) {
-      //console.log("forceshow");
-
-      setHidden(false);
-    }
-  };
-
   useEffect(() => {
-    forceShow();
+    setTimeSinceNav(() => new Date().getTime());
+    setHidden(false);
     if (
-      router.query?.slug?.[1] === "comments" ||
-      router.pathname.includes("/about") ||
-      router.pathname.includes("/subreddits")
+      router.asPath.includes("/comments/") ||
+      router.asPath.includes("/about") ||
+      router.asPath.includes("/settings") ||
+      router.asPath.includes("/changelog") ||
+      router.asPath.includes("/subreddits")
     ) {
       setallowHide(false);
     } else {
@@ -77,7 +78,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   }, [router]);
 
   const homeClick = () => {
-    router?.route === "/" && setForceRefresh((p) => p + 1);
+    router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
   };
 
   return (
@@ -85,7 +86,8 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       <header
         className={
           `${hidden ? "-translate-y-full" : ""}` +
-          " z-50 fixed top-0 transition duration-500 ease-in-out transform h-14 w-screen "
+          " z-50 fixed top-0 transition ease-in-out transform h-14 w-screen" +
+          (hidden ? " duration-500" : " duration-0")
         }
       >
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
@@ -146,9 +148,15 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </div>
           </div>
         </nav>
+        {fetchingCount > 0 && (
+          <div className="relative">
+            <div className="absolute top-0 z-40 w-screen h-1 bg-th-accent animate-pulse"></div>
+            <div className="absolute top-0 z-30 w-screen h-1 bg-th-base"></div>
+          </div>
+        )}
       </header>
       <div
-        onMouseOver={(e) => forceShow()}
+        onMouseOver={(e) => setHidden(false)}
         className="fixed top-0 z-40 w-full bg-transparent h-14 opacity-10 "
       ></div>
     </>

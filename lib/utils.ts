@@ -83,13 +83,63 @@ export const checkVersion = (a, b) => {
   return y.length > x.length ? -1 : 0;
 };
 
+export function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+      var context = this, args = arguments;
+      var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+  };
+};
+
+export const fixCommentFormat =  async (comments) => {
+  if (comments?.length > 0) {
+    let basedepth = comments[0].data.depth;
+
+    let idIndex = new Map();
+    comments.forEach((comment) => {
+      idIndex.set(`t1_${comment.data.id}`, comment);
+    });
+    await comments.forEach((comment, i) => {
+      let c = idIndex.get(comment.data.parent_id);
+      if (c && c.data.replies?.data?.children) {
+        c.data.replies.data.children.push(comment);
+      } else if (c) {
+        c.data.replies = {
+          kind: "Listing",
+          data: {
+            children: [comment],
+          },
+        };
+      }
+      c && idIndex.set(comment.data.parent_id, c);
+    });
+
+    let fixedcomments = [] as any[];
+    idIndex.forEach((comment, i) => {
+      if (comment?.data?.depth === basedepth) {
+        fixedcomments.push(comment);
+      } else {
+      }
+    });
+    return fixedcomments;
+  }
+  return comments;
+};
+
 export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];
   let thumbnailInfo;
   let iFrameHTML;
   let gallery; // = [];
-  let isPortrait = undefined;
+  let isPortrait = undefined as unknown as boolean;
   let isImage = false;
   let isGallery = false;
   let isVideo = false;
@@ -392,7 +442,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   const stringToHTML = function (str) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(str, "text/html");
-    return doc.body.firstElementChild;
+    return doc.body.firstElementChild as Element;
   };
 
   const findIframe = async (post) => {

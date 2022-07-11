@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { BsBookmarks } from "react-icons/bs";
+import useMutate from "../hooks/useMutate";
 import { useMainContext } from "../MainContext";
 import { saveLink } from "../RedditAPI";
 
@@ -26,16 +27,16 @@ const SaveButton = ({
     };
   }, [saved, id]);
 
+  const { saveMutation } = useMutate();
+
+  useEffect(() => {
+    setIsSaved(saved);
+  }, [saveMutation.isError])
+
   const save = async () => {
     if (session) {
-      let pstatus = isSaved;
       setIsSaved((s) => !s);
-      const res = await saveLink(category, id, isSaved);
-      if (res) {
-        context.updateSaves(postindex, !pstatus);
-      } else {
-        setIsSaved(pstatus);
-      }
+      saveMutation.mutate({id: id, isSaved: isSaved})
     } else if (!loading) {
       context.setLoginModal(true);
     }

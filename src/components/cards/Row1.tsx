@@ -7,7 +7,7 @@ import { useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
-import { BsCardText } from "react-icons/bs";
+import { BsBoxArrowInUpRight, BsCardText } from "react-icons/bs";
 import { AiOutlineLink } from "react-icons/ai";
 import { CgArrowsExpandDownRight, CgArrowsExpandUpLeft } from "react-icons/cg";
 import TitleFlair from "../TitleFlair";
@@ -28,6 +28,7 @@ const Row1 = ({
   postNum,
   read,
   handleClick,
+  origCommentCount,
 }) => {
   const context: any = useMainContext();
   const [expand, setexpand] = useState(false);
@@ -55,6 +56,7 @@ const Row1 = ({
               name={post?.name}
               postindex={postNum}
               archived={post?.archived}
+              postTime={post?.created_utc}
             />
           </div>
         </div>
@@ -210,15 +212,41 @@ const Row1 = ({
               />
             </>
           )}
-          <span className="ml-auto text-xs font-xs hover:underline">
+          <div className="mx-0.5"></div>
+
+          {post?.mediaInfo?.isLink ? (
             <a
-              title="open source"
               href={`${post.url}`}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-            >{`(${post?.domain})`}</a>
-          </span>
+              className="ml-auto flex items-center gap-0.5 "
+            >
+              <BsBoxArrowInUpRight className="flex-none w-3 h-3 ml-auto group-hover:scale-110 " />
+
+              {"("}
+              <span className="max-w-xs truncate group-hover:text-th-linkHover hover:underline">
+                {post?.domain}/
+                {post?.url
+                  ?.split("?")?.[0]
+                  ?.replace("https://", "")
+                  ?.split("/")
+                  ?.splice(1)
+                  ?.join("/")}
+              </span>
+              {")"}
+            </a>
+          ) : (
+            <span className="ml-auto text-xs font-xs hover:underline">
+              <a
+                title="open source"
+                href={`${post.url}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >{`(${post?.domain})`}</a>
+            </span>
+          )}
         </div>
         {/* Links */}
         <div>
@@ -262,9 +290,15 @@ const Row1 = ({
                 <h1 className="">{`${
                   numToString(post?.num_comments, 1000) ?? "??"
                 }`}</h1>
-                <h1 className="hidden md:block">{`${
-                  post?.num_comments === 1 ? "comment" : "comments"
-                }`}</h1>
+                <h1 className="hidden md:block">
+                  {`${post?.num_comments === 1 ? "comment" : "comments"}`}{" "}
+                </h1>
+                {typeof origCommentCount === "number" &&
+                  post?.num_comments > origCommentCount && (
+                    <span className="text-xs italic font-medium">{`(${
+                      post?.num_comments - origCommentCount
+                    } new)`}</span>
+                  )}
               </button>
             </a>
             <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">

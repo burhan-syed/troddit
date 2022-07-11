@@ -21,7 +21,7 @@ const MediaWrapper = ({
   const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
   const [hideText, setHideText] = useState("");
-  const [postData, setPostData] = useState<any>({});
+  const [postData, setPostData] = useState<any>();
   const [isXPost, setIsXPost] = useState(false);
   useEffect(() => {
     post?.over_18 && post?.spoiler
@@ -39,7 +39,7 @@ const MediaWrapper = ({
     if (post?.crosspost_parent_list?.[0]) {
       setIsXPost(true);
       setPostData(post.crosspost_parent_list[0]);
-    } else {
+    } else if (!postData){
       setPostData(post);
     }
     return () => {
@@ -177,7 +177,7 @@ const MediaWrapper = ({
         <div className="flex flex-row flex-none ml-auto hover:underline">
           <a
             title="open source"
-            href={`${postData.url}`}
+            href={`${postData?.url}`}
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useMemo } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BsFilterRight } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useMainContext } from "../MainContext";
 import ToggleFilters from "./ToggleFilters";
 import FilterModal from "./FilterModal";
+import useLocation from "../hooks/useLocation";
+import { useQueryClient } from "react-query";
+import { numToString } from "../../lib/utils";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -13,32 +16,16 @@ function classNames(...classes) {
 
 const FilterMenu = ({ hide = false }) => {
   const context: any = useMainContext();
+  const { key } = useLocation();
+  const queryClient = useQueryClient();
+  const feedData = queryClient.getQueryData(key) as any;
   const [openFilter, setOpenFilter] = useState(0);
+  const [filterCount, setFilterCount] = useState<number>(0);
   const [active, setActive] = useState(false);
   const [deg, setDeg] = useState(0);
   const [degIntervalID, setDegIntervalID] = useState<any>();
   useEffect(() => {
-    let {
-      readFilter,
-      imgFilter,
-      vidFilter,
-      selfFilter,
-      galFilter,
-      linkFilter,
-      imgPortraitFilter,
-      imgLandscapeFilter,
-    } = context;
-    if (
-      !readFilter ||
-      !imgFilter ||
-      !vidFilter ||
-      !selfFilter ||
-      // !galFilter ||
-      !linkFilter ||
-      !imgPortraitFilter ||
-      !imgLandscapeFilter
-    ) {
-      //console.log("active");
+    if (context.filtersApplied > 0) {
       setActive(true);
     } else {
       setActive(false);
@@ -46,7 +33,7 @@ const FilterMenu = ({ hide = false }) => {
     return () => {
       setActive(false);
     };
-  }, [context]);
+  }, [context.filtersApplied]);
 
   useEffect(() => {
     if (active) {
@@ -66,6 +53,17 @@ const FilterMenu = ({ hide = false }) => {
     };
   }, [active]);
 
+  useEffect(() => {
+    let count = 0;
+    feedData?.pages?.forEach((p) => (count += p?.filterCount ?? 0));
+    setFilterCount(count);
+  }, [feedData?.pages]);
+
+  const filterCountDisplay = useMemo(
+    () => numToString(filterCount, 999),
+    [filterCount]
+  );
+
   return (
     <>
       <FilterModal toOpen={openFilter} />
@@ -79,6 +77,15 @@ const FilterMenu = ({ hide = false }) => {
           setOpenFilter((o) => o + 1);
         }}
       >
+        {filterCount > 0 && (
+          <span
+            className="absolute text-white z-20 px-1 top-[-5px] right-[1.5px] translate-x-1/2 rounded-xl bg-th-accent "
+            style={{ fontSize: "0.5rem", lineHeight: "1rem" }}
+          >
+            {filterCountDisplay}
+          </span>
+        )}
+
         <div
           className={
             "flex flex-row items-center justify-center w-full h-full  rounded-md  bg-th-background2 focus:outline-none" +
@@ -88,7 +95,7 @@ const FilterMenu = ({ hide = false }) => {
           }
         >
           <FiFilter
-            className={"flex-none " + (active ? " w-6 h-6 " : " w-5 h-5 ")}
+            className={"flex-none z-50 " + (active ? " w-6 h-6 " : " w-5 h-5 ")}
           />
         </div>
         {active && (

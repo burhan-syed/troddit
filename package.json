@@ -1,6 +1,6 @@
 {
   "name": "troddit",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,7 @@
     "markdown-draft-js": "^2.4.0",
     "masonic": "^3.6.4",
     "next": "12",
-    "next-auth": "^4.5.0",
+    "next-auth": "^4.9.0",
     "next-cookies": "^2.0.3",
     "next-plausible": "^3.1.4",
     "next-pwa": "^5.5.2",
@@ -34,6 +34,7 @@
     "react-icons": "^4.3.1",
     "react-intersection-observer": "^9.1.0",
     "react-markdown": "^8.0.3",
+    "react-query": "^3.39.1",
     "react-switch": "^6.0.0",
     "react-twitter-embed": "^4.0.4",
     "rehype-raw": "^6.1.1"

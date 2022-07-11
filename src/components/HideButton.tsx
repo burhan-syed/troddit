@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { BiHide } from "react-icons/bi";
+import useMutate from "../hooks/useMutate";
 import { useMainContext } from "../MainContext";
 import { hideLink } from "../RedditAPI";
 
@@ -25,16 +26,18 @@ const HideButton = ({
     };
   }, [hidden]);
 
+  const {hideMutation} = useMutate(); 
+
+  useEffect(() => {
+   setIsHidden(hidden); 
+  }, [hideMutation.isError])
+  
+
   const hide = async () => {
     if (session) {
       let pstatus = isHidden;
       setIsHidden((s) => !s);
-      const res = await hideLink(id, isHidden);
-      if (res) {
-        context.updateHidden(postindex, !pstatus);
-      } else {
-        setIsHidden(pstatus);
-      }
+      hideMutation.mutate({id: id, isHidden: isHidden});
     } else if (!loading) {
       context.setLoginModal(true);
     }
@@ -65,7 +68,7 @@ const HideButton = ({
       )}
 
       {!isPortrait && (
-        <h1 className={post && "hidden " + (!isPortrait && " md:block ")}>
+        <h1 className={(post ? "hidden " : "") + (!isPortrait && " md:block ")}>
           {isHidden ? "Unhide" : "Hide"}
           {menu ? " Post" : ""}
         </h1>

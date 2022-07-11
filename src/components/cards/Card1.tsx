@@ -12,12 +12,21 @@ import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick }) => {
+const Card1 = ({
+  post,
+  hasMedia,
+  hideNSFW,
+  forceMute,
+  postNum,
+  read,
+  handleClick,
+  origCommentCount
+}) => {
   const context: any = useMainContext();
   const [hovered, setHovered] = useState(false);
   const [mediaInfoHeight, setMediaInfoHeight] = useState(0);
   const mediaBox = useRef(null);
-  const infoBox = useRef(null);
+  const infoBox = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -67,7 +76,10 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
           ? " hover:scale-101 group hover:transition-transform transition-transform "
           : "")
       }
-      onClick={(e) => {setHovered(false); handleClick(e)}}
+      onClick={(e) => {
+        setHovered(false);
+        handleClick(e);
+      }}
     >
       <div
         className={
@@ -143,17 +155,13 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   {post?.over_18 && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-th-red text-color ">
-                        NSFW
-                      </span>
+                      <span className="text-th-red text-color ">NSFW</span>
                     </div>
                   )}
                   {post?.spoiler && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-th-red text-color ">
-                        SPOILER
-                      </span>
+                      <span className="text-th-red text-color ">SPOILER</span>
                     </div>
                   )}
                   <div className="mx-1"></div>
@@ -259,10 +267,19 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   size={5}
                   postindex={postNum}
                   archived={post?.archived}
+                  postTime={post?.created_utc}
                 />
               </div>
               <div className="flex flex-row items-center justify-end gap-2 ml-auto -mr-2">
-                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
+                <a
+                  href={post?.permalink}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setHovered(false);
+                    handleClick(e, true);
+                  }}
+                >
                   <h1
                     className={
                       "cursor-pointer hover:underline" +
@@ -270,8 +287,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                     }
                   >
                     {`${numToString(post.num_comments, 1000)} ${
-                      post.num_comments === 1 ? "comment" : "comments"
-                    }`}
+                      post.num_comments === 1 ?  "comment" : "comments"
+                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
                   </h1>
                 </a>
                 <PostOptButton post={post} postNum={postNum} mode="" />
@@ -363,17 +380,13 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                 {post?.over_18 && (
                   <div className="flex flex-row pl-1 space-x-1">
                     <p>•</p>
-                    <span className="text-th-red ">
-                      NSFW
-                    </span>
+                    <span className="text-th-red ">NSFW</span>
                   </div>
                 )}
                 {post?.spoiler && (
                   <div className="flex flex-row pl-1 space-x-1">
                     <p>•</p>
-                    <span className="text-th-red">
-                      SPOILER
-                    </span>
+                    <span className="text-th-red">SPOILER</span>
                   </div>
                 )}
                 <div className="mx-0.5"></div>
@@ -402,10 +415,19 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   size={5}
                   postindex={postNum}
                   archived={post?.archived}
+                  postTime={post?.created_utc}
                 />
               </div>
               <div className="flex flex-row items-center gap-2 ml-auto mr-6">
-                <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); setHovered(false); handleClick(e, true);}}>
+                <a
+                  href={post?.permalink}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setHovered(false);
+                    handleClick(e, true);
+                  }}
+                >
                   <h1
                     className={
                       "cursor-pointer hover:underline font-semibold " +
@@ -414,7 +436,7 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   >
                     {`${numToString(post.num_comments, 1000)} ${
                       post.num_comments === 1 ? "comment" : "comments"
-                    }`}
+                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
                   </h1>
                 </a>
               </div>

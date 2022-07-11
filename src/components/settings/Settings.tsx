@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { useState, useRef, useEffect, createRef } from "react";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
 
 import { BiImages, BiComment, BiDetail, BiCog, BiPaint } from "react-icons/bi";
 import { BsColumnsGap } from "react-icons/bs";
@@ -10,6 +11,7 @@ import ToggleFilters from "../ToggleFilters";
 import CardStyleDemo from "./CardStyleDemo";
 import ColumnCardOptions from "./ColumnCardOptions";
 import FilterEntities from "./FilterEntities";
+import IntInput from "./IntInput";
 import ThemeSelector from "./ThemeSelector";
 import Toggles from "./Toggles";
 
@@ -111,6 +113,7 @@ const Settings = () => {
             externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
           />
         )),
+        
       ],
     },
     // Cards: {
@@ -155,7 +158,7 @@ const Settings = () => {
           "read",
         ].map((f, i) => (
           <div key={f}>
-            <ToggleFilters filter={f} withSubtext={true} />
+            <ToggleFilters filter={f} withSubtext={true} quickToggle={true} />
           </div>
         )),
         <div key={"other_filters"} className={"py-1 "}>
@@ -163,15 +166,28 @@ const Settings = () => {
         </div>,
       ],
     },
-    Other: {
+    Behavior: {
       icon: <BiCog className={icons} />,
       settings: [
         ...[
           "autoRead",
-          // "dimRead",
           "infiniteLoading",
-          // "showAwardings",
-          // "showFlairs",
+          "autoRefreshFeed",
+        ].map((s: any) => (
+          <Toggles
+            key={s}
+            setting={s}
+            withSubtext={true}
+            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
+          />
+        )),
+        ...["slowRefreshInterval", "fastRefreshInterval"].map((s: any) => (
+          <IntInput key={s} setting={s} />
+        )),
+        ...[
+          "refreshOnFocus",
+          "askToUpdateFeed",
+          "autoRefreshComments",
         ].map((s: any) => (
           <Toggles
             key={s}
@@ -182,6 +198,10 @@ const Settings = () => {
         )),
       ],
     },
+    // Other: {
+    //   icon: <AiOutlineQuestionCircle className={icons} />,
+
+    // },
   });
 
   const refs = Object.keys(categories).reduce((acc, value) => {
@@ -212,8 +232,8 @@ const Settings = () => {
       </h1>
       <Tab.List
         className={
-          "flex flex-col border rounded-lg overflow-y-auto  py-4 w-16 sm:w-44 px-0 pb-0 flex-none  sm:mr-4 overflow-hidden border-r-0 sm:border-r  rounded-r-none sm:rounded-r-lg bg-th-post border-th-border2 shadow-md "
-         + " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full bg-th-post border-th-border2"
+          "flex flex-col border rounded-lg overflow-y-auto  py-4 w-16 sm:w-44 px-0 pb-0 flex-none  sm:mr-4 overflow-hidden border-r-0 sm:border-r  rounded-r-none sm:rounded-r-lg bg-th-post border-th-border2 shadow-md " +
+          " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full bg-th-post border-th-border2"
         }
       >
         {Object.keys(categories).map((category, i) => (

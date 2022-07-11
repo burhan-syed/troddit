@@ -9,6 +9,10 @@ import SubOptButton from "../SubOptButton";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
 import Login from "../Login";
 import SubIcon from "../SubIcon";
+import useRefresh from "../../hooks/useRefresh";
+import { useSession } from "next-auth/react";
+import { GrRefresh } from "react-icons/gr";
+import { IoMdRefresh } from "react-icons/io";
 
 const SubCard = ({
   data,
@@ -17,10 +21,12 @@ const SubCard = ({
   subInfo = undefined,
   currMulti = undefined,
   subArray = undefined,
-  openDescription = undefined,
+  openDescription = () => {},
   isSelf = false,
 }) => {
   const context: any = useMainContext();
+  const session = useSession();
+  const { invalidateKey, refreshCurrent, numFetching } = useRefresh();
   const [thumbURL, setThumbURL] = useState("");
   const [subBanner, setBanner] = useState<any>({});
   const [hideNSFW, setHideNSFW] = useState(false);
@@ -80,9 +86,7 @@ const SubCard = ({
     <div
       className={
         "relative  transition-colors bg-contain border  shadow-md bg-th-post  " +
-        (tall
-          ? "  "
-          : " rounded-lg ") +
+        (tall ? "  " : " rounded-lg ") +
         (tall
           ? " border-transparent  border-b-th-border "
           : " group hover:bg-th-postHover border-th-border hover:shadow-2xl  hover:cursor-pointer ")
@@ -91,9 +95,7 @@ const SubCard = ({
       <div
         className={
           ` absolute  w-full  bg-cover bg-center  ` +
-          ( tall
-            ? " "
-            : " rounded-t-lg ") +
+          (tall ? " " : " rounded-t-lg ") +
           (tall ? " h-[121px] border-b " : " h-16") +
           (hideNSFW ||
           (subBanner?.backgroundImage?.length < 9 &&
@@ -144,7 +146,10 @@ const SubCard = ({
               >
                 {data?.kind === "t2" ? "u/" : data?.kind === "t5" ? "r/" : " "}
                 {hideNSFW && (
-                  <span className="absolute right-0 opacity-70 " style={{fontSize: '0.5rem'}}>
+                  <span
+                    className="absolute right-0 opacity-70 "
+                    style={{ fontSize: "0.5rem" }}
+                  >
                     {"18+"}
                   </span>
                 )}
@@ -177,11 +182,23 @@ const SubCard = ({
                     <a>
                       <h1
                         className={
-                          "font-semibold  hover:cursor-pointer hover:underline group-hover:underline" +
-                          (tall ? " " : " ")
+                          "font-semibold hover:cursor-pointer hover:underline group-hover:underline" +
+                          (tall ? ` ${data?.kind ? "mb-[-0.075rem]" : ""} ` : " ")
                         }
                         onClick={() => {
-                          !link && context.setForceRefresh((p) => p + 1);
+                          !link && data?.kind === "t2"
+                            ? invalidateKey([
+                                "feed",
+                                session?.data?.user?.name === data?.data?.name
+                                  ? "SELF"
+                                  : "USER",
+                                data?.data?.name,
+                              ])
+                            : invalidateKey([
+                                "feed",
+                                "SUBREDDIT",
+                                data?.data?.display_name,
+                              ]); //context.setForceRefresh((p) => p + 1);
                         }}
                       >
                         {data?.kind === "t2"
@@ -203,9 +220,10 @@ const SubCard = ({
                       rel="noreferrer"
                       className="mb-3 ml-2 rounded hover:bg-th-postHover"
                     >
-                      <BsBoxArrowInUpRight className="w-3 h-3 -ml-1" />
+                      <BsBoxArrowInUpRight className="w-3 h-3 -ml-1 hover:scale-110 " />
                     </a>
                   )}
+                 
                   <h1 className="text-xs font-semibold pb-0.5">
                     {data?.kind === "t2" &&
                     (data?.data?.comment_karma || data?.data?.link_karma) ? (
@@ -230,9 +248,7 @@ const SubCard = ({
                   )}
                   {(data?.data?.over18 || data?.data?.subreddit?.over_18) && (
                     <>
-                      <span className="text-xs text-th-red pb-0.5">
-                        NSFW
-                      </span>
+                      <span className="text-xs text-th-red pb-0.5">NSFW</span>
                     </>
                   )}
                 </>

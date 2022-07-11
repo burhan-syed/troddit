@@ -132,7 +132,7 @@ const DropdownPane = ({ hide }) => {
             <Menu.Items
               as="div"
               className={
-                " flex outline-none flex-col w-full border bg-th-background2 border-th-border ring-1 ring-th-base mt-1 rounded-md shadow-sm origin-top " +
+                " flex outline-none flex-col w-full border bg-th-background2 border-th-border ring-1 ring-th-base mt-1 rounded-md shadow-sm origin-top z-50" +
                 `${open && !hide ? " block" : " hidden"}`
               }
             >

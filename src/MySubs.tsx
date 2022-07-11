@@ -576,9 +576,9 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    //console.log(currSubs);
-    router?.query?.m
+    router?.query?.m 
       ? setMulti(router?.query?.m?.toString())
+      :  router?.asPath?.includes("m=") ? setMulti(router.asPath.split("m=").join("&")?.split("&")?.[1])
       : currSubs?.length > 1
       ? setMulti(`Feed`)
       : setMulti("");

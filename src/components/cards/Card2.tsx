@@ -11,14 +11,23 @@ import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 
 //og card
-const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick }) => {
+const Card1 = ({
+  post,
+  hasMedia,
+  hideNSFW,
+  forceMute,
+  postNum,
+  read,
+  handleClick,
+  origCommentCount
+}) => {
   const context: any = useMainContext();
   return (
     <div onClick={(e) => handleClick(e)}>
       <div
         className={
           " text-sm bg-th-post hover:bg-th-postHover group  hover:shadow-2xl transition-colors border hover:cursor-pointer border-th-border2 hover:border-th-borderHighlight2  shadow-md " +
-          " rounded-lg overflow-clip" 
+          " rounded-lg overflow-clip"
         }
       >
         <div className="">
@@ -47,8 +56,8 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                       " hover:underline font-semibold text-base mr-2 " +
                       (post?.distinguished == "moderator" || post?.stickied
                         ? " text-th-green "
-                        : " ")
-                        + (read && context.dimRead ? " opacity-50" : "")
+                        : " ") +
+                      (read && context.dimRead ? " opacity-50" : "")
                     }
                   >{`${post?.title ?? ""}`}</span>
                 </a>
@@ -108,17 +117,13 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                   {post?.over_18 && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-th-red">
-                        NSFW
-                      </span>
+                      <span className="text-th-red">NSFW</span>
                     </div>
                   )}
                   {post?.spoiler && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
-                      <span className="text-th-red">
-                        SPOILER
-                      </span>
+                      <span className="text-th-red">SPOILER</span>
                     </div>
                   )}
                   <div className="mx-0.5"></div>
@@ -147,10 +152,18 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                     size={5}
                     postindex={postNum}
                     archived={post?.archived}
+                    postTime={post?.created_utc}
                   />
                 </div>
                 <div className="flex flex-row items-center gap-2 ml-auto mr-6">
-                  <a href={post?.permalink} onClick={(e) => {e.preventDefault(); e.stopPropagation(); handleClick(e, true);}}>
+                  <a
+                    href={post?.permalink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleClick(e, true);
+                    }}
+                  >
                     <h1
                       className={
                         "cursor-pointer hover:underline font-semibold " +
@@ -159,12 +172,12 @@ const Card1 = ({ post, hasMedia, hideNSFW, forceMute, postNum, read, handleClick
                     >
                       {`${numToString(post.num_comments, 1000)} ${
                         post.num_comments === 1 ? "comment" : "comments"
-                      }`}
+                      }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
                     </h1>
                   </a>
                 </div>
                 <div className="absolute right-3">
-                  <PostOptButton post={post} postNum={postNum}  />
+                  <PostOptButton post={post} postNum={postNum} />
                 </div>
               </div>
             </div>
