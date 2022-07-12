@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import React,{ useEffect, useState, useRef, useCallback } from "react";
 import { useMainContext } from "../MainContext";
 import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
@@ -9,7 +9,7 @@ import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
 
-const Post = ({ post, postNum = 0 }) => {
+const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [select, setSelect] = useState(false);
@@ -148,8 +148,8 @@ const Post = ({ post, postNum = 0 }) => {
           postNum={postNum}
           commentMode={post?.kind === "t1"}
           commentsDirect={commentsDirect}
-          curKey={post?.curKey}
-          fetchMore={post?.fetchMore}
+          curKey={curKey}
+          fetchMore={fetchNextPage}
         />
       )}
 

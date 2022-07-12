@@ -1,5 +1,5 @@
 /* eslint-disable react/no-children-prop */
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useWindowSize } from "@react-hook/window-size";
 import { Masonry, useInfiniteLoader } from "masonic";
 
@@ -114,10 +114,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
     const posts = feed?.data?.pages
       ?.map((page) => page.filtered)
-      ?.flat()
-      ?.map((post) => {
-        return { ...post, curKey: curKey, fetchMore: feed.fetchNextPage };
-      }) as any[];
+      ?.flat() as any[];
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
@@ -216,6 +213,20 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     </>
   );
 
+  const PostCard = useCallback(
+    (props) => (
+      <>
+        <Post
+          post={props.data}
+          postNum={props.index}
+          fetchNextPage={feed.fetchNextPage}
+          curKey={curKey}
+        />
+      </>
+    ),
+    []
+  );
+
   return (
     <div>
       <Masonry
@@ -260,12 +271,5 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   );
 };
 
-const PostCard = (props) => {
-  return (
-    <div className={""}>
-      <Post post={props.data} postNum={props.index} />
-    </div>
-  );
-};
 
 export default MyMasonic;
