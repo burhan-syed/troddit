@@ -1,4 +1,10 @@
-import { useEffect, useState, useRef, useMemo, useLayoutEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import Comments from "./Comments";
 import Link from "next/dist/client/link";
 import { useWindowSize } from "@react-hook/window-size";
@@ -35,6 +41,7 @@ import useThread from "../hooks/useThread";
 import { QueryClient, useQueryClient } from "react-query";
 import useSubreddit from "../hooks/useSubreddit";
 import ErrMessage from "./ErrMessage";
+import { useRead } from "../hooks/useRead";
 
 const Thread = ({
   permalink,
@@ -58,11 +65,16 @@ const Thread = ({
   const [post, setPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
   );
+  const { read } = useRead(post?.name);
   const { sub } = useSubreddit(post?.subreddit);
 
   const [postComments, setPostComments] = useState<any[]>([]);
   const [commentsReady, setCommentsReady] = useState(false);
-  const [prevCount, setPrevCount] = useState<number>();
+  const [origCommentCount, setOrigCommentCount] = useState<number>();
+  const [origReadTime, setOrigReadTime] = useState<number>();
+  const [newReadTime, setNewReadTime] = useState<number>();
+
+  //const [prevCount, setPrevCount] = useState<number>();
   const [mediaInfo, setMediaInfo] = useState<any>();
   const [usePortrait, setUsePortrait] = useState<boolean | undefined>(
     undefined
@@ -79,7 +91,13 @@ const Thread = ({
       if (!initPost?.name?.includes("t3_")) {
         setInitPost(thread?.data?.pages?.[0].post);
       }
-      setPrevCount(post?.num_comments);
+      if (!origCommentCount) {
+        setOrigCommentCount(
+          thread?.data?.pages?.[0].post?.num_comments ?? undefined
+        );
+      }
+
+      setNewReadTime(new Date().getTime());
       setPost(thread?.data?.pages?.[0].post);
     }
 
@@ -102,17 +120,10 @@ const Thread = ({
 
   useEffect(() => {
     const getMediaInfo = async (post) => {
-      const domain = window?.location?.hostname ?? 'www.troddit.com';
+      const domain = window?.location?.hostname ?? "www.troddit.com";
       const mInfo = await findMediaInfo(post, false, domain);
       setMediaInfo(mInfo);
     };
-
-    context?.autoRead &&
-      context.addReadPost({
-        postId: post?.name,
-        numComments: post?.num_comments,
-      });
-
     if (post?.mediaInfo) {
       setMediaInfo(post?.mediaInfo);
     } else if (post) {
@@ -120,6 +131,26 @@ const Thread = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
+
+  useEffect(() => {
+    if (read){
+      setOrigCommentCount(read?.numComments);
+      !origReadTime && setOrigReadTime(read?.time);
+    } else if (read===false){
+      setOrigReadTime(new Date().getTime());
+    }
+  }, [read]);
+
+  //add to read on unmount
+  useEffect(() => {
+    return () => {
+      context?.autoRead &&
+        context.addReadPost({
+          postId: post?.name,
+          numComments: post?.num_comments,
+        });
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (
@@ -477,7 +508,7 @@ const Thread = ({
                         {windowWidth >= 1300 && (
                           <>
                             <button
-                            autoFocus={true}
+                              autoFocus={true}
                               onClick={(e) => {
                                 setUsePortrait((p) => !p);
                               }}
@@ -692,21 +723,22 @@ const Thread = ({
                     <h1 className="hidden md:block">
                       {`comment${post?.num_comments == 1 ? "" : "s"}`}
                     </h1>
-                    {prevCount &&
-                    post?.num_comments &&
-                    post.num_comments - prevCount > 0 ? (
-                      <h2 className="text-xs italic text-th-textLight">{`(${
-                        post.num_comments - prevCount
-                      } new)`}</h2>
-                    ) : (
-                      <></>
-                    )}
+                    {typeof origCommentCount === "number" &&
+                      post?.num_comments > origCommentCount && (
+                        <h2 className="text-xs italic font-medium">{`(${
+                          post?.num_comments - origCommentCount
+                        } new)`}</h2>
+                      )}
                   </div>
                 </div>
                 <div className="flex items-center h-full gap-2">
                   <button
                     disabled={thread.isFetching}
-                    onClick={() => thread.refetch()}
+                    onClick={() => {
+                      setOrigCommentCount(post?.num_comments ?? undefined);
+                      setOrigReadTime(newReadTime);
+                      thread.refetch();
+                    }}
                   >
                     <IoMdRefresh
                       className={
@@ -786,6 +818,7 @@ const Thread = ({
                       locked={post?.locked}
                       scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
                       setCommentsReady={setCommentsReady}
+                      readTime={origReadTime}
                     />
                   )}
                 </div>

@@ -1,27 +1,35 @@
 import { useEffect, useState } from "react";
 import { localRead, useMainContext } from "../MainContext";
 
+interface Read {
+  numComments: number | undefined;
+  time: number | undefined;
+}
+
 export const useRead = (postID) => {
-  const context: any = useMainContext(); 
-  const [read, setRead] = useState(false); 
-  const [readCount, setReadCount] = useState<number>(); 
+  const context: any = useMainContext();
+  const [read, setRead] = useState<Read | false>();
 
   useEffect(() => {
     const checkRead = async () => {
-      let read = await localRead.getItem(postID) as any;
+      let read = (await localRead.getItem(postID)) as any;
       if (read) {
-        context.addReadPost({postId: postID, numComments: read?.numComments});
-        setRead(true);
-        read?.numComments && setReadCount(read?.numComments)
+        context.addReadPost({ postId: postID, numComments: read?.numComments });
+        setRead({ numComments: read?.numComments, time: read?.time });
+      } else {
+        setRead(false);
       }
     };
     checkRead();
   }, []);
   useEffect(() => {
     const readData = context?.readPosts?.[postID];
-    setRead(!!readData);
-    (context?.readPosts?.[postID]?.numComments || context?.readPosts?.[postID]?.numComments === 0) ? setReadCount(context?.readPosts?.[postID]?.numComments) : setReadCount(undefined); 
-  }, [context.readPostsChange])
+    if (readData) {
+      setRead({ numComments: readData?.numComments, time: readData?.time });
+    } else {
+      setRead(false);
+    }
+  }, [context.readPostsChange]);
 
-  return {read, readCount}
-}
+  return { read };
+};

@@ -68,7 +68,6 @@ const useThread = (permalink, sort, initialData?, withContext = false) => {
         ...newComment,
         data: {
           ...newComment.data,
-          new: !prevComment ? true : false,
           replies: repliesData,
           collapsed: prevComment?.data?.collapsed
             ? true
@@ -148,7 +147,7 @@ const useThread = (permalink, sort, initialData?, withContext = false) => {
       token && context.setToken(token);
       const comments = processComments(post_comments)?.map((c) => ({
         ...c,
-        data: { ...c?.data, new: false },
+        data: { ...c?.data},
       }));
 
       return {

@@ -1,13 +1,16 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { loadMoreComments, postVote } from "../RedditAPI";
-import { BiDownvote, BiUpvote } from "react-icons/bi";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
 import Link from "next/dist/client/link";
 import Vote from "./Vote";
-import { ImSpinner2 } from "react-icons/im";
 import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
@@ -18,6 +21,7 @@ import useMutate from "../hooks/useMutate";
 
 const ChildComments = ({
   comment,
+  readTime,
   depth,
   hide,
   op = "",
@@ -130,6 +134,12 @@ const ChildComments = ({
     [comment?.data?.permalink, session, context]
   );
 
+  const [isNew, setIsNew] = useState(false); 
+  useEffect(() => {
+    setIsNew((readTime/1000)?.toFixed(0) < comment?.data?.created_utc)
+  }, [readTime, comment?.data?.created_utc])
+  
+
   return (
     <div
       ref={parentRef}
@@ -141,18 +151,18 @@ const ChildComments = ({
           ? " bg-th-backgroundComment "
           : "bg-th-backgroundCommentAlternate ") +
         (hide ? " hidden " : "") +
-        (comment?.data?.new ? " bg-th-highlight " : " ") +
+        (isNew ? " bg-th-highlight " : " ") +
         " border-t border-l border-l-transparent  border-b border-th-border2 rounded-md"
       }
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {/* <h1 className="absolute top-0 right-0 z-50 text-lg">{new Date(readTime).toISOString()},{new Date(comment?.data?.created_utc * 1000).toISOString()}, {(readTime/1000)?.toFixed(0) > comment?.data?.created_utc ? "gr" : "ls"}</h1> */}
       <div
         className={"flex flex-row"}
         onClick={(e) => {
           e.stopPropagation();
           toggleHidden();
-          //setHideChildren((h) => !h);
           executeScroll();
         }}
       >
@@ -161,7 +171,6 @@ const ChildComments = ({
           onClick={(e) => {
             e.stopPropagation();
             toggleHidden();
-            //setHideChildren((h) => !h);
             executeScroll();
           }}
           className={
@@ -189,7 +198,6 @@ const ChildComments = ({
           onClick={(e) => {
             e.stopPropagation();
             toggleHidden();
-            //setHideChildren((h) => !h);
             executeScroll();
           }}
         >
@@ -288,7 +296,7 @@ const ChildComments = ({
             </div>
 
             <div className="flex items-center gap-1 pr-4 mt-1">
-              {comment?.data?.new && (
+              {isNew && (
                 <p className="text-xs italic">{"(new)"}</p>
               )}
               {comment?.data?.edited && (
@@ -444,6 +452,7 @@ const ChildComments = ({
                             portraitMode={portraitMode}
                             locked={locked}
                             scoreHideMins={scoreHideMins}
+                            readTime={readTime}
                           />
                         )}
                         {childcomment.kind == "more" && (

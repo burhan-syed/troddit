@@ -1,12 +1,12 @@
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
+import React,{ useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { fixCommentFormat } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
-const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0, setCommentsReady }) => {
+const Comments = ({ comments, readTime, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0, setCommentsReady,  }) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const [commentsData, setCommentsData] = useState<any[]>();
@@ -55,6 +55,7 @@ const Comments = ({ comments, sort="top", depth = 0, op = "", portraitMode = fal
                 portraitMode={portraitMode}
                 locked={locked}
                 scoreHideMins={scoreHideMins}
+                readTime={readTime}
               />
             </>
           )}

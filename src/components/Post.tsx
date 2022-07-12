@@ -18,7 +18,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
   const { data: session, status } = useSession();
   const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
-  const {read, readCount} = useRead(post?.data?.name)
+  const {read} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
   const [origCommentCount, setOrigCommentCount] = useState<number>(); 
   useEffect(() => {
@@ -129,9 +129,8 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
   };
 
   useEffect(() => {
-    if (read && (readCount || readCount === 0)) {setOrigCommentCount(readCount)} else {setOrigCommentCount(undefined)};
-   
-  }, [readCount])
+    if (read) {setOrigCommentCount(read?.numComments)} else {setOrigCommentCount(undefined)};
+  }, [read])
 
   return (
     <div className={margin + " "}>

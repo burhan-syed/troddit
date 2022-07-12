@@ -1,7 +1,7 @@
 // import {Switch} from '@headlessui/react'
 import Switch from "react-switch";
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import { BiComment, BiDetail, BiMoon, BiSun } from "react-icons/bi";
 import { CgArrowsShrinkH, CgArrowsMergeAltH } from "react-icons/cg";
@@ -248,7 +248,7 @@ const Toggles = ({
         !label && setSwitchLabel("Auto Read");
         !subtext &&
           setSwitchSubtext(
-            "Automatically mark posts as read when their thread is opened"
+            "Automatically mark posts as read when their thread is closed"
           );
         break;
       case "disableEmbeds":
