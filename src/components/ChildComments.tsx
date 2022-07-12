@@ -460,13 +460,14 @@ const ChildComments = ({
                             {true && (
                               <>
                                 {childcomment.data?.count > 0 ? (
-                                  <div
+                                  <button
+                                  disabled={loadingComments}
                                     onMouseEnter={() => setHovered(true)}
                                     onMouseLeave={() => setHovered(false)}
                                     className={
                                       (portraitMode ? "" : "") +
                                       (loadingComments && " animate-pulse ") +
-                                      " pt-2 cursor-pointer hover:font-semibold ml-3 md:pl-0 select-none text-sm"
+                                      " pt-2  hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
                                     }
                                     onClick={(e) => {
                                       e.preventDefault();
@@ -479,7 +480,7 @@ const ChildComments = ({
                                     }}
                                   >
                                     {`Load ${childcomment.data?.count} More... `}
-                                  </div>
+                                  </button>
                                 ) : (
                                   <Link href={comment?.data?.permalink}>
                                     <a
