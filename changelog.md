@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.1
+## Changes
+- Posts are now automatically marked as read when the thread is closed instead of when it is opened
+- Improved new comment detection so new comments are highlighted between sessions
+- Votes on comments now update quickly without triggering a refetch of comment scores
+
 ## v0.15.0
 
 ### New
