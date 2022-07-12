@@ -83,15 +83,38 @@ const useMutate = () => {
           queryClient.invalidateQueries(["feed"]);
         }
       } else if (data.id.substring(0, 3) === "t1_") {
+
+
+        const updateCommentValue = (prevData, commentId, key, value) => {
+          const iterComments = (comment, commentId, key, value) => {
+            if (comment?.data?.name === commentId){
+              comment["data"][key] = value; 
+              if (key === "likes"){
+                comment["data"]["score"] = comment["data"]["score"] + value
+              }
+              return comment; 
+            }
+            for (let i = 0; i < comment?.data?.replies?.data?.children?.length ?? 0; i++){
+               iterComments(comment?.data?.replies?.data?.children[i], commentId, key, value);
+            }
+            return comment; 
+          }
+
+          let newpages = prevData?.pages?.map(page => {return {...page, comments: page.comments?.map((comment) => iterComments(comment, commentId, key, value)) }})
+          return {...prevData, pages: newpages }
+        }
+
         const path = router?.asPath?.split("/");
         const cIndex = path?.indexOf("comments");
         let postId;
         if (cIndex) {
           postId = path?.[cIndex + 1] as string;
         }
+
+
         //this check could be better
         postId?.match(/[A-z0-9]/g)?.length === 6
-          ? queryClient.invalidateQueries(["thread", postId])
+          ? queryClient.setQueriesData(["thread", postId], (prevData) => updateCommentValue(prevData, data.id, "likes", data.vote ))
           : queryClient.invalidateQueries(["thread"]);
       }
     },

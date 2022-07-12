@@ -1,5 +1,5 @@
 import { BiUpvote, BiDownvote } from "react-icons/bi";
-import { useState, useEffect, useMemo } from "react";
+import React,{ useState, useEffect, useMemo } from "react";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
