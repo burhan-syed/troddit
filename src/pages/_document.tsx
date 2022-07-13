@@ -64,7 +64,7 @@ class MyDocument extends Document {
           />
         </Head>
         <PlausibleProvider domain="troddit.com">
-          <body className="overflow-x-hidden bg-th-base text-th-text ">
+          <body className=" bg-th-base text-th-text">
             <Main />
             <NextScript />
           </body>

@@ -34,23 +34,23 @@ const PostModal = ({
   const [curPost, setCurPost] = useState<any>(postData);
   const [curPostNum, setCurPostNum] = useState(postNum);
 
-  //prevent scrolling on main body when open
-  useEffect(() => {
-    if (true) {
-      const width = document.body.clientWidth;
-      document.body.style.overflow = "hidden";
-      document.body.style.width = `${width}px`;
-    } else {
-      document.body.style.overflow = "visible";
-      document.body.style.width = `auto`;
-    }
-
-    return () => {
-      document.body.style.overflow = "visible";
-      document.body.style.width = `auto`;
-    };
-  }, []);
-
+     //prevent scrolling on main body when open
+     useEffect(() => {
+      if (true) {
+        const width = document.body.clientWidth;
+        document.documentElement.style.setProperty('--overflow', 'hidden hidden')
+        document.body.style.width = `${width}px`;
+      } else {
+        document.documentElement.style.setProperty('--overflow', 'hidden visible')
+        document.body.style.width = `auto`;
+      }
+  
+      return () => {
+        document.documentElement.style.setProperty('--overflow', 'hidden visible')
+        document.body.style.width = `auto`;
+      };
+    }, []);
+ 
   const updateSort = async (e, sort) => {
     e.preventDefault();
     setSort(sort);
@@ -152,7 +152,7 @@ const PostModal = ({
   return (
     <div
       className={
-        "fixed inset-0 z-30 w-screen min-w-full min-h-screen overflow-y-auto overscroll-y-contain"
+        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overflow-y-auto overscroll-y-contain"
       }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}
