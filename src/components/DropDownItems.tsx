@@ -2,7 +2,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import { BsChevronDown, BsList } from "react-icons/bs";
@@ -39,13 +39,14 @@ const DropDownItems = ({ show, hideExtra = false }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [filter, setFilter] = useState("");
-  const filterRef = useRef(null);
+  const filterRef = useRef<HTMLInputElement>(null);
   const [expand, setExpand] = useState(false);
+  const [expandFavorites, setExpandFavorites] = useState(true);
   const [expandMultis, setExpandMultis] = useState(true);
   const [expandSubs, setExpandSubs] = useState(true);
   const [expandFollowing, setExpandFollowing] = useState(true);
-  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
-  const [myLocalFollows, setMyLocalFollows] = useState([]);
+  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState<any[]>([]);
+  const [myLocalFollows, setMyLocalFollows] = useState<any[]>([]);
 
   useEffect(() => {
     tryLoadAll();
@@ -56,8 +57,8 @@ const DropDownItems = ({ show, hideExtra = false }) => {
   }, [show, filterRef?.current]);
 
   useEffect(() => {
-    let subs = [];
-    let follows = [];
+    let subs = [] as any[];
+    let follows = [] as any[];
     //console.log(myLocalSubs);
     if (myLocalSubs?.length > 0) {
       myLocalSubs.forEach((s) => {
@@ -73,10 +74,24 @@ const DropDownItems = ({ show, hideExtra = false }) => {
   }, [myLocalSubs]);
 
   const constructMultiLink = (multi) => {
-    let subs = [];
-    multi?.data?.subreddits?.forEach((s) => subs.push(s?.name));
+    let subs = [] as any[];
+    multi?.data?.subreddits?.forEach((s:any) => subs.push(s?.name));
     return `/r/${subs.join("+")}?m=${multi?.data?.name}`;
   };
+
+  const favoriteSubs = useMemo(() => {
+    if (session?.user?.name) {
+      return [
+        ...mySubs?.filter((sub) => sub?.data?.user_has_favorited),
+        ...myFollowing?.filter(
+          (user) => user?.data?.subreddit?.user_has_favorited
+        ),
+      ];
+    } else {
+      console.log(myLocalSubs);
+      return [...myLocalSubs?.filter((sub) => sub?.data?.user_has_favorited)];
+    }
+  }, [mySubs, myFollowing, myLocalSubs]);
 
   return (
     <>
@@ -176,6 +191,101 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           />
         </div>
       )}
+
+      {favoriteSubs?.length > 0 && (
+        <>
+          <div
+            onClick={() => setExpandFavorites((e) => !e)}
+            className={
+              "px-2 py-0.5 items-center text-xs tracking-widest hover:bg-th-highlight  hover:cursor-pointer hover:font-semibold flex flex-row justify-between" +
+              (expandFavorites ? " " : " mb-2")
+            }
+          >
+            <p>favorites</p>
+            {!hideExtra && (
+              <BsChevronDown
+                className={
+                  (expandFavorites ? "-rotate-180 " : "rotate-0 ") +
+                  "transform transition duration-200"
+                }
+              />
+            )}
+          </div>
+          <div
+            className={
+              " " +
+              (expandFavorites ? " max-h-full" : " max-h-0 overflow-hidden")
+            }
+          >
+            <div className={"py-2"}>
+              {favoriteSubs
+                ? favoriteSubs.map((sub, i) => {
+                    return (
+                      <Menu.Item
+                        key={`sub_${i}`}
+                        disabled={
+                          !expandFavorites ||
+                          (filter !== "" &&
+                            !(
+                              sub.data?.display_name_prefixed
+                                ?.toUpperCase()
+                                .includes(filter.toUpperCase()) ||
+                              sub.data?.display_name
+                                ?.toUpperCase()
+                                .includes(filter.toUpperCase()) ||
+                              sub.data?.subreddit?.display_name
+                                ?.toUpperCase()
+                                .includes(filter.toUpperCase())
+                            ))
+                        }
+                      >
+                        {({ active }) => (
+                          <MyLink
+                            href={sub?.data?.subreddit?.url?.replace("/user/","/u/") ?? sub?.data?.url}
+                          >
+                            <div
+                              className={
+                                (active ? "bg-th-highlight" : " ") +
+                                " px-4 py-2 group" +
+                                (filter !== "" &&
+                                !(
+                                  sub.data?.display_name_prefixed
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase()) ||
+                                  sub.data?.display_name
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase()) ||
+                                  sub.data?.subreddit?.display_name
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase())
+                                )
+                                  ? " hidden"
+                                  : "")
+                              }
+                            >
+                              <DropdownItem
+                                sub={{
+                                  kind: sub?.kind,
+                                  data: sub?.data?.subreddit ?? sub?.data,
+                                }}
+                                isUser={
+                                  sub?.kind === "t2" ||
+                                  sub?.data?.display_name?.substring(0, 2) ===
+                                    "u_"
+                                }
+                              />
+                            </div>
+                          </MyLink>
+                        )}
+                      </Menu.Item>
+                    );
+                  })
+                : ""}
+            </div>
+          </div>
+        </>
+      )}
+
       {!session && (
         <>
           {myLocalMultis?.length > 0 && (
@@ -205,52 +315,49 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               >
                 <div className="py-2">
                   {myLocalMultis
-                    ? myLocalMultis
-                        .map((multi, i) => {
-                          return (
-                            <Menu.Item
-                              key={`${i}_${multi.data.display_name}`}
-                              disabled={
-                                !expandMultis ||
-                                (filter !== "" &&
-                                  !(
-                                    multi.data?.display_name_prefixed
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase()) ||
-                                    multi.data?.display_name
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase())
-                                  ))
-                              }
-                            >
-                              {({ active }) => (
-                                <MyLink href={constructMultiLink(multi)}>
-                                  <div
-                                    className={
-                                      (active
-                                        ? "bg-th-highlight"
-                                        : " ") +
-                                      " px-4 py-2" +
-                                      (filter !== "" &&
-                                      !(
-                                        multi.data?.display_name_prefixed
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase()) ||
-                                        multi.data?.display_name
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase())
-                                      )
-                                        ? " hidden"
-                                        : " ")
-                                    }
-                                  >
-                                    <DropdownItem sub={multi} />
-                                  </div>
-                                </MyLink>
-                              )}
-                            </Menu.Item>
-                          );
-                        })
+                    ? myLocalMultis.map((multi, i) => {
+                        return (
+                          <Menu.Item
+                            key={`${i}_${multi.data.display_name}`}
+                            disabled={
+                              !expandMultis ||
+                              (filter !== "" &&
+                                !(
+                                  multi.data?.display_name_prefixed
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase()) ||
+                                  multi.data?.display_name
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase())
+                                ))
+                            }
+                          >
+                            {({ active }) => (
+                              <MyLink href={constructMultiLink(multi)}>
+                                <div
+                                  className={
+                                    (active ? "bg-th-highlight" : " ") +
+                                    " px-4 py-2 " +
+                                    (filter !== "" &&
+                                    !(
+                                      multi.data?.display_name_prefixed
+                                        ?.toUpperCase()
+                                        .includes(filter.toUpperCase()) ||
+                                      multi.data?.display_name
+                                        ?.toUpperCase()
+                                        .includes(filter.toUpperCase())
+                                    )
+                                      ? " hidden"
+                                      : " ")
+                                  }
+                                >
+                                  <DropdownItem sub={multi} />
+                                </div>
+                              </MyLink>
+                            )}
+                          </Menu.Item>
+                        );
+                      })
                     : ""}
                 </div>
               </div>
@@ -283,52 +390,49 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               >
                 <div className="py-2">
                   {myLocalSubsFiltered
-                    ? myLocalSubsFiltered
-                        .map((sub, i) => {
-                          return (
-                            <Menu.Item
-                              key={`${i}`}
-                              disabled={
-                                !expandSubs ||
-                                (filter !== "" &&
-                                  !(
-                                    sub.data?.display_name_prefixed
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase()) ||
-                                    sub.data?.display_name
-                                      ?.toUpperCase()
-                                      .includes(filter.toUpperCase())
-                                  ))
-                              }
-                            >
-                              {({ active }) => (
-                                <MyLink href={sub?.data?.url}>
-                                  <div
-                                    className={
-                                      (active
-                                        ? "bg-th-highlight"
-                                        : " ") +
-                                      " px-4 py-2" +
-                                      (filter !== "" &&
-                                      !(
-                                        sub.data?.display_name_prefixed
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase()) ||
-                                        sub.data?.display_name
-                                          ?.toUpperCase()
-                                          .includes(filter.toUpperCase())
-                                      )
-                                        ? " hidden "
-                                        : "")
-                                    }
-                                  >
-                                    <DropdownItem sub={sub} />
-                                  </div>
-                                </MyLink>
-                              )}
-                            </Menu.Item>
-                          );
-                        })
+                    ? myLocalSubsFiltered.map((sub:any, i) => {
+                        return (
+                          <Menu.Item
+                            key={`${i}`}
+                            disabled={
+                              !expandSubs ||
+                              (filter !== "" &&
+                                !(
+                                  sub.data?.display_name_prefixed
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase()) ||
+                                  sub.data?.display_name
+                                    ?.toUpperCase()
+                                    .includes(filter.toUpperCase())
+                                ))
+                            }
+                          >
+                            {({ active }) => (
+                              <MyLink href={sub?.data?.url}>
+                                <div
+                                  className={
+                                    (active ? "bg-th-highlight" : " ") +
+                                    " px-4 py-2 group" +
+                                    (filter !== "" &&
+                                    !(
+                                      sub.data?.display_name_prefixed
+                                        ?.toUpperCase()
+                                        .includes(filter.toUpperCase()) ||
+                                      sub.data?.display_name
+                                        ?.toUpperCase()
+                                        .includes(filter.toUpperCase())
+                                    )
+                                      ? " hidden "
+                                      : "")
+                                  }
+                                >
+                                  <DropdownItem sub={sub} />
+                                </div>
+                              </MyLink>
+                            )}
+                          </Menu.Item>
+                        );
+                      })
                     : ""}
                 </div>
               </div>
@@ -341,7 +445,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                       (expandFollowing ? " " : " mb-2")
                     }
                   >
-                    <p>local follows</p>
+                    <p>follows</p>
                     {!hideExtra && (
                       <BsChevronDown
                         className={
@@ -361,7 +465,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                   >
                     <div className="py-2">
                       {myLocalFollows
-                        ? myLocalFollows.map((sub, i) => {
+                        ? myLocalFollows.map((sub:any, i) => {
                             return (
                               <Menu.Item
                                 key={`${i}`}
@@ -387,10 +491,8 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                   >
                                     <div
                                       className={
-                                        (active
-                                          ? "bg-th-highlight"
-                                          : " ") +
-                                        " px-4 py-2" +
+                                        (active ? "bg-th-highlight" : " ") +
+                                        " px-4 py-2 group " +
                                         (filter !== "" &&
                                         !(
                                           sub.data?.display_name_prefixed
@@ -425,8 +527,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               }
               onClick={() => signIn("reddit")}
             >
-              <span className="text-th-accent ">Login</span> to
-              see your subs
+              <span className="text-th-accent ">Login</span> to see your subs
             </button>
           )}
         </>
@@ -436,7 +537,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         <>
           {/* Multis */}
           {/* onClick={() => {setloadedMultis(m => !m);setloadedSubs(s => !s)}} */}
-
           <div
             onClick={() => setExpandMultis((m) => !m)}
             className={
@@ -486,42 +586,39 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               <>
                 <div className="py-2">
                   {myMultis
-                    ? myMultis
-                        .map((multi, i) => {
-                          return (
-                            <Menu.Item
-                              key={`multi_${i}`}
-                              disabled={
-                                !expandMultis ||
-                                (filter !== "" &&
-                                  !multi.data.display_name
-                                    .toUpperCase()
-                                    .includes(filter.toUpperCase()))
-                              }
-                            >
-                              {({ active }) => (
-                                <MyLink href={constructMultiLink(multi)}>
-                                  <div
-                                    className={
-                                      (active
-                                        ? "bg-th-highlight"
-                                        : " ") +
-                                      " px-4 py-2" +
-                                      (filter !== "" &&
-                                      !multi.data.display_name
-                                        .toUpperCase()
-                                        .includes(filter.toUpperCase())
-                                        ? " hidden"
-                                        : "")
-                                    }
-                                  >
-                                    <DropdownItem sub={multi} />
-                                  </div>
-                                </MyLink>
-                              )}
-                            </Menu.Item>
-                          );
-                        })
+                    ? myMultis.map((multi, i) => {
+                        return (
+                          <Menu.Item
+                            key={`multi_${i}`}
+                            disabled={
+                              !expandMultis ||
+                              (filter !== "" &&
+                                !multi.data.display_name
+                                  .toUpperCase()
+                                  .includes(filter.toUpperCase()))
+                            }
+                          >
+                            {({ active }) => (
+                              <MyLink href={constructMultiLink(multi)}>
+                                <div
+                                  className={
+                                    (active ? "bg-th-highlight" : " ") +
+                                    " px-4 py-2" +
+                                    (filter !== "" &&
+                                    !multi.data.display_name
+                                      .toUpperCase()
+                                      .includes(filter.toUpperCase())
+                                      ? " hidden"
+                                      : "")
+                                  }
+                                >
+                                  <DropdownItem sub={multi} />
+                                </div>
+                              </MyLink>
+                            )}
+                          </Menu.Item>
+                        );
+                      })
                     : ""}
                 </div>
               </>
@@ -576,52 +673,49 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             ) : (
               <div className={"py-2"}>
                 {mySubs
-                  ? mySubs
-                      .map((sub, i) => {
-                        return (
-                          <Menu.Item
-                            key={`sub_${i}`}
-                            disabled={
-                              !expandSubs ||
-                              (filter !== "" &&
-                                !(
-                                  sub.data?.display_name_prefixed
-                                    ?.toUpperCase()
-                                    .includes(filter.toUpperCase()) ||
-                                  sub.data?.display_name
-                                    ?.toUpperCase()
-                                    .includes(filter.toUpperCase())
-                                ))
-                            }
-                          >
-                            {({ active }) => (
-                              <MyLink href={sub?.data?.url}>
-                                <div
-                                  className={
-                                    (active
-                                      ? "bg-th-highlight"
-                                      : " ") +
-                                    " px-4 py-2" +
-                                    (filter !== "" &&
-                                    !(
-                                      sub.data?.display_name_prefixed
-                                        ?.toUpperCase()
-                                        .includes(filter.toUpperCase()) ||
-                                      sub.data?.display_name
-                                        ?.toUpperCase()
-                                        .includes(filter.toUpperCase())
-                                    )
-                                      ? " hidden"
-                                      : "")
-                                  }
-                                >
-                                  <DropdownItem sub={sub} />
-                                </div>
-                              </MyLink>
-                            )}
-                          </Menu.Item>
-                        );
-                      })
+                  ? mySubs.map((sub, i) => {
+                      return (
+                        <Menu.Item
+                          key={`sub_${i}`}
+                          disabled={
+                            !expandSubs ||
+                            (filter !== "" &&
+                              !(
+                                sub.data?.display_name_prefixed
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase()) ||
+                                sub.data?.display_name
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase())
+                              ))
+                          }
+                        >
+                          {({ active }) => (
+                            <MyLink href={sub?.data?.url}>
+                              <div
+                                className={
+                                  (active ? "bg-th-highlight" : " ") +
+                                  " px-4 py-2" +
+                                  (filter !== "" &&
+                                  !(
+                                    sub.data?.display_name_prefixed
+                                      ?.toUpperCase()
+                                      .includes(filter.toUpperCase()) ||
+                                    sub.data?.display_name
+                                      ?.toUpperCase()
+                                      .includes(filter.toUpperCase())
+                                  )
+                                    ? " hidden"
+                                    : "")
+                                }
+                              >
+                                <DropdownItem sub={sub} />
+                              </div>
+                            </MyLink>
+                          )}
+                        </Menu.Item>
+                      );
+                    })
                   : ""}
               </div>
             )}
@@ -655,48 +749,45 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               >
                 <div className={"py-2"}>
                   {myFollowing
-                    ? myFollowing
-                        .map((user, i) => {
-                          return (
-                            <Menu.Item
-                              key={`follow_${i}`}
-                              disabled={
-                                !expandFollowing ||
-                                (filter !== "" &&
-                                  !user.data?.name
-                                    ?.toUpperCase()
-                                    .includes(filter.toUpperCase()))
-                              }
-                            >
-                              {({ active }) => (
-                                <MyLink href={`/u/${user?.data?.name}`}>
-                                  <div
-                                    className={
-                                      (active
-                                        ? "bg-th-highlight"
-                                        : " ") +
-                                      " px-4 py-2" +
-                                      (filter !== "" &&
-                                      !user.data?.name
-                                        ?.toUpperCase()
-                                        .includes(filter.toUpperCase())
-                                        ? " hidden "
-                                        : "")
-                                    }
-                                  >
-                                    <DropdownItem
-                                      sub={{
-                                        kind: user?.kind,
-                                        data: user?.data?.subreddit,
-                                      }}
-                                      isUser={true}
-                                    />
-                                  </div>
-                                </MyLink>
-                              )}
-                            </Menu.Item>
-                          );
-                        })
+                    ? myFollowing.map((user, i) => {
+                        return (
+                          <Menu.Item
+                            key={`follow_${i}`}
+                            disabled={
+                              !expandFollowing ||
+                              (filter !== "" &&
+                                !user.data?.name
+                                  ?.toUpperCase()
+                                  .includes(filter.toUpperCase()))
+                            }
+                          >
+                            {({ active }) => (
+                              <MyLink href={`/u/${user?.data?.name}`}>
+                                <div
+                                  className={
+                                    (active ? "bg-th-highlight" : " ") +
+                                    " px-4 py-2" +
+                                    (filter !== "" &&
+                                    !user.data?.name
+                                      ?.toUpperCase()
+                                      .includes(filter.toUpperCase())
+                                      ? " hidden "
+                                      : "")
+                                  }
+                                >
+                                  <DropdownItem
+                                    sub={{
+                                      kind: user?.kind,
+                                      data: user?.data?.subreddit,
+                                    }}
+                                    isUser={true}
+                                  />
+                                </div>
+                              </MyLink>
+                            )}
+                          </Menu.Item>
+                        );
+                      })
                     : ""}
                 </div>
               </div>

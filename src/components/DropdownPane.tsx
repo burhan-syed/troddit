@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, Fragment, useEffect, useMemo } from "react";
+import React,{ useState, Fragment, useEffect, useMemo } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
@@ -81,6 +81,7 @@ const DropdownPane = ({ hide }) => {
                           icon_url: multi_icon
                         },
                       }}
+                      showFavorite={false}
                     />
                   </div>
                 ) : currSubInfo ? (
@@ -91,6 +92,8 @@ const DropdownPane = ({ hide }) => {
                         data: currSubInfo?.data?.subreddit ?? currSubInfo?.data,
                       }}
                       isUser={router.pathname.includes("/u/")}
+                      showFavorite={false}
+
                     />
                   </div>
                 ) : (

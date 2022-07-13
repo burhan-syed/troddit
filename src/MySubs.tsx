@@ -7,6 +7,7 @@ import {
   createMulti,
   deleteFromMulti,
   deleteMulti,
+  favoriteSub,
   getAllMyFollows,
   getMyMultis,
   getMySubs,
@@ -36,6 +37,7 @@ export const MySubsProvider = ({ children }) => {
   const loading = status === "loading";
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
+  const [loadingSubs, setLoadingSubs] = useState(false); 
   const [currLocation, setCurrLocation] = useState("");
   const [currSubs, setCurrSubs] = useState([]);
   const [currSubInfo, setCurrSubInfo] = useState({});
@@ -565,10 +567,10 @@ export const MySubsProvider = ({ children }) => {
     localSubInfoCache.setItem(sub, subInfoLess);
 
     //keep local storage in check
-    const maxCacheLength = 200
+    const maxCacheLength = 200;
     localSubInfoCache.length().then((len) => {
       if (len > maxCacheLength) {
-        localSubInfoCache.key(maxCacheLength-1).then((key) => {
+        localSubInfoCache.key(maxCacheLength - 1).then((key) => {
           localSubInfoCache.removeItem(key);
         });
       }
@@ -576,9 +578,10 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    router?.query?.m 
+    router?.query?.m
       ? setMulti(router?.query?.m?.toString())
-      :  router?.asPath?.includes("m=") ? setMulti(router.asPath.split("m=").join("&")?.split("&")?.[1])
+      : router?.asPath?.includes("m=")
+      ? setMulti(router.asPath.split("m=").join("&")?.split("&")?.[1])
       : currSubs?.length > 1
       ? setMulti(`Feed`)
       : setMulti("");
@@ -653,7 +656,7 @@ export const MySubsProvider = ({ children }) => {
         router?.pathname === "/search")
     ) {
       loadLocalSubs();
-      loadAllFast();
+      tryLoadAll();
     }
   }, [router?.pathname, loadedSubs]);
   useEffect(() => {
@@ -662,17 +665,17 @@ export const MySubsProvider = ({ children }) => {
       router?.query?.slug?.[1] !== "comments" &&
       !loadedSubs
     ) {
-      loadAllFast();
+      tryLoadAll();
     }
   }, [router, loadedSubs]);
   const tryLoadAll = () => {
-    !loadedSubs && loadAllFast();
+    !loadedSubs && !loadingSubs && loadAllFast();
   };
 
   useEffect(() => {
     loadLocalSubs();
     return () => {};
-  }, [context.localSubs]);
+  }, [context.localSubs, context.localFavoriteSubs]);
 
   useEffect(() => {
     if (session && mySubs.length == 0) {
@@ -697,6 +700,7 @@ export const MySubsProvider = ({ children }) => {
           name: s,
           display_name: s,
           url: s?.substring(0, 2) === "u_" ? `/u/${s.substring(2)}` : `/r/${s}`,
+          user_has_favorited: context.localFavoriteSubs.find((f) => f?.toUpperCase() === s?.toUpperCase())
         },
       };
       localsubs.push(sub);
@@ -708,18 +712,31 @@ export const MySubsProvider = ({ children }) => {
     setMyLocalSubs(localsubs);
   };
 
+  const loadUserSubInfos = async (users) => {
+    const follows = [];
+    await Promise.all([...users.map(async (user) => {
+      const info = await loadSubInfo(user?.data?.subreddit?.display_name);
+      info?.kind == "t5" ? follows.push({...user, data: {...user.data, subreddit: info.data}}) : follows.push(user)
+    })]);
+    setMyFollowing(follows); 
+  };
+
   const loadAllFast = async () => {
     try {
       //console.log('load subs');
+      setLoadingSubs(true); 
       const multis = getMyMultis();
       const all = getAllMyFollows();
       setMyMultis(await multis);
       setloadedMultis(true);
       let { subs, users } = await all;
       setMySubs(subs);
-      setMyFollowing(users);
+      await loadUserSubInfos(users); 
+      //setMyFollowing(users);
+      setLoadingSubs(false); 
       setloadedSubs(true);
     } catch (err) {
+      setLoadingSubs(false); 
       console.log(err);
     }
   };
@@ -745,7 +762,8 @@ export const MySubsProvider = ({ children }) => {
         setloadedSubs(false);
         let data = await getAllMyFollows();
         setMySubs(data.subs);
-        setMyFollowing(data.users);
+        await loadUserSubInfos(data.users); 
+        //setMyFollowing(data.users);
         //console.log('loaded subs', data);
         setloadedSubs(true);
       } catch (err) {
@@ -771,6 +789,55 @@ export const MySubsProvider = ({ children }) => {
       seterror(false);
     };
   }, [mySubs, session, loadedSubs]);
+
+  const favorite = async (
+    makeFavorite: boolean,
+    subname: string,
+    isUser = false,
+    loggedIn = false
+  ) => {
+    if (session?.user?.name || loggedIn) {
+      const pState = isUser ? myFollowing : mySubs;
+      if (isUser) {
+        setMyFollowing((users) => {
+          return users.map((user) => {
+            if (user?.data?.subreddit?.display_name === subname) {
+              return {
+                ...user,
+                data: {
+                  ...user.data,
+                  subreddit: {
+                    ...user.data.subreddit,
+                    user_has_favorited: makeFavorite,
+                  },
+                },
+              };
+            }
+            return user;
+          });
+        });
+      } else {
+        setMySubs((subs) =>
+          subs.map((sub) => {
+            if (sub?.data?.display_name === subname) {
+              return {
+                ...sub,
+                data: { ...sub.data, user_has_favorited: makeFavorite },
+              };
+            }
+            return sub;
+          })
+        );
+      }
+
+      const res = await favoriteSub(makeFavorite, subname);
+      if (!res) {
+        isUser ? setMyFollowing(pState) : setMySubs(pState);
+      }
+    } else {
+      context.favoriteLocalSub(makeFavorite, subname); 
+    }
+  };
 
   const subscribe = async (
     action: "sub" | "unsub",
@@ -987,6 +1054,7 @@ export const MySubsProvider = ({ children }) => {
         loadedMultis,
         subscribe,
         subscribeAll,
+        favorite,
         error,
         currSubInfo,
         currLocation,

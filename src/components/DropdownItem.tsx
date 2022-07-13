@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import Image from "next/dist/client/image";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { loadSubredditInfo } from "../RedditAPI";
+import FavoriteButton from "./FavoriteButton";
 
-const DropdownItem = ({ sub, isUser = false }) => {
+const DropdownItem = ({ sub, isUser = false, showFavorite = true }) => {
   const [loaded, setLoaded] = useState(false);
   const [thumbURL, setThumbURL] = useState("");
   const [isMulti, setisMulti] = useState(false);
@@ -48,7 +49,7 @@ const DropdownItem = ({ sub, isUser = false }) => {
 
   const Line = (
     <div
-      className="flex flex-row items-center text-sm text-center cursor-pointer"
+      className="flex flex-row items-center text-sm text-center cursor-pointer group"
       // onClick={(e) => !preventNav && goTo(e)}
     >
       {/* Image */}
@@ -90,6 +91,15 @@ const DropdownItem = ({ sub, isUser = false }) => {
             sub.data?.display_name?.replace("u_", "")}
         {/* {isUser && router?.query?.slug?.[0].toString()} */}
       </h1>
+      {showFavorite && !isMulti && (
+        <div className="ml-auto">
+          <FavoriteButton
+            sub={sub}
+            favorited={sub?.data?.user_has_favorited}
+            isUser={isUser}
+          />
+        </div>
+      )}
     </div>
   );
 

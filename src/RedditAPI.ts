@@ -486,6 +486,29 @@ export const getWikiContent = async (wikiquery) => {
   }
 };
 
+export const favoriteSub = async (favorite, name) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1){
+    try{
+      const res = await fetch("https://oauth.reddit.com/api/favorite", {
+        method: "POST", 
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `make_favorite=${favorite}&sr_name=${name}&api_type=json`,
+      }); 
+      if (res.ok) {
+        return true; 
+      }
+      return false; 
+    }
+    catch (err) {
+      return false; 
+    }
+  }
+}
+
 export const subToSub = async (action, name) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {

@@ -366,6 +366,7 @@ export const MainProvider = ({ children }) => {
   };
 
   const [localSubs, setLocalSubs] = useState([]);
+  const [localFavoriteSubs, setLocalFavoriteSubs] = useState([]);
   const subToSub = async (action, sub) => {
     if (action == "sub") {
       return await addLocalSub(sub);
@@ -391,6 +392,22 @@ export const MainProvider = ({ children }) => {
     });
     return true;
   };
+  const favoriteLocalSub = async(makeFavorite, subname) => {
+    if(makeFavorite === true){
+      let found = localFavoriteSubs.find((s) => s?.toUpperCase() === subname?.toUpperCase());
+    if (!found) {
+      setLocalFavoriteSubs((p) => [...p, subname]);
+    }
+    } else {
+      setLocalFavoriteSubs((p) => {
+        let filtered = p.filter((s) => s?.toUpperCase() !== subname?.toUpperCase());
+        if (!(filtered.length > 0)) {
+          localForage.setItem("localFavoriteSubs", []);
+        }
+        return filtered;
+      });
+    }
+  }
 
   const toggleAudioOnHover = () => {
     setaudioOnHover((a) => !a);
@@ -619,6 +636,13 @@ export const MainProvider = ({ children }) => {
           let local_localSubs = JSON.parse(localStorage.getItem("localSubs"));
           local_localSubs && setLocalSubs(local_localSubs);
         }
+      };
+      //new setting no fallback
+      const loadLocalFavoriteSubs = async () => {
+        let saved_favs: [] = await localForage.getItem("localFavoriteSubs");
+        if (saved_favs !== null) {
+          saved_favs && setLocalFavoriteSubs(saved_favs);
+        } 
       };
 
       let filters = {
@@ -924,6 +948,7 @@ export const MainProvider = ({ children }) => {
       let postwideui = postWideUI();
       let wideUI = loadWideUI();
       let cardstyle = loadCardStyle();
+      let localfavorites = loadLocalFavoriteSubs(); 
       let localsubs = loadLocalSubs();
       let imgfilter = loadImgFilter();
       let imgportraitfilter = loadImgPortraitFilter();
@@ -957,6 +982,7 @@ export const MainProvider = ({ children }) => {
         postwideui,
         wideUI,
         cardstyle,
+        localfavorites, 
         localsubs,
         imgfilter,
         imgportraitfilter,
@@ -1134,6 +1160,12 @@ export const MainProvider = ({ children }) => {
       document.cookie = `localSubs=false;samesite=strict`;
     }
   }, [localSubs]);
+  useEffect(() => {
+   if (localFavoriteSubs?.length > 0){
+    localForage.setItem("localFavoriteSubs", localFavoriteSubs)
+   }
+  }, [localFavoriteSubs])
+  
 
   useEffect(() => {
     if (nsfw !== undefined) {
@@ -1233,7 +1265,9 @@ export const MainProvider = ({ children }) => {
         postNum,
         setPostNum,
         localSubs,
+        localFavoriteSubs,
         subToSub,
+        favoriteLocalSub,
         token,
         setToken,
         updateLikes,
