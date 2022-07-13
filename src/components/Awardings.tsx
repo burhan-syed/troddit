@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { numToString } from "../../lib/utils";
@@ -23,11 +23,10 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
   if (all_awardings?.length > 0 && context.showAwardings)
     return (
       <>
-        {all_awardings.map((a, i) => {
-          if ((truncate && i < MAX_DISPLAY) || !truncate) {
+        {all_awardings?.sort((a,b) => a?.coin_price > b?.coin_price ? -1 : a?.coin_price < b?.coin_price ? 1 : 0)?.slice(0,truncate ? MAX_DISPLAY : Infinity).map((a, i) => {
             return (
               <div
-                key={a?.icon_url}
+                key={a?.icon_url ?? i}
                 className={styles}
                 title={`${a?.name} (${a?.count})`}
               >
@@ -42,9 +41,6 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
                 />
               </div>
             );
-          } else {
-            return <></>;
-          }
         })}
         {rewardCount > 0 && (
           <h4 className="text-xs font-semibold">
