@@ -3,7 +3,7 @@ import { BiUser, BiLink } from "react-icons/bi";
 import { MdOutlineClear } from "react-icons/md";
 import { AiOutlineTag } from "react-icons/ai";
 import { FiFilter } from "react-icons/fi";
-import { Fragment, useEffect, useRef, useState } from "react";
+import React,{ Fragment, useEffect, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Link from "next/link";
 
@@ -276,7 +276,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
               (mode == "post"
                 ? " top-[-2.31rem] origin-top-right translate-x-[-13.4rem]  "
                 : mode == "row"
-                ? "  -top-3 origin-top-right translate-x-[-14.5rem]"
+                ? "  -top-6 origin-top-right right-6"
                 : mode == "media"
                 ? "origin-bottom-right bottom-0 right-[1.35rem] "
                 : context.cardStyle === "card2"

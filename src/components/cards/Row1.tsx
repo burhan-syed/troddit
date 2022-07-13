@@ -3,7 +3,7 @@ import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
-import { useState } from "react";
+import React,{ useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
@@ -38,7 +38,7 @@ const Row1 = ({
       onClick={(e) => handleClick(e)}
       className={
         (postNum === 0 ? " border-t rounded-t-md " : " ") +
-        "flex flex-row items-start py-1 pb-2 text-sm bg-th-post2 hover:bg-th-postHover group border-l border-r border-transparent hover:border-th-borderHighlight2   "
+        "flex sm:flex-row flex-row-reverse items-start py-1 pb-2 text-sm bg-th-post2 hover:bg-th-postHover group border-l border-r border-transparent hover:border-th-borderHighlight2   "
       }
     >
       {/* Votes */}
@@ -225,7 +225,7 @@ const Row1 = ({
               <BsBoxArrowInUpRight className="flex-none w-3 h-3 ml-auto group-hover:scale-110 " />
 
               {"("}
-              <span className="max-w-xs truncate group-hover:text-th-linkHover hover:underline">
+              <span className="max-w-[5rem] md:max-w-[10rem]  lg:max-w-xs truncate group-hover:text-th-linkHover hover:underline">
                 {post?.domain}/
                 {post?.url
                   ?.split("?")?.[0]
@@ -253,7 +253,7 @@ const Row1 = ({
           <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-th-text ">
             <button
               className={
-                "flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
+                "hidden sm:flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
                 (!hasMedia &&
                   !post?.selftext_html &&
                   "opacity-0 cursor-default")
