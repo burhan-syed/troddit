@@ -146,6 +146,9 @@ const PostModal = ({
     }
   };
 
+  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data
+  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data
+
   return (
     <div
       className={
@@ -177,7 +180,7 @@ const PostModal = ({
           }
         />
       </button>
-      {flattenedPosts?.[curPostNum - 1]?.data && (
+      {hasPrevPost && (
         <button
           title={`previous post (left arrow)`}
           onClick={(e) => {
@@ -185,7 +188,7 @@ const PostModal = ({
             e.stopPropagation();
             changePost(-1);
           }}
-          className="fixed hidden p-2 text-gray-400 outline-none cursor-pointer select-none md:block left-4 hover:text-gray-300 top-1/2"
+          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none right-7 md:rotate-0 bottom-36 md:p-2 md:text-gray-400 md:block md:left-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineLeft className="w-10 h-10" />
         </button>
@@ -202,7 +205,7 @@ const PostModal = ({
         withContext={withcontext}
       />
       {/* context.posts?.length > 0 */}
-      {flattenedPosts?.[curPostNum + 1]?.data && (
+      {hasNextPost && (
         <button
           title={`next post (right arrow)`}
           onClick={(e) => {
@@ -210,7 +213,7 @@ const PostModal = ({
             e.stopPropagation();
             changePost(1);
           }}
-          className="fixed hidden p-2 text-gray-400 outline-none cursor-pointer select-none md:block right-4 hover:text-gray-300 top-1/2"
+          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:text-gray-400 right-7 bottom-24 md:rotate-0 md:p-2 md:block md:right-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineRight className="w-10 h-10" />
         </button>
