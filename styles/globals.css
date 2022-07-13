@@ -262,6 +262,7 @@
 }
 
 :root {
+  overflow-x: hidden;
   scrollbar-width: thin;
 }
 ::-webkit-scrollbar {

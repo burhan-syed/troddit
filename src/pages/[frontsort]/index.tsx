@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Feed from "../../components/Feed";
 import NavBar from "../../components/NavBar";
 import Head from "next/head";
@@ -16,11 +16,11 @@ const Subs = ({ query }) => {
       </Head>
 
       <main className="">
-        {query.frontsort === "best" ||
+        {(query.frontsort === "best" ||
         query.frontsort === "hot" ||
         query.frontsort === "new" ||
         query.frontsort === "top" ||
-        query.frontsort === "rising" ? (
+        query.frontsort === "rising") ? (
           <>
             <Feed />
           </>

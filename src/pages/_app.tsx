@@ -11,7 +11,7 @@ import Head from "next/head";
 
 import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import packageInfo from "../../package.json";
 import { checkVersion } from "../../lib/utils";
 import ToastCustom from "../components/toast/ToastCustom";
