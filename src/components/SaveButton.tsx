@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { BsBookmarks } from "react-icons/bs";
+import React, { useEffect, useState } from "react";
+import { BsBookmarks, BsBookmarksFill } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
 import { useMainContext } from "../MainContext";
 import { saveLink } from "../RedditAPI";
@@ -31,16 +31,24 @@ const SaveButton = ({
 
   useEffect(() => {
     setIsSaved(saved);
-  }, [saveMutation.isError])
+  }, [saveMutation.isError]);
 
   const save = async () => {
     if (session) {
       setIsSaved((s) => !s);
-      saveMutation.mutate({id: id, isSaved: isSaved})
+      saveMutation.mutate({ id: id, isSaved: isSaved });
     } else if (!loading) {
       context.setLoginModal(true);
     }
   };
+
+  const bookmarkStyle =
+    "flex-none   " +
+    (row || menu ? " w-4 h-4 " : " w-5 h-5 ") +
+    (!isPortrait && !row ? " md:mr-2 " : " ") +
+    (menu ? " mr-2 " : "") +
+    (isSaved ? " text-th-upvote  " : " ");
+
   return (
     <div
       className={
@@ -54,19 +62,21 @@ const SaveButton = ({
       }}
     >
       {(post || row || menu) && (
-        <BsBookmarks
-          className={
-            "flex-none   " +
-            (row || menu ? " w-4 h-4 " : " w-5 h-5 ") +
-            (!isPortrait && !row ? " md:mr-2 " : " ") +
-            (menu ? " mr-2 " : "") +
-            (isSaved ? " text-th-upvote  " : " ")
-          }
-        />
+        <>
+          {!!isSaved ? (
+            <BsBookmarksFill className={bookmarkStyle} />
+          ) : (
+            <BsBookmarks className={bookmarkStyle} />
+          )}
+        </>
       )}
 
       {!isPortrait && (
-        <h1 className={(post ? "hidden " : "") + (!isPortrait ? " md:block " : "")}>
+        <h1
+          className={
+            (post ? "hidden " : "") + (!isPortrait && !row ? " md:block " : "") + (row ? " hidden sm:block " : "")
+          }
+        >
           {isSaved ? "Unsave" : "Save"}
           {menu ? " Post" : ""}
         </h1>
