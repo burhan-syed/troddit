@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.15.2
+### New
+- Support for favorite subreddits: 
+  - Click the star next to subscribed subreddits and followed users in the dropdown pane to pin them to the top. Works with and without a Reddit login. 
+### Changes
+- Rows view is now more mobile friendly. On small devices the thumbnail has moved to the right and expanding media button is no longer available. 
+- Post navigation buttons have been added to threads on small devices. 
+
 ## v0.15.1
 ## Changes
 - Posts are now automatically marked as read when the thread is closed instead of when it is opened

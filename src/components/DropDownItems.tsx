@@ -246,7 +246,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                             <div
                               className={
                                 (active ? "bg-th-highlight" : " ") +
-                                " px-4 py-2 group" +
+                                " px-4 py-2 group " +
                                 (filter !== "" &&
                                 !(
                                   sub.data?.display_name_prefixed
@@ -412,7 +412,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                 <div
                                   className={
                                     (active ? "bg-th-highlight" : " ") +
-                                    " px-4 py-2 group" +
+                                    " px-4 py-2 group " +
                                     (filter !== "" &&
                                     !(
                                       sub.data?.display_name_prefixed
@@ -695,7 +695,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                               <div
                                 className={
                                   (active ? "bg-th-highlight" : " ") +
-                                  " px-4 py-2" +
+                                  " px-4 py-2 group " +
                                   (filter !== "" &&
                                   !(
                                     sub.data?.display_name_prefixed
@@ -766,7 +766,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                                 <div
                                   className={
                                     (active ? "bg-th-highlight" : " ") +
-                                    " px-4 py-2" +
+                                    " px-4 py-2 group " +
                                     (filter !== "" &&
                                     !user.data?.name
                                       ?.toUpperCase()
