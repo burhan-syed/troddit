@@ -456,7 +456,7 @@ const ChildComments = ({
                           />
                         )}
                         {childcomment.kind == "more" && (
-                          <div className={hideChildren ? "hidden" : " "}>
+                          <div className={hideChildren ? "hidden" : " flex "}>
                             {true && (
                               <>
                                 {childcomment.data?.count > 0 ? (
@@ -467,7 +467,7 @@ const ChildComments = ({
                                     className={
                                       (portraitMode ? "" : "") +
                                       (loadingComments && " animate-pulse ") +
-                                      " pt-2  hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
+                                      " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
                                     }
                                     onClick={(e) => {
                                       e.preventDefault();
@@ -484,9 +484,10 @@ const ChildComments = ({
                                 ) : (
                                   <Link href={comment?.data?.permalink}>
                                     <a
-                                      className="flex items-center ml-3 text-sm select-none hover:font-semibold md:pl-0"
+                                      className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
                                       onMouseEnter={() => setHovered(true)}
                                       onMouseLeave={() => setHovered(false)}
+                                      onClick={e => e.stopPropagation()}
                                     >
                                       Continue thread <BsArrowRightShort />
                                     </a>
