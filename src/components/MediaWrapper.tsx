@@ -1,6 +1,6 @@
 import Media from "./Media";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
-import { useState, useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import Link from "next/link";
 import Awardings from "./Awardings";
 import { secondsToTime } from "../../lib/utils";
@@ -39,7 +39,7 @@ const MediaWrapper = ({
     if (post?.crosspost_parent_list?.[0]) {
       setIsXPost(true);
       setPostData(post.crosspost_parent_list[0]);
-    } else if (!postData){
+    } else if (!postData || post?.name !== postData?.name){
       setPostData(post);
     }
     return () => {
