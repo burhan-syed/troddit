@@ -27,7 +27,8 @@ async function fileExists(url) {
   return true;
 }
 
-const scrollStyle = " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full " 
+const scrollStyle =
+  " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
 
 const Media = ({
   post,
@@ -434,8 +435,11 @@ const Media = ({
           {isTweet && allowIFrame && (
             <div
               className={
-                " bg-transparent " + scrollStyle + 
-                (!postMode || !imgFull && !containerDims?.[1] ? " h-96 max-h-96 overflow-auto " : "")
+                " bg-transparent " +
+                scrollStyle +
+                (!postMode || (!imgFull && !containerDims?.[1])
+                  ? " h-96 max-h-96 overflow-auto "
+                  : "")
               }
             >
               <TwitterTweetEmbed
@@ -507,8 +511,10 @@ const Media = ({
                 ((imgFull || (!postMode && context.columns !== 1)) &&
                 !post?.mediaInfo?.isTweet
                   ? " block "
-                  : " flex items-center justify-start  relative overflow-hidden rounded-lg " +
-                    (containerDims?.[1] ? "" : " h-96 "))
+                  : post?.mediaInfo?.isTweet
+                  ? " flex items-center justify-start  relative overflow-hidden rounded-lg " +
+                    (containerDims?.[1] ? "" : " h-96 ")
+                  : " flex items-center justify-center relative ")
               } //flex items-center justify-center "}
               style={
                 containerDims?.[1] && post.mediaInfo.isTweet
@@ -584,7 +590,9 @@ const Media = ({
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  (imgFull || context?.columns == 1 && !post.mediaInfo.isTweet) ? "contain" : "fill"
+                  imgFull || (context?.columns == 1 && !post.mediaInfo.isTweet)
+                    ? "contain"
+                    : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
@@ -620,7 +628,8 @@ const Media = ({
             postMode) ? (
             <div
               className={
-                "p-1 overflow-y-auto select-text  overscroll-auto " + scrollStyle + 
+                "p-1 overflow-y-auto select-text  overscroll-auto " +
+                scrollStyle +
                 (!imgFull ? " max-h-96 border-b border-th-border" : " ") +
                 (containerDims?.[1] ? " mx-4 my-2 " : "") +
                 (read && context.dimRead ? " opacity-50 " : "")
@@ -670,7 +679,7 @@ const Media = ({
           <div className="">
             <a
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover "
+              className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs bg-opacity-50 bg-black/80 text-th-link hover:text-th-linkHover "
               target={"_blank"}
               rel="noreferrer"
               href={post?.url}

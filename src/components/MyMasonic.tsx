@@ -256,8 +256,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   const handleSizeChange = (postName, height) => {
     if (
-      height > (heightMap.get(postName)?.height ?? 0) &&
-      context.cardStyle !== "row1" //don't set row heights, they're dynamic
+      height > (heightMap.get(postName)?.height ?? 0) ||
+      context.cardStyle === "row1" //rows may grow or shrink
     ) {
       heightMap.set(postName, { height: height });
     }
@@ -283,18 +283,26 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 margin +
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
-                  : "")
-                  + " outline "
+                  : "") +
+                " outline "
               }
               style={
                 knownHeight > 0 && seen
-                  ? {
-                      height: `${
-                        heightMap.get(props?.data?.data?.name)?.height
-                      }px`,
-                      outlineWidth: "2px",
-                      outlineColor: "green",
-                    }
+                  ? context.cardStyle === "row1" //rows need to grow
+                    ? {
+                        minHeight: `${
+                          heightMap.get(props?.data?.data?.name)?.height
+                        }px`,
+                        outlineWidth: "2px",
+                        outlineColor: "green",
+                      }
+                    : {
+                        height: `${
+                          heightMap.get(props?.data?.data?.name)?.height
+                        }px`,
+                        outlineWidth: "2px",
+                        outlineColor: "green",
+                      }
                   : seen === true
                   ? { outlineWidth: "2px", outlineColor: "red" }
                   : knownHeight > 0
