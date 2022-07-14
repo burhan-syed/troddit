@@ -18,6 +18,7 @@ import UserFlair from "./UserFlair";
 import Image from "next/image";
 import { BsArrowRightShort } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
+import { InView, useInView } from "react-intersection-observer";
 
 const ChildComments = ({
   comment,
@@ -32,7 +33,17 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
   const { data: session, status } = useSession();
-  const parentRef = useRef<HTMLDivElement>(null);
+  const [inViewRef, inView] = useInView({
+    /* Optional options */
+    threshold: 0,
+    //skip: depth !== 0 && !(depth % 2 === 0),
+    onChange: (inView, entry) => {
+     console.log(inView, comment?.data?.author);
+     setOutOfView(!InView);
+    },
+  });
+  const [outOfView, setOutOfView] = useState(true);
+  const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
   const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
@@ -40,6 +51,17 @@ const ChildComments = ({
   const [hideChildren, setHideChildren] = useState(
     comment?.data?.collapsed ?? false
   );
+
+  const setRefs = useCallback(
+    (node) => {
+      // Ref's from useRef needs to have the node assigned to `current`
+      parentRef.current = node;
+      // Callback refs, like the one from `useInView`, is a function that takes the node as an argument
+      inViewRef(node);
+    },
+    [inViewRef],
+  );
+
   const toggleHidden = (override?) => {
     setHideChildren((h) => {
       let collapsed = !h;
@@ -142,7 +164,7 @@ const ChildComments = ({
 
   return (
     <div
-      ref={parentRef}
+      ref={setRefs}
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
@@ -427,7 +449,8 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-
+              {!outOfView && <>
+              
               <div
                 onMouseEnter={() => setHovered(false)}
                 onMouseLeave={() => setHovered(true)}
@@ -502,6 +525,8 @@ const ChildComments = ({
                   </>
                 )}
               </div>
+              </>}
+
             </div>
           </div>
         </div>
