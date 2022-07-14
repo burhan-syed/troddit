@@ -10,10 +10,12 @@ import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
 import  useResizeObserver  from "@react-hook/resize-observer";
 
-const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeChange }) => {
+const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeChange, forceSizeChange }) => {
   const postRef = useRef<HTMLDivElement>(null);
   useResizeObserver(postRef, () => handleSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height))
-  
+  const recomputeSize = () => {
+    forceSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height)
+  }
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [select, setSelect] = useState(false);
@@ -97,7 +99,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
   }, [read])
 
   return (
-    <div ref={postRef} className={!post?.data?.mediaInfo?.isMedia ? "  border-2 border-yellow-300 " : ""}>
+    <div ref={postRef} className={""}>
       {select && (
         <PostModal
           permalink={post?.data?.permalink}
@@ -130,6 +132,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
             read={read}
             handleClick={handleClick}
             origCommentCount={origCommentCount}
+            recomputeSize={recomputeSize}
           />
         ) : context?.cardStyle === "card2" ? (
           <Card2

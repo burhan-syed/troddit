@@ -3,7 +3,7 @@ import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
-import React,{ useState } from "react";
+import React,{ useEffect, useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
@@ -29,9 +29,14 @@ const Row1 = ({
   read,
   handleClick,
   origCommentCount,
+  recomputeSize
 }) => {
   const context: any = useMainContext();
   const [expand, setexpand] = useState(false);
+  useEffect(() => {
+    recomputeSize(); 
+  }, [expand])
+  
 
   return (
     <div

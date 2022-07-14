@@ -256,12 +256,17 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   const handleSizeChange = (postName, height) => {
     if (
-      height > (heightMap.get(postName)?.height ?? 0) ||
-      context.cardStyle === "row1" //rows may grow or shrink
+      height > (heightMap.get(postName)?.height ?? 0) 
+      //|| context.cardStyle === "row1" //rows may grow or shrink
     ) {
       heightMap.set(postName, { height: height });
     }
   };
+
+  //for when rows are collapsed
+  const forceSizeChange = (postName, height) => {
+    heightMap.set(postName, {height: height})
+  }
 
   const PostCard = useCallback(
     (props) => {
@@ -316,6 +321,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 fetchNextPage={feed.fetchNextPage}
                 curKey={curKey}
                 handleSizeChange={handleSizeChange}
+                forceSizeChange={forceSizeChange}
               />
             </div>
           )}
