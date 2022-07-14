@@ -147,8 +147,9 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let isSelf = false; //self text post
   let isTweet = false;
   let isIframe = false;
+  let isMedia = false; 
 
-  let dimensions = [-1, -1]; //x,y pixels
+  let dimensions = [0, 0]; //x,y pixels
 
   const loadInfo = async (post, quick = false) => {
     let a = await findVideo(post);
@@ -183,13 +184,15 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       let i = await findIframe(post);
       if (i) {
         isIframe = true;
+        isMedia = true; 
       }
     }
 
     if (
       post.thumbnail === "self" ||
       post.is_self ||
-      post?.domain?.includes("self")
+      post?.domain?.includes("self") || 
+      post?.selftext_html
     ) {
       isSelf = true;
     }
@@ -203,8 +206,9 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       isLink = false;
     }
 
-    //portrait check
+    //portrait && media check
     if (dimensions[0] > 0) {
+      isMedia = true; 
       if (dimensions[1] >= dimensions[0]) {
         isPortrait = true;
       } else if (dimensions[1] < dimensions[0]) {
@@ -213,13 +217,13 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     }
 
     //treat these as self posts, not images/videos/links or anything else
-    if (post?.selftext_html) {
+    if (isSelf) {
       isImage = false;
       isVideo = false;
       isGallery = false;
       isLink = false;
       isPortrait = false;
-      isSelf = true;
+      isMedia = false; 
     }
 
     return {
@@ -237,6 +241,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       isLink,
       isSelf,
       dimensions,
+      isMedia
     };
   };
 

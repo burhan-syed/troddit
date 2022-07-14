@@ -1,5 +1,5 @@
 /* eslint-disable react/no-children-prop */
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useWindowSize } from "@react-hook/window-size";
 import { Masonry, useInfiniteLoader } from "masonic";
 
@@ -12,6 +12,7 @@ import toast, { ToastIcon } from "react-hot-toast";
 import ToastCustom from "./toast/ToastCustom";
 import useRefresh from "../hooks/useRefresh";
 import useFeedGallery from "../hooks/useFeedGallery";
+import { InView } from "react-intersection-observer";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -29,7 +30,7 @@ interface MyMasonicProps {
 
 const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const context: any = useMainContext();
-  const {setFeedData} = useFeedGallery(); 
+  const { setFeedData } = useFeedGallery();
 
   const [cols, setCols] = useState(3);
   const [items, setItems] = useState<any[]>([]);
@@ -80,10 +81,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   const [domain, setDomain] = useState("www.troddit.com");
   useEffect(() => {
-    setDomain(window?.location?.hostname ?? "www.troddit.com")
-  
-  }, [])
-  
+    setDomain(window?.location?.hostname ?? "www.troddit.com");
+  }, []);
 
   useEffect(() => {
     context.setColumns(cols);
@@ -96,16 +95,16 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     const tryUpdatePostsInPlace = (newPosts) => {
       setItems((pposts) => {
         let newPostCount = 0;
-        let pPostMap = new Map(); 
-        pposts.forEach(p => pPostMap.set(p?.data?.name, p));
-        newPosts.forEach(np => {
-          let prevPost = pPostMap.get(np?.data?.name); 
-          if (prevPost?.data?.name){
-            pPostMap.set(prevPost?.data?.name, np); 
+        let pPostMap = new Map();
+        pposts.forEach((p) => pPostMap.set(p?.data?.name, p));
+        newPosts.forEach((np) => {
+          let prevPost = pPostMap.get(np?.data?.name);
+          if (prevPost?.data?.name) {
+            pPostMap.set(prevPost?.data?.name, np);
           } else {
-            newPostCount += 1; 
+            newPostCount += 1;
           }
-        })
+        });
         setNewPostsCount(newPostCount);
         setNewPosts(() => (newPostCount > 0 ? newPosts : []));
         return Array.from(pPostMap.values());
@@ -136,7 +135,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     if (newPostsCount > 0) {
       toast.remove("new_post");
-      if (!context.askToUpdateFeed){
+      if (!context.askToUpdateFeed) {
         overwritePosts();
       } else {
         let tId = toast.custom(
@@ -154,7 +153,6 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
           { position: "bottom-right", duration: Infinity, id: "new_post" }
         );
       }
-   
     }
     () => {
       toast.remove("new_post");
@@ -171,8 +169,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     }
     return () => {
       setFeedData([]);
-    }
-  }, [items])
+    };
+  }, [items]);
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     feed?.fetchNextPage();
@@ -213,18 +211,111 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     </>
   );
 
+  const [heightMap, setHeightMap] = useState(new Map());
+  const [seenMap, setSeenMap] = useState(new Map());
+  // const intersectRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    setHeightMap(new Map());
+    setSeenMap(new Map());
+  }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
+
+  const margin = useMemo(
+    () =>
+      context.cardStyle === "row1"
+        ? "m-0"
+        : cols === 1
+        ? "m-1"
+        : cols > 1 && windowWidth < 640 //sm
+        ? "m-0"
+        : cols > 3 && windowWidth < 1280 //xl
+        ? "m-0.5"
+        : cols > 3 && windowWidth > 1280 //xl
+        ? "m-1"
+        : "m-1",
+    [cols, context.cardStyle, windowWidth]
+  );
+
+  const handleIntersectChange = (
+    inView: boolean,
+    entry: IntersectionObserverEntry,
+    post
+  ) => {
+    if (
+      entry.intersectionRect?.x === 0 &&
+      !inView &&
+      entry.boundingClientRect.top < 0 &&
+      Math.abs(entry?.boundingClientRect?.bottom) < (windowHeight * 1) / 2
+    ) {
+      console.log(
+        post?.data?.title,
+        heightMap.get(post?.data?.name)?.height?.toFixed()
+      );
+      seenMap.set(post?.data?.name, { seen: true });
+    }
+  };
+
+  const handleSizeChange = (postName, height) => {
+    if (
+      height > (heightMap.get(postName)?.height ?? 0) &&
+      context.cardStyle !== "row1" //don't set row heights, they're dynamic
+    ) {
+      heightMap.set(postName, { height: height });
+    }
+  };
+
   const PostCard = useCallback(
-    (props) => (
-      <>
-        <Post
-          post={props.data}
-          postNum={props.index}
-          fetchNextPage={feed.fetchNextPage}
-          curKey={curKey}
-        />
-      </>
-    ),
-    []
+    (props) => {
+      const post = props?.data;
+      const seen = seenMap.get(props?.data?.data?.name)?.seen === true;
+      const knownHeight = heightMap.get(props?.data?.data?.name)?.height;
+
+      return (
+        <InView
+          threshold={0}
+          onChange={(inView, entry) =>
+            handleIntersectChange(inView, entry, post)
+          }
+        >
+          {({ inView, ref, entry }) => (
+            <div
+              ref={ref}
+              className={
+                margin +
+                (knownHeight && seen
+                  ? " hover:z-50 overflow-hidden hover:overflow-visible"
+                  : "")
+                  + " outline "
+              }
+              style={
+                knownHeight > 0 && seen
+                  ? {
+                      height: `${
+                        heightMap.get(props?.data?.data?.name)?.height
+                      }px`,
+                      outlineWidth: "2px",
+                      outlineColor: "green",
+                    }
+                  : seen === true
+                  ? { outlineWidth: "2px", outlineColor: "red" }
+                  : knownHeight > 0
+                  ? { outlineWidth: "2px", outlineColor: "blue" }
+                  : { outlineWidth: "2px", outlineColor: "white" }
+              }
+            >
+              <Post
+                post={props.data}
+                postNum={props.index}
+                fetchNextPage={feed.fetchNextPage}
+                curKey={curKey}
+                handleSizeChange={handleSizeChange}
+              />
+            </div>
+          )}
+        </InView>
+      );
+    },
+
+    [heightMap, cols]
   );
 
   return (
@@ -235,7 +326,13 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         columnGutter={0}
         columnCount={cols}
         items={items}
-        itemHeightEstimate={cols === 1 ? 0 : itemheightestimate} //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
+        itemHeightEstimate={
+          cols === 1
+            ? context.cardStyle === "row1"
+              ? 96
+              : 0
+            : itemheightestimate
+        } //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
         overscanBy={2}
         render={PostCard}
         className="outline-none"
@@ -270,6 +367,5 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     </div>
   );
 };
-
 
 export default MyMasonic;

@@ -8,15 +8,18 @@ import Card2 from "./cards/Card2";
 import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
+import  useResizeObserver  from "@react-hook/resize-observer";
 
-const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
+const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeChange }) => {
+  const postRef = useRef<HTMLDivElement>(null);
+  useResizeObserver(postRef, () => handleSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height))
+  
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [select, setSelect] = useState(false);
   const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [hasMedia, setHasMedia] = useState(false);
   const [margin, setMargin] = useState("m-1");
   const {read} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
@@ -26,23 +29,12 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
       ? setHideNSFW(true)
       : setHideNSFW(false);
     post?.data.spoiler && setHideNSFW(true);
-    findMedia();
     return () => {
       setHideNSFW(false);
     };
   }, [context, post]);
 
-  useEffect(() => {
-    //console.log(context.columns, context.cardStyle);
-    context.cardStyle === "row1"
-      ? setMargin("m-0")
-      : context.columns === 1
-      ? setMargin("m-1")
-      : context.columns > 4
-      ? setMargin("m-0.5")
-      : setMargin("m-1");
-  }, [context.columns, context.cardStyle]);
-
+ 
   const [lastRoute, setLastRoute] = useState("");
   const [returnRoute, setReturnRoute] = useState("");
 
@@ -100,40 +92,12 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
     }
   };
 
-  const findMedia = () => {
-    if (post?.data?.preview?.reddit_video_preview) {
-      setHasMedia(true);
-      return true;
-    } else if (post?.data?.media?.reddit_video) {
-      setHasMedia(true);
-      return true;
-    } else if (post?.data?.media_metadata) {
-      setHasMedia(true);
-      return true;
-    } else if (post?.data?.preview?.images?.[0]) {
-      setHasMedia(true);
-      return true;
-    } else if (post?.data?.url) {
-      if (
-        post?.data.url.includes(".jpg") ||
-        post?.data.url.includes(".png") ||
-        post?.data.url.includes(".gif")
-      ) {
-        setHasMedia(true);
-        return true;
-      }
-    } else {
-      setHasMedia(false);
-      return false;
-    }
-  };
-
   useEffect(() => {
     if (read) {setOrigCommentCount(read?.numComments)} else {setOrigCommentCount(undefined)};
   }, [read])
 
   return (
-    <div className={margin + " "}>
+    <div ref={postRef} className={!post?.data?.mediaInfo?.isMedia ? "  border-2 border-yellow-300 " : ""}>
       {select && (
         <PostModal
           permalink={post?.data?.permalink}
@@ -159,7 +123,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
         ) : context?.cardStyle === "row1" ? (
           <Row1
             post={post?.data}
-            hasMedia={hasMedia}
+            hasMedia={post?.data?.mediaInfo?.isMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
@@ -170,7 +134,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
         ) : context?.cardStyle === "card2" ? (
           <Card2
             post={post?.data}
-            hasMedia={hasMedia}
+            hasMedia={post?.data?.mediaInfo?.isMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
@@ -182,7 +146,7 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {} }) => {
         ) : (
           <Card1
             post={post?.data}
-            hasMedia={hasMedia}
+            hasMedia={post?.data?.mediaInfo?.isMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}

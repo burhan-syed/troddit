@@ -1,7 +1,7 @@
 import Image from "next/dist/client/image";
 import Gallery from "./Gallery";
 import VideoHandler from "./VideoHandler";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
@@ -27,6 +27,8 @@ async function fileExists(url) {
   return true;
 }
 
+const scrollStyle = " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full " 
+
 const Media = ({
   post,
   imgFull = false,
@@ -39,7 +41,7 @@ const Media = ({
 }) => {
   const context: any = useMainContext();
   const [windowWidth, windowHeight] = useWindowSize();
-  const mediaRef = useRef(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
   const [isPortrait, setIsPortrait] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
@@ -330,7 +332,17 @@ const Media = ({
   //scale media
   const [imgheight, setimgheight] = useState({}); //sets style height for image
   const [maxheight, setmaxheight] = useState({}); //sets maxheight style
-  const [maxheightnum, setmaxheightnum] = useState<number>(); //maxheight set in style
+  const [maxheightnum, setmaxheightnum] = useState<number>(() => {
+    let cropamount = 0.95;
+    if (postMode) {
+      cropamount = 0.5;
+    } else if (context?.columns === 1 && !imgFull) {
+      cropamount = 0.75;
+    }
+    return containerDims?.[1]
+      ? containerDims?.[1]
+      : Math.floor(windowHeight * cropamount);
+  }); //maxheight set in style
   useEffect(() => {
     //console.log(postMode, context.columns, imgFull)
     let cropamount = 0.95;
@@ -373,7 +385,12 @@ const Media = ({
     imageInfo.height,
   ]);
   useEffect(() => {
-    if (mediaRef.current.clientWidth && imageInfo.height && imageInfo.width) {
+    if (
+      mediaRef.current &&
+      mediaRef.current.clientWidth &&
+      imageInfo.height &&
+      imageInfo.width
+    ) {
       let r = mediaRef.current.clientWidth / imageInfo.width;
       let height = r * imageInfo.height;
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
@@ -381,17 +398,20 @@ const Media = ({
   }, [imageInfo, mediaRef?.current?.clientWidth]);
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
-  const externalLink = (   <a
-    onClick={(e) => e.stopPropagation()}
-    className="flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80 md:bg-black/0 md:group-hover:bg-black/80 bg-opacity-50 "
-    target={"_blank"}
-    rel="noreferrer"
-    href={post?.url}
-  >
-    <span className="ml-2 md:opacity-0 group-hover:opacity-100">{post?.url?.split("?")?.[0]}</span>
-    <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto mr-2 text-white group-hover:scale-110 " />
-
-  </a>)
+  const externalLink = (
+    <a
+      onClick={(e) => e.stopPropagation()}
+      className="flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80 md:bg-black/0 md:group-hover:bg-black/80 bg-opacity-50 "
+      target={"_blank"}
+      rel="noreferrer"
+      href={post?.url}
+    >
+      <span className="ml-2 md:opacity-0 group-hover:opacity-100">
+        {post?.url?.split("?")?.[0]}
+      </span>
+      <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto mr-2 text-white group-hover:scale-110 " />
+    </a>
+  );
 
   return (
     <div className="block select-none group" ref={mediaRef}>
@@ -412,18 +432,22 @@ const Media = ({
           )}
 
           {isTweet && allowIFrame && (
-            <div className={" bg-transparent"}>
+            <div
+              className={
+                " bg-transparent " + scrollStyle + 
+                (!postMode || !imgFull && !containerDims?.[1] ? " h-96 max-h-96 overflow-auto " : "")
+              }
+            >
               <TwitterTweetEmbed
                 placeholder={
-                  <div className="relative mx-auto my-5 border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
+                  <div className="relative mx-auto border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
                   </div>
                 }
                 options={{
-                  theme: theme,
-                  conversation: "none",
+                  theme: theme === "light" ? "light" : "dark",
                   align: "center",
                 }}
                 tweetId={
@@ -445,7 +469,7 @@ const Media = ({
                   (containerDims?.[1]
                     ? ""
                     : postMode || context.columns == 1
-                    ? " max-h-[80vh]"
+                    ? " max-h-[75vh]"
                     : "")
                 }
                 style={
@@ -483,31 +507,38 @@ const Media = ({
                 ((imgFull || (!postMode && context.columns !== 1)) &&
                 !post?.mediaInfo?.isTweet
                   ? " block "
-                  : " flex items-center justify-center ") +
-                (post?.mediaInfo?.isTweet ? " py-14 " : " ")
+                  : " flex items-center justify-start  relative overflow-hidden rounded-lg " +
+                    (containerDims?.[1] ? "" : " h-96 "))
               } //flex items-center justify-center "}
               style={
-                (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
-                (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
-                (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
+                containerDims?.[1] && post.mediaInfo.isTweet
+                  ? { height: `${containerDims?.[1]}px` }
+                  : (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
+                    (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
+                    (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
                   ? imgheight
                   : !post?.mediaInfo?.isTweet
                   ? { height: `${imgWidthHeight?.[1]}px` }
                   : {}
               }
             >
-              {!false && (
+              {!mediaLoaded && (
                 <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                   <ImSpinner2 className="w-8 h-8 animate-spin" />
                 </div>
               )}
               {post?.mediaInfo?.isTweet && (
                 <div className="absolute flex w-full h-full bg-[#1A8CD8] rounded-lg  ">
-                  <AiOutlineTwitter className="absolute right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
+                  <AiOutlineTwitter className="absolute z-20 right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
                 </div>
               )}
               {post?.mediaInfo?.isLink && (
-                <div className="absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all ">
+                <div
+                  className={
+                    "absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all " +
+                    (post?.mediaInfo?.isTweet ? " rounded-b-lg " : "")
+                  }
+                >
                   {externalLink}
                 </div>
               )}
@@ -517,6 +548,8 @@ const Media = ({
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
                       undefined
+                    : post?.mediaInfo?.isTweet
+                    ? containerDims?.[1] ?? 384 //h-96
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -528,6 +561,8 @@ const Media = ({
                 width={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? undefined
+                    : post?.mediaInfo?.isTweet
+                    ? mediaRef?.current?.clientWidth - 55 //twitter bird size
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
                         (mediaRef.current.clientWidth / imageInfo.width) >
@@ -542,20 +577,18 @@ const Media = ({
                 layout={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? "fill"
-                    : imgFull //|| post?.mediaInfo?.isTweet
+                    : imgFull && !post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"
                 }
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  imgFull || context?.columns == 1 ? "contain" : "fill"
+                  (imgFull || context?.columns == 1 && !post.mediaInfo.isTweet) ? "contain" : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
-                className={
-                  post?.mediaInfo?.isTweet ? "rounded-lg object-contain" : ""
-                }
+                className={post?.mediaInfo?.isTweet ? "object-contain " : ""}
               />
             </div>
           )}
@@ -582,15 +615,12 @@ const Media = ({
             ""
           )}
 
-          
-
           {post?.selftext_html &&
           ((!context.mediaOnly && context.cardStyle !== "card2") ||
             postMode) ? (
             <div
               className={
-                "p-1 overflow-y-auto select-text  overscroll-auto " +
-                "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full" +
+                "p-1 overflow-y-auto select-text  overscroll-auto " + scrollStyle + 
                 (!imgFull ? " max-h-96 border-b border-th-border" : " ") +
                 (containerDims?.[1] ? " mx-4 my-2 " : "") +
                 (read && context.dimRead ? " opacity-50 " : "")
@@ -611,30 +641,45 @@ const Media = ({
             ""
           )}
         </>
-      ) : post?.mediaInfo?.dimensions?.[1] ? (
-        <div
-          className=""
-          style={{ height: `${post.mediaInfo.dimensions[1]}px` }}
-        ></div>
       ) : (
-        <div></div>
+        post?.mediaInfo?.dimensions?.[1] > 0 &&
+        mediaRef?.current &&
+        mediaRef?.current?.clientWidth > 0 &&
+        maxheightnum && (
+          <div
+            className=""
+            style={{
+              height: `${
+                (mediaRef.current.clientWidth / post.mediaInfo.dimensions[0]) *
+                  post.mediaInfo.dimensions[1] >
+                maxheightnum
+                  ? maxheightnum
+                  : (mediaRef.current.clientWidth /
+                      post.mediaInfo.dimensions[0]) *
+                    post.mediaInfo.dimensions[1]
+              }px`,
+            }}
+          ></div>
+        )
       )}
-      {post?.mediaInfo?.isLink  && !isImage && !isMP4 && !isIFrame && !isGallery && (
-            <div className="">
-                <a
-               onClick={(e) => e.stopPropagation()}
-               className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover "
-               target={"_blank"}
-               rel="noreferrer"
-               href={post?.url}
-             >
-               <span className="opacity-100 ">{post?.url?.split("?")?.[0]}</span>
-               <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto text-white group-hover:scale-110 " />
-
-             </a>
-            </div>
-             
-          )}
+      {post?.mediaInfo?.isLink &&
+        !isImage &&
+        !isMP4 &&
+        !isIFrame &&
+        !isGallery && (
+          <div className="">
+            <a
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover "
+              target={"_blank"}
+              rel="noreferrer"
+              href={post?.url}
+            >
+              <span className="opacity-100 ">{post?.url?.split("?")?.[0]}</span>
+              <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto text-white group-hover:scale-110 " />
+            </a>
+          </div>
+        )}
     </div>
   );
 };
