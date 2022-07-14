@@ -241,10 +241,10 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       entry.boundingClientRect.top < 0 &&
       Math.abs(entry?.boundingClientRect?.bottom) < (windowHeight * 1) / 2
     ) {
-      console.log(
-        post?.data?.title,
-        heightMap.get(post?.data?.name)?.height?.toFixed()
-      );
+      // console.log(
+      //   post?.data?.title,
+      //   heightMap.get(post?.data?.name)?.height?.toFixed()
+      // );
       seenMap.set(post?.data?.name, { seen: true });
     }
   };
@@ -284,7 +284,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "") +
-                " outline "
+                "  "
               }
               style={
                 knownHeight > 0 && seen
@@ -293,21 +293,22 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                         minHeight: `${
                           heightMap.get(props?.data?.data?.name)?.height
                         }px`,
-                        outlineWidth: "2px",
-                        outlineColor: "green",
+                        // outlineWidth: "2px",
+                        // outlineColor: "green",
                       }
                     : {
                         height: `${
                           heightMap.get(props?.data?.data?.name)?.height
                         }px`,
-                        outlineWidth: "2px",
-                        outlineColor: "green",
+                        // outlineWidth: "2px",
+                        // outlineColor: "green",
                       }
-                  : seen === true
-                  ? { outlineWidth: "2px", outlineColor: "red" }
-                  : knownHeight > 0
-                  ? { outlineWidth: "2px", outlineColor: "blue" }
-                  : { outlineWidth: "2px", outlineColor: "white" }
+                      :{}
+                  // : seen === true
+                  // ? { outlineWidth: "2px", outlineColor: "red" }
+                  // : knownHeight > 0
+                  // ? { outlineWidth: "2px", outlineColor: "blue" }
+                  // : { outlineWidth: "2px", outlineColor: "white" }
               }
             >
               <Post

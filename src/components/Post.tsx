@@ -22,7 +22,6 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
   const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [margin, setMargin] = useState("m-1");
   const {read} = useRead(post?.data?.name)
   const [commentsDirect, setCommentsDirect] = useState(false); 
   const [origCommentCount, setOrigCommentCount] = useState<number>(); 
