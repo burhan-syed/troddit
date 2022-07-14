@@ -33,16 +33,16 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
   const { data: session, status } = useSession();
-  const [inViewRef, inView] = useInView({
+  const [outOfView, setOutOfView] = useState(depth % 3 === 0);
+  const [inViewRef] = useInView({
     /* Optional options */
     threshold: 0,
-    //skip: depth !== 0 && !(depth % 2 === 0),
+    skip: (depth % 3 !== 0), 
     onChange: (inView, entry) => {
-     console.log(inView, comment?.data?.author);
+     //console.log(inView, comment?.data?.author);
      setOutOfView(!InView);
     },
   });
-  const [outOfView, setOutOfView] = useState(true);
   const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
   const [moreComments, setMoreComments] = useState([]);
