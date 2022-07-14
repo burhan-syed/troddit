@@ -188,7 +188,7 @@ const PostModal = ({
             e.stopPropagation();
             changePost(-1);
           }}
-          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none right-7 md:rotate-0 bottom-36 md:p-2 md:text-gray-400 md:block md:left-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
+          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:w-12 right-7 md:rotate-0 bottom-36 md:p-2 md:text-gray-400 md:block md:left-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineLeft className="w-10 h-10" />
         </button>
@@ -213,7 +213,7 @@ const PostModal = ({
             e.stopPropagation();
             changePost(1);
           }}
-          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:text-gray-400 right-7 bottom-24 md:rotate-0 md:p-2 md:block md:right-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
+          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:w-12 md:text-gray-400 right-7 bottom-24 md:rotate-0 md:p-2 md:block md:right-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineRight className="w-10 h-10" />
         </button>
