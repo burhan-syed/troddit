@@ -33,7 +33,6 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const { setFeedData } = useFeedGallery();
 
   const [cols, setCols] = useState(3);
-  const [items, setItems] = useState<any[]>([]);
   const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [masonicKey, setMasonicKey] = useState(curKey);
   const [windowWidth, windowHeight] = useWindowSize();
@@ -79,15 +78,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     context.postOpen,
   ]);
 
-  const [domain, setDomain] = useState("www.troddit.com");
-  useEffect(() => {
-    setDomain(window?.location?.hostname ?? "www.troddit.com");
-  }, []);
-
   useEffect(() => {
     context.setColumns(cols);
   }, [cols]);
 
+  const [items, setItems] = useState<any[]>([]);
   const [newPosts, setNewPosts] = useState<any[]>([]);
   const [newPostsCount, setNewPostsCount] = useState(0);
 
@@ -256,7 +251,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   const handleSizeChange = (postName, height) => {
     if (
-      height > (heightMap.get(postName)?.height ?? 0) 
+      height > (heightMap.get(postName)?.height ?? 0)
       //|| context.cardStyle === "row1" //rows may grow or shrink
     ) {
       heightMap.set(postName, { height: height });
@@ -265,8 +260,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
 
   //for when rows are collapsed
   const forceSizeChange = (postName, height) => {
-    heightMap.set(postName, {height: height})
-  }
+    heightMap.set(postName, { height: height });
+  };
 
   const PostCard = useCallback(
     (props) => {
@@ -343,8 +338,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         itemHeightEstimate={
           cols === 1
             ? context.cardStyle === "row1"
-              ? 96
-              : 0
+              ? 0
+              : itemheightestimate
             : itemheightestimate
         } //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
         overscanBy={2}
@@ -373,7 +368,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       )}
       {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
         <h1 className="text-center">
-          Loading page {(feed?.data?.pages?.length ?? 1) + 1}...
+          Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
         </h1>
       )}
 

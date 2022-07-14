@@ -32,9 +32,9 @@ const Row1 = ({
   recomputeSize
 }) => {
   const context: any = useMainContext();
-  const [expand, setexpand] = useState(false);
+  const [expand, setexpand] = useState<boolean>();
   useEffect(() => {
-    recomputeSize(); 
+    if (expand === false) recomputeSize(); 
   }, [expand])
   
 
@@ -266,7 +266,7 @@ const Row1 = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                !(!hasMedia && !post?.selftext_html) && setexpand((s) => !s);
+                !(!hasMedia && !post?.selftext_html) && setexpand((s) => !!!s);
               }}
             >
               {hasMedia || post?.selftext_html ? (
