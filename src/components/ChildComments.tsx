@@ -272,7 +272,7 @@ const ChildComments = ({
                 </a>
               </Link>
 
-              {(comment?.data?.author == op || comment?.data?.is_submitter) && (
+              {(comment?.data?.is_submitter) && (
                 <>
                   <p className="px-0.5 font-medium text-th-accent ">{"OP"}</p>
                 </>
