@@ -189,10 +189,10 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   //   console.log("reset map..");
   //   return new Map();
   // }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
-  // const seenMap = useMemo(
-  //   () => new Map(),
-  //   [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
-  // );
+  const seenMap = useMemo(
+    () => new Map(),
+    [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
+  );
   const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap(
     {
       columns: cols,
@@ -243,10 +243,10 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       Math.abs(entry?.boundingClientRect?.bottom) < (windowHeight * 1) / 2
     ) {
       //console.log(post?.data?.title)
-      setSeen(post?.data?.name, { seen: true });
+      //setSeen(post?.data?.name, { seen: true });
+      seenMap.set(post?.data?.name, { seen: true }); //using local map instead.. don't want to prerender heights if they haven't been scrolled onto the page yet
       context?.autoSeen && localSeen.setItem(post?.data?.name, { time: new Date() });
 
-      //seenMap.set(post?.data?.name, { seen: true });
     }
   };
 
@@ -267,7 +267,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const PostCard = useCallback(
     (props) => {
       const post = props?.data;
-      const seen = getSeen()?.get(props?.data?.data?.name)?.seen === true;
+      const seen = seenMap?.get(props?.data?.data?.name)?.seen === true;//getSeen()?.get(props?.data?.data?.name)?.seen === true;
       const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
       return (
         <InView

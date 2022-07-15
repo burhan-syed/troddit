@@ -88,7 +88,6 @@ const DropDownItems = ({ show, hideExtra = false }) => {
         ),
       ];
     } else {
-      console.log(myLocalSubs);
       return [...myLocalSubs?.filter((sub) => sub?.data?.user_has_favorited)];
     }
   }, [mySubs, myFollowing, myLocalSubs]);
