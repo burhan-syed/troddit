@@ -1,4 +1,4 @@
-import { localRead, subredditFilters, userFilters } from "../src/MainContext";
+import { localRead, localSeen, subredditFilters, userFilters } from "../src/MainContext";
 
 const DOMAIN = "www.troddit.com";
 export const secondsToTime = (
@@ -484,6 +484,7 @@ export const filterPosts = async (
   domain=DOMAIN
 ) => {
   let {
+    seenFilter,
     readFilter,
     imgFilter,
     vidFilter,
@@ -524,6 +525,10 @@ export const filterPosts = async (
       }
 
       //if filtering read, no need for other content checks
+      if (!seenFilter && (await localSeen.getItem(d?.name))){
+        filtercount +=1; 
+        return false; 
+      }
       if (!readFilter && (await localRead.getItem(d?.name))) {
         filtercount += 1;
         return false;

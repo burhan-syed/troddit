@@ -2,7 +2,7 @@ import { useTheme } from "next-themes";
 import ReactSwitch from "react-switch";
 import { BsX, BsCheck } from "react-icons/bs";
 import { useMainContext } from "../MainContext";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useRefresh from "../hooks/useRefresh";
 const ToggleFilters = ({ filter, withSubtext = false, quickToggle = false}) => {
   const context: any = useMainContext();
@@ -22,6 +22,10 @@ const ToggleFilters = ({ filter, withSubtext = false, quickToggle = false}) => {
     //console.log(filter, context.filters, context.filters.filter)
     let f = "";
     switch (filter) {
+      case "seen":
+        setSubtext("Will attempt to filter seen posts if toggled off");
+        f = "seenFilter";
+        break;
       case "read":
         setSubtext("Filter or show read posts");
         f = "readFilter";

@@ -1,4 +1,5 @@
 import { Tab } from "@headlessui/react";
+import React from "react";
 import { useState, useRef, useEffect, createRef } from "react";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 
@@ -156,6 +157,7 @@ const Settings = () => {
           "portrait",
           "landscape",
           "read",
+          "seen"
         ].map((f, i) => (
           <div key={f}>
             <ToggleFilters filter={f} withSubtext={true} quickToggle={true} />
@@ -171,6 +173,7 @@ const Settings = () => {
       settings: [
         ...[
           "autoRead",
+          "autoSeen",
           "infiniteLoading",
           "autoRefreshFeed",
         ].map((s: any) => (

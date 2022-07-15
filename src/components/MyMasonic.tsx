@@ -4,7 +4,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { Masonry, useInfiniteLoader } from "masonic";
 
 import Post from "./Post";
-import { useMainContext } from "../MainContext";
+import { localSeen, useMainContext } from "../MainContext";
 // import { usePlausible } from "next-plausible";
 import { UseInfiniteQueryResult } from "react-query";
 
@@ -244,13 +244,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     ) {
       //console.log(post?.data?.title)
       setSeen(post?.data?.name, { seen: true });
+      context?.autoSeen && localSeen.setItem(post?.data?.name, { time: new Date() });
+
       //seenMap.set(post?.data?.name, { seen: true });
     }
   };
 
   const handleSizeChange = (postName, height) => {
     const pHeight = getHeights()?.get(postName)?.height ?? 0;
-    console.log('pHeight', pHeight)
     if (height > pHeight) {
       setHeight(postName, { height: height });
       //heightMap.set(postName, { height: height });

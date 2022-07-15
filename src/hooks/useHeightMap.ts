@@ -56,7 +56,6 @@ const useHeightMap = (args: UseHeightMap) => {
   }
   const getHeights = () => {
     const heights = queryClient.getQueryData(queryKeyHeights) as any; 
-    console.log('heights?', heights)
     return heights?.heightMap; 
   }
   const getSeen = () => {
