@@ -139,17 +139,12 @@ const Row1 = ({
                       : " ") +
                     (read && context.dimRead ? " opacity-50" : "")
                   }
+                  style={{
+                    wordBreak: "break-word"
+                  }}
                 >{`${post?.title ?? ""}`}</span>
               </a>
             </h1>
-
-            {/* <a
-              href={post?.permalink}
-              onClick={(e) => e.preventDefault()}
-              className={" font-semibold"}
-            >
-              <PostTitle post={post} />
-            </a> */}
           </h1>
         </div>
         {/* Info */}

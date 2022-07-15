@@ -57,7 +57,7 @@ const Thread = ({
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [windowWidth, windowHeight] = useWindowSize();
-
+  const containerRef = useRef<HTMLDivElement>(null)
   //initPost so later refetches will keep media (ie videos) stable
   const [initPost, setInitPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
@@ -345,6 +345,7 @@ const Thread = ({
         >
           {/* Content container */}
           <div
+            ref={containerRef}
             className="flex flex-col w-full h-screen overflow-x-hidden overflow-y-auto break-words border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
             onClick={(e) => e.stopPropagation()}
           >
@@ -810,6 +811,7 @@ const Thread = ({
                   {postComments?.length > 0 && (
                     <Comments
                       comments={postComments}
+                      containerRef={containerRef}
                       depth={0}
                       op={post?.author}
                       portraitMode={usePortrait}
@@ -822,6 +824,8 @@ const Thread = ({
                     />
                   )}
                 </div>
+                <div className="py-16"></div>
+
               </div>
             </div>
             <div onClick={goBack} className="flex-grow"></div>

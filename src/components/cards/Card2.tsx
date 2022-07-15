@@ -9,6 +9,7 @@ import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
+import React from "react";
 
 //og card
 const Card1 = ({
@@ -59,6 +60,9 @@ const Card1 = ({
                         : " ") +
                       (read && context.dimRead ? " opacity-50" : "")
                     }
+                    style={{
+                      wordBreak: "break-word"
+                    }}
                   >{`${post?.title ?? ""}`}</span>
                 </a>
                 {(post?.link_flair_text?.length > 0 ||

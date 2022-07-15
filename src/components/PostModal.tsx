@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
@@ -34,23 +34,36 @@ const PostModal = ({
   const [curPost, setCurPost] = useState<any>(postData);
   const [curPostNum, setCurPostNum] = useState(postNum);
 
-     //prevent scrolling on main body when open
-     useEffect(() => {
-      if (true) {
-        const width = document.body.clientWidth;
-        document.documentElement.style.setProperty('--overflow', 'hidden hidden')
-        document.body.style.width = `${width}px`;
-      } else {
-        document.documentElement.style.setProperty('--overflow', 'hidden visible')
-        document.body.style.width = `auto`;
-      }
-  
-      return () => {
-        document.documentElement.style.setProperty('--overflow', 'hidden visible')
-        document.body.style.width = `auto`;
-      };
-    }, []);
- 
+  useEffect(() => {
+    context.setPostOpen(true);
+    return () => {
+      context.setPostOpen(false);
+    };
+  }, []);
+
+  //prevent scrolling on main body when open
+  useEffect(() => {
+    if (true) {
+      const width = document.body.clientWidth;
+      document.documentElement.style.setProperty("--overflow", "hidden hidden");
+      document.body.style.width = `${width}px`;
+    } else {
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
+      document.body.style.width = `auto`;
+    }
+
+    return () => {
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
+      document.body.style.width = `auto`;
+    };
+  }, []);
+
   const updateSort = async (e, sort) => {
     e.preventDefault();
     setSort(sort);
@@ -146,13 +159,13 @@ const PostModal = ({
     }
   };
 
-  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data
-  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data
+  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data;
+  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data;
 
   return (
     <div
       className={
-        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overflow-y-auto overscroll-y-contain"
+        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain"
       }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}

@@ -13,6 +13,7 @@ import ToastCustom from "./toast/ToastCustom";
 import useRefresh from "../hooks/useRefresh";
 import useFeedGallery from "../hooks/useFeedGallery";
 import { InView } from "react-intersection-observer";
+import useHeightMap from "../hooks/useHeightMap";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -33,50 +34,28 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const { setFeedData } = useFeedGallery();
 
   const [cols, setCols] = useState(3);
-  const [itemheightestimate, setItemHeightEstimate] = useState(600);
   const [masonicKey, setMasonicKey] = useState(curKey);
   const [windowWidth, windowHeight] = useWindowSize();
 
   useEffect(() => {
     if (context.cardStyle == "row1") {
-      setItemHeightEstimate(80);
       setCols(1);
     } else if (context?.columnOverride !== 0) {
-      if (context?.columnOverride === 1) {
-        setItemHeightEstimate(Math.floor(windowHeight * 0.8));
-      } else {
-        setItemHeightEstimate(Math.floor(2000 / context.columnOverride));
-      }
       setCols(context.columnOverride);
-      //context.setColumns(context.columnOverride);
     } else if (!context.postOpen) {
       //prevent layout shift when resize with post open
       if (windowWidth > 2560) {
-        setItemHeightEstimate(500);
         setCols(4);
-        //context.setColumns(4);
       } else if (windowWidth > 1280) {
-        setItemHeightEstimate(600);
         setCols(3);
-        //context.setColumns(3);
       } else if (windowWidth > 767) {
-        setItemHeightEstimate(900);
         setCols(2);
-        //context.setColumns(2);
       } else {
-        setItemHeightEstimate(1200);
         setCols(1);
-        //context.setColumns(1);
       }
     }
     return () => {};
-  }, [
-    windowWidth,
-    context.columnOverride,
-    context.cardStyle,
-    windowHeight,
-    context.postOpen,
-  ]);
+  }, [windowWidth, context.columnOverride, context.cardStyle]);
 
   useEffect(() => {
     context.setColumns(cols);
@@ -206,12 +185,34 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     </>
   );
 
-  const [heightMap, setHeightMap] = useState(new Map());
-  const [seenMap, setSeenMap] = useState(new Map());
-  // const intersectRef = useRef<HTMLDivElement>(null)
+  // const heightMap = useMemo(() => {
+  //   console.log("reset map..");
+  //   return new Map();
+  // }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
+  // const seenMap = useMemo(
+  //   () => new Map(),
+  //   [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
+  // );
+  const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap(
+    {
+      columns: cols,
+      cardStyle: context.cardStyle,
+      mediaOnly: context.mediaOnly,
+      wideUI: context.wideUI,
+      windowWidth: windowWidth,
+    }
+  );
   useEffect(() => {
-    setHeightMap(new Map());
-    setSeenMap(new Map());
+    if (
+      !context.postOpen && 
+      cols > 0 &&
+      windowWidth > 0 &&
+      context.cardStyle &&
+      (context.mediaOnly === true || context.mediaOnly === false) &&
+      (context.wideUI === true || context.wideUI === false)
+    ) {
+      createMaps();
+    }
   }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
 
   const margin = useMemo(
@@ -241,34 +242,32 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       entry.boundingClientRect.top < 0 &&
       Math.abs(entry?.boundingClientRect?.bottom) < (windowHeight * 1) / 2
     ) {
-      // console.log(
-      //   post?.data?.title,
-      //   heightMap.get(post?.data?.name)?.height?.toFixed()
-      // );
-      seenMap.set(post?.data?.name, { seen: true });
+      //console.log(post?.data?.title)
+      setSeen(post?.data?.name, { seen: true });
+      //seenMap.set(post?.data?.name, { seen: true });
     }
   };
 
   const handleSizeChange = (postName, height) => {
-    if (
-      height > (heightMap.get(postName)?.height ?? 0)
-      //|| context.cardStyle === "row1" //rows may grow or shrink
-    ) {
-      heightMap.set(postName, { height: height });
+    const pHeight = getHeights()?.get(postName)?.height ?? 0;
+    console.log('pHeight', pHeight)
+    if (height > pHeight) {
+      setHeight(postName, { height: height });
+      //heightMap.set(postName, { height: height });
     }
   };
 
   //for when rows are collapsed
   const forceSizeChange = (postName, height) => {
-    heightMap.set(postName, { height: height });
+    setHeight(postName, { height: height });
+    //heightMap.set(postName, { height: height });
   };
 
   const PostCard = useCallback(
     (props) => {
       const post = props?.data;
-      const seen = seenMap.get(props?.data?.data?.name)?.seen === true;
-      const knownHeight = heightMap.get(props?.data?.data?.name)?.height;
-
+      const seen = getSeen()?.get(props?.data?.data?.name)?.seen === true;
+      const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
       return (
         <InView
           threshold={0}
@@ -284,31 +283,31 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "") +
-                "  "
+                " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
                   ? context.cardStyle === "row1" //rows need to grow
                     ? {
                         minHeight: `${
-                          heightMap.get(props?.data?.data?.name)?.height
+                          knownHeight
                         }px`,
-                        // outlineWidth: "2px",
-                        // outlineColor: "green",
+                        outlineWidth: "2px",
+                        outlineColor: "green",
                       }
                     : {
                         height: `${
-                          heightMap.get(props?.data?.data?.name)?.height
+                          knownHeight
                         }px`,
-                        // outlineWidth: "2px",
-                        // outlineColor: "green",
+                        outlineWidth: "2px",
+                        outlineColor: "green",
                       }
-                      :{}
-                  // : seen === true
-                  // ? { outlineWidth: "2px", outlineColor: "red" }
-                  // : knownHeight > 0
-                  // ? { outlineWidth: "2px", outlineColor: "blue" }
-                  // : { outlineWidth: "2px", outlineColor: "white" }
+                  : //  :{}
+                  seen === true
+                  ? { outlineWidth: "2px", outlineColor: "red" }
+                  : knownHeight > 0
+                  ? { outlineWidth: "2px", outlineColor: "blue" }
+                  : { outlineWidth: "2px", outlineColor: "white" }
               }
             >
               <Post
@@ -325,9 +324,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       );
     },
 
-    [heightMap, cols]
+    [cols, windowWidth, context.cardStyle, context.wideUI, context.mediaOnly]
   );
-
+  const filteredHeights = Array.from(getHeights()?.values() ?? [])
+    .filter((m:any) => m?.height > 0)
+    ?.map((m:any) => m?.height);
+  const aveHeight =
+    filteredHeights?.reduce((a: any, b: any) => a + b, 0) /
+    filteredHeights.length;
   return (
     <div>
       <Masonry
@@ -336,13 +340,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         columnGutter={0}
         columnCount={cols}
         items={items}
-        itemHeightEstimate={
-          cols === 1
-            ? context.cardStyle === "row1"
-              ? 0
-              : itemheightestimate
-            : itemheightestimate
-        } //itemheightestimate makes scrollbar jumpy but setting to 0 will result in empty columns
+        itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
         overscanBy={2}
         render={PostCard}
         className="outline-none"

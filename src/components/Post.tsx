@@ -41,7 +41,6 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
 
   useEffect(() => {
     if (lastRoute === router.asPath) {
-      //console.log("match");
       setSelect(false);
       setCommentsDirect(false);
       context.setPauseAll(false);

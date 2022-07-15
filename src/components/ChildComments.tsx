@@ -33,11 +33,10 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
   const { data: session, status } = useSession();
-  const [outOfView, setOutOfView] = useState(depth % 3 === 0);
+  const [outOfView, setOutOfView] = useState(true);
   const [inViewRef] = useInView({
-    /* Optional options */
     threshold: 0,
-    skip: depth % 3 !== 0,
+    skip: false,//depth % 3 !== 0,
     onChange: (inView, entry) => {
       //console.log(inView, comment?.data?.author);
       setOutOfView(!InView);
@@ -235,7 +234,7 @@ const ChildComments = ({
                 >
                   {comment?.data?.profile_img?.includes("http") &&
                   context.showUserIcons ? (
-                    <div className="w-6 h-6 rounded-full overflow-clip mr-0.5">
+                    <div className="w-6 h-6 rounded-full overflow-hidden mr-0.5">
                       <Image
                         src={comment.data.profile_img}
                         height={"256"}

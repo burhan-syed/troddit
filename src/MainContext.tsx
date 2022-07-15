@@ -22,7 +22,7 @@ export const MainProvider = ({ children }) => {
   const [pauseAll, setPauseAll] = useState(false); //pauses all media when a post is opened
   const [loading, setLoading] = useState(false); //used in feed to display load bar
   const [ready, setReady] = useState(false); //prevents any feed load until settings are loaded
-  const [postOpen, setPostOpen] = useState(false);
+  const [postOpen, setPostOpen] = useState(false); //using pauseAll instead..
   const [loginModal, setLoginModal] = useState(false);
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);

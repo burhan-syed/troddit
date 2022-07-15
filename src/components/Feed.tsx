@@ -1,26 +1,11 @@
-import { useEffect, useState } from "react";
-import {
-  loadFront,
-  loadPost,
-  loadSubreddits,
-  loadUserPosts,
-  loadSubInfo,
-  getUserMultiPosts,
-  getRedditSearch,
-  loadSubFlairPosts,
-  loadUserSelf,
-} from "../RedditAPI";
+import React,{ useEffect } from "react";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
-import { useSession } from "next-auth/react";
-import PostModal from "./PostModal";
 import LoginModal from "./LoginModal";
 
 import MyMasonic from "./MyMasonic";
-import { filterPosts, findMediaInfo } from "../../lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
-import type { Session } from "next-auth/core/types";
 import useFeed from "../hooks/useFeed";
 import useRefresh from "../hooks/useRefresh";
 import { IoMdRefresh } from "react-icons/io";
@@ -47,7 +32,7 @@ const Feed = ({ initialData = {} as any }) => {
     }
   }, []);
 
-  if (feed.error && (mode === "USER" || mode === "SUBREDDIT") && subreddits) {
+  if (feed.error && (mode === "USER" || mode === "SUBREDDIT") && subreddits && !feed?.data?.pages) {
     router.replace(`/search?q=${subreddits}`);
   }
   return (
