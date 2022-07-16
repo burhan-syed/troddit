@@ -512,12 +512,12 @@ const Media = ({
                 !post?.mediaInfo?.isTweet
                   ? " block "
                   : post?.mediaInfo?.isTweet
-                  ? " flex items-center justify-start  relative overflow-hidden rounded-lg " +
-                    (containerDims?.[1] ? "" : " h-96 ")
+                  ? "flex items-center justify-center  relative overflow-hidden rounded-lg " +
+                    (containerDims?.[1] ? "" : " h-96  border border-[#E7E5E4] ")
                   : " flex items-center justify-center relative ")
               } //flex items-center justify-center "}
               style={
-                containerDims?.[1] && post.mediaInfo.isTweet
+                containerDims?.[1] && post.mediaInfo?.isTweet
                   ? { height: `${containerDims?.[1]}px` }
                   : (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
                     (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
@@ -555,10 +555,10 @@ const Media = ({
                     ? //layout in fill mode, no height needed
                       undefined
                     : post?.mediaInfo?.isTweet
-                    ? containerDims?.[1] ?? 384 //h-96
+                    ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
-                        (mediaRef.current.clientWidth / imageInfo.width) >
+                        (mediaRef?.current?.clientWidth / imageInfo.width) >
                         maxheightnum && //scale down image to fit in window
                       !imgFull
                     ? maxheightnum
@@ -568,10 +568,10 @@ const Media = ({
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? undefined
                     : post?.mediaInfo?.isTweet
-                    ? mediaRef?.current?.clientWidth - 55 //twitter bird size
+                    ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
                       imageInfo.height *
-                        (mediaRef.current.clientWidth / imageInfo.width) >
+                        (mediaRef?.current?.clientWidth / imageInfo.width) >
                         maxheightnum && //scale down image to fit in window
                       !imgFull
                     ? Math.floor(
@@ -590,13 +590,13 @@ const Media = ({
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  imgFull || (context?.columns == 1 && !post.mediaInfo.isTweet)
+                  imgFull || (context?.columns == 1 && !post.mediaInfo?.isTweet)
                     ? "contain"
                     : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
-                className={post?.mediaInfo?.isTweet ? "object-contain " : ""}
+                className={post?.mediaInfo?.isTweet ? "object-contain  " : ""}
               />
             </div>
           )}
