@@ -824,7 +824,7 @@ const Thread = ({
                     />
                   )}
                 </div>
-                <div className="py-16"></div>
+                <div className="py-5"></div>
 
               </div>
             </div>

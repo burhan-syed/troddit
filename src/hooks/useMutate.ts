@@ -19,6 +19,7 @@ const useMutate = () => {
   interface Change {
     property: string;
     value: any;
+    increment?:any;
   }
   const optimisticUpdate = async (
     key: string[],
@@ -40,6 +41,9 @@ const useMutate = () => {
             filtered: page?.filtered?.map((post) => {
               if (id === post?.data?.name) {
                 post.data[change.property] = change.value;
+                if(change.property === "likes"){
+                  post["data"]["score"] = post["data"]["score"] + (change?.increment ?? 0);
+                }
               }
               return post;
             }),
@@ -53,16 +57,17 @@ const useMutate = () => {
     return { previousData };
   };
 
-  const voteMutation = useMutation(({ vote, id }: any) => postVote(vote, id), {
+  const voteMutation = useMutation(({ vote, id, increment }: any) => postVote(vote, id), {
     onMutate: async (update) => {
       if (update.id.substring(0, 3) === "t3_") {
         return optimisticUpdate(["feed"], update.id, {
           property: "likes",
           value: update.vote,
+          increment: update.increment,
         });
       }
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables) => {
       if (data.id.substring(0, 3) === "t3_") {
         if (session?.user?.name) {
           data.vote == 1 &&
@@ -83,26 +88,40 @@ const useMutate = () => {
           queryClient.invalidateQueries(["feed"]);
         }
       } else if (data.id.substring(0, 3) === "t1_") {
-
-
         const updateCommentValue = (prevData, commentId, key, value) => {
           const iterComments = (comment, commentId, key, value) => {
-            if (comment?.data?.name === commentId){
-              comment["data"][key] = value; 
-              if (key === "likes"){
-                comment["data"]["score"] = comment["data"]["score"] + value
+            if (comment?.data?.name === commentId) {
+              comment["data"][key] = value;
+              if (key === "likes") {
+                comment["data"]["score"] = comment["data"]["score"] + (variables?.increment ?? 0);
               }
-              return comment; 
+              return comment;
             }
-            for (let i = 0; i < comment?.data?.replies?.data?.children?.length ?? 0; i++){
-               iterComments(comment?.data?.replies?.data?.children[i], commentId, key, value);
+            for (
+              let i = 0;
+              i < comment?.data?.replies?.data?.children?.length ?? 0;
+              i++
+            ) {
+              iterComments(
+                comment?.data?.replies?.data?.children[i],
+                commentId,
+                key,
+                value
+              );
             }
-            return comment; 
-          }
+            return comment;
+          };
 
-          let newpages = prevData?.pages?.map(page => {return {...page, comments: page.comments?.map((comment) => iterComments(comment, commentId, key, value)) }})
-          return {...prevData, pages: newpages }
-        }
+          let newpages = prevData?.pages?.map((page) => {
+            return {
+              ...page,
+              comments: page.comments?.map((comment) =>
+                iterComments(comment, commentId, key, value)
+              ),
+            };
+          });
+          return { ...prevData, pages: newpages };
+        };
 
         const path = router?.asPath?.split("/");
         const cIndex = path?.indexOf("comments");
@@ -111,10 +130,11 @@ const useMutate = () => {
           postId = path?.[cIndex + 1] as string;
         }
 
-
         //this check could be better
         postId?.match(/[A-z0-9]/g)?.length === 6
-          ? queryClient.setQueriesData(["thread", postId], (prevData) => updateCommentValue(prevData, data.id, "likes", data.vote ))
+          ? queryClient.setQueriesData(["thread", postId], (prevData) =>
+              updateCommentValue(prevData, data.id, "likes", data.vote)
+            )
           : queryClient.invalidateQueries(["thread"]);
       }
     },
@@ -186,8 +206,6 @@ const useMutate = () => {
     }
   );
 
-  
-
   const postCommentMutation = useMutation(
     ({ parent, textValue, postName }: any) => postComment(parent, textValue),
     {
@@ -217,12 +235,9 @@ const useMutate = () => {
             }
           );
         } else if (data?.parent_id?.substring?.(0, 3) === "t1_") {
-      
-
           queryClient.setQueriesData(
             ["thread", data?.link_id?.substring?.(3)],
-            (pCommentsData: any) => 
-            {
+            (pCommentsData: any) => {
               const editNestedComment = (comment, data, parent_id) => {
                 if (comment.data.name === parent_id) {
                   comment["data"]["replies"]["data"]["children"] = [
@@ -315,14 +330,15 @@ const useMutate = () => {
       return [comment, found];
     }
     if (comment?.data?.name && comment?.data?.name == name) {
-      if (updateChildren){
-        comment["data"]["replies"]["data"]["children"] =  [
-          ...comment?.data?.replies?.data?.children?.filter(child => child.kind === "t1"),
+      if (updateChildren) {
+        comment["data"]["replies"]["data"]["children"] = [
+          ...comment?.data?.replies?.data?.children?.filter(
+            (child) => child.kind === "t1"
+          ),
           ...value,
-        ]; 
+        ];
       } else {
         comment["data"][property] = value;
-
       }
       found = true;
     }
@@ -345,7 +361,13 @@ const useMutate = () => {
     }
     return [comment, found];
   };
-  const updateCommentProperty = (pCommentsData, name, property, value, updateChildren = false) => {
+  const updateCommentProperty = (
+    pCommentsData,
+    name,
+    property,
+    value,
+    updateChildren = false
+  ) => {
     let found = false;
     let newCommentsData = pCommentsData?.pages?.map((page: any) => {
       return {
@@ -357,7 +379,7 @@ const useMutate = () => {
             comment,
             property,
             value,
-            found, 
+            found,
             updateChildren
           );
           found = f;
@@ -393,8 +415,6 @@ const useMutate = () => {
     childcomments,
     token?
   ) => {
-  
-
     const filterExisting = (comments, childcomments) => {
       return comments.filter((comment: any) => {
         return !childcomments.find((cComment: any) => {

@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useCallback,
   useMemo,
 } from "react";
 import { useSession } from "next-auth/react";
@@ -18,7 +17,7 @@ import UserFlair from "./UserFlair";
 import Image from "next/image";
 import { BsArrowRightShort } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
-import { InView, useInView } from "react-intersection-observer";
+import { useWindowSize } from "@react-hook/window-size";
 
 const ChildComments = ({
   comment,
@@ -33,32 +32,13 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
   const { data: session, status } = useSession();
-  const [outOfView, setOutOfView] = useState(true);
-  const [inViewRef] = useInView({
-    threshold: 0,
-    skip: false,//depth % 3 !== 0,
-    onChange: (inView, entry) => {
-      //console.log(inView, comment?.data?.author);
-      setOutOfView(!InView);
-    },
-  });
+
   const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
-  const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [hideChildren, setHideChildren] = useState(
     comment?.data?.collapsed ?? false
-  );
-
-  const setRefs = useCallback(
-    (node) => {
-      // Ref's from useRef needs to have the node assigned to `current`
-      parentRef.current = node;
-      // Callback refs, like the one from `useInView`, is a function that takes the node as an argument
-      inViewRef(node);
-    },
-    [inViewRef]
   );
 
   const toggleHidden = (override?) => {
@@ -152,15 +132,33 @@ const ChildComments = ({
     setLoadingComments(false);
   };
 
-
-  const [isNew, setIsNew] = useState(false); 
+  const [isNew, setIsNew] = useState(false);
   useEffect(() => {
-    setIsNew((readTime/1000)?.toFixed(0) < comment?.data?.created_utc)
-  }, [readTime, comment?.data?.created_utc])
+    setIsNew((readTime / 1000)?.toFixed(0) < comment?.data?.created_utc);
+  }, [readTime, comment?.data?.created_utc]);
 
+  const [windowWidth, windowHeight] = useWindowSize();
+  const [showOpts, setShowOpts] = useState(false);
+  const voteScore = useMemo(() => {
+    let x = comment?.data?.score ?? 0;
+    if (scoreHideMins && comment?.data?.created_utc && scoreHideMins > 0 && comment.data.created_utc > 0) {
+      const now = new Date().getTime() / 1000;
+      if (comment?.data?.created_utc + scoreHideMins * 60 > now) {
+        x = "? pts";
+        return x;
+      }
+    }
+    if (x < 1000) {
+      return x.toString() + (x === 1 ? " pt" : " pts");
+    } else {
+      let y = Math.floor(x / 1000);
+      let z = (x / 1000).toFixed(1);
+      return z.toString() + "k pts";
+    }
+  }, [comment?.data?.score, comment?.data?.created_utc]);
   return (
     <div
-      ref={setRefs}
+      ref={parentRef}
       className={
         `${depth !== 0 ? " " : ""}` +
         (depth == 0
@@ -328,6 +326,22 @@ const ChildComments = ({
                   ])}
                 </p>
               )}
+              {(hideChildren) && (
+                <>
+                  <span
+                    className={
+                      "text-xs " +
+                      (comment?.data?.likes === true
+                        ? " text-th-upvote "
+                        : comment?.data?.likes === false
+                        ? " text-th-downvote "
+                        : "")
+                    }
+                  >
+                    {voteScore}
+                  </span>
+                </>
+              )}
 
               {hideChildren &&
                 !context.collapseChildrenOnly &&
@@ -373,49 +387,68 @@ const ChildComments = ({
                   " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-th-textLight "
                 }
               >
-                {/* Vote */}
-                <div
-                  className={
-                    (!portraitMode && " ") + //ml-1.5 md:ml-0
-                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
-                  }
-                >
-                  <Vote
-                    name={comment?.data?.name}
-                    likes={comment?.data?.likes}
-                    score={comment?.data?.score}
-                    archived={comment?.data?.archived}
-                    scoreHideMins={scoreHideMins}
-                    postTime={comment?.data?.created_utc}
-                  />
-                </div>
-                <button
-                  disabled={comment?.data?.archived || locked}
-                  className={
-                    "text-sm " +
-                    ((hideChildren && !context.collapseChildrenOnly) ||
-                    //comment?.myreply ||
-                    comment?.data?.archived ||
-                    locked
-                      ? "hidden"
-                      : "block hover:underline")
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    session && !comment?.data?.archived
-                      ? setopenReply((p) => !p)
-                      : context.toggleLoginModal();
-                  }}
-                >
-                  Reply
-                </button>
-                <div className="pl-2 text-sm cursor-pointer hover:underline">
-                  <SaveButton
-                    id={comment?.data?.name}
-                    saved={comment?.data?.saved}
-                  />
-                </div>
+                  <div
+                    className={
+                      (!portraitMode && " ") + //ml-1.5 md:ml-0
+                      " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
+                    }
+                  >
+                    {(windowWidth > 640 || showOpts) && (
+                      <Vote
+                        name={comment?.data?.name}
+                        likes={comment?.data?.likes}
+                        score={comment?.data?.score}
+                        archived={comment?.data?.archived}
+                        scoreHideMins={scoreHideMins}
+                        postTime={comment?.data?.created_utc}
+                      />
+                    )}
+                    {/* chrome struggles with svgs.. hiding on low end devices */}
+                    {!showOpts && windowWidth <= 640 && (
+                      <button
+                        className="pr-2 text-sm hover:underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (!session?.user?.name) {
+                            context.setLoginModal(true);
+                          } else {
+                            setShowOpts(true);
+                          }
+                        }}
+                      >
+                        Vote
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    disabled={comment?.data?.archived || locked}
+                    className={
+                      "text-sm " +
+                      ((hideChildren && !context.collapseChildrenOnly) ||
+                      //comment?.myreply ||
+                      comment?.data?.archived ||
+                      locked
+                        ? "hidden"
+                        : "block hover:underline")
+                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      session && !comment?.data?.archived
+                        ? setopenReply((p) => !p)
+                        : context.toggleLoginModal();
+                    }}
+                  >
+                    Reply
+                  </button>
+                  <div className="pl-2 text-sm cursor-pointer hover:underline">
+                    <SaveButton
+                      id={comment?.data?.name}
+                      saved={comment?.data?.saved}
+                    />
+                  </div>
+
                 {hideChildren &&
                   context.collapseChildrenOnly &&
                   childcomments?.length > 0 && (
@@ -443,87 +476,80 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-              {!outOfView && (
-                <>
-                  <div
-                    onMouseEnter={() => setHovered(false)}
-                    onMouseLeave={() => setHovered(true)}
-                    className={
-                      "min-w-full py-2" +
-                      (hideChildren &&
-                      context.collapseChildrenOnly &&
-                      childcomments?.length > 0
-                        ? " hidden "
-                        : "")
-                    }
-                  >
-                    {childcomments && (
-                      <>
-                        {childcomments.map((childcomment: any, i) => (
-                          <div key={`${i}_${childcomment?.data?.id}`}>
-                            {childcomment.kind === "t1" && (
-                              <ChildComments
-                                comment={childcomment}
-                                depth={depth + 1}
-                                hide={hideChildren}
-                                portraitMode={portraitMode}
-                                locked={locked}
-                                scoreHideMins={scoreHideMins}
-                                readTime={readTime}
-                              />
-                            )}
-                            {childcomment.kind == "more" && (
-                              <div
-                                className={hideChildren ? "hidden" : " flex "}
-                              >
-                                {true && (
-                                  <>
-                                    {childcomment.data?.count > 0 ? (
-                                      <button
-                                        disabled={loadingComments}
-                                        onMouseEnter={() => setHovered(true)}
-                                        onMouseLeave={() => setHovered(false)}
-                                        className={
-                                          (portraitMode ? "" : "") +
-                                          (loadingComments &&
-                                            " animate-pulse ") +
-                                          " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
-                                        }
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          setLoadingComments(true);
-                                          loadChildComments(
-                                            childcomment?.data?.children,
-                                            comment?.data?.link_id
-                                          );
-                                        }}
-                                      >
-                                        {`Load ${childcomment.data?.count} More... `}
-                                      </button>
-                                    ) : (
-                                      <Link href={comment?.data?.permalink}>
-                                        <a
-                                          className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
-                                          onMouseEnter={() => setHovered(true)}
-                                          onMouseLeave={() => setHovered(false)}
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          Continue thread <BsArrowRightShort />
-                                        </a>
-                                      </Link>
-                                    )}
-                                  </>
+              <div
+                onMouseEnter={() => setHovered(false)}
+                onMouseLeave={() => setHovered(true)}
+                className={
+                  "min-w-full py-2" +
+                  (hideChildren &&
+                  context.collapseChildrenOnly &&
+                  childcomments?.length > 0
+                    ? " hidden "
+                    : "")
+                }
+              >
+                {childcomments && (
+                  <>
+                    {childcomments.map((childcomment: any, i) => (
+                      <div key={`${i}_${childcomment?.data?.id}`}>
+                        {childcomment.kind === "t1" && (
+                          <ChildComments
+                            comment={childcomment}
+                            depth={depth + 1}
+                            hide={hideChildren}
+                            portraitMode={portraitMode}
+                            locked={locked}
+                            scoreHideMins={scoreHideMins}
+                            readTime={readTime}
+                          />
+                        )}
+                        {childcomment.kind == "more" && (
+                          <div className={hideChildren ? "hidden" : " flex "}>
+                            {true && (
+                              <>
+                                {childcomment.data?.count > 0 ? (
+                                  <button
+                                    disabled={loadingComments}
+                                    onMouseEnter={() => setHovered(true)}
+                                    onMouseLeave={() => setHovered(false)}
+                                    className={
+                                      (portraitMode ? "" : "") +
+                                      (loadingComments ? " animate-pulse " : "") +
+                                      " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
+                                    }
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setLoadingComments(true);
+                                      loadChildComments(
+                                        childcomment?.data?.children,
+                                        comment?.data?.link_id
+                                      );
+                                    }}
+                                  >
+                                    {`Load ${childcomment.data?.count} More... `}
+                                  </button>
+                                ) : (
+                                  <Link href={comment?.data?.permalink}>
+                                    <a
+                                      className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
+                                      onMouseEnter={() => setHovered(true)}
+                                      onMouseLeave={() => setHovered(false)}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      Continue thread <BsArrowRightShort />
+                                    </a>
+                                  </Link>
                                 )}
-                              </div>
+                              </>
                             )}
                           </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
