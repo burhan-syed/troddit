@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useRef, useEffect, createRef } from "react";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 
-import { BiImages, BiComment, BiDetail, BiCog, BiPaint } from "react-icons/bi";
+import { BiImages, BiComment, BiDetail, BiCog, BiPaint, BiHistory } from "react-icons/bi";
 import { BsColumnsGap } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
 import FilterSubs from "../FilterSubs";
@@ -12,6 +12,7 @@ import ToggleFilters from "../ToggleFilters";
 import CardStyleDemo from "./CardStyleDemo";
 import ColumnCardOptions from "./ColumnCardOptions";
 import FilterEntities from "./FilterEntities";
+import History from "./History";
 import IntInput from "./IntInput";
 import ThemeSelector from "./ThemeSelector";
 import Toggles from "./Toggles";
@@ -114,7 +115,6 @@ const Settings = () => {
             externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
           />
         )),
-        
       ],
     },
     // Cards: {
@@ -157,7 +157,7 @@ const Settings = () => {
           "portrait",
           "landscape",
           "read",
-          "seen"
+          "seen",
         ].map((f, i) => (
           <div key={f}>
             <ToggleFilters filter={f} withSubtext={true} quickToggle={true} />
@@ -171,34 +171,38 @@ const Settings = () => {
     Behavior: {
       icon: <BiCog className={icons} />,
       settings: [
-        ...[
-          "autoRead",
-          "autoSeen",
-          "infiniteLoading",
-          "autoRefreshFeed",
-        ].map((s: any) => (
-          <Toggles
-            key={s}
-            setting={s}
-            withSubtext={true}
-            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
-          />
-        )),
+        ...["autoRead", "autoSeen", "infiniteLoading", "autoRefreshFeed"].map(
+          (s: any) => (
+            <Toggles
+              key={s}
+              setting={s}
+              withSubtext={true}
+              externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
+            />
+          )
+        ),
         ...["slowRefreshInterval", "fastRefreshInterval"].map((s: any) => (
           <IntInput key={s} setting={s} />
         )),
-        ...[
-          "refreshOnFocus",
-          "askToUpdateFeed",
-          "autoRefreshComments",
-        ].map((s: any) => (
-          <Toggles
-            key={s}
-            setting={s}
-            withSubtext={true}
-            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
-          />
-        )),
+        ...["refreshOnFocus", "askToUpdateFeed", "autoRefreshComments"].map(
+          (s: any) => (
+            <Toggles
+              key={s}
+              setting={s}
+              withSubtext={true}
+              externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
+            />
+          )
+        ),
+      ],
+    },
+
+    History: {
+      icon: <BiHistory className={icons} />,
+      settings: [
+        <div key={"historySettings"} className="p-2">
+          <History />
+        </div>,
       ],
     },
     // Other: {

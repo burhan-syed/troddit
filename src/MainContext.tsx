@@ -155,6 +155,16 @@ export const MainProvider = ({ children }) => {
 
   const [readPosts, setReadPosts] = useState<{}>({});
   const [readPostsChange, setReadPostsChange] = useState<number>(0);
+  const clearReadPosts = async() => {
+    try{
+      await localRead.clear(); 
+      setReadPosts({});
+      setReadPostsChange(n => n+1);
+      return true; 
+    } catch(err){
+      return false; 
+    }
+  }
   const addReadPost = ({ postId, numComments }) => {
     localRead.setItem(postId, { postId, numComments, time: new Date() });
     setReadPosts((read) => {
@@ -1351,6 +1361,7 @@ export const MainProvider = ({ children }) => {
         readPostsChange,
         addReadPost,
         toggleReadPost,
+        clearReadPosts,
         postOpen,
         setPostOpen,
         collapseChildrenOnly,
