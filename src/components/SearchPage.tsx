@@ -7,7 +7,8 @@ import { getRedditSearch } from "../RedditAPI";
 import Feed from "./Feed";
 import SubCard from "./cards/SubCard";
 import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
-import Checkbox from './ui/Checkbox'
+import Checkbox from "./ui/Checkbox";
+import React from "react";
 const SearchPage = ({ query }) => {
   const router = useRouter();
   const context: any = useMainContext();
@@ -16,7 +17,7 @@ const SearchPage = ({ query }) => {
   const [after, setAfter] = useState("");
   const [expand, setExpand] = useState(false);
   const [searchUsers, setSearchUsers] = useState(false);
-  const {safeSearch, setSafeSearch} = context; 
+  const { safeSearch, setSafeSearch } = context;
   const loadMore = async () => {
     let subs = await getRedditSearch(
       { q: query?.q },
@@ -129,7 +130,7 @@ const SearchPage = ({ query }) => {
                 className={
                   (expand
                     ? "md:sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 md:flex-none  p-2 md:px-0 md:mr-4  border  bg-th-post border-th-border2   shadow-md  " +
-                      ( " rounded-lg ")
+                      " rounded-lg "
                     : "flex flex-row justify-between select-none  ") + " "
                 }
               >
@@ -164,12 +165,20 @@ const SearchPage = ({ query }) => {
                       {sel}
                     </div>
                   ))}
-                  <div  className={
+                  <div
+                    className={
                       "flex flex-row items-center my-auto gap-2 hover:cursor-pointer" +
                       (expand
                         ? " md:flex-row-reverse ml-auto md:mr-auto md:ml-0 md:my-1 pl-2 "
-                        : " mr-2 ml-auto ")}>
-                  <Checkbox clickEvent={() => setSafeSearch((r) => !r)}  toggled={safeSearch} labelText={"Safe Search"} reverse={expand}/>
+                        : " mr-2 ml-auto ")
+                    }
+                  >
+                    <Checkbox
+                      clickEvent={() => setSafeSearch((r) => !r)}
+                      toggled={safeSearch}
+                      labelText={"Safe Search"}
+                      reverse={expand}
+                    />
                   </div>
                 </div>
               </div>
@@ -207,6 +216,7 @@ const SearchPage = ({ query }) => {
                     </div>
                   ))}
                   <button
+                    aria-label="...loading"
                     className="flex items-center justify-center w-24 mt-2 ml-auto text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base"
                     onClick={(e) => {
                       e.preventDefault();
@@ -266,6 +276,7 @@ const SearchPage = ({ query }) => {
                         )}
                         {(!expand || after) && (
                           <button
+                            aria-label="see more"
                             className="flex items-center justify-center w-24 ml-auto text-center border rounded-md cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base "
                             onClick={(e) => {
                               e.preventDefault();
@@ -319,7 +330,7 @@ const SearchPage = ({ query }) => {
                       <div
                         className={
                           "absolute top-0 flex flex-col items-center justify-center w-full h-full text-center border bg-th-post border-th-border " +
-                          ( " rounded-lg ")
+                          " rounded-lg "
                         }
                       >
                         <h1>{`Didn't find any ${
@@ -340,7 +351,7 @@ const SearchPage = ({ query }) => {
       </div>
       {!expand && (
         <div className="">
-          <Feed  />
+          <Feed />
         </div>
       )}
     </div>

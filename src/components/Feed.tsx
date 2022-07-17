@@ -1,4 +1,4 @@
-import React,{ useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
@@ -32,7 +32,12 @@ const Feed = ({ initialData = {} as any }) => {
     }
   }, []);
 
-  if (feed.error && (mode === "USER" || mode === "SUBREDDIT") && subreddits && !feed?.data?.pages) {
+  if (
+    feed.error &&
+    (mode === "USER" || mode === "SUBREDDIT") &&
+    subreddits &&
+    !feed?.data?.pages
+  ) {
     router.replace(`/search?q=${subreddits}`);
   }
   return (
@@ -40,9 +45,7 @@ const Feed = ({ initialData = {} as any }) => {
       <LoginModal />
       {feed.error && (
         <div className="fixed z-50 max-w-lg p-2 mx-auto -translate-x-1/2 -translate-y-1/2 border rounded-lg top-1/2 left-1/2 bg-th-post border-th-border2">
-          <p className="mb-2 text-center">
-            {"Oops something went wrong :("}
-          </p>
+          <p className="mb-2 text-center">{"Oops something went wrong :("}</p>
 
           <ErrMessage />
         </div>
@@ -80,6 +83,7 @@ const Feed = ({ initialData = {} as any }) => {
         </div>
       </div>
       <button
+        aria-label="refresh"
         disabled={feed.isFetching}
         onClick={() => {
           refreshCurrent();

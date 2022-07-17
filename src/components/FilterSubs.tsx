@@ -79,7 +79,10 @@ const FilterSubs = ({ mode = "subs" }) => {
                   }}
                 >
                   <h4 className="capitalize">{f?.toLowerCase()}</h4>
-                  <button className="p-0.5 rounded-md border-transparent group-hover:ring-2 hover:bg-th-highlight ring-th-accent border ">
+                  <button
+                    aria-label="remove"
+                    className="p-0.5 rounded-md border-transparent group-hover:ring-2 hover:bg-th-highlight ring-th-accent border "
+                  >
                     <MdOutlineClear className="w-5 h-5 transition-transform " />
                   </button>
                 </div>
@@ -113,6 +116,7 @@ const FilterSubs = ({ mode = "subs" }) => {
             }
           />
           <button
+            aria-label="add"
             onClick={(e) => handleSubmit(e)}
             className="flex items-center justify-center ml-2 border rounded-md w-9 h-9 hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
           >
@@ -121,6 +125,7 @@ const FilterSubs = ({ mode = "subs" }) => {
         </form>
       ) : (
         <button
+          aria-label="add"
           className="flex flex-row items-center px-2 py-1 mb-2 ml-2 border rounded-md hover:bg-th-highlight border-th-border w-28 hover:border-th-borderHighlight"
           onClick={(e) => {
             e.preventDefault();

@@ -22,6 +22,7 @@ const SelectedSubs = () => {
       <div className="flex flex-row items-center gap-2">
         <h1 className="mr-auto text-lg">{selected.length} Selected</h1>
         <button
+          aria-label="clear selected"
           className="flex items-center justify-center w-10 border rounded-md h-9 hover:bg-th-highlight hover:border-th-borderHighlight border-th-border "
           onClick={clearAll}
         >

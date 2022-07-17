@@ -1,11 +1,10 @@
-import React,{ Fragment, useState, useEffect, useMemo } from "react";
+import React, { Fragment, useState, useEffect, useMemo } from "react";
 import { FiFilter } from "react-icons/fi";
 import { useMainContext } from "../MainContext";
 import FilterModal from "./FilterModal";
 import useLocation from "../hooks/useLocation";
 import { useQueryClient } from "react-query";
 import { numToString } from "../../lib/utils";
-
 
 const FilterMenu = ({ hide = false }) => {
   const context: any = useMainContext();
@@ -61,6 +60,7 @@ const FilterMenu = ({ hide = false }) => {
     <>
       <FilterModal toOpen={openFilter} />
       <button
+        aria-label="filters"
         title={"filters"}
         className={
           "relative flex flex-col items-center flex-grow w-full h-full select-none"

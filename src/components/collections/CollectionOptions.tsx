@@ -5,6 +5,7 @@ import { useSubsContext } from "../../MySubs";
 import { useSession } from "next-auth/react";
 import DropdownItem from "../DropdownItem";
 import MultiManageModal from "../MultiManageModal";
+import React from "react";
 
 const CollectionOptions = ({
   // subInfo,
@@ -80,6 +81,7 @@ const CollectionOptions = ({
           <>
             <div className="flex items-center justify-center w-6">
               <Menu.Button
+                aria-label="more actions"
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
@@ -113,9 +115,7 @@ const CollectionOptions = ({
                     {({ active, disabled }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") +
+                          (active ? "bg-th-highlight " : "") +
                           " block px-4 py-1 text-sm" +
                           (disabled ? " opacity-20 " : "")
                         }
@@ -187,14 +187,14 @@ const CollectionOptions = ({
                   </Menu.Item>
 
                   <Menu.Item
-                    disabled={subArray.length < 1 || currMulti.length < 1 || !isOwner}
+                    disabled={
+                      subArray.length < 1 || currMulti.length < 1 || !isOwner
+                    }
                   >
                     {({ active, disabled }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") +
+                          (active ? "bg-th-highlight " : "") +
                           " flex justify-end px-4 py-1 text-sm" +
                           (disabled ? " hidden " : "")
                         }
@@ -244,9 +244,7 @@ const CollectionOptions = ({
                     {({ active, disabled }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") +
+                          (active ? "bg-th-highlight " : "") +
                           " block px-4 py-1 text-sm" +
                           (disabled ? " hidden " : "")
                         }
@@ -297,9 +295,7 @@ const CollectionOptions = ({
                       {({ active, disabled }) => (
                         <div
                           className={
-                            (active
-                              ? "bg-th-highlight "
-                              : "") +
+                            (active ? "bg-th-highlight " : "") +
                             " block px-4 py-1 text-sm" +
                             (disabled ? " hidden" : "")
                           }

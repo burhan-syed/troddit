@@ -75,7 +75,7 @@ const CommentReply = ({ parent, postName, getResponse }) => {
   //   setEditorState(editorState);
   // };
 
-  const {postCommentMutation} = useMutate();
+  const { postCommentMutation } = useMutate();
 
   const submit = (e) => {
     e.preventDefault();
@@ -121,25 +121,32 @@ const CommentReply = ({ parent, postName, getResponse }) => {
       // } else {
       //   setErr(true);
       // }
-      if (parent.substring(0,3) === "t3_"){
-        postCommentMutation.mutate({parent: parent, textValue: textValue, postName:postName})
+      if (parent.substring(0, 3) === "t3_") {
+        postCommentMutation.mutate({
+          parent: parent,
+          textValue: textValue,
+          postName: postName,
+        });
       } else {
-        try{
+        try {
           setErr(false);
-          let res = await postCommentMutation.mutateAsync({parent: parent, textValue: textValue, postName:postName});
+          let res = await postCommentMutation.mutateAsync({
+            parent: parent,
+            textValue: textValue,
+            postName: postName,
+          });
           res && getResponse(res);
-        } catch (err){
+        } catch (err) {
           setErr(true);
         }
-       
       }
     };
     session && submitComment();
   };
 
   useEffect(() => {
-    if(postCommentMutation.isSuccess) setTextValue("");
-  }, [postCommentMutation.isSuccess])
+    if (postCommentMutation.isSuccess) setTextValue("");
+  }, [postCommentMutation.isSuccess]);
 
   useEffect(() => {
     EditorRef?.current?.focus();
@@ -158,9 +165,7 @@ const CommentReply = ({ parent, postName, getResponse }) => {
           <div className="flex flex-row justify-between w-full select-none text-th-textLight">
             <h1>Commenting as {session.user.name}</h1>
             {(postCommentMutation.isError || err) && (
-              <h1 className="text-xs text-th-red">
-                Something went wrong
-              </h1>
+              <h1 className="text-xs text-th-red">Something went wrong</h1>
             )}
           </div>
           {/* Retiring this until reddit markdown can be fully properly supported */}
@@ -200,13 +205,20 @@ const CommentReply = ({ parent, postName, getResponse }) => {
               using markdown editor
             </p>
             <button
-            disabled={postCommentMutation.isLoading}
-              onClick={(e) =>  submit(e)}
+              aria-label="post comment"
+              disabled={postCommentMutation.isLoading}
+              onClick={(e) => submit(e)}
               className={
                 "flex items-center relative justify-center px-4 py-1.5 ml-auto text-center border border-th-border hover:border-th-borderHighlight hover:bg-th-highlight rounded-md cursor-pointer  "
               }
             >
-              <h1 className={postCommentMutation.isLoading ? " opacity-50 " : " mx-3 "}>Comment</h1>
+              <h1
+                className={
+                  postCommentMutation.isLoading ? " opacity-50 " : " mx-3 "
+                }
+              >
+                Comment
+              </h1>
               {postCommentMutation.isLoading && (
                 <div className="flex flex-none ">
                   <ImSpinner2 className="ml-2 animate-spin" />

@@ -75,7 +75,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
 
   const constructMultiLink = (multi) => {
     let subs = [] as any[];
-    multi?.data?.subreddits?.forEach((s:any) => subs.push(s?.name));
+    multi?.data?.subreddits?.forEach((s: any) => subs.push(s?.name));
     return `/r/${subs.join("+")}?m=${multi?.data?.name}`;
   };
 
@@ -240,7 +240,12 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                       >
                         {({ active }) => (
                           <MyLink
-                            href={sub?.data?.subreddit?.url?.replace("/user/","/u/") ?? sub?.data?.url}
+                            href={
+                              sub?.data?.subreddit?.url?.replace(
+                                "/user/",
+                                "/u/"
+                              ) ?? sub?.data?.url
+                            }
                           >
                             <div
                               className={
@@ -389,7 +394,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
               >
                 <div className="py-2">
                   {myLocalSubsFiltered
-                    ? myLocalSubsFiltered.map((sub:any, i) => {
+                    ? myLocalSubsFiltered.map((sub: any, i) => {
                         return (
                           <Menu.Item
                             key={`${i}`}
@@ -464,7 +469,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                   >
                     <div className="py-2">
                       {myLocalFollows
-                        ? myLocalFollows.map((sub:any, i) => {
+                        ? myLocalFollows.map((sub: any, i) => {
                             return (
                               <Menu.Item
                                 key={`${i}`}
@@ -520,6 +525,7 @@ const DropDownItems = ({ show, hideExtra = false }) => {
             </>
           ) : (
             <button
+              aria-label="sign in"
               className={
                 "p-2 m-2  border rounded-md  border-th-border hover:border-th-borderHighlight " +
                 (hideExtra ? " w-full " : "")

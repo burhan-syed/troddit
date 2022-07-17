@@ -193,18 +193,16 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     () => new Map(),
     [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
   );
-  const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap(
-    {
-      columns: cols,
-      cardStyle: context.cardStyle,
-      mediaOnly: context.mediaOnly,
-      wideUI: context.wideUI,
-      windowWidth: windowWidth,
-    }
-  );
+  const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap({
+    columns: cols,
+    cardStyle: context.cardStyle,
+    mediaOnly: context.mediaOnly,
+    wideUI: context.wideUI,
+    windowWidth: windowWidth,
+  });
   useEffect(() => {
     if (
-      !context.postOpen && 
+      !context.postOpen &&
       cols > 0 &&
       windowWidth > 0 &&
       context.cardStyle &&
@@ -245,8 +243,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       //console.log(post?.data?.title)
       //setSeen(post?.data?.name, { seen: true });
       seenMap.set(post?.data?.name, { seen: true }); //using local map instead.. don't want to prerender heights if they haven't been scrolled onto the page yet
-      context?.autoSeen && localSeen.setItem(post?.data?.name, { time: new Date() });
-
+      context?.autoSeen &&
+        localSeen.setItem(post?.data?.name, { time: new Date() });
     }
   };
 
@@ -267,7 +265,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const PostCard = useCallback(
     (props) => {
       const post = props?.data;
-      const seen = seenMap?.get(props?.data?.data?.name)?.seen === true;//getSeen()?.get(props?.data?.data?.name)?.seen === true;
+      const seen = seenMap?.get(props?.data?.data?.name)?.seen === true; //getSeen()?.get(props?.data?.data?.name)?.seen === true;
       const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
       return (
         <InView
@@ -290,16 +288,12 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 knownHeight > 0 && seen
                   ? context.cardStyle === "row1" //rows need to grow
                     ? {
-                        minHeight: `${
-                          knownHeight
-                        }px`,
+                        minHeight: `${knownHeight}px`,
                         outlineWidth: "2px",
                         outlineColor: "green",
                       }
                     : {
-                        height: `${
-                          knownHeight
-                        }px`,
+                        height: `${knownHeight}px`,
                         outlineWidth: "2px",
                         outlineColor: "green",
                       }
@@ -328,8 +322,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     [cols, windowWidth, context.cardStyle, context.wideUI, context.mediaOnly]
   );
   const filteredHeights = Array.from(getHeights()?.values() ?? [])
-    .filter((m:any) => m?.height > 0)
-    ?.map((m:any) => m?.height);
+    .filter((m: any) => m?.height > 0)
+    ?.map((m: any) => m?.height);
   const aveHeight =
     filteredHeights?.reduce((a: any, b: any) => a + b, 0) /
     filteredHeights.length;
@@ -351,6 +345,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       {!context?.infiniteLoading && feed.hasNextPage && (
         <div className="flex items-center justify-center mt-6 mb-6">
           <button
+            aria-label="load more"
             disabled={feed.isLoading || feed.isFetchingNextPage}
             onClick={() => {
               loadMoreItems(items.length, items.length + 20);

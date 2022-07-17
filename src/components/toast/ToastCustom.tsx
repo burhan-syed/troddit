@@ -70,6 +70,7 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
 
           <div className="flex gap-1 ml-auto md:flex-col-reverse ">
             <button
+              aria-label="apply"
               className="flex items-center gap-2 cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
@@ -83,6 +84,7 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
               </div>
             </button>
             <button
+              aria-label="close"
               className="flex items-center justify-center p-1 border rounded-md border-th-border hover:border-th-borderHighlight bg-th-background2"
               onClick={() => toast.remove(t.id)}
             >

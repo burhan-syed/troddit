@@ -47,6 +47,7 @@ const ParseATag = (props) => {
       {props?.children?.data}
       {expandable && (
         <button
+          aria-label="expand"
           className={
             "flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight  text-th-text inline-block mx-1.5"
           }

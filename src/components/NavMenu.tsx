@@ -70,6 +70,7 @@ const NavMenu = ({ hide = false }) => {
     >
       <div className="flex-grow w-full">
         <Menu.Button
+          aria-label="options"
           title={"options"}
           name="Options"
           className="flex flex-row items-center justify-center w-full h-full border border-transparent rounded-md hover:border-th-border focus:outline-none"

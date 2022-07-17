@@ -79,23 +79,37 @@ const History = () => {
         </div>
         {clearingSeen ? (
           <button
+            aria-label="...loading"
             disabled={true}
-            className={buttonStyle + " flex items-center justify-center text-transparent select-none"}
+            className={
+              buttonStyle +
+              " flex items-center justify-center text-transparent select-none"
+            }
           >
-            <span>.</span><ImSpinner2 className="text-th-text animate-spin" /><span>.</span>
+            <span>.</span>
+            <ImSpinner2 className="text-th-text animate-spin" />
+            <span>.</span>
           </button>
         ) : seenPrompt ? (
           <div
             className={
-              buttonStyle + " flex flex-col items-center justify-between relative"
+              buttonStyle +
+              " flex flex-col items-center justify-between relative"
             }
           >
-            <label className="absolute -top-[14px] w-full text-xs text-center text-[8px]">Are you sure? </label>
-            <div className="flex justify-center w-full gap-2">
-              <button className="hover:underline" onClick={clearSeenAction}>
+            <label className="absolute -top-[14px] w-full text-xs text-center text-[8px]">
+              Are you sure?{" "}
+            </label>
+            <div className="flex justify-center w-full gap-3">
+              <button
+                aria-label="yes"
+                className="hover:underline"
+                onClick={clearSeenAction}
+              >
                 Yes
               </button>
               <button
+                aria-label="no"
                 className="hover:underline"
                 onClick={() => setSeenPrompt(false)}
               >
@@ -105,7 +119,11 @@ const History = () => {
           </div>
         ) : (
           <div className="relative">
-            <button className={buttonStyle} onClick={() => setSeenPrompt(true)}>
+            <button
+              aria-label="clear seen"
+              className={buttonStyle}
+              onClick={() => setSeenPrompt(true)}
+            >
               Clear Seen
             </button>
             {seenErr && (
@@ -131,23 +149,37 @@ const History = () => {
         </div>
         {clearingRead ? (
           <button
+            aria-label="...loading"
             disabled={true}
-            className={buttonStyle + " flex items-center justify-center text-transparent select-none"}
+            className={
+              buttonStyle +
+              " flex items-center justify-center text-transparent select-none"
+            }
           >
-            <span>.</span><ImSpinner2 className="text-th-text animate-spin" /><span>.</span>
+            <span>.</span>
+            <ImSpinner2 className="text-th-text animate-spin" />
+            <span>.</span>
           </button>
         ) : readPrompt ? (
           <div
             className={
-              buttonStyle + " flex flex-col items-center justify-between relative"
+              buttonStyle +
+              " flex flex-col items-center justify-between relative"
             }
           >
-            <label className="absolute -top-[14px] w-full text-xs text-center text-[8px]">Are you sure? </label>
-            <div className="flex justify-center w-full gap-2">
-              <button className="hover:underline" onClick={clearReadAction}>
+            <label className="absolute -top-[14px] w-full text-xs text-center text-[8px]">
+              Are you sure?{" "}
+            </label>
+            <div className="flex justify-center w-full gap-3">
+              <button
+                aria-label="yes"
+                className="hover:underline"
+                onClick={clearReadAction}
+              >
                 Yes
               </button>
               <button
+                aria-label="no"
                 className="hover:underline"
                 onClick={() => setReadPrompt(false)}
               >
@@ -157,7 +189,11 @@ const History = () => {
           </div>
         ) : (
           <div className="relative">
-            <button className={buttonStyle} onClick={() => setReadPrompt(true)}>
+            <button
+              aria-label="clear read"
+              className={buttonStyle}
+              onClick={() => setReadPrompt(true)}
+            >
               Clear Read
             </button>
             {readErr && (

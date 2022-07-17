@@ -420,6 +420,7 @@ const Media = ({
         <>
           {isIFrame && (
             <button
+              aria-label="switch embed"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -513,7 +514,9 @@ const Media = ({
                   ? " block "
                   : post?.mediaInfo?.isTweet
                   ? "flex items-center justify-center  relative overflow-hidden rounded-lg " +
-                    (containerDims?.[1] ? "" : " h-96  border border-[#E7E5E4] ")
+                    (containerDims?.[1]
+                      ? ""
+                      : " h-96  border border-[#E7E5E4] ")
                   : " flex items-center justify-center relative ")
               } //flex items-center justify-center "}
               style={

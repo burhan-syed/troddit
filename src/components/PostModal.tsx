@@ -176,6 +176,7 @@ const PostModal = ({
         className="fixed top-0 left-0 w-screen h-full bg-black/75 opacity-80 backdrop-filter backdrop-blur-lg overscroll-none"
       ></div>
       <button
+        aria-label="go back"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -195,6 +196,7 @@ const PostModal = ({
       </button>
       {hasPrevPost && (
         <button
+          aria-label="previous post"
           title={`previous post (left arrow)`}
           onClick={(e) => {
             e.preventDefault();
@@ -220,6 +222,7 @@ const PostModal = ({
       {/* context.posts?.length > 0 */}
       {hasNextPost && (
         <button
+          aria-label="next post"
           title={`next post (right arrow)`}
           onClick={(e) => {
             e.preventDefault();

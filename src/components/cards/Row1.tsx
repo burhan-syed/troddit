@@ -3,7 +3,7 @@ import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
@@ -29,14 +29,13 @@ const Row1 = ({
   read,
   handleClick,
   origCommentCount,
-  recomputeSize
+  recomputeSize,
 }) => {
   const context: any = useMainContext();
   const [expand, setexpand] = useState<boolean>();
   useEffect(() => {
-    if (expand === false) recomputeSize(); 
-  }, [expand])
-  
+    if (expand === false) recomputeSize();
+  }, [expand]);
 
   return (
     <div
@@ -140,7 +139,7 @@ const Row1 = ({
                     (read && context.dimRead ? " opacity-50" : "")
                   }
                   style={{
-                    wordBreak: "break-word"
+                    wordBreak: "break-word",
                   }}
                 >{`${post?.title ?? ""}`}</span>
               </a>
@@ -252,6 +251,7 @@ const Row1 = ({
         <div>
           <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-th-text ">
             <button
+              aria-label="expand"
               className={
                 "hidden sm:flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
                 (!hasMedia &&
@@ -279,6 +279,7 @@ const Row1 = ({
 
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
               <button
+                aria-label="open comments"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();

@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import DropDownItems from "./DropDownItems";
 import { Menu } from "@headlessui/react";
 import LoginProfile from "./LoginProfile";
+import React from "react";
 
-const scrollStyle = "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+const scrollStyle =
+  "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full";
 
 const SideNav = ({ visible, toggle }) => {
   const { data: session, status } = useSession();
@@ -52,9 +54,9 @@ const SideNav = ({ visible, toggle }) => {
   }, [visible]);
   return (
     <div
-      // onTouchStart={(e) => handleTouchStart(e)}
-      // onTouchMove={(e) => handleTouchMove(e)}
-      // onTouchEnd={(e) => handleTouchEnd(e)}
+    // onTouchStart={(e) => handleTouchStart(e)}
+    // onTouchMove={(e) => handleTouchMove(e)}
+    // onTouchEnd={(e) => handleTouchEnd(e)}
     >
       <div
         className={
@@ -87,6 +89,7 @@ const SideNav = ({ visible, toggle }) => {
                 {({ open }) => (
                   <>
                     <Menu.Button
+                      aria-label="open subs"
                       as="div"
                       className={"hidden"}
                       ref={buttonRef}

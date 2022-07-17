@@ -57,7 +57,7 @@ const Thread = ({
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [windowWidth, windowHeight] = useWindowSize();
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
   //initPost so later refetches will keep media (ie videos) stable
   const [initPost, setInitPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
@@ -133,10 +133,10 @@ const Thread = ({
   }, [post]);
 
   useEffect(() => {
-    if (read){
+    if (read) {
       setOrigCommentCount(read?.numComments);
       !origReadTime && setOrigReadTime(read?.time);
-    } else if (read===false){
+    } else if (read === false) {
       setOrigReadTime(new Date().getTime());
     }
   }, [read]);
@@ -509,6 +509,7 @@ const Thread = ({
                         {windowWidth >= 1300 && (
                           <>
                             <button
+                              aria-label="switch comments location"
                               autoFocus={true}
                               onClick={(e) => {
                                 setUsePortrait((p) => !p);
@@ -523,6 +524,7 @@ const Thread = ({
                         )}
                         {true && (
                           <button
+                            aria-label="expand media"
                             autoFocus={windowWidth < 1300}
                             onClick={(e) => setimgFull((p) => !p)}
                             className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
@@ -542,6 +544,7 @@ const Thread = ({
                       <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm ">
                         <div>
                           <button
+                            aria-label="reply"
                             disabled={post?.archived || post?.locked}
                             onClick={(e) => {
                               e.preventDefault();
@@ -734,6 +737,7 @@ const Thread = ({
                 </div>
                 <div className="flex items-center h-full gap-2">
                   <button
+                    aria-label="refresh comments"
                     disabled={thread.isFetching}
                     onClick={() => {
                       setOrigCommentCount(post?.num_comments ?? undefined);
@@ -825,7 +829,6 @@ const Thread = ({
                   )}
                 </div>
                 <div className="py-5"></div>
-
               </div>
             </div>
             <div onClick={goBack} className="flex-grow"></div>

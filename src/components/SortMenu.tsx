@@ -216,6 +216,7 @@ const SortMenu = ({ hide = false }) => {
         <>
           <div className="flex-grow w-full">
             <Menu.Button
+              aria-label="sort by"
               name="Sort Page By"
               className="flex flex-row items-center justify-between w-full h-full px-2 border border-transparent rounded-md hover:border-th-border focus:outline-none "
             >
@@ -302,9 +303,7 @@ const SortMenu = ({ hide = false }) => {
                         onTouchStart={(e) => setTopTouch(false)}
                         onClick={(e) => updateSort(e, "best")}
                         className={classNames(
-                          active
-                            ? "bg-th-highlight"
-                            : "",
+                          active ? "bg-th-highlight" : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -352,9 +351,7 @@ const SortMenu = ({ hide = false }) => {
                             : updateSort(e, "new")
                         }
                         className={classNames(
-                          active
-                            ? "bg-th-highlight"
-                            : "",
+                          active ? "bg-th-highlight" : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -378,9 +375,7 @@ const SortMenu = ({ hide = false }) => {
                     >
                       <div
                         className={classNames(
-                          active
-                            ? "bg-th-highlight"
-                            : "",
+                          active ? "bg-th-highlight" : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >
@@ -504,9 +499,7 @@ const SortMenu = ({ hide = false }) => {
                         <div
                           onClick={(e) => updateRange(e, "all", "relevance")}
                           className={classNames(
-                            active
-                              ? "bg-th-highlight"
-                              : "",
+                            active ? "bg-th-highlight" : "",
                             "block px-4 py-1 text-sm"
                           )}
                         >
@@ -635,9 +628,7 @@ const SortMenu = ({ hide = false }) => {
                         <div
                           onClick={(e) => updateRange(e, "all", "comments")}
                           className={classNames(
-                            active
-                              ? "bg-th-highlight"
-                              : "",
+                            active ? "bg-th-highlight" : "",
                             "block px-4 py-1 text-sm"
                           )}
                         >
@@ -775,9 +766,7 @@ const SortMenu = ({ hide = false }) => {
                         <div
                           onClick={(e) => updateSort(e, "rising")}
                           className={classNames(
-                            active
-                              ? "bg-th-highlight"
-                              : "",
+                            active ? "bg-th-highlight" : "",
                             "block px-4 py-1 text-sm "
                           )}
                         >

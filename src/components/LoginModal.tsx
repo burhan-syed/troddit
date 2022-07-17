@@ -5,6 +5,7 @@ import { MdErrorOutline } from "react-icons/md";
 import { useMainContext } from "../MainContext";
 import { signIn } from "next-auth/react";
 import { usePlausible } from "next-plausible";
+import React from "react";
 
 const Login = () => {
   const [open, setOpen] = useState(false);
@@ -84,6 +85,7 @@ const Login = () => {
               </div>
               <div className="px-4 py-3 bg-th-background2 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
+                  aria-label="sign in"
                   type="button"
                   className="inline-flex justify-center w-full px-4 py-2 text-base font-medium border border-transparent rounded-md shadow-sm bg-th-accent hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => {
@@ -94,6 +96,7 @@ const Login = () => {
                   Login
                 </button>
                 <button
+                  aria-label="cancel"
                   type="button"
                   className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-black bg-white border rounded-md shadow-sm border-th-border hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => context.setLoginModal(false)}

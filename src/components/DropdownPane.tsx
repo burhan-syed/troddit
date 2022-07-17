@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React,{ useState, Fragment, useEffect, useMemo } from "react";
+import React, { useState, Fragment, useEffect, useMemo } from "react";
 import Image from "next/dist/client/image";
 
 import { BsChevronDown } from "react-icons/bs";
@@ -13,11 +13,13 @@ import DropDownItems from "./DropDownItems";
 import { Menu, Transition } from "@headlessui/react";
 import { useMainContext } from "../MainContext";
 
-const scrollStyle = "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+const scrollStyle =
+  "scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full";
 
 const DropdownPane = ({ hide }) => {
   const subsContext: any = useSubsContext();
-  const { multi, currSubInfo, currLocation, tryLoadAll, myMultis } = subsContext;
+  const { multi, currSubInfo, currLocation, tryLoadAll, myMultis } =
+    subsContext;
   const context: any = useMainContext();
   const [expand, setExpand] = useState<boolean>();
   const router = useRouter();
@@ -27,16 +29,16 @@ const DropdownPane = ({ hide }) => {
   };
 
   const multi_icon = useMemo(() => {
-    let icon = ""; 
-    if (multi && myMultis){
-      myMultis?.forEach(myMulti => {
-        if (myMulti?.data?.name?.toUpperCase() == multi?.toUpperCase()){
+    let icon = "";
+    if (multi && myMultis) {
+      myMultis?.forEach((myMulti) => {
+        if (myMulti?.data?.name?.toUpperCase() == multi?.toUpperCase()) {
           icon = myMulti?.data?.icon_url;
         }
       });
-    } 
+    }
     return icon;
-  }, [multi, myMultis])
+  }, [multi, myMultis]);
 
   useEffect(() => {
     context.expandedSubPane ? setExpand(true) : setExpand(false);
@@ -51,6 +53,7 @@ const DropdownPane = ({ hide }) => {
         <>
           {/* Main Button */}
           <Menu.Button
+            aria-label="Open Nav Dropdown"
             as="div"
             className={
               "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer rounded-2  hover:border-th-border " +
@@ -78,7 +81,7 @@ const DropdownPane = ({ hide }) => {
                           display_name: multi,
                           name: multi,
                           subreddits: ["", ""],
-                          icon_url: multi_icon
+                          icon_url: multi_icon,
                         },
                       }}
                       showFavorite={false}
@@ -93,7 +96,6 @@ const DropdownPane = ({ hide }) => {
                       }}
                       isUser={router.pathname.includes("/u/")}
                       showFavorite={false}
-
                     />
                   </div>
                 ) : (

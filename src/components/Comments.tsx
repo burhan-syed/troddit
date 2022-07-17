@@ -1,8 +1,5 @@
 import { useSession } from "next-auth/react";
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
 import ChildComments from "./ChildComments";
 
@@ -43,6 +40,7 @@ const Comments = ({
         <div key={`${i}_${comment?.data?.id}`} className="py-1 ">
           {comment?.kind === "more" ? (
             <button
+              aria-label="load more"
               className={
                 "text-sm pl-2 text-semibold flex hover:font-semibold w-full " +
                 (thread.isFetching ? " animate-pulse" : " ")

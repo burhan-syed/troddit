@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
@@ -412,6 +407,7 @@ const ChildComments = ({
                   {/* chrome struggles with svgs.. hiding on low end devices */}
                   {!showOpts && windowWidth <= 640 && (
                     <button
+                      aria-label="vote"
                       className="pr-2 text-sm hover:underline"
                       onClick={(e) => {
                         e.preventDefault();
@@ -428,6 +424,7 @@ const ChildComments = ({
                   )}
                 </div>
                 <button
+                  aria-label="reply"
                   disabled={comment?.data?.archived || locked}
                   className={
                     "text-sm " +
@@ -482,84 +479,83 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-                  <div
-                    onMouseEnter={() => setHovered(false)}
-                    onMouseLeave={() => setHovered(true)}
-                    className={
-                      "min-w-full py-2" +
-                      (hideChildren &&
-                      context.collapseChildrenOnly &&
-                      childcomments?.length > 0
-                        ? " hidden "
-                        : "")
-                    }
-                  >
-                    {childcomments && (
-                      <>
-                        {childcomments.map((childcomment: any, i) => (
-                          <div key={`${i}_${childcomment?.data?.id}`}>
-                            {childcomment.kind === "t1" && (
-                              <ChildComments
-                                comment={childcomment}
-                                depth={depth + 1}
-                                hide={hideChildren}
-                                portraitMode={portraitMode}
-                                locked={locked}
-                                scoreHideMins={scoreHideMins}
-                                readTime={readTime}
-                              />
-                            )}
-                            {childcomment.kind == "more" && (
-                              <div
-                                className={hideChildren ? "hidden" : " flex "}
-                              >
-                                {true && (
-                                  <>
-                                    {childcomment.data?.count > 0 ? (
-                                      <button
-                                        disabled={loadingComments}
-                                        onMouseEnter={() => setHovered(true)}
-                                        onMouseLeave={() => setHovered(false)}
-                                        className={
-                                          (portraitMode ? "" : "") +
-                                          (loadingComments
-                                            ? " animate-pulse "
-                                            : "") +
-                                          " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
-                                        }
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          setLoadingComments(true);
-                                          loadChildComments(
-                                            childcomment?.data?.children,
-                                            comment?.data?.link_id
-                                          );
-                                        }}
-                                      >
-                                        {`Load ${childcomment.data?.count} More... `}
-                                      </button>
-                                    ) : (
-                                      <Link href={comment?.data?.permalink}>
-                                        <a
-                                          className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
-                                          onMouseEnter={() => setHovered(true)}
-                                          onMouseLeave={() => setHovered(false)}
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          Continue thread <BsArrowRightShort />
-                                        </a>
-                                      </Link>
-                                    )}
-                                  </>
+              <div
+                onMouseEnter={() => setHovered(false)}
+                onMouseLeave={() => setHovered(true)}
+                className={
+                  "min-w-full py-2" +
+                  (hideChildren &&
+                  context.collapseChildrenOnly &&
+                  childcomments?.length > 0
+                    ? " hidden "
+                    : "")
+                }
+              >
+                {childcomments && (
+                  <>
+                    {childcomments.map((childcomment: any, i) => (
+                      <div key={`${i}_${childcomment?.data?.id}`}>
+                        {childcomment.kind === "t1" && (
+                          <ChildComments
+                            comment={childcomment}
+                            depth={depth + 1}
+                            hide={hideChildren}
+                            portraitMode={portraitMode}
+                            locked={locked}
+                            scoreHideMins={scoreHideMins}
+                            readTime={readTime}
+                          />
+                        )}
+                        {childcomment.kind == "more" && (
+                          <div className={hideChildren ? "hidden" : " flex "}>
+                            {true && (
+                              <>
+                                {childcomment.data?.count > 0 ? (
+                                  <button
+                                    aria-label="load more"
+                                    disabled={loadingComments}
+                                    onMouseEnter={() => setHovered(true)}
+                                    onMouseLeave={() => setHovered(false)}
+                                    className={
+                                      (portraitMode ? "" : "") +
+                                      (loadingComments
+                                        ? " animate-pulse "
+                                        : "") +
+                                      " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
+                                    }
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setLoadingComments(true);
+                                      loadChildComments(
+                                        childcomment?.data?.children,
+                                        comment?.data?.link_id
+                                      );
+                                    }}
+                                  >
+                                    {`Load ${childcomment.data?.count} More... `}
+                                  </button>
+                                ) : (
+                                  <Link href={comment?.data?.permalink}>
+                                    <a
+                                      className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
+                                      onMouseEnter={() => setHovered(true)}
+                                      onMouseLeave={() => setHovered(false)}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      Continue thread <BsArrowRightShort />
+                                    </a>
+                                  </Link>
                                 )}
-                              </div>
+                              </>
                             )}
                           </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

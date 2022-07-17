@@ -100,6 +100,7 @@ const FilterModal = ({ toOpen }) => {
                   </h4>
 
                   <button
+                    aria-label="apply"
                     className="flex items-center justify-center px-4 py-1.5 mr-4 text-center border border-th-border hover:bg-th-highlight hover:border-th-borderHighlight rounded-md cursor-pointer  "
                     onClick={(e) => {
                       e.preventDefault();

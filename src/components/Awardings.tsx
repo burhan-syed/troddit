@@ -32,7 +32,7 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
               >
                 <Image
                   src={a?.resized_icons?.[1]?.url ?? a?.icon_url}
-                  alt=""
+                  alt={`${a?.name} (${a?.count})`}
                   unoptimized={true}
                   layout="intrinsic"
                   width={a?.resized_icons?.[0]?.width ?? 16}

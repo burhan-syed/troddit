@@ -11,6 +11,7 @@ const FavoriteButton = ({sub, favorited, isUser=false, forceShow=false}) => {
 
   return (
     <button
+    aria-label="favorite"
     onClick={(e) => {e.stopPropagation(); e.preventDefault(); handleClick()}}
         className={
           (favorited || forceShow ? " " : " md:opacity-0 md:group-hover:opacity-100 ")  + " outline-none select-none"

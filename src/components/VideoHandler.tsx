@@ -8,6 +8,7 @@ import { useWindowSize } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 import { ImSpinner2 } from "react-icons/im";
+import React from "react";
 const VideoHandler = ({
   thumbnail,
   placeholder,
@@ -456,6 +457,7 @@ const VideoHandler = ({
       <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-white">
         <div className="flex items-center space-x-2">
           <button
+            aria-label="play"
             onClick={(e) => {
               playControl(e, true);
             }}
@@ -553,6 +555,7 @@ const VideoHandler = ({
               </div>
             </div>
             <button
+              aria-label="toggle mute"
               //mute unmute button
               onClick={(e) => audioControl(e, true)}
               onMouseEnter={() => setShowVol(true)}
