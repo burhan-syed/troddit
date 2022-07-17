@@ -43,9 +43,9 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
             );
         })}
         {rewardCount > 0 && (
-          <h4 className="text-xs font-semibold">
+          <span className="text-xs font-semibold">
             {rewardCount} award{rewardCount == 1 ? "" : "s"}
-          </h4>
+          </span>
         )}
       </>
     );

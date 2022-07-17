@@ -269,6 +269,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
       return (
         <InView
+          role={"gridcell"}
           threshold={0}
           onChange={(inView, entry) =>
             handleIntersectChange(inView, entry, post)
@@ -330,6 +331,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   return (
     <div>
       <Masonry
+      role="list"
         key={masonicKey}
         onRender={maybeLoadMorePosts}
         columnGutter={0}

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Autosuggest from "react-autosuggest";
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
@@ -18,6 +17,8 @@ import {
 } from "react-icons/ai";
 import { useCollectionContext } from "./collections/CollectionContext";
 import Checkbox from "./ui/Checkbox";
+import ItemsList from "./search/ItemsList";
+
 
 const Search = ({ id }) => {
   const router = useRouter();
@@ -229,7 +230,7 @@ const Search = ({ id }) => {
       return (
         <>
           {/* Default value */}
-          <div>
+          <div aria-label={lastRequest?.current ?? "suggestions loading"}>
             <div className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer select-none hover:bg-th-highlight ">
               <div className="ml-2">
                 {suggestion?.data?.icon_image ?? suggestion?.data?.icon_img ? (
@@ -303,7 +304,7 @@ const Search = ({ id }) => {
               : `/search?q=${suggestion?.data?.q}&sort=relevance&t=all`
           }
         >
-          <a>
+          <a aria-label={`Search for "${suggestion?.data?.q}"`}>
             <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-th-highlight">
               <AiOutlineSearch className="w-6 h-6" />
               <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
@@ -316,7 +317,7 @@ const Search = ({ id }) => {
       );
     }
     return (
-      <div className="select-none ">
+      <div className="select-none " aria-label={`go to ${suggestion?.data?.display_name_prefixed}`}>
         {/* <Link href={`r/${suggestion?.data?.display_name.replace('/r','')}`}>
           <a> */}
         <Link href={`/r/${suggestion?.data?.display_name}`}>
@@ -510,10 +511,11 @@ const Search = ({ id }) => {
 
   const inputProps = {
     placeholder: placeHolder,
-    value,
+    value: value,
     onChange: onChange,
     onFocus: () => context.setReplyFocus(true),
     onBlur: () => context.setReplyFocus(false),
+    type: 'search'
   };
 
   return (
@@ -525,6 +527,13 @@ const Search = ({ id }) => {
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         getSuggestionValue={getSuggestionValue}
         renderSuggestion={renderSuggestion}
+        renderSuggestionsContainer={({ containerProps: {role, ...otherContainerProps}, children }) => (
+          <div {...otherContainerProps}>
+          {React.Children.map(children, child => (
+              <ItemsList {...child.props}/>
+          ))}
+          </div>
+      )}
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         onSuggestionSelected={onSuggestionSelected}

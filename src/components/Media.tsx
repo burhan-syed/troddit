@@ -401,6 +401,7 @@ const Media = ({
 
   const externalLink = (
     <a
+      aria-label="external link"
       onClick={(e) => e.stopPropagation()}
       className="flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80 md:bg-black/0 md:group-hover:bg-black/80 bg-opacity-50 "
       target={"_blank"}
@@ -582,7 +583,7 @@ const Media = ({
                       )
                     : imgWidthHeight[0]
                 }
-                alt=""
+                alt={post?.title}
                 layout={
                   !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
                     ? "fill"
@@ -681,6 +682,7 @@ const Media = ({
         !isGallery && (
           <div className="">
             <a
+              aria-label="external link"
               onClick={(e) => e.stopPropagation()}
               className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs bg-opacity-50 bg-black/80 text-th-link hover:text-th-linkHover "
               target={"_blank"}

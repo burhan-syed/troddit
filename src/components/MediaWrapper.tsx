@@ -1,6 +1,6 @@
 import Media from "./Media";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
-import React,{ useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Awardings from "./Awardings";
 import { secondsToTime } from "../../lib/utils";
@@ -39,7 +39,7 @@ const MediaWrapper = ({
     if (post?.crosspost_parent_list?.[0]) {
       setIsXPost(true);
       setPostData(post.crosspost_parent_list[0]);
-    } else if (!postData || post?.name !== postData?.name){
+    } else if (!postData || post?.name !== postData?.name) {
       setPostData(post);
     }
     return () => {
@@ -76,12 +76,13 @@ const MediaWrapper = ({
       {hideNSFW && hidden && (
         <div className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-11 top-1/2 text-white hover:cursor-pointer">
           <div className="flex flex-col items-center justify-center p-4 bg-opacity-50 rounded-lg bg-black/30 backdrop-blur-xl">
-          <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
-          <VscEye className="hidden w-10 h-10 group-hover:block" />
-          <h1 className="hidden text-sm group-hover:block">Click to Unhide</h1>
-          <h1 className="group-hover:hidden">{hideText}</h1>
+            <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
+            <VscEye className="hidden w-10 h-10 group-hover:block" />
+            <h1 className="hidden text-sm group-hover:block">
+              Click to Unhide
+            </h1>
+            <h1 className="group-hover:hidden">{hideText}</h1>
           </div>
-        
         </div>
       )}
     </div>
@@ -96,6 +97,7 @@ const MediaWrapper = ({
           }
         >
           <a
+            aria-label={postData?.title}
             href={postData?.permalink}
             //onClick={(e) => e.preventDefault()}
             className=""
@@ -153,17 +155,13 @@ const MediaWrapper = ({
           {postData?.over_18 && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-th-red">
-                NSFW
-              </span>
+              <span className="text-th-red">NSFW</span>
             </div>
           )}
           {postData?.spoiler && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
-              <span className="text-th-red">
-                SPOILER
-              </span>
+              <span className="text-th-red">SPOILER</span>
             </div>
           )}
           <div className="mx-1"></div>

@@ -54,9 +54,9 @@ const DropdownPane = ({ hide }) => {
           {/* Main Button */}
           <Menu.Button
             aria-label="Open Nav Dropdown"
-            as="div"
+            as="button"
             className={
-              "flex flex-row items-center justify-between flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer rounded-2  hover:border-th-border " +
+              "flex flex-row items-center justify-between outline-none flex-none w-full h-full px-2 border border-transparent rounded-md hover:cursor-pointer rounded-2  hover:border-th-border " +
               (open ? " border-th-border " : "")
             }
             onClick={handleClick}

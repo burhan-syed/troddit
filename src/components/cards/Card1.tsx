@@ -235,6 +235,7 @@ const Card1 = ({
             </div>
           ) : (
             <a
+            aria-label={post?.title}
               href={post?.permalink}
               onClick={(e) => {
                 e.preventDefault();

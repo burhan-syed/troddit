@@ -366,7 +366,7 @@ const Thread = ({
                       size={7}
                       postindex={context.postNum}
                       postMode={true}
-                      archived={post?.archived}
+                      archived={post?.archived === true}
                       //scoreHideMins={sub?.data?.data?.comment_score_hide_mins} //only hide score for comments.. not posts
                       //postTime={post?.created_utc}
                     />
@@ -502,7 +502,7 @@ const Thread = ({
                           name={post?.name}
                           score={post?.score}
                           size={7}
-                          archived={post?.archived}
+                          archived={post?.archived === true}
                         />
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start space-x-1 ">
@@ -545,16 +545,16 @@ const Thread = ({
                         <div>
                           <button
                             aria-label="reply"
-                            disabled={post?.archived || post?.locked}
+                            disabled={post?.archived === true || post?.locked === true}
                             onClick={(e) => {
                               e.preventDefault();
-                              session && !post?.archived && !post?.locked
+                              session && !(post?.archived === true) && !post?.locked
                                 ? setopenReply((r) => !r)
                                 : !session && context.toggleLoginModal();
                             }}
                             className={
                               "flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border  " +
-                              (post?.archived || post?.locked
+                              (post?.archived === true || post?.locked === true
                                 ? " opacity-50"
                                 : " hover:border-th-borderHighlight ")
                             }
@@ -660,16 +660,16 @@ const Thread = ({
               </div>
             )}
 
-            {(post?.archived ||
+            {(post?.archived === true ||
               post?.removed_by_category === "moderator" ||
-              post?.locked) && (
+              post?.locked === true) && (
               <div className="w-full ">
                 <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
                   {post?.archived && <BsArchive />}
                   {post?.removed_by_category === "moderator" && <BsShieldX />}
                   {post?.locked && <BsLock />}
                   <p className="flex flex-col text-sm font-normal ">
-                    {post?.archived && (
+                    {post?.archived === true && (
                       <>
                         <span>This is an archived post.</span>
                         <span className="text-xs">
@@ -688,7 +688,7 @@ const Thread = ({
                         </span>
                       </>
                     )}
-                    {post?.locked && (
+                    {post?.locked === true && (
                       <>
                         <span>This post is locked.</span>
                         <span className="text-xs">

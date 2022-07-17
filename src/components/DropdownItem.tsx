@@ -76,9 +76,9 @@ const DropdownItem = ({ sub, isUser = false, showFavorite = true }) => {
                 " w-6 h-6 text-center text-white overflow-clip flex items-center justify-center  text-lg"
               }
             >
-              <h4 className={isMulti ? "" : "" + "mb-0.5"}>
+              <span className={isMulti ? "" : "" + "mb-0.5"}>
                 {isUser ? "u/" : isMulti ? "f" : "r/"}
-              </h4>
+              </span>
             </div>
           )
         )}
