@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
@@ -18,7 +12,7 @@ import UserFlair from "./UserFlair";
 import Image from "next/image";
 import { BsArrowRightShort } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
-
+import { useWindowSize } from "@react-hook/window-size";
 const ChildComments = ({
   comment,
   readTime,
@@ -32,14 +26,14 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation } = useMutate();
   const { data: session, status } = useSession();
-  const parentRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
-  const [moreComments, setMoreComments] = useState([]);
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [hideChildren, setHideChildren] = useState(
     comment?.data?.collapsed ?? false
   );
+
   const toggleHidden = (override?) => {
     setHideChildren((h) => {
       let collapsed = !h;
@@ -113,32 +107,55 @@ const ChildComments = ({
     return count;
   }, [childcomments, hideChildren]);
 
-  const loadChildComments = useCallback(
-    async (children, link_id) => {
-      let newComments = await loadCommentsMutation.mutateAsync({
-        parentName: comment?.data?.name,
-        children: children,
-        link_id: link_id,
-        permalink: comment?.data?.permalink,
-        childcomments: childcomments,
-        token: context?.token,
-      });
-      setchildcomments((c) => [
-        ...c?.filter((k) => k?.kind !== "more"),
-        ...newComments?.newComments,
-      ]);
-      newComments?.newToken && context?.setToken(newComments?.newToken);
-      setMoreLoaded(true);
-      setLoadingComments(false);
-    },
-    [comment?.data?.permalink, session, context]
-  );
+  const loadChildComments = async (children, link_id) => {
+    let newComments = await loadCommentsMutation.mutateAsync({
+      parentName: comment?.data?.name,
+      children: children,
+      link_id: link_id,
+      permalink: comment?.data?.permalink,
+      childcomments: childcomments,
+      token: context?.token,
+    });
+    setchildcomments((c) => [
+      ...c?.filter((k) => k?.kind !== "more"),
+      ...newComments?.newComments,
+    ]);
+    newComments?.newToken && context?.setToken(newComments?.newToken);
+    setMoreLoaded(true);
+    setLoadingComments(false);
+  };
 
-  const [isNew, setIsNew] = useState(false); 
+  const [windowWidth, windowHeight] = useWindowSize();
+  const [showOpts, setShowOpts] = useState(false);
+
+  const [isNew, setIsNew] = useState(false);
   useEffect(() => {
-    setIsNew((readTime/1000)?.toFixed(0) < comment?.data?.created_utc)
-  }, [readTime, comment?.data?.created_utc])
-  
+    setIsNew((readTime / 1000)?.toFixed(0) < comment?.data?.created_utc);
+  }, [readTime, comment?.data?.created_utc]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const voteScore = useMemo(() => {
+    let x = comment?.data?.score ?? 0;
+    if (
+      scoreHideMins &&
+      comment?.data?.created_utc &&
+      scoreHideMins > 0 &&
+      comment.data.created_utc > 0
+    ) {
+      const now = new Date().getTime() / 1000;
+      if (comment?.data?.created_utc + scoreHideMins * 60 > now) {
+        x = "? pts";
+        return x;
+      }
+    }
+    if (x < 1000) {
+      return x.toString() + (x === 1 ? " pt" : " pts");
+    } else {
+      let y = Math.floor(x / 1000);
+      let z = (x / 1000).toFixed(1);
+      return z.toString() + "k pts";
+    }
+  }, [comment?.data?.score, comment?.data?.created_utc, scoreHideMins]);
 
   return (
     <div
@@ -216,7 +233,7 @@ const ChildComments = ({
                 >
                   {comment?.data?.profile_img?.includes("http") &&
                   context.showUserIcons ? (
-                    <div className="w-6 h-6 rounded-full overflow-clip mr-0.5">
+                    <div className="w-6 h-6 rounded-full overflow-hidden mr-0.5">
                       <Image
                         src={comment.data.profile_img}
                         height={"256"}
@@ -229,7 +246,7 @@ const ChildComments = ({
                   ) : (
                     context.showUserIcons && (
                       <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-th-accent">
-                        <h4 className="text-xl ml-0.5 mb-1 text-white">u/</h4>
+                        <span className="text-xl ml-0.5 mb-1 text-white">u/</span>
                       </div>
                     )
                   )}
@@ -250,7 +267,7 @@ const ChildComments = ({
                 </a>
               </Link>
 
-              {(comment?.data?.author == op || comment?.data?.is_submitter) && (
+              {comment?.data?.is_submitter && (
                 <>
                   <p className="px-0.5 font-medium text-th-accent ">{"OP"}</p>
                 </>
@@ -296,9 +313,7 @@ const ChildComments = ({
             </div>
 
             <div className="flex items-center gap-1 pr-4 mt-1">
-              {isNew && (
-                <p className="text-xs italic">{"(new)"}</p>
-              )}
+              {isNew && <p className="text-xs italic">{"(new)"}</p>}
               {comment?.data?.edited && (
                 <p className="text-xs italic ">
                   edited{" "}
@@ -311,6 +326,22 @@ const ChildComments = ({
                     "yr ago",
                   ])}
                 </p>
+              )}
+              {(hideChildren || windowWidth <= 640) && (
+                <>
+                  <span
+                    className={
+                      "text-xs " +
+                      (comment?.data?.likes === true
+                        ? " text-th-upvote "
+                        : comment?.data?.likes === false
+                        ? " text-th-downvote "
+                        : "")
+                    }
+                  >
+                    {voteScore}
+                  </span>
+                </>
               )}
 
               {hideChildren &&
@@ -350,30 +381,50 @@ const ChildComments = ({
                 <ParseBodyHTML html={comment?.data?.body_html} />
               </div>
 
-              {/* Buttom Row */}
+              {/* Bottom Row */}
               <div
                 className={
                   (portraitMode ? " ml-1 " : " ml-2 ") +
                   " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-th-textLight "
                 }
               >
-                {/* Vote */}
                 <div
                   className={
                     (!portraitMode && " ") + //ml-1.5 md:ml-0
                     " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
                   }
                 >
-                  <Vote
-                    name={comment?.data?.name}
-                    likes={comment?.data?.likes}
-                    score={comment?.data?.score}
-                    archived={comment?.data?.archived}
-                    scoreHideMins={scoreHideMins}
-                    postTime={comment?.data?.created_utc}
-                  />
+                  {(windowWidth > 640 || showOpts) && (
+                    <Vote
+                      name={comment?.data?.name}
+                      likes={comment?.data?.likes}
+                      score={comment?.data?.score}
+                      archived={comment?.data?.archived}
+                      scoreHideMins={scoreHideMins}
+                      postTime={comment?.data?.created_utc}
+                    />
+                  )}
+                  {/* chrome struggles with svgs.. hiding on low end devices */}
+                  {!showOpts && windowWidth <= 640 && (
+                    <button
+                      aria-label="vote"
+                      className="pr-2 text-sm hover:underline"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!session?.user?.name) {
+                          context.setLoginModal(true);
+                        } else {
+                          setShowOpts(true);
+                        }
+                      }}
+                    >
+                      Vote
+                    </button>
+                  )}
                 </div>
                 <button
+                  aria-label="reply"
                   disabled={comment?.data?.archived || locked}
                   className={
                     "text-sm " +
@@ -400,6 +451,7 @@ const ChildComments = ({
                     saved={comment?.data?.saved}
                   />
                 </div>
+
                 {hideChildren &&
                   context.collapseChildrenOnly &&
                   childcomments?.length > 0 && (
@@ -427,7 +479,6 @@ const ChildComments = ({
               )}
 
               {/* Children */}
-
               <div
                 onMouseEnter={() => setHovered(false)}
                 onMouseLeave={() => setHovered(true)}
@@ -461,12 +512,15 @@ const ChildComments = ({
                               <>
                                 {childcomment.data?.count > 0 ? (
                                   <button
-                                  disabled={loadingComments}
+                                    aria-label="load more"
+                                    disabled={loadingComments}
                                     onMouseEnter={() => setHovered(true)}
                                     onMouseLeave={() => setHovered(false)}
                                     className={
                                       (portraitMode ? "" : "") +
-                                      (loadingComments && " animate-pulse ") +
+                                      (loadingComments
+                                        ? " animate-pulse "
+                                        : "") +
                                       " pt-2  w-full text-left hover:font-semibold ml-3 md:pl-0 select-none outline-none text-sm"
                                     }
                                     onClick={(e) => {
@@ -487,7 +541,7 @@ const ChildComments = ({
                                       className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
                                       onMouseEnter={() => setHovered(true)}
                                       onMouseLeave={() => setHovered(false)}
-                                      onClick={e => e.stopPropagation()}
+                                      onClick={(e) => e.stopPropagation()}
                                     >
                                       Continue thread <BsArrowRightShort />
                                     </a>

@@ -1,10 +1,10 @@
 import { BiUpvote, BiDownvote } from "react-icons/bi";
-import React,{ useState, useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import { useKeyPress } from "../hooks/KeyPress";
-import useMutate from "../hooks/useMutate";
+import useVote from "../hooks/useVote";
 
 const calculateScore = (x: number) => {
   if (x < 1000) {
@@ -26,89 +26,44 @@ const Vote = ({
   postindex = undefined,
   postMode = false,
   scoreHideMins = 0,
-  postTime = 0
+  postTime = 0,
 }) => {
   const context: any = useMainContext();
   const { data: session, status } = useSession();
   const aPress = useKeyPress("a");
   const zPress = useKeyPress("z");
+  const { voteDisplay, castVote, liked, loading } = useVote({
+    name,
+    likes,
+    score,
+    scoreHideMins,
+    postTime,
+  });
 
-  const [voteScore, setVoteScore] = useState("");
-
-
-  const { voteMutation } = useMutate();
-
-
-  const [liked, setLiked] = useState<number | undefined>();
-
-  useEffect(() => {
-    setLiked(() => {
-      if (likes === 1 || likes === true) return 1;
-      if (likes === false || likes === -1) return -1;
-      return undefined;
-    });
-  }, [likes, voteMutation.isError]);
-
-
-
-  const castVote = async (e, v) => {
+  const tryCastVote = (e, v) => {
     e?.preventDefault();
     e?.stopPropagation();
     if (session && !archived) {
-      let postv;
-      if (v === liked) {
-        postv = 0;
-      } else if (v === 1) {
-        postv = 1;
-      } else if (v === -1) {
-        postv = -1;
-      }
-      setLiked(postv === 1 ? 1 : postv === -1 ? -1 : undefined);
-      setVoteScore(calculateScore(score + postv));
-      voteMutation.mutate({ vote: postv, id: name });
-    
+      castVote(v);
     } else if (!session) {
       context.setLoginModal(true);
     }
   };
-  useEffect(() => {
-    //postindex > -1 && console.log(postindex, score, likes);
-    //setLiked(likes);
-    setVoteScore(calculateScore(score));
-
-    return () => {
-      //setLiked(undefined);
-    };
-  }, [score, likes]);
 
   useEffect(() => {
     if (!context.replyFocus && postMode) {
       if (aPress) {
-        castVote(undefined, 1);
+        tryCastVote(undefined, 1);
       } else if (zPress) {
-        castVote(undefined, -1);
+        tryCastVote(undefined, -1);
       }
     }
 
     return () => {};
   }, [aPress, zPress, context.replyFocus]);
 
-  const voteDisplay = useMemo(() => {
-    let display = voteScore ?? "0"
-
-
-    if (scoreHideMins > 0 && postTime > 0){
-      const now = new Date().getTime()/1000; 
-      if ((postTime + (scoreHideMins * 60)) > now){
-        display = "Vote"
-      }
-    }
-    return display; 
-  }, [voteScore, postTime, scoreHideMins])
-
   const VoteFilledUp = (
     <svg
-      //onClick={(e) => castVote(e, 1)}
       stroke="currentColor"
       fill="currentColor"
       strokeWidth="0"
@@ -116,7 +71,7 @@ const Vote = ({
       className={
         (liked === 1 ? " text-th-upvote " : "") +
         ` flex-none  w-${size} h-${size} ${
-          !archived
+          !archived && !loading
             ? " cursor-pointer hover:text-th-upvote scale-110 hover:scale-100"
             : ""
         }`
@@ -140,8 +95,8 @@ const Vote = ({
       className={
         (liked === -1 ? " text-th-downvote " : " ") +
         ` flex-none w-${size} h-${size} ${
-          !archived
-            ? " cursor-pointer } hover:text-th-downvote scale-110 hover:scale-100"
+          !archived && !loading
+            ? " cursor-pointer hover:text-th-downvote scale-110 hover:scale-100"
             : ""
         } `
       }
@@ -157,8 +112,9 @@ const Vote = ({
   return (
     <>
       <button
-        onClick={(e) => castVote(e, 1)}
-        disabled={archived || voteMutation.isLoading}
+        aria-label="upvote"
+        onClick={(e) => tryCastVote(e, 1)}
+        disabled={archived || loading}
       >
         {liked === 1 ? (
           <>{VoteFilledUp}</>
@@ -174,7 +130,7 @@ const Vote = ({
                 ? " opacity-50 "
                 : "") +
               ` flex-none w-${size} h-${size} ${
-                !archived
+                !archived && !loading
                   ? "cursor-pointer  hover:text-th-upvote hover:scale-110 hover:opacity-100"
                   : " opacity-10 "
               } `
@@ -199,8 +155,9 @@ const Vote = ({
         </>
       )}
       <button
-        onClick={(e) => castVote(e, -1)}
-        disabled={archived || voteMutation.isLoading}
+        aria-label="downvote"
+        onClick={(e) => tryCastVote(e, -1)}
+        disabled={archived || loading}
       >
         {liked === -1 ? (
           <>{VoteFilledDown}</>
@@ -212,7 +169,7 @@ const Vote = ({
             className={
               (liked ? " opacity-50 " : "") +
               ` flex-none w-${size} h-${size} ${
-                !archived
+                !archived && !loading
                   ? "cursor-pointer  hover:text-th-downvote hover:scale-110 hover:opacity-100"
                   : "opacity-10"
               } `

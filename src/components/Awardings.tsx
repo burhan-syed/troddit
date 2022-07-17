@@ -32,7 +32,7 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
               >
                 <Image
                   src={a?.resized_icons?.[1]?.url ?? a?.icon_url}
-                  alt=""
+                  alt={`${a?.name} (${a?.count})`}
                   unoptimized={true}
                   layout="intrinsic"
                   width={a?.resized_icons?.[0]?.width ?? 16}
@@ -43,9 +43,9 @@ const Awardings = ({ all_awardings, truncate = true, styles = "" }) => {
             );
         })}
         {rewardCount > 0 && (
-          <h4 className="text-xs font-semibold">
+          <span className="text-xs font-semibold">
             {rewardCount} award{rewardCount == 1 ? "" : "s"}
-          </h4>
+          </span>
         )}
       </>
     );

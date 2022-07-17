@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
@@ -34,23 +34,36 @@ const PostModal = ({
   const [curPost, setCurPost] = useState<any>(postData);
   const [curPostNum, setCurPostNum] = useState(postNum);
 
-     //prevent scrolling on main body when open
-     useEffect(() => {
-      if (true) {
-        const width = document.body.clientWidth;
-        document.documentElement.style.setProperty('--overflow', 'hidden hidden')
-        document.body.style.width = `${width}px`;
-      } else {
-        document.documentElement.style.setProperty('--overflow', 'hidden visible')
-        document.body.style.width = `auto`;
-      }
-  
-      return () => {
-        document.documentElement.style.setProperty('--overflow', 'hidden visible')
-        document.body.style.width = `auto`;
-      };
-    }, []);
- 
+  useEffect(() => {
+    context.setPostOpen(true);
+    return () => {
+      context.setPostOpen(false);
+    };
+  }, []);
+
+  //prevent scrolling on main body when open
+  useEffect(() => {
+    if (true) {
+      const width = document.body.clientWidth;
+      document.documentElement.style.setProperty("--overflow", "hidden hidden");
+      document.body.style.width = `${width}px`;
+    } else {
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
+      document.body.style.width = `auto`;
+    }
+
+    return () => {
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
+      document.body.style.width = `auto`;
+    };
+  }, []);
+
   const updateSort = async (e, sort) => {
     e.preventDefault();
     setSort(sort);
@@ -146,13 +159,13 @@ const PostModal = ({
     }
   };
 
-  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data
-  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data
+  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data;
+  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data;
 
   return (
     <div
       className={
-        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overflow-y-auto overscroll-y-contain"
+        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain"
       }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}
@@ -163,6 +176,7 @@ const PostModal = ({
         className="fixed top-0 left-0 w-screen h-full bg-black/75 opacity-80 backdrop-filter backdrop-blur-lg overscroll-none"
       ></div>
       <button
+        aria-label="go back"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -182,13 +196,14 @@ const PostModal = ({
       </button>
       {hasPrevPost && (
         <button
+          aria-label="previous post"
           title={`previous post (left arrow)`}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             changePost(-1);
           }}
-          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:w-12 right-7 md:rotate-0 bottom-36 md:p-2 md:text-gray-400 md:block md:left-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
+          className="fixed z-50 w-12 rotate-90 outline-none cursor-pointer select-none right-6 md:rotate-0 bottom-36 md:p-2 md:text-gray-400 md:block md:left-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineLeft className="w-10 h-10" />
         </button>
@@ -207,13 +222,14 @@ const PostModal = ({
       {/* context.posts?.length > 0 */}
       {hasNextPost && (
         <button
+          aria-label="next post"
           title={`next post (right arrow)`}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             changePost(1);
           }}
-          className="fixed z-50 rotate-90 outline-none cursor-pointer select-none md:w-12 md:text-gray-400 right-7 bottom-24 md:rotate-0 md:p-2 md:block md:right-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
+          className="fixed z-50 w-12 rotate-90 outline-none cursor-pointer select-none md:text-gray-400 right-6 bottom-24 md:rotate-0 md:p-2 md:block md:right-4 md:hover:text-gray-300 md:top-1/2 md:bottom-auto"
         >
           <AiOutlineRight className="w-10 h-10" />
         </button>

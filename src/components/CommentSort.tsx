@@ -6,12 +6,13 @@ import { IoMdTrendingUp } from "react-icons/io";
 import { RiBarChart2Line } from "react-icons/ri";
 import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
+import React from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const CommentSort = ({ updateSort, sortBy="top" }) => {
+const CommentSort = ({ updateSort, sortBy = "top" }) => {
   const [sort, setsort] = useState(sortBy);
   //confidence (best),top,new,controversial,old,qa (Q&A)
 
@@ -24,10 +25,15 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
         <>
           <div className="flex-grow ">
             <Menu.Button
+              aria-label="Sort Comments By"
               name="Sort Comments By"
               className="flex flex-row items-center justify-between h-full px-2 border rounded-md border-th-border bg-th-background2 focus:outline-none hover:border-th-borderHighlight"
             >
-              <div className="flex gap-1 mr-2"><span className="hidden sm:block">{"sort comments by"}</span><span className="block sm:hidden">{"sort by"}</span><span>{sort}</span></div>
+              <div className="flex gap-1 mr-2">
+                <span className="hidden sm:block">{"sort comments by"}</span>
+                <span className="block sm:hidden">{"sort by"}</span>
+                <span>{sort}</span>
+              </div>
               <BsChevronDown
                 className={
                   open
@@ -104,9 +110,7 @@ const CommentSort = ({ updateSort, sortBy="top" }) => {
                     >
                       <div
                         className={classNames(
-                          active
-                            ? "bg-th-highlight"
-                            : "",
+                          active ? "bg-th-highlight" : "",
                           "block px-4 py-1 text-sm"
                         )}
                       >

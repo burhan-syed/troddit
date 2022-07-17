@@ -2,6 +2,8 @@ import localForage from "localforage";
 import React, { useState, useContext, useEffect, useReducer } from "react";
 
 export const localRead = localForage.createInstance({ storeName: "readPosts" });
+export const localSeen = localForage.createInstance({ storeName: "seenPosts" });
+
 export const localSubInfoCache = localForage.createInstance({
   storeName: "subInfoCache",
 });
@@ -22,14 +24,14 @@ export const MainProvider = ({ children }) => {
   const [pauseAll, setPauseAll] = useState(false); //pauses all media when a post is opened
   const [loading, setLoading] = useState(false); //used in feed to display load bar
   const [ready, setReady] = useState(false); //prevents any feed load until settings are loaded
-  const [postOpen, setPostOpen] = useState(false);
+  const [postOpen, setPostOpen] = useState(false); //using pauseAll instead..
   const [loginModal, setLoginModal] = useState(false);
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);
   const [postNum, setPostNum] = useState(0);
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
-  const [safeSearch, setSafeSearch] = useState(true); 
+  const [safeSearch, setSafeSearch] = useState(true);
   const [volume, setVolume] = useState(0.5);
   //const [forceRefresh, setForceRefresh] = useState(0);
   //update key whenever items may change for Masonic component
@@ -65,19 +67,18 @@ export const MainProvider = ({ children }) => {
   const [infiniteLoading, setInfinitLoading] = useState<boolean>();
   const [dimRead, setDimRead] = useState<boolean>();
   const [autoRead, setAutoRead] = useState<boolean>();
+  const [autoSeen, setAutoSeen] = useState<boolean>();
+
   const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
   const [preferEmbeds, setPreferEmbeds] = useState<boolean>();
   const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>();
 
-  const [autoRefreshFeed, setAutoRefreshFeed] = useState<boolean>(); 
-  const [autoRefreshComments, setAutoRefreshComments] = useState<boolean>(); 
-  const [askToUpdateFeed, setAskToUpdateFeed] = useState<boolean>(); 
-  const [refreshOnFocus, setRefreshOnFocus] = useState<boolean>(); 
-  const [fastRefreshInterval, setFastRefreshInterval] = useState<number>(); 
-  const [slowRefreshInterval, setSlowRefreshInterval] = useState<number>(); 
-
-
-
+  const [autoRefreshFeed, setAutoRefreshFeed] = useState<boolean>();
+  const [autoRefreshComments, setAutoRefreshComments] = useState<boolean>();
+  const [askToUpdateFeed, setAskToUpdateFeed] = useState<boolean>();
+  const [refreshOnFocus, setRefreshOnFocus] = useState<boolean>();
+  const [fastRefreshInterval, setFastRefreshInterval] = useState<number>();
+  const [slowRefreshInterval, setSlowRefreshInterval] = useState<number>();
 
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
@@ -113,6 +114,9 @@ export const MainProvider = ({ children }) => {
   };
   const toggleAutoRead = () => {
     setAutoRead((r) => !r);
+  };
+  const toggleAutoSeen = () => {
+    setAutoSeen((r) => !r);
   };
   const toggleDisableEmbeds = () => {
     setDisableEmbeds((d) => {
@@ -151,30 +155,40 @@ export const MainProvider = ({ children }) => {
 
   const [readPosts, setReadPosts] = useState<{}>({});
   const [readPostsChange, setReadPostsChange] = useState<number>(0);
-  const addReadPost = ({postId, numComments}) => {
-    localRead.setItem(postId, {postId, numComments, time: new Date()});
+  const clearReadPosts = async() => {
+    try{
+      await localRead.clear(); 
+      setReadPosts({});
+      setReadPostsChange(n => n+1);
+      return true; 
+    } catch(err){
+      return false; 
+    }
+  }
+  const addReadPost = ({ postId, numComments }) => {
+    localRead.setItem(postId, { postId, numComments, time: new Date() });
     setReadPosts((read) => {
       setReadPostsChange((n) => n + 1);
 
       if (Object.keys(read).length < 10000) {
-        read[postId] = {postId, numComments, time: new Date()};
+        read[postId] = { postId, numComments, time: new Date() };
         return read;
       }
       //resetting object if space becomes too large
       let newread = {};
-      newread[postId] = {postId, numComments, time: new Date()}
+      newread[postId] = { postId, numComments, time: new Date() };
 
       return newread;
     });
   };
-  const toggleReadPost = async ({postId, numComments}) => {
+  const toggleReadPost = async ({ postId, numComments }) => {
     setReadPosts((read) => {
       if (read?.[postId]) {
         localRead.removeItem(postId);
         delete read[postId];
       } else {
-        read[postId] = {postId, numComments, time: new Date()}
-        localRead.setItem(postId, {postId, numComments, time: new Date()});
+        read[postId] = { postId, numComments, time: new Date() };
+        localRead.setItem(postId, { postId, numComments, time: new Date() });
       }
       setReadPostsChange((n) => n + 1);
 
@@ -183,6 +197,8 @@ export const MainProvider = ({ children }) => {
   };
 
   //filters in the inverse sense, true = allowed
+  const [seenFilter, setSeenFilter] = useState<boolean>();
+
   const [readFilter, setReadFilter] = useState<boolean>();
   const [imgFilter, setImgFilter] = useState<boolean>();
   const [vidFilter, setVidFilter] = useState<boolean>();
@@ -207,6 +223,9 @@ export const MainProvider = ({ children }) => {
   const [updateFilters, setUpdateFilters] = useState(0);
   const toggleFilter = (filter) => {
     switch (filter) {
+      case "seen":
+        setSeenFilter((r) => !r);
+        break;
       case "read":
         setReadFilter((r) => !r);
         break;
@@ -298,6 +317,7 @@ export const MainProvider = ({ children }) => {
   const [filtersApplied, setApplyFilters] = useState(0);
   const applyFilters = (
     filters = {
+      seenFilter,
       readFilter,
       imgFilter,
       vidFilter,
@@ -313,6 +333,7 @@ export const MainProvider = ({ children }) => {
     setApplyFilters((f) => {
       //any filter on
       const {
+        seenFilter,
         readFilter,
         imgFilter,
         vidFilter,
@@ -322,6 +343,7 @@ export const MainProvider = ({ children }) => {
         imgLandscapeFilter,
       } = filters;
       if (
+        seenFilter === false ||
         readFilter === false ||
         imgFilter === false ||
         vidFilter === false ||
@@ -335,7 +357,7 @@ export const MainProvider = ({ children }) => {
       }
       return (Math.abs(f) + 1) * -1;
     });
-    setProgressKey(p => p+1);
+    setProgressKey((p) => p + 1);
   };
 
   const updateLikes = (i, like) => {
@@ -392,22 +414,26 @@ export const MainProvider = ({ children }) => {
     });
     return true;
   };
-  const favoriteLocalSub = async(makeFavorite, subname) => {
-    if(makeFavorite === true){
-      let found = localFavoriteSubs.find((s) => s?.toUpperCase() === subname?.toUpperCase());
-    if (!found) {
-      setLocalFavoriteSubs((p) => [...p, subname]);
-    }
+  const favoriteLocalSub = async (makeFavorite, subname) => {
+    if (makeFavorite === true) {
+      let found = localFavoriteSubs.find(
+        (s) => s?.toUpperCase() === subname?.toUpperCase()
+      );
+      if (!found) {
+        setLocalFavoriteSubs((p) => [...p, subname]);
+      }
     } else {
       setLocalFavoriteSubs((p) => {
-        let filtered = p.filter((s) => s?.toUpperCase() !== subname?.toUpperCase());
+        let filtered = p.filter(
+          (s) => s?.toUpperCase() !== subname?.toUpperCase()
+        );
         if (!(filtered.length > 0)) {
           localForage.setItem("localFavoriteSubs", []);
         }
         return filtered;
       });
     }
-  }
+  };
 
   const toggleAudioOnHover = () => {
     setaudioOnHover((a) => !a);
@@ -642,10 +668,11 @@ export const MainProvider = ({ children }) => {
         let saved_favs: [] = await localForage.getItem("localFavoriteSubs");
         if (saved_favs !== null) {
           saved_favs && setLocalFavoriteSubs(saved_favs);
-        } 
+        }
       };
 
       let filters = {
+        seenFilter: true,
         readFilter: true,
         imgFilter: true,
         vidFilter: true,
@@ -814,6 +841,17 @@ export const MainProvider = ({ children }) => {
         }
       };
 
+      //new setting
+      const loadSeenFilter = async () => {
+        let saved = await localForage.getItem("seenFilter");
+        if (saved === false) {
+          filters.seenFilter = false;
+          setSeenFilter(false);
+        } else {
+          setSeenFilter(true);
+        }
+      };
+
       //new settings don't need localstorage fallback..
       const loadCollapseChildrenOnly = async () => {
         let saved_collapseChildrenOnly = await localForage.getItem(
@@ -871,6 +909,10 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("autoRead");
         saved === false ? setAutoRead(false) : setAutoRead(true);
       };
+      const loadAutoSeen = async () => {
+        let saved = await localForage.getItem("autoSeen");
+        saved === false ? setAutoSeen(false) : setAutoSeen(true);
+      };
       const loadDisableEmbeds = async () => {
         let saved = await localForage.getItem("disableEmbeds");
         saved === true ? setDisableEmbeds(true) : setDisableEmbeds(false);
@@ -890,7 +932,9 @@ export const MainProvider = ({ children }) => {
       };
       const autoRefreshComments = async () => {
         let saved = await localForage.getItem("autoRefreshComments");
-        saved === false ? setAutoRefreshComments(false) : setAutoRefreshComments(true);
+        saved === false
+          ? setAutoRefreshComments(false)
+          : setAutoRefreshComments(true);
       };
       const askToUpdateFeed = async () => {
         let saved = await localForage.getItem("askToUpdateFeed");
@@ -901,23 +945,25 @@ export const MainProvider = ({ children }) => {
         saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
       };
       const fastRefreshInterval = async () => {
-        let saved = await localForage.getItem("fastRefreshInterval") as number;
-        if (typeof saved === "number" && saved >= 10 * 1000){
+        let saved = (await localForage.getItem(
+          "fastRefreshInterval"
+        )) as number;
+        if (typeof saved === "number" && saved >= 10 * 1000) {
           setFastRefreshInterval(saved);
         } else {
-          setFastRefreshInterval(30 * 1000)
+          setFastRefreshInterval(30 * 1000);
         }
       };
       const slowRefreshInterval = async () => {
-        let saved = await localForage.getItem("slowRefreshInterval") as number;
-        if (typeof saved === "number" && saved >= 10 * 1000){
+        let saved = (await localForage.getItem(
+          "slowRefreshInterval"
+        )) as number;
+        if (typeof saved === "number" && saved >= 10 * 1000) {
           setSlowRefreshInterval(saved);
         } else {
-          setSlowRefreshInterval(30 * 60 * 1000)
+          setSlowRefreshInterval(30 * 60 * 1000);
         }
       };
-
-
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -927,16 +973,14 @@ export const MainProvider = ({ children }) => {
       loadExpandedSubPane();
       loadAutoRead();
 
-     
-
-
       //things we need loaded before posts are rendered
-      let autorefreshfeed = autoRefreshFeed(); 
-      let autorefreshcomments = autoRefreshComments(); 
-      let asktoupdatefeed = askToUpdateFeed(); 
-      let refreshonfocus = refreshOnFocus(); 
-      let fastrefreshinterval = fastRefreshInterval(); 
-      let slowrefreshinterval = slowRefreshInterval(); 
+      let autoseen = loadAutoSeen(); 
+      let autorefreshfeed = autoRefreshFeed();
+      let autorefreshcomments = autoRefreshComments();
+      let asktoupdatefeed = askToUpdateFeed();
+      let refreshonfocus = refreshOnFocus();
+      let fastrefreshinterval = fastRefreshInterval();
+      let slowrefreshinterval = slowRefreshInterval();
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
       let hoverplay = loadHoverPlay();
@@ -948,7 +992,7 @@ export const MainProvider = ({ children }) => {
       let postwideui = postWideUI();
       let wideUI = loadWideUI();
       let cardstyle = loadCardStyle();
-      let localfavorites = loadLocalFavoriteSubs(); 
+      let localfavorites = loadLocalFavoriteSubs();
       let localsubs = loadLocalSubs();
       let imgfilter = loadImgFilter();
       let imgportraitfilter = loadImgPortraitFilter();
@@ -957,6 +1001,7 @@ export const MainProvider = ({ children }) => {
       let linkfilter = loadLinkFilter();
       let selffilter = loadSelfFilter();
       let readfilter = loadReadFilter();
+      let seenfilter = loadSeenFilter(); 
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
       let infiniteLoading = loadInfiniteLoading();
@@ -965,7 +1010,8 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
-        autorefreshfeed, 
+        autoseen,
+        autorefreshfeed,
         autorefreshcomments,
         asktoupdatefeed,
         refreshonfocus,
@@ -982,7 +1028,7 @@ export const MainProvider = ({ children }) => {
         postwideui,
         wideUI,
         cardstyle,
-        localfavorites, 
+        localfavorites,
         localsubs,
         imgfilter,
         imgportraitfilter,
@@ -991,6 +1037,7 @@ export const MainProvider = ({ children }) => {
         linkfilter,
         selffilter,
         readfilter,
+        seenfilter,
         showflairs,
         showawardings,
         infiniteLoading,
@@ -1059,6 +1106,11 @@ export const MainProvider = ({ children }) => {
     }
   }, [embedsEverywhere]);
   useEffect(() => {
+    if (autoSeen !== undefined) {
+      localForage.setItem("autoSeen", autoSeen);
+    }
+  }, [autoSeen]);
+  useEffect(() => {
     if (autoRead !== undefined) {
       localForage.setItem("autoRead", autoRead);
     }
@@ -1108,6 +1160,11 @@ export const MainProvider = ({ children }) => {
       localForage.setItem("collapseChildrenOnly", collapseChildrenOnly);
     }
   }, [collapseChildrenOnly]);
+  useEffect(() => {
+    if (seenFilter !== undefined) {
+      localForage.setItem("seenFilter", seenFilter);
+    }
+  }, [seenFilter]);
   useEffect(() => {
     if (readFilter !== undefined) {
       localForage.setItem("readFilter", readFilter);
@@ -1161,11 +1218,10 @@ export const MainProvider = ({ children }) => {
     }
   }, [localSubs]);
   useEffect(() => {
-   if (localFavoriteSubs?.length > 0){
-    localForage.setItem("localFavoriteSubs", localFavoriteSubs)
-   }
-  }, [localFavoriteSubs])
-  
+    if (localFavoriteSubs?.length > 0) {
+      localForage.setItem("localFavoriteSubs", localFavoriteSubs);
+    }
+  }, [localFavoriteSubs]);
 
   useEffect(() => {
     if (nsfw !== undefined) {
@@ -1281,6 +1337,7 @@ export const MainProvider = ({ children }) => {
         loading,
         setLoading,
         toggleFilter,
+        seenFilter,
         readFilter,
         imgFilter,
         vidFilter,
@@ -1304,6 +1361,7 @@ export const MainProvider = ({ children }) => {
         readPostsChange,
         addReadPost,
         toggleReadPost,
+        clearReadPosts,
         postOpen,
         setPostOpen,
         collapseChildrenOnly,
@@ -1326,6 +1384,8 @@ export const MainProvider = ({ children }) => {
         toggleDimRead,
         autoRead,
         toggleAutoRead,
+        autoSeen,
+        toggleAutoSeen,
         disableEmbeds,
         toggleDisableEmbeds,
         preferEmbeds,
@@ -1336,24 +1396,24 @@ export const MainProvider = ({ children }) => {
         setUpdateFilters,
         applyFilters,
         filtersApplied,
-        progressKey, 
+        progressKey,
         setProgressKey,
-        safeSearch, 
+        safeSearch,
         setSafeSearch,
-        volume, 
+        volume,
         setVolume,
         autoRefreshComments,
         setAutoRefreshComments,
         autoRefreshFeed,
         setAutoRefreshFeed,
-        askToUpdateFeed, 
+        askToUpdateFeed,
         setAskToUpdateFeed,
         refreshOnFocus,
         setRefreshOnFocus,
         fastRefreshInterval,
         setFastRefreshInterval,
         slowRefreshInterval,
-        setSlowRefreshInterval
+        setSlowRefreshInterval,
       }}
     >
       {children}

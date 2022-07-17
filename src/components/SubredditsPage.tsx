@@ -205,7 +205,7 @@ const SubredditsPage = ({ query = undefined }) => {
           <Tab.List className={""}>
             <div
               className={
-                " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg" 
+                " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg"
               }
             >
               {categories.map((c) => (
@@ -257,6 +257,7 @@ const SubredditsPage = ({ query = undefined }) => {
                         ))}
                         {after && !end ? (
                           <button
+                            aria-label="load more"
                             className="flex items-center justify-center w-24 ml-auto mr-2 text-center border rounded-md shadow-xl cursor-pointer h-9 ring-1 ring-th-base border-th-border bg-th-background2 hover:bg-th-highlight hover:border-th-borderHighlight "
                             onClick={(e) => {
                               e.preventDefault();
@@ -284,6 +285,7 @@ const SubredditsPage = ({ query = undefined }) => {
                         ))}
                         {afterNew && !endNew ? (
                           <button
+                            aria-label="load more"
                             className="flex items-center justify-center w-24 ml-auto mr-2 text-center border rounded-md shadow-xl cursor-pointer h-9 bg-th-background2 border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ring-1 ring-th-base"
                             onClick={(e) => {
                               e.preventDefault();

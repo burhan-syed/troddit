@@ -3,7 +3,7 @@ import { BiUser, BiLink } from "react-icons/bi";
 import { MdOutlineClear } from "react-icons/md";
 import { AiOutlineTag } from "react-icons/ai";
 import { FiFilter } from "react-icons/fi";
-import React,{ Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Link from "next/link";
 
@@ -29,7 +29,10 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
   const { read } = useRead(post?.name);
 
   const toggleRead = async () => {
-    context?.toggleReadPost({postId: post?.name, numComments: post?.num_comments});
+    context?.toggleReadPost({
+      postId: post?.name,
+      numComments: post?.num_comments,
+    });
   };
 
   return (
@@ -45,6 +48,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
               }}
             >
               <Menu.Button
+                aria-label="post options"
                 className={
                   " flex justify-center items-center  border rounded-md  " +
                   (mode == "row"
@@ -81,9 +85,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       passHref
                       onClick={(e) => e.stopPropagation()}
                       className={
-                        (active
-                          ? "bg-th-highlight "
-                          : "") +
+                        (active ? "bg-th-highlight " : "") +
                         " px-2 py-1 text-sm flex flex-row items-center"
                       }
                     >
@@ -101,9 +103,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       passHref
                       onClick={(e) => e.stopPropagation()}
                       className={
-                        (active
-                          ? "bg-th-highlight "
-                          : "") +
+                        (active ? "bg-th-highlight " : "") +
                         "  px-2 py-1 text-sm flex flex-row items-center"
                       }
                     >
@@ -121,9 +121,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         rel="noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") +
+                          (active ? "bg-th-highlight " : "") +
                           " px-2 py-1 text-sm flex flex-row items-center"
                         }
                       >
@@ -146,9 +144,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         )}`}
                         onClick={(e) => e.stopPropagation()}
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") +
+                          (active ? "bg-th-highlight " : "") +
                           " px-2 py-1 text-sm flex flex-row items-center"
                         }
                       >
@@ -164,13 +160,10 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      className={
-                        (active
-                          ? "bg-th-highlight "
-                          : "") + "  "
-                      }
+                      className={(active ? "bg-th-highlight " : "") + "  "}
                     >
                       <button
+                        aria-label="add to filters"
                         onClick={(e) => {
                           filterMenuRef?.current?.click();
                           //e.preventDefault();
@@ -189,9 +182,8 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     {({ active }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") + " block  text-sm hover:cursor-pointer"
+                          (active ? "bg-th-highlight " : "") +
+                          " block  text-sm hover:cursor-pointer"
                         }
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -211,9 +203,8 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                     {({ active }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") + " block  text-sm hover:cursor-pointer"
+                          (active ? "bg-th-highlight " : "") +
+                          " block  text-sm hover:cursor-pointer"
                         }
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -234,13 +225,10 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      className={
-                        (active
-                          ? "bg-th-highlight "
-                          : "") + "  "
-                      }
+                      className={(active ? "bg-th-highlight " : "") + "  "}
                     >
                       <button
+                        aria-label="toggle read"
                         onClick={(e) => {
                           toggleRead();
                           e.preventDefault();
@@ -260,7 +248,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
         )}
       </Menu>
       <Menu as={"div"} className={"relative font-normal"}>
-        <Menu.Button ref={filterMenuRef} className="hidden"></Menu.Button>
+        <Menu.Button aria-label="filter options" ref={filterMenuRef} className="hidden"></Menu.Button>
         <Transition
           as={Fragment}
           enter="transition ease-out duration-800"
@@ -290,6 +278,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
             <Menu.Item>
               {({ active }) => (
                 <button
+                  aria-label="filter subreddit"
                   onClick={(e) => {
                     addSubFilter(post?.subreddit);
                     e.stopPropagation();
@@ -309,6 +298,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
             <Menu.Item>
               {({ active }) => (
                 <button
+                  aria-label="filter author"
                   onClick={(e) => {
                     addUserFilter(post?.author);
                     e.stopPropagation();

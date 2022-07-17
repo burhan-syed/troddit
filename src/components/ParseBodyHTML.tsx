@@ -170,7 +170,7 @@ const ParseBodyHTML = ({
         }} //alternate to single click fix
         className={
           " prose inline-block prose-a:py-0  prose-headings:font-normal prose-p:my-0 prose-h1:text-xl   " +
-          " prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody  prose-a:break-all prose-pre:md:max-w-lg prose-pre:lg:max-w-full  prose-pre:overflow-x-auto prose-table:max-w-lg prose-table:lg:max-w-full prose-table:overflow-x-auto break-words  " +
+          " prose-strong:text-th-textStrong prose-headings:text-th-textHeading text-th-textBody  prose-a:break-all prose-pre:md:max-w-lg prose-pre:lg:max-w-3xl  prose-pre:overflow-x-auto prose-table:max-w-lg prose-table:lg:max-w-full prose-table:overflow-x-auto break-words  " +
           (resolvedTheme == "light" ? " " : " prose-invert  ") +
           (small && card
             ? " prose-sm  "

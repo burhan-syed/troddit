@@ -97,10 +97,13 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
           <span className="mr-2 text-xs opacity-70">{inputSubtext}</span>
         )}
       </label>
-      <div className={"flex flex-col items-end justify-center min-h-full my-3 " }>
+      <div
+        className={"flex flex-col items-end justify-center min-h-full my-3 "}
+      >
         <div className="relative flex justify-end flex-grow w-20 h-full px-1 text-sm text-right border rounded-md outline-none ring-0 border-th-border bg-th-highlight focus:border-th-borderHighlight">
           {defaultValue && (
             <button
+              aria-label="apply default"
               disabled={disabled}
               onClick={(e) => {
                 e.preventDefault();

@@ -18,7 +18,7 @@ import {
 import { useMainContext } from "../../MainContext";
 import ThemeSelector from "./ThemeSelector";
 
-interface ToggleProps  {
+interface ToggleProps {
   setting:
     | "theme"
     | "nsfw"
@@ -38,6 +38,7 @@ interface ToggleProps  {
     | "infiniteLoading"
     | "dimRead"
     | "autoRead"
+    | "autoSeen"
     | "disableEmbeds"
     | "preferEmbeds"
     | "embedsEverywhere"
@@ -51,7 +52,7 @@ interface ToggleProps  {
   externalStyles?: string;
   withSubtext?: boolean;
   subtext?: string;
-};
+}
 
 const Toggles = ({
   setting,
@@ -251,6 +252,13 @@ const Toggles = ({
             "Automatically mark posts as read when their thread is closed"
           );
         break;
+      case "autoSeen":
+        !label && setSwitchLabel("Auto Seen");
+        !subtext &&
+          setSwitchSubtext(
+            "Attempt to automatically mark posts as seen when they are scrolled off the page"
+          );
+        break;
       case "disableEmbeds":
         !label && setSwitchLabel("Disable Embeds");
         !subtext &&
@@ -379,6 +387,9 @@ const Toggles = ({
         break;
       case "autoRead":
         context.toggleAutoRead();
+        break;
+      case "autoSeen":
+        context.toggleAutoSeen();
         break;
       case "disableEmbeds":
         context.toggleDisableEmbeds();

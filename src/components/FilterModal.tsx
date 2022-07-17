@@ -6,6 +6,7 @@ import ToggleFilters from "./ToggleFilters";
 import { useMainContext } from "../MainContext";
 import FilterEntities from "./settings/FilterEntities";
 import useRefresh from "../hooks/useRefresh";
+import React from "react";
 
 const filters = ["self", "links", "images", "videos", "portrait", "landscape"];
 
@@ -85,6 +86,7 @@ const FilterModal = ({ toOpen }) => {
                     <div>
                       <div className={"block px-4  text-sm "}>
                         <ToggleFilters filter={"read"} />
+                        <ToggleFilters filter={"seen"} />
                       </div>
                     </div>
                     <div className="py-1 mr-4">
@@ -98,6 +100,7 @@ const FilterModal = ({ toOpen }) => {
                   </h4>
 
                   <button
+                    aria-label="apply"
                     className="flex items-center justify-center px-4 py-1.5 mr-4 text-center border border-th-border hover:bg-th-highlight hover:border-th-borderHighlight rounded-md cursor-pointer  "
                     onClick={(e) => {
                       e.preventDefault();

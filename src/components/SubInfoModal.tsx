@@ -4,6 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useRouter } from "next/router";
 import ParseBodyHTML from "./ParseBodyHTML";
+import React from "react";
 
 const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
   const [open, setOpen] = useState(false);
@@ -57,6 +58,7 @@ const SubInfoModal = ({ toOpen, descriptionHTML, displayName }) => {
             <div className="inline-block overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg md:max-w-3xl lg:max-w-5xl sm:w-full bg-th-background2">
               <div className="relative px-4 pt-5 pb-4 overflow-visible bg-th-background2 sm:p-6 sm:pb-4">
                 <button
+                  aria-label="exit"
                   ref={cancelButtonRef}
                   className="absolute flex items-center justify-center w-8 h-8 ml-auto top-2 right-2 hover:opacity-60 opacity-40"
                   onClick={() => {

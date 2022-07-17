@@ -57,7 +57,7 @@ const Thread = ({
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [windowWidth, windowHeight] = useWindowSize();
-
+  const containerRef = useRef<HTMLDivElement>(null);
   //initPost so later refetches will keep media (ie videos) stable
   const [initPost, setInitPost] = useState<any>(() =>
     initialData?.name?.includes("t3_") ? initialData : {}
@@ -133,10 +133,10 @@ const Thread = ({
   }, [post]);
 
   useEffect(() => {
-    if (read){
+    if (read) {
       setOrigCommentCount(read?.numComments);
       !origReadTime && setOrigReadTime(read?.time);
-    } else if (read===false){
+    } else if (read === false) {
       setOrigReadTime(new Date().getTime());
     }
   }, [read]);
@@ -345,6 +345,7 @@ const Thread = ({
         >
           {/* Content container */}
           <div
+            ref={containerRef}
             className="flex flex-col w-full h-screen overflow-x-hidden overflow-y-auto break-words border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
             onClick={(e) => e.stopPropagation()}
           >
@@ -365,7 +366,7 @@ const Thread = ({
                       size={7}
                       postindex={context.postNum}
                       postMode={true}
-                      archived={post?.archived}
+                      archived={post?.archived === true}
                       //scoreHideMins={sub?.data?.data?.comment_score_hide_mins} //only hide score for comments.. not posts
                       //postTime={post?.created_utc}
                     />
@@ -501,13 +502,14 @@ const Thread = ({
                           name={post?.name}
                           score={post?.score}
                           size={7}
-                          archived={post?.archived}
+                          archived={post?.archived === true}
                         />
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start space-x-1 ">
                         {windowWidth >= 1300 && (
                           <>
                             <button
+                              aria-label="switch comments location"
                               autoFocus={true}
                               onClick={(e) => {
                                 setUsePortrait((p) => !p);
@@ -522,6 +524,7 @@ const Thread = ({
                         )}
                         {true && (
                           <button
+                            aria-label="expand media"
                             autoFocus={windowWidth < 1300}
                             onClick={(e) => setimgFull((p) => !p)}
                             className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
@@ -541,16 +544,17 @@ const Thread = ({
                       <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm ">
                         <div>
                           <button
-                            disabled={post?.archived || post?.locked}
+                            aria-label="reply"
+                            disabled={post?.archived === true || post?.locked === true}
                             onClick={(e) => {
                               e.preventDefault();
-                              session && !post?.archived && !post?.locked
+                              session && !(post?.archived === true) && !post?.locked
                                 ? setopenReply((r) => !r)
                                 : !session && context.toggleLoginModal();
                             }}
                             className={
                               "flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border  " +
-                              (post?.archived || post?.locked
+                              (post?.archived === true || post?.locked === true
                                 ? " opacity-50"
                                 : " hover:border-th-borderHighlight ")
                             }
@@ -656,16 +660,16 @@ const Thread = ({
               </div>
             )}
 
-            {(post?.archived ||
+            {(post?.archived === true ||
               post?.removed_by_category === "moderator" ||
-              post?.locked) && (
+              post?.locked === true) && (
               <div className="w-full ">
                 <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
                   {post?.archived && <BsArchive />}
                   {post?.removed_by_category === "moderator" && <BsShieldX />}
                   {post?.locked && <BsLock />}
                   <p className="flex flex-col text-sm font-normal ">
-                    {post?.archived && (
+                    {post?.archived === true && (
                       <>
                         <span>This is an archived post.</span>
                         <span className="text-xs">
@@ -684,7 +688,7 @@ const Thread = ({
                         </span>
                       </>
                     )}
-                    {post?.locked && (
+                    {post?.locked === true && (
                       <>
                         <span>This post is locked.</span>
                         <span className="text-xs">
@@ -733,6 +737,7 @@ const Thread = ({
                 </div>
                 <div className="flex items-center h-full gap-2">
                   <button
+                    aria-label="refresh comments"
                     disabled={thread.isFetching}
                     onClick={() => {
                       setOrigCommentCount(post?.num_comments ?? undefined);
@@ -810,6 +815,7 @@ const Thread = ({
                   {postComments?.length > 0 && (
                     <Comments
                       comments={postComments}
+                      containerRef={containerRef}
                       depth={0}
                       op={post?.author}
                       portraitMode={usePortrait}
@@ -822,6 +828,7 @@ const Thread = ({
                     />
                   )}
                 </div>
+                <div className="py-5"></div>
               </div>
             </div>
             <div onClick={goBack} className="flex-grow"></div>

@@ -11,6 +11,7 @@ const useLocation = (params?) => {
   const router = useRouter();
   const context: any = useMainContext();
   const {
+    seenFilter,
     readFilter,
     imgFilter,
     vidFilter,
@@ -22,6 +23,7 @@ const useLocation = (params?) => {
   } = context;
 
   const [filters, setFilters] = useState({
+    seenFilter: true,
     readFilter: true,
     imgFilter: true,
     vidFilter: true,
@@ -41,6 +43,7 @@ const useLocation = (params?) => {
   useEffect(() => {
     if (context.ready && context.filtersApplied > 0) {
       setFilters({
+        seenFilter,
         readFilter,
         imgFilter,
         vidFilter,
@@ -53,6 +56,7 @@ const useLocation = (params?) => {
     }
     return () => {
       setFilters({
+        seenFilter : true,
         readFilter: true,
         imgFilter: true,
         vidFilter: true,
@@ -178,6 +182,7 @@ const useLocation = (params?) => {
       //console.log("SAFESEARCH?", params?.safeSearch);
       //console.log("FILTERS??", filters);
       const {
+        seenFilter,
         readFilter,
         imgFilter,
         vidFilter,
@@ -189,6 +194,7 @@ const useLocation = (params?) => {
       } = filters;
       //force unique strings on filter change.. nested objects don't do the trick with masonic
       const filtersString = [
+        seenFilter,
         readFilter,
         imgFilter,
         vidFilter,

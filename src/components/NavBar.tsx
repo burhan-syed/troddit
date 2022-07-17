@@ -1,5 +1,5 @@
 import Search from "./Search";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import Link from "next/link";
 import Login from "./Login";
 import DropdownPane from "./DropdownPane";

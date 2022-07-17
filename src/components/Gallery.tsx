@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Transition } from "@headlessui/react";
 import Image from "next/dist/client/image";
+import React from "react";
 import { useState, useEffect, createRef } from "react";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
 import { isContext } from "vm";
@@ -114,6 +115,7 @@ const Gallery = ({
     <>
       {images.length > 1 && (
         <button
+          aria-label="next"
           type="button"
           onClick={isLeft ? previous : advance}
           className={`${arrowStyle} ${isLeft ? "left-2" : "right-2"} ${
@@ -163,7 +165,7 @@ const Gallery = ({
                       : " hidden "
                   }`}
                   style={
-                    uniformHeight && imgtall 
+                    uniformHeight && imgtall
                       ? postMode || context.columns == 1
                         ? {
                             height: `${
@@ -181,7 +183,7 @@ const Gallery = ({
                           }
                         : {
                             height: `${
-                              (mediaRef?.current?.clientWidth && imgwide?.width)
+                              mediaRef?.current?.clientWidth && imgwide?.width
                                 ? imgtall.height *
                                   (mediaRef.current.clientWidth / imgwide.width)
                                 : image.height

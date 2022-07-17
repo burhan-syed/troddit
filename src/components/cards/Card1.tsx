@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import { useState, useEffect, useRef } from "react";
+import React,{ useState, useEffect, useRef } from "react";
 import Link from "next/dist/client/link";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import { GoRepoForked } from "react-icons/go";
@@ -235,6 +235,7 @@ const Card1 = ({
             </div>
           ) : (
             <a
+            aria-label={post?.title}
               href={post?.permalink}
               onClick={(e) => {
                 e.preventDefault();

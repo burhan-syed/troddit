@@ -1,3 +1,5 @@
+import React from "react";
+
 const PostTitle = ({ post, read=false }) => {
   return (
     <h1
@@ -8,6 +10,9 @@ const PostTitle = ({ post, read=false }) => {
           : " ")
           + (read ? " opacity-50 " : "")
       }
+      style={{
+        wordBreak: "break-word"
+      }}
     >
       {`${post?.title ?? ""}`}
     </h1>

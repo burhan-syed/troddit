@@ -1,18 +1,10 @@
-import { Fragment, useState, useEffect, useMemo } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { BsFilterRight } from "react-icons/bs";
+import React, { Fragment, useState, useEffect, useMemo } from "react";
 import { FiFilter } from "react-icons/fi";
-import Link from "next/link";
 import { useMainContext } from "../MainContext";
-import ToggleFilters from "./ToggleFilters";
 import FilterModal from "./FilterModal";
 import useLocation from "../hooks/useLocation";
 import { useQueryClient } from "react-query";
 import { numToString } from "../../lib/utils";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const FilterMenu = ({ hide = false }) => {
   const context: any = useMainContext();
@@ -68,6 +60,7 @@ const FilterMenu = ({ hide = false }) => {
     <>
       <FilterModal toOpen={openFilter} />
       <button
+        aria-label="filters"
         title={"filters"}
         className={
           "relative flex flex-col items-center flex-grow w-full h-full select-none"

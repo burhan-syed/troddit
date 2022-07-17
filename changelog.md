@@ -1,5 +1,18 @@
 # Changelog
 
+
+## v0.15.3
+### New
+- New filter to remove 'seen' posts from the feed. 
+  - Posts are considered seen when they have been scrolled past
+  - Option to disable logging seen posts in settings
+- New buttons to clear seen and read history in settings
+
+### Changes
+- General performance improvements
+- Comment score now shown when collapsed
+- Vote options hidden until opened on mobile devices
+  
 ## v0.15.2
 ### New
 - Support for favorite subreddits: 

@@ -1,37 +1,46 @@
 import { useSession } from "next-auth/react";
-import React,{ useCallback, useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
-import { fixCommentFormat } from "../../lib/utils";
+import React, { useEffect, useState } from "react";
 import { useMainContext } from "../MainContext";
-import { loadMoreComments, loadPost } from "../RedditAPI";
 import ChildComments from "./ChildComments";
 
-const Comments = ({ comments, readTime, sort="top", depth = 0, op = "", portraitMode = false, thread, locked=false, scoreHideMins=0, setCommentsReady,  }) => {
+const Comments = ({
+  comments,
+  readTime,
+  containerRef,
+  sort = "top",
+  depth = 0,
+  op = "",
+  portraitMode = false,
+  thread,
+  locked = false,
+  scoreHideMins = 0,
+  setCommentsReady,
+}) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const [commentsData, setCommentsData] = useState<any[]>();
   useEffect(() => {
-    comments && setCommentsData(comments); 
-  }, [comments])
+    comments && setCommentsData(comments);
+  }, [comments]);
   useEffect(() => {
     commentsData && setCommentsReady(true);
-  }, [commentsData])
-  
-  
-  const loadChildComments = async () => {
+  }, [commentsData]);
 
+  const loadChildComments = async () => {
     if (session) {
-      thread.fetchNextPage(); 
+      thread.fetchNextPage();
     } else {
       context.toggleLoginModal();
     }
   };
+
   return (
     <div className="">
       {commentsData?.map((comment, i) => (
         <div key={`${i}_${comment?.data?.id}`} className="py-1 ">
           {comment?.kind === "more" ? (
             <button
+              aria-label="load more"
               className={
                 "text-sm pl-2 text-semibold flex hover:font-semibold w-full " +
                 (thread.isFetching ? " animate-pulse" : " ")
@@ -40,7 +49,7 @@ const Comments = ({ comments, readTime, sort="top", depth = 0, op = "", portrait
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                loadChildComments(); 
+                loadChildComments();
               }}
             >
               Load {comment?.data?.count} More...

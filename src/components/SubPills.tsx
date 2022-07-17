@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdOutlineClear } from "react-icons/md";
 import { BsChevronDown } from "react-icons/bs";
 
@@ -84,7 +84,8 @@ const SubPills = ({
             >
               <h1 className="">{s}</h1>
               <button
-                title={`hide posts from r/${s}`}
+                aria-label="remove sub"
+                title={`remove posts from r/${s}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();

@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
 import Link from "next/link";
 import useFilterSubs from "../hooks/useFilterSubs";
+import React from "react";
 
 const SubOptButton = ({
   subInfo,
@@ -136,6 +137,7 @@ const SubOptButton = ({
           <>
             <div className="flex items-center justify-center w-6">
               <Menu.Button
+                aria-label="more actions"
                 title={"more actions"}
                 name="Extra Sub Menu"
                 className={
@@ -165,9 +167,8 @@ const SubOptButton = ({
                     {({ active }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") + " block px-4 py-1 text-sm"
+                          (active ? "bg-th-highlight " : "") +
+                          " block px-4 py-1 text-sm"
                         }
                       >
                         <div className="relative flex flex-row justify-end py-0.5 cursor-pointer select-none">
@@ -240,9 +241,8 @@ const SubOptButton = ({
                       {({ active }) => (
                         <div
                           className={
-                            (active
-                              ? "bg-th-highlight "
-                              : "") + " block px-4 py-1 text-sm"
+                            (active ? "bg-th-highlight " : "") +
+                            " block px-4 py-1 text-sm"
                           }
                           onClick={removeFromMulti}
                         >
@@ -258,9 +258,8 @@ const SubOptButton = ({
                       {({ active }) => (
                         <div
                           className={
-                            (active
-                              ? "bg-th-highlight "
-                              : "") + " block px-4 py-1 text-sm"
+                            (active ? "bg-th-highlight " : "") +
+                            " block px-4 py-1 text-sm"
                           }
                         >
                           <div
@@ -307,9 +306,8 @@ const SubOptButton = ({
                     {({ active }) => (
                       <div
                         className={
-                          (active
-                            ? "bg-th-highlight "
-                            : "") + " block px-4 py-1 text-sm"
+                          (active ? "bg-th-highlight " : "") +
+                          " block px-4 py-1 text-sm"
                         }
                         onClick={() => addSubFilter(subInfo?.display_name)}
                       >
@@ -325,9 +323,8 @@ const SubOptButton = ({
                         {({ active }) => (
                           <div
                             className={
-                              (active
-                                ? "bg-th-highlight "
-                                : "") + " block px-4 py-1 text-sm"
+                              (active ? "bg-th-highlight " : "") +
+                              " block px-4 py-1 text-sm"
                             }
                             onClick={openDescription}
                           >
@@ -341,9 +338,7 @@ const SubOptButton = ({
                         {({ active }) => (
                           <div
                             className={
-                              (active
-                                ? "bg-th-highlight "
-                                : "") +
+                              (active ? "bg-th-highlight " : "") +
                               " block px-4 py-1 text-sm cursor-pointer select-none"
                             }
                           >
@@ -362,9 +357,8 @@ const SubOptButton = ({
                       {({ active }) => (
                         <div
                           className={
-                            (active
-                              ? "bg-th-highlight "
-                              : "") + " block px-4 py-1 text-sm"
+                            (active ? "bg-th-highlight " : "") +
+                            " block px-4 py-1 text-sm"
                           }
                           onClick={JoinAll}
                         >

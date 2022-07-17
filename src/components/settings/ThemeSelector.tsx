@@ -27,6 +27,7 @@ const ThemeSelector = () => {
   return (
     <Menu as={"div"} className="relative w-full">
       <Menu.Button
+        aria-label="options"
         title={"options"}
         name="Options"
         className="w-full py-2 capitalize border rounded-md focus:outline-none hover:bg-th-highlight border-th-border hover:border-th-borderHighlight"
