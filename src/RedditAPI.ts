@@ -35,7 +35,7 @@ const filterPostChildren = (children) => {
     kind: child?.kind, 
     data: {
       all_awardings: child?.data?.all_awardings,
-      archived: child?.data?.all_awardings,
+      archived: child?.data?.archived,
       author: child?.data?.author,
       created_utc: child?.data?.created_utc, 
       distinguished: child?.data?.distinguished,

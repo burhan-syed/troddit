@@ -282,8 +282,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 margin +
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
-                  : "") +
-                " outline " //outlines for debugging..
+                  : "")
+                // " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
@@ -298,12 +298,12 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                         outlineWidth: "2px",
                         outlineColor: "green",
                       }
-                  : //  :{}
-                  seen === true
-                  ? { outlineWidth: "2px", outlineColor: "red" }
-                  : knownHeight > 0
-                  ? { outlineWidth: "2px", outlineColor: "blue" }
-                  : { outlineWidth: "2px", outlineColor: "white" }
+                  : {}
+                // seen === true
+                // ? { outlineWidth: "2px", outlineColor: "red" }
+                // : knownHeight > 0
+                // ? { outlineWidth: "2px", outlineColor: "blue" }
+                // : { outlineWidth: "2px", outlineColor: "white" }
               }
             >
               <Post
@@ -331,7 +331,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   return (
     <div>
       <Masonry
-      role="list"
+        role="list"
         key={masonicKey}
         onRender={maybeLoadMorePosts}
         columnGutter={0}
