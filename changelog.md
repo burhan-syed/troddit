@@ -4,7 +4,7 @@
 ## v0.15.3
 ### New
 - New filter to remove 'seen' posts from the feed. 
-  - Posts are considered seen when they have been scrolled past
+  - Posts are considered seen when they are scrolled off the page 
   - Option to disable logging seen posts in settings
 - New buttons to clear seen and read history in settings
 
