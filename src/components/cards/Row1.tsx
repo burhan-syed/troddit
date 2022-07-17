@@ -3,7 +3,7 @@ import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/dist/client/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { BiExit } from "react-icons/bi";
 import { ImReddit } from "react-icons/im";
@@ -36,6 +36,16 @@ const Row1 = ({
   useEffect(() => {
     if (expand === false) recomputeSize();
   }, [expand]);
+  const voteScore = useMemo(() => {
+    let x = post?.score ?? 0;
+    if (x < 1000) {
+      return x.toString() + (x === 1 ? " pt" : " pts");
+    } else {
+      let y = Math.floor(x / 1000);
+      let z = (x / 1000).toFixed(1);
+      return z.toString() + "k pts";
+    }
+  }, [post?.score]);
 
   return (
     <div
@@ -249,7 +259,7 @@ const Row1 = ({
         </div>
         {/* Links */}
         <div>
-          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-th-text ">
+          <div className="flex flex-row flex-wrap items-center justify-start pb-1 space-x-1 text-xs select-none text-th-text">
             <button
               aria-label="expand"
               className={
@@ -276,7 +286,18 @@ const Row1 = ({
                 <AiOutlineLink />
               )}
             </button>
-
+            <span
+              className={
+                "sm:hidden text-th-textLight text-xs" +
+                (post?.likes === true || post?.likes === 1
+                  ? " text-th-upvote "
+                  : post?.likes === false || post?.likes === -1
+                  ? " text-th-downvote "
+                  : "")
+              }
+            >
+              {voteScore}
+            </span>
             <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
               <button
                 aria-label="open comments"
@@ -340,8 +361,7 @@ const Row1 = ({
                 <h1 className="hidden md:block ">Original</h1>
               </div>
             </a>
-            <div className="flex-grow md:flex-grow-0"></div>
-            <div className="text-th-textLight">
+            <div className="relative flex justify-end flex-grow sm:flex-grow-0 text-th-textLight">
               <PostOptButton post={post} postNum={postNum} mode={"row"} />
             </div>
           </div>

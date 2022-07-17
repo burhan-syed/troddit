@@ -332,9 +332,9 @@ const ChildComments = ({
                   <span
                     className={
                       "text-xs " +
-                      (comment?.data?.likes === true
+                      (comment?.data?.likes === true || comment?.data?.likes === 1
                         ? " text-th-upvote "
-                        : comment?.data?.likes === false
+                        : comment?.data?.likes === false|| comment?.data?.likes === -1
                         ? " text-th-downvote "
                         : "")
                     }

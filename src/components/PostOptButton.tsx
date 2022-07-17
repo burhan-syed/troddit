@@ -264,7 +264,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
               (mode == "post"
                 ? " top-[-2.31rem] origin-top-right translate-x-[-13.4rem]  "
                 : mode == "row"
-                ? "  -top-6 origin-top-right right-6"
+                ? "  -top-0 origin-top-right right-5"
                 : mode == "media"
                 ? "origin-bottom-right bottom-0 right-[1.35rem] "
                 : context.cardStyle === "card2"
