@@ -29,6 +29,91 @@ const getToken = async () => {
   }
 };
 
+//trim child data esp for initial SSG
+const filterPostChildren = (children) => {
+  const c =  children.map(child => ({
+    kind: child?.kind, 
+    data: {
+      all_awardings: child?.data?.all_awardings,
+      archived: child?.data?.all_awardings,
+      author: child?.data?.author,
+      created_utc: child?.data?.created_utc, 
+      distinguished: child?.data?.distinguished,
+      domain: child?.data?.domain, 
+      downs: child?.data?.downs,
+      edited: child?.data?.edited,
+      hidden: child?.data?.hidden, 
+      hide_score: child?.data?.hide_score,
+      id: child?.data?.id, 
+      is_self: child?.data?.is_self,
+      is_video: child?.data?.is_video,
+      likes: child?.data?.likes, 
+      locked: child?.data?.locked,
+      media: child?.data?.media,
+      media_embed: child?.data?.media_embed, 
+      media_only: child?.data?.media_only, 
+      name: child?.data?.name, 
+      no_follow: child?.data?.no_follow,
+      num_comments: child?.data?.num_comments,
+      num_crossposts: child?.data?.num_crossposts,
+      over_18: child?.data?.over_18,
+      permalink: child?.data?.permalink, 
+      pinned: child?.data?.pinned, 
+      post_hint: child?.data?.post_hint, 
+      preview: child?.data?.preview, 
+      saved: child?.data?.saved, 
+      score: child?.data?.score, 
+      secure_media: child?.data?.secure_media, 
+      secure_media_embed: child?.data?.secure_media_embed,
+      selftext: child?.data?.selftext,
+      selftext_html: child?.data?.selftext_html,
+      spoiler: child?.data?.spoiler,
+      sr_detail : {
+        accept_followers: child?.data?.sr_detail?.accept_followers,
+        banner_img: child?.data?.sr_detail?.banner_img,
+        community_icon: child?.data?.sr_detail?.community_icon, 
+        created_utc: child?.data?.sr_detail?.created_utc,
+        display_name: child?.data?.sr_detail?.display_name,
+        header_img: child?.data?.sr_detail?.header_img,
+        icon_img: child?.data?.sr_detail?.icon_img,
+        key_color: child?.data?.sr_detail?.key_color,
+        link_flair_position: child?.data?.sr_detail?.link_flair_position,
+        name: child?.data?.sr_detail?.name,
+        over_18: child?.data?.sr_detail?.over_18,
+        primary_color: child?.data?.sr_detail?.primary_color,
+        public_description: child?.data?.sr_detail?.public_description,
+        quarantine: child?.data?.sr_detail?.quarantine,
+        subreddit_type: child?.data?.sr_detail?.subreddit_type,
+        subscribers: child?.data?.sr_detail?.subscribers,
+        title: child?.data?.sr_detail?.subscribers,
+        url: child?.data?.sr_detail?.url,
+        user_is_banned: child?.data?.sr_detail?.user_is_banned,
+        user_is_subscriber: child?.data?.sr_detail?.user_is_subscriber,
+      },
+      stickied: child?.data?.stickied,
+      subreddit: child?.data?.subreddit,
+      subreddit_id: child?.data?.subreddit_id,
+      subreddit_name_prefixed: child?.data?.subreddit_name_prefixed,
+      subreddit_type: child?.data?.subreddit_type,
+      suggested_sort: child?.data?.suggested_sort,
+      thumbnail: child?.data?.thumbnail, 
+      thumbnail_height: child?.data?.thumbnail_height,
+      thumbnail_width: child?.data?.thumbnail_width,
+      title: child?.data?.title,
+      total_awards_received: child?.data?.total_awards_received,
+      ups: child?.data?.ups,
+      upvote_ratio: child?.data?.upvote_ratio, 
+      url: child?.data?.url,
+      url_overidden_by_dest: child?.data?.url_overidden_by_dest, 
+    }
+  }));
+  //~35k byte reduction
+  //console.log(new Blob([JSON.stringify(children)]).size,new Blob([JSON.stringify(c)]).size); // 38
+  //console.log(JSON.stringify(children).replace(/[\[\]\,\"]/g,'').length, JSON.stringify(c).replace(/[\[\]\,\"]/g,'').length)
+  
+  return c; 
+}
+
 //to reduce serverless calls to refresh token
 const checkToken = async (
   loggedIn: boolean,
@@ -86,7 +171,7 @@ export const loadFront = async (
       return {
         after: res.data.after,
         before: res.data.before,
-        children: res.data.children,
+        children: filterPostChildren(res.data.children),
         token: returnToken,
       };
     } catch (err) {
@@ -122,7 +207,7 @@ export const loadFront = async (
         return {
           after: res.data.after,
           before: res.data.before,
-          children: res.data.children,
+          children: filterPostChildren(res.data.children),
           token: returnToken,
         };
       } catch (err) {

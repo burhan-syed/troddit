@@ -9,6 +9,7 @@ import { loadFront } from "../RedditAPI";
 import { useMainContext } from "../MainContext";
 import { getToken } from "next-auth/jwt";
 import { useRouter } from "next/router";
+import React from "react";
 
 interface Props {
   session;
@@ -17,12 +18,11 @@ interface Props {
   user;
 }
 
-const index = ({ session, query, postData, user }) => {
+const index = ({ postData, user }) => {
   const [initialData, setInitialData] = useState({});
   const [ready, setReady] = useState(false);
   const data = useSession();
   const isloading = data.status === "loading";
-  const router = useRouter(); 
 
  
 
@@ -96,12 +96,11 @@ index.getInitialProps = async ({ req, query }) => {
         user: session?.user?.name ?? "",
         query: query,
         postData: {
-          children: data.children.slice(0, 10), //only send the first 10 posts to limit page size
+          children: data.children.slice(0, 6), //only send the first n posts to limit page size
         },
-        session: session,
       };
     }
-    return { query: query, postData: {}, session: session, user: "" };
+    return { query: query, postData: {}, user: "" };
   }
   return { query };
 };
