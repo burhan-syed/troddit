@@ -29,13 +29,13 @@ const Row1 = ({
   read,
   handleClick,
   origCommentCount,
-  recomputeSize
+  //recomputeSize
 }) => {
   const context: any = useMainContext();
   const [expand, setexpand] = useState<boolean>();
-  useEffect(() => {
-    if (expand === false) recomputeSize(); 
-  }, [expand])
+  // useEffect(() => {
+  //   if (expand === false) recomputeSize(); 
+  // }, [expand])
   
 
   return (

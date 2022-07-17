@@ -272,6 +272,20 @@ html, body {
     max-width: 100%;
     overflow: var(--overflow);
 }
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: 0px; /* gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 0px; /* gutter size */
+  background-clip: padding-box;
+}
+
+
 /*input box*/
 .react-autosuggest__input {
   @apply bg-transparent;
