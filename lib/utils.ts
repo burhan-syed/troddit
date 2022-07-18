@@ -353,8 +353,10 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     }
     if (post.media_metadata) {
       gallery = [];
+      //gallery_data is array of ordered gallery images but may not exist, media_metadata is object, not necessarily ordered
       for (let i in post?.gallery_data?.items ?? post.media_metadata) {
         let image = post?.media_metadata?.[i];
+        let caption = post?.gallery_data?.items?.[i]?.caption ?? "";
         let id = post?.gallery_data?.items?.[i]?.media_id;
         if (id && post.media_metadata[id]) {
           image = post.media_metadata[id];
@@ -369,6 +371,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
               ),
               height: image.p[num].y,
               width: image.p[num].x,
+              caption: caption
             });
           }
         }

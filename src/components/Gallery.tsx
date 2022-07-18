@@ -45,10 +45,8 @@ const Gallery = ({
   const handleTouchEnd = (e) => {
     if (touchStart - touchEnd > 50) {
       advance(e);
-      //console.log("right");
     } else if (touchStart - touchEnd < -50) {
       previous(e);
-      //console.log("left");
     }
   };
 
@@ -62,12 +60,14 @@ const Gallery = ({
           if (img.height > maxheight) {
             ratio = maxheight / img.height;
             newimages.push({
+              ...img,
               url: img.url,
               height: Math.floor(img.height * ratio),
               width: Math.floor(img.width * ratio),
             });
           } else {
             newimages.push({
+              ...img,
               url: img.url,
               height: img.height,
               width: img.width,
@@ -77,9 +77,7 @@ const Gallery = ({
         let tallest = newimages[0];
         let widest = newimages[0];
         let ratio = newimages[0];
-        console.log(newimages);
         newimages.forEach((img, i) => {
-          console.log(img.height, tallest?.height, img.width, widest?.width);
           if (img.height > tallest?.height) {
             tallest = newimages[i];
           }
@@ -251,6 +249,7 @@ const Gallery = ({
                       unoptimized={true}
                     ></Image>
                   )}
+                  {i === index && image.caption && <div className="absolute bottom-0 left-0 z-20 flex text-sm p-0.5 py-1 bg-black/50 bg-opacity-80 w-full text-white text-left">{image.caption}</div>}
                 </div>
               );
             }
