@@ -348,7 +348,7 @@ const Media = ({
     //console.log(postMode, context.columns, imgFull)
     let cropamount = 0.95;
     if (postMode) {
-      cropamount = 0.5;
+      cropamount = 0.75
     } else if (context?.columns == 1 && !imgFull) {
       cropamount = 0.75;
     }

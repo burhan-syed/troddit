@@ -17,6 +17,11 @@ const Gallery = ({
   const context: any = useMainContext();
   const [loaded, setLoaded] = useState(false);
   const [index, setIndex] = useState(0);
+  const [imgRatio, setImgRatio] = useState<{
+    url: string;
+    height: number;
+    width: number;
+  }>();
   const [imgtall, setimgtall] = useState<{
     url: string;
     height: number;
@@ -49,11 +54,10 @@ const Gallery = ({
 
   useEffect(() => {
     let ratio = 1;
-    let tallest = images[0];
-    let widest = images[0];
+
     if (images.length > 0) {
       if (maxheight > 0) {
-        let newimages = [];
+        let newimages = [] as any[];
         images.forEach((img, i) => {
           if (img.height > maxheight) {
             ratio = maxheight / img.height;
@@ -69,16 +73,27 @@ const Gallery = ({
               width: img.width,
             });
           }
-          if (images[i].height > images?.[tallest]?.height) {
-            tallest = images[i];
+        });
+        let tallest = newimages[0];
+        let widest = newimages[0];
+        let ratio = newimages[0];
+        console.log(newimages);
+        newimages.forEach((img, i) => {
+          console.log(img.height, tallest?.height, img.width, widest?.width);
+          if (img.height > tallest?.height) {
+            tallest = newimages[i];
           }
-          if (images[i].width > images?.[widest]?.width) {
-            widest = images[i];
+          if (img.width > widest?.width) {
+            widest = newimages[i];
+          }
+          if (img.height / img.width > ratio.height / ratio.width) {
+            ratio = newimages[i];
           }
         });
         setImagesRender(newimages);
         setimgtall(tallest);
         setimgwide(widest);
+        setImgRatio(ratio);
       } else {
         setImagesRender(images);
       }
@@ -135,7 +150,7 @@ const Gallery = ({
     return (
       <div
         className={
-          "relative flex flex-row items-center min-w-full justify-center"
+          "relative flex flex-row items-center min-w-full justify-center overflow-hidden"
         }
         onTouchStart={(e) => handleTouchStart(e)}
         onTouchMove={(e) => handleTouchMove(e)}
@@ -151,7 +166,7 @@ const Gallery = ({
         )}
 
         {sliderControl(true)}
-        <div className="">
+        <div>
           {imagesRender.map((image, i) => {
             if (i < index + 3 || i > index - 3) {
               return (
@@ -162,62 +177,80 @@ const Gallery = ({
                       ? postMode || context.columns == 1
                         ? " flex items-center "
                         : " block "
-                      : " hidden "
+                      : postMode || context.columns == 1 ? ` flex absolute top-0 items-center ` : ' hidden'
                   }`}
                   style={
-                    uniformHeight && imgtall
-                      ? postMode || context.columns == 1
-                        ? {
-                            height: `${
-                              maxheight >
-                              imgtall.height *
-                                ((mediaRef?.current?.clientWidth ??
-                                  imgtall.width) /
-                                  imgtall.width)
-                                ? imgtall.height *
-                                  ((mediaRef?.current?.clientWidth ??
-                                    imgtall.width) /
-                                    imgtall.width)
-                                : maxheight
-                            }px`,
-                          }
-                        : {
-                            height: `${
-                              mediaRef?.current?.clientWidth && imgwide?.width
-                                ? imgtall.height *
-                                  (mediaRef.current.clientWidth / imgwide.width)
-                                : image.height
-                            }px`,
-                          }
+                    imgRatio?.height && (postMode || context.columns === 1)
+                      ? {
+                          height: `${Math.min(
+                            maxheight,
+                            imgRatio?.height *
+                              (mediaRef.current.clientWidth / imgRatio.width)
+                          )}px`,
+                        }
+                      : imgtall?.height
+                      ? {
+                          height: `${
+                            mediaRef?.current?.clientWidth && imgwide?.width
+                              ? imgtall.height *
+                                (mediaRef.current.clientWidth / imgwide.width)
+                              : image.height
+                          }px`,
+                        }
                       : {}
                   }
                 >
-                  {/* <Transition
-                   show={i === index}
-                   enter="transition ease-in-out duration-300 transform"
-                   enterFrom={index > prevIndex ? "translate-x-full" : "-translate-x-full"}
-                   enterTo={index > prevIndex ? "translate-x-0" : ""}
-                   leave="transition ease-in-out duration-300 transform"
-                   leaveFrom={"translate-x-0"}
-                   leaveTo={"translate-x-full"}
-                  > */}
-                  <Image
-                    src={image.url}
-                    height={image.height}
-                    width={image.width}
-                    alt=""
-                    //layout={image.url === "spoiler" ? "fill" : "intrinsic"}
-                    layout={
-                      image.url === "spoiler" ||
-                      (!postMode && context.columns !== 1)
-                        ? "fill"
-                        : "intrinsic"
-                    }
-                    objectFit="cover"
-                    priority={true}
-                    unoptimized={true}
-                  ></Image>
-                  {/* </Transition> */}
+                  {postMode || context?.columns === 1 ? (
+                    <Transition
+                      show={i === index}
+                      enter="transition ease-in-out duration-200 transform "
+                      enterFrom={
+                        (index > prevIndex
+                          ? "translate-x-full"
+                          : "-translate-x-full") + " opacity-0 "
+                      }
+                      enterTo={(index > prevIndex ? "" : "") + " opacity-100 "}
+                      leave="transition ease-in-out duration-200 transform"
+                      leaveFrom={""}
+                      leaveTo={
+                        (index > prevIndex
+                          ? "-translate-x-full"
+                          : "translate-x-full") + " opacity-0 "
+                      }
+                    >
+                      <Image
+                        src={image.url}
+                        height={image.height}
+                        width={image.width}
+                        alt=""
+                        layout={
+                          image.url === "spoiler" ||
+                          (!postMode && context.columns !== 1)
+                            ? "fill"
+                            : "intrinsic"
+                        }
+                        objectFit="cover"
+                        priority={true}
+                        unoptimized={true}
+                      ></Image>
+                    </Transition>
+                  ) : (
+                    <Image
+                      src={image.url}
+                      height={image.height}
+                      width={image.width}
+                      alt=""
+                      layout={
+                        image.url === "spoiler" ||
+                        (!postMode && context.columns !== 1)
+                          ? "fill"
+                          : "intrinsic"
+                      }
+                      objectFit="cover"
+                      priority={true}
+                      unoptimized={true}
+                    ></Image>
+                  )}
                 </div>
               );
             }
