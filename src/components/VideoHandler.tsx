@@ -114,7 +114,7 @@ const VideoHandler = ({
     else if ((context.columns == 1 || postMode) && maxHeightNum > 0) {
       if (videoInfo.height > maxHeightNum) {
         let r2 = maxHeightNum / videoInfo.height;
-        setVidHeight(Math.floor(videoInfo.height * r2));
+        setVidHeight(Math.floor(maxHeightNum));
         setVidWidth(Math.floor(videoInfo.width * r2));
       }
     }
@@ -148,13 +148,13 @@ const VideoHandler = ({
   //unify overall heights to avoid weird sizing issues
   const windowSize = useWindowSize();
   useEffect(() => {
-    let h = (video?.current?.clientWidth / videoInfo.width) * videoInfo.height;
+    let h = (video?.current?.clientWidth / vidWidth) * vidHeight;
     if (h > 0) {
       setHeightStyle({
         height: `${h}px`,
       });
     }
-  }, [video?.current?.clientWidth, windowSize, videoInfo]);
+  }, [video?.current?.clientWidth, vidHeight, vidWidth]);
 
   useEffect(() => {
     if (context?.autoplay && !videoPlaying && !context.pauseAll && show) {
@@ -418,7 +418,7 @@ const VideoHandler = ({
   return (
     <div
       className={
-        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden"
+        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden "
       }
       onClick={(e) => {
         playControl(e, true);

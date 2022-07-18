@@ -663,6 +663,7 @@ const Media = ({
             className=""
             style={{
               height: `${
+                (videoInfo?.height > 0 && videoInfo?.height < maxheightnum) ? videoInfo?.height : 
                 (mediaRef.current.clientWidth / post.mediaInfo.dimensions[0]) *
                   post.mediaInfo.dimensions[1] >
                 maxheightnum
