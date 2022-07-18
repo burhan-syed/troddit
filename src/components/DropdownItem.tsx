@@ -73,7 +73,7 @@ const DropdownItem = ({ sub, isUser = false, showFavorite = true }) => {
                 (isMulti
                   ? "rounded bg-th-red"
                   : "rounded-full bg-th-accent border-2 ") +
-                " w-6 h-6 text-center text-white overflow-clip flex items-center justify-center  text-lg"
+                " w-6 h-6 text-center text-white overflow-hidden flex items-center justify-center  text-lg"
               }
             >
               <span className={isMulti ? "" : "" + "mb-0.5"}>

@@ -245,7 +245,7 @@ const ChildComments = ({
                     </div>
                   ) : (
                     context.showUserIcons && (
-                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-clip bg-th-accent">
+                      <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-hidden bg-th-accent">
                         <span className="text-xl ml-0.5 mb-1 text-white">u/</span>
                       </div>
                     )

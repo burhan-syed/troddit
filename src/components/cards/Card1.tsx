@@ -88,7 +88,7 @@ const Card1 = ({
             : "  ") +
           " rounded-lg    " +
           (context.mediaOnly && hasMedia
-            ? " border-transparent overflow-clip "
+            ? " border-transparent overflow-hidden "
             : " hover:border-th-borderHighlight2 border-th-border2  hover:shadow-2xl  shadow-md group bg-th-post hover:bg-th-postHover ") +
           (context.mediaOnly && hasMedia && hovered
             ? "  border-b-transparent rounded-b-none border-th-border2   "

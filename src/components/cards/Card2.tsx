@@ -28,7 +28,7 @@ const Card1 = ({
       <div
         className={
           " text-sm bg-th-post hover:bg-th-postHover group  hover:shadow-2xl transition-colors border hover:cursor-pointer border-th-border2 hover:border-th-borderHighlight2  shadow-md " +
-          " rounded-lg overflow-clip"
+          " rounded-lg overflow-hidden"
         }
       >
         <div className="">
