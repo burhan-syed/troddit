@@ -183,7 +183,7 @@ const PostModal = ({
           handleBack();
         }}
         className={
-          "fixed z-50 right-5 bottom-10 md:left-4 md:top-16 md:bottom-auto  " +
+          "fixed z-50 right-5 bottom-10 md:left-4 md:top-14 md:bottom-auto  " +
           " outline-none select-none rounded-full w-14 h-9 flex items-center justify-center md:dark:bg-transparent md:bg-transparent  md:h-auto   "
         }
       >

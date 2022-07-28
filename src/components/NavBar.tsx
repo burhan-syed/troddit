@@ -86,7 +86,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       <header
         className={
           `${hidden ? "-translate-y-full" : ""}` +
-          " z-50 fixed top-0 transition ease-in-out transform h-14 w-screen" +
+          " z-50 fixed top-0 transition ease-in-out transform h-12 w-screen  " +
           (hidden ? " duration-500" : " duration-0")
         }
       >
@@ -112,16 +112,16 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </Link>
 
             <div
-              className="flex-none hidden h-full py-2 md:block w-60"
+              className="flex-none hidden h-full py-1.5 md:block w-60"
               onClick={() => plausible("dropdownPane")}
             >
               <DropdownPane hide={hidden} />
             </div>
           </div>
-          <div className="hidden w-full h-full py-2 max-w-7xl md:block">
+          <div className="hidden w-full h-full py-1.5 max-w-7xl md:block">
             <Search id={"subreddit search main"} />
           </div>
-          <div className="flex flex-row items-center justify-end h-full py-2 ml-auto mr-2 space-x-1 md:ml-2">
+          <div className="flex flex-row items-center justify-end h-full py-1.5 ml-auto mr-2 space-x-1 md:ml-2">
             <div className="w-20 h-full">
               <SortMenu hide={hidden} />
             </div>

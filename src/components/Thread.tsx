@@ -306,7 +306,7 @@ const Thread = ({
       <div className={"flex flex-row justify-center h-full"}>
         {/* Portrait Media */}
         {usePortrait && (
-          <div className="z-10 mt-16 mr-3 md:w-6/12">
+          <div className="z-10 mr-3 mt-14 md:w-6/12">
             <div
               ref={portraitDivRef}
               className="flex items-center justify-center max-h-full min-h-full overflow-y-auto border rounded-lg bg-th-background2 border-th-border2 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
@@ -340,7 +340,7 @@ const Thread = ({
               : !usePortrait
               ? " w-full md:w-10/12 lg:w-3/4 "
               : " md:w-4/12 ") +
-            " z-10 pt-2  md:flex md:flex-col md:items-center md:justify-start  "
+            " z-10 pt-0  md:flex md:flex-col md:items-center md:justify-start  "
           }
         >
           {/* Content container */}

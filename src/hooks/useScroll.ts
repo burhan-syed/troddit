@@ -27,7 +27,7 @@ export function useScroll() {
       setScrollDirection(lastScrollTop > -bodyOffset?.top ? "down" : "up");
       setLastScrollTop(-bodyOffset?.top);
     },
-    20,
+    10,
     false
   );
 

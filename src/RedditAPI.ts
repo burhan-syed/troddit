@@ -104,7 +104,7 @@ const filterPostChildren = (children) => {
       ups: child?.data?.ups,
       upvote_ratio: child?.data?.upvote_ratio, 
       url: child?.data?.url,
-      url_overidden_by_dest: child?.data?.url_overidden_by_dest, 
+      url_overridden_by_dest: child?.data?.url_url_overridden_by_dest, 
     }
   }));
   //~35k byte reduction

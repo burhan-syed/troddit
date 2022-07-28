@@ -198,7 +198,7 @@ const SearchPage = ({ query }) => {
             <div
               className={
                 expand
-                  ? " mb-10  flex flex-col gap-3  md:w-[32rem] lg:w-[48rem] xl:w-[54rem] 2xl:w-[60rem] "
+                  ? " mb-10 mt-2 flex flex-col gap-3  md:w-[32rem] lg:w-[48rem] xl:w-[54rem] 2xl:w-[60rem] "
                   : ""
               }
             >

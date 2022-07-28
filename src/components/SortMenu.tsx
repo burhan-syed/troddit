@@ -8,6 +8,7 @@ import { RiBarChart2Line } from "react-icons/ri";
 import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import React from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -207,6 +208,13 @@ const SortMenu = ({ hide = false }) => {
     }
   };
 
+  const disabled =
+    (router.pathname !== "/r/[...slug]" &&
+      router.pathname !== "/" &&
+      router.pathname !== "/[frontsort]" &&
+      router.pathname !== "/u/[...slug]" &&
+      router.pathname !== "/search");
+
   return (
     <Menu
       as="div"
@@ -216,9 +224,13 @@ const SortMenu = ({ hide = false }) => {
         <>
           <div className="flex-grow w-full">
             <Menu.Button
+              disabled={disabled}
               aria-label="sort by"
               name="Sort Page By"
-              className="flex flex-row items-center justify-between w-full h-full px-2 border border-transparent rounded-md hover:border-th-border focus:outline-none "
+              className={
+                (disabled ? "  " : " hover:border-th-border ") +
+                " flex flex-row items-center justify-between w-full h-full px-2 border border-transparent rounded-md focus:outline-none "
+              }
             >
               <BsChevronDown
                 className={
@@ -290,7 +302,7 @@ const SortMenu = ({ hide = false }) => {
           >
             <Menu.Items
               className={
-                "absolute right-0 w-40 mt-11 origin-top-right bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border z-50 " +
+                "absolute right-0 w-40 mt-10 origin-top-right bg-th-background2 rounded-md shadow-lg ring-1 ring-th-base ring-opacity-5 focus:outline-none border border-th-border z-50 " +
                 (hide && " hidden")
               }
             >
