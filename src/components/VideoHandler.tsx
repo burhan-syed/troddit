@@ -436,6 +436,11 @@ const VideoHandler = ({
         containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
       }
     >
+      {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
+          <div className="absolute z-10 text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+            <ImSpinner2 className="w-8 h-8 animate-spin" />
+          </div>
+        )}
       {/* Background Span Image */}
       <div
         className="absolute z-0 min-w-full min-h-full overflow-hidden brightness-[0.2]"
@@ -619,12 +624,6 @@ const VideoHandler = ({
           containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
         }
       >
-        {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
-          <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-            <ImSpinner2 className="w-8 h-8 animate-spin" />
-          </div>
-        )}
-
         <div
           //high res placeholder image
           className={

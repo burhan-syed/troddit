@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.15.4
+### Changes
+- Image previews for 'link' type posts are now shown as large thumbnails in Original and Compact Cards.
+  - This behavior can be reverted with the toggle labeled "Link Thumbnails" in the Appearance section of the  settings page. 
+- Other slight UI changes including a slimmer nav bar. 
 
 ## v0.15.3
 ### New

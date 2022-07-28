@@ -53,7 +53,7 @@ const Settings = () => {
             <ColumnCardOptions mode="cards" />
           </div>
         </label>,
-        ...["dimRead", "showAwardings", "showFlairs", "compactLinkPics"].map((s: any) => (
+        ...["compactLinkPics", "dimRead", "showAwardings", "showFlairs"].map((s: any) => (
           <Toggles
             key={s}
             setting={s}
