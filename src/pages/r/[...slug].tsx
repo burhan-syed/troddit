@@ -76,25 +76,8 @@ const SubredditPage = ({ query, metaTags }) => {
             {metaTags?.ogHeight && <meta property="og:image:height" content={metaTags?.ogHeight} />}
             {metaTags?.ogWidth && <meta property="og:image:width" content={metaTags?.ogWidth} />}
             {metaTags?.ogType &&  <meta property="og:type" content={metaTags?.ogType} />}
-           
           </>
         )}
-        {/* <meta
-          property="og:url"
-          content="https://www.youtube.com/watch?v=ur3-A7ovGUk"
-        />
-        <meta
-          property="og:image"
-          content="https://i.ytimg.com/vi/ur3-A7ovGUk/maxresdefault.jpg"
-        />
-        <meta property="og:video:type" content="text/html" />
-        <meta
-          property="og:video:url"
-          content="https://www.youtube.com/embed/ur3-A7ovGUk"
-        />
-        <meta property="og:video:height" content="720" />
-        <meta property="og:video:width" content="1280" />
-        <meta property="og:type" content="video.other" /> */}
       </Head>
       <main>
         {subsArray?.[0]?.toUpperCase() !== "ALL" &&
@@ -145,16 +128,14 @@ const SubredditPage = ({ query, metaTags }) => {
 SubredditPage.getInitialProps = async ({ query }) => {
   if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
     const permalink = `${query?.slug?.join("/")}`;
-    console.log("pr", permalink);
-    //const {post} = await loadPost(`/${query?.slug?.join("/")}`);
     const data = await fetch(`https://www.reddit.com/r/${permalink}/.json`);
     try {
       let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
       const media = await findMediaInfo(post, true, undefined);
-      console.log(post, media);
+      //console.log(post,media);
       let metaTags = {
         ogSiteName: "troddit",
-        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score} points and ${post.num_comments} comments`,
+        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score?.toLocalString('en-US')} points and ${post.num_comments?.toLocalString('en-US')} comments`,
         ogTitle: post.title,
         ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
         ogHeight: media?.dimensions?.[1],

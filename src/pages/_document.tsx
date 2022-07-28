@@ -21,7 +21,7 @@ class MyDocument extends Document {
           <meta />
           <link rel="manifest" href="/manifest.json" />
           <link rel="apple-touch-icon" href="/icon-512.png"></link>
-          <meta name="theme-color" content="#171717" />
+          <meta name="theme-color" content="#60A5FA" />
 
           <meta name="application-name" content="troddit" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -60,7 +60,7 @@ class MyDocument extends Document {
           <meta property="og:url" content="https://troddit.com" />
           <meta
             property="og:image"
-            content="https://yourdomain.com/icon-512.png"
+            content="https://troddit.com/icon-512.png"
           />
         </Head>
         <PlausibleProvider domain="troddit.com">
