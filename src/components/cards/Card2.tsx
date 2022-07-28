@@ -10,6 +10,7 @@ import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 import React from "react";
+import ExternalLink from "../ui/ExternalLink";
 
 //og card
 const Card1 = ({
@@ -20,9 +21,19 @@ const Card1 = ({
   postNum,
   read,
   handleClick,
-  origCommentCount
+  origCommentCount,
 }) => {
   const context: any = useMainContext();
+  const linkMode =
+    context?.compactLinkPics &&
+    post?.mediaInfo?.isLink &&
+    !post?.mediaInfo?.isTweet &&
+    post?.mediaInfo?.imageInfo?.[0]?.url &&
+    !(
+      post?.mediaInfo?.isIframe &&
+      (context.embedsEverywhere ||
+        (context.columns === 1 && !context.disableEmbeds))
+    );
   return (
     <div onClick={(e) => handleClick(e)}>
       <div
@@ -32,46 +43,83 @@ const Card1 = ({
         }
       >
         <div className="">
-          <a
-            href={post?.permalink}
-            onClick={(e) => e.preventDefault()}
-            onMouseDown={(e) => e.preventDefault()}
-            className="relative block"
-          >
-            <MediaWrapper
-              hideNSFW={hideNSFW}
-              post={post}
-              forceMute={forceMute}
-              postMode={false}
-              imgFull={false}
-              read={read}
-              card={true}
-            />
-          </a>
+          {!linkMode && (
+            <a
+              href={post?.permalink}
+              onClick={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+              className="relative block"
+            >
+              <MediaWrapper
+                hideNSFW={hideNSFW}
+                post={post}
+                forceMute={forceMute}
+                postMode={false}
+                imgFull={false}
+                read={read}
+                card={true}
+              />
+            </a>
+          )}
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
-              <h1>
-                <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                  <span
-                    className={
-                      " hover:underline font-semibold text-base mr-2 " +
-                      (post?.distinguished == "moderator" || post?.stickied
-                        ? " text-th-green "
-                        : " ") +
-                      (read && context.dimRead ? " opacity-50" : "")
-                    }
-                    style={{
-                      wordBreak: "break-word"
-                    }}
-                  >{`${post?.title ?? ""}`}</span>
-                </a>
-                {(post?.link_flair_text?.length > 0 ||
-                  post?.link_flair_richtext?.length > 0) && (
-                  <span className="text-xs font-medium">
-                    <TitleFlair post={post} />
-                  </span>
+              <div className={linkMode ? " flex justify-between gap-1  " : ""}>
+                <div className={linkMode ? "flex flex-col w-2/3 " : ""}>
+                  {linkMode && (
+                    <div className="-mt-0.5 -ml-1 overflow-hidden rounded-md">
+                      <ExternalLink domain={post?.domain} url={post?.url} />
+                    </div>
+                  )}
+                  <h1 className="my-auto">
+                    <a
+                      className=""
+                      href={post?.permalink}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <span
+                        className={
+                          " hover:underline font-semibold text-base mr-2 " +
+                          (post?.distinguished == "moderator" || post?.stickied
+                            ? " text-th-green "
+                            : " ") +
+                          (read && context.dimRead ? " opacity-50" : "")
+                        }
+                        style={{
+                          wordBreak: "break-word",
+                        }}
+                      >{`${post?.title ?? ""}`}</span>
+                    </a>
+                    {(post?.link_flair_text?.length > 0 ||
+                      post?.link_flair_richtext?.length > 0) && (
+                      <span className="text-xs font-medium">
+                        <TitleFlair post={post} />
+                      </span>
+                    )}
+                  </h1>
+                </div>
+
+                {linkMode && (
+                  <a
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                    onMouseDown={(e) => e.preventDefault()}
+                    className="relative flex items-center justify-center w-1/3 -mt-0.5 overflow-hidden rounded-md bg-th-base aspect-video "
+                  >
+                    <div className="w-full">
+                      <MediaWrapper
+                        hideNSFW={hideNSFW}
+                        post={post}
+                        forceMute={forceMute}
+                        postMode={false}
+                        imgFull={false}
+                        read={read}
+                        card={true}
+                        fill={true}
+                      />
+                    </div>
+                  </a>
                 )}
-              </h1>
+              </div>
 
               <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight text-gray ">
                 <div className="flex flex-row flex-wrap items-start ">
@@ -108,7 +156,10 @@ const Card1 = ({
                   </Link>
                   <p>•</p>
 
-                  <p className="ml-1" title={new Date(post?.created_utc * 1000)?.toString()}>
+                  <p
+                    className="ml-1"
+                    title={new Date(post?.created_utc * 1000)?.toString()}
+                  >
                     {secondsToTime(post?.created_utc, [
                       "s ago",
                       "m ago",
@@ -135,7 +186,12 @@ const Card1 = ({
                     <Awardings all_awardings={post?.all_awardings} />
                   )}
                 </div>
-                <div className="flex flex-row ml-auto">
+
+                <div
+                  className={
+                    "flex flex-row ml-auto " + (linkMode ? "hidden" : "")
+                  }
+                >
                   <a
                     title="open source"
                     href={`${post.url}`}
@@ -176,7 +232,13 @@ const Card1 = ({
                     >
                       {`${numToString(post.num_comments, 1000)} ${
                         post.num_comments === 1 ? "comment" : "comments"
-                      }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
+                      }`}{" "}
+                      {typeof origCommentCount === "number" &&
+                        post?.num_comments > origCommentCount && (
+                          <span className="text-xs italic font-medium">{`(${
+                            post?.num_comments - origCommentCount
+                          } new)`}</span>
+                        )}
                     </h1>
                   </a>
                 </div>

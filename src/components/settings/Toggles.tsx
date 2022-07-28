@@ -46,7 +46,8 @@ interface ToggleProps {
     | "autoRefreshFeed"
     | "autoRefreshComments"
     | "askToUpdateFeed"
-    | "refreshOnFocus";
+    | "refreshOnFocus"
+    | "compactLinkPics";
 
   label?: string;
   externalStyles?: string;
@@ -226,6 +227,13 @@ const Toggles = ({
         !label && setSwitchLabel("Post Flairs");
         !subtext && setSwitchSubtext("Show post flairs");
         break;
+      case "compactLinkPics":
+        !label && setSwitchLabel("Link Thumbnails");
+        !subtext &&
+          setSwitchSubtext(
+            "When toggled on previews for link posts will be shown as thumbnails instead of full images in Original and Compact Cards. "
+          );
+        break;
       case "showUserFlairs":
         !label && setSwitchLabel("User Flairs");
         !subtext && setSwitchSubtext("Show user flairs");
@@ -348,6 +356,9 @@ const Toggles = ({
         break;
       case "audioOnHover":
         context.toggleAudioOnHover();
+        break;
+      case "compactLinkPics":
+        context.toggleCompactLinkPics();
         break;
       case "wideUI":
         context.toggleWideUI();

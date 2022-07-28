@@ -52,6 +52,7 @@ const filterPostChildren = (children) => {
       media: child?.data?.media,
       media_embed: child?.data?.media_embed, 
       media_only: child?.data?.media_only, 
+      media_metadata: child?.data?.media_metadata,
       name: child?.data?.name, 
       no_follow: child?.data?.no_follow,
       num_comments: child?.data?.num_comments,

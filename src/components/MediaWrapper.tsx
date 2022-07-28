@@ -17,6 +17,7 @@ const MediaWrapper = ({
   containerDims = undefined as any,
   read = false,
   card = false,
+  fill = false
 }) => {
   const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
@@ -71,6 +72,7 @@ const MediaWrapper = ({
           containerDims={containerDims}
           read={read}
           card={card}
+          fill={fill}
         />
       </div>
       {hideNSFW && hidden && (

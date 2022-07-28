@@ -118,7 +118,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               <DropdownPane hide={hidden} />
             </div>
           </div>
-          <div className="hidden w-full h-full py-1.5 max-w-7xl md:block">
+          <div className="hidden w-full h-full py-1.5 max-w-5xl md:block">
             <Search id={"subreddit search main"} />
           </div>
           <div className="flex flex-row items-center justify-end h-full py-1.5 ml-auto mr-2 space-x-1 md:ml-2">

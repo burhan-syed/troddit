@@ -54,7 +54,10 @@ export const MainProvider = ({ children }) => {
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
-
+  const [compactLinkPics, setCompactLinkPics] = useState<boolean>(); 
+  const toggleCompactLinkPics = () => {
+    setCompactLinkPics(c => !c);
+  }
   //new settings..
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
@@ -964,6 +967,16 @@ export const MainProvider = ({ children }) => {
           setSlowRefreshInterval(30 * 60 * 1000);
         }
       };
+      const compactLinkPics = async () => {
+        let saved = (await localForage.getItem(
+          "compactLinkPics"
+        ));
+        if (saved===false) {
+          setCompactLinkPics(saved);
+        } else {
+          setCompactLinkPics(true);
+        }
+      };
 
       //things we dont' really need loaded before posts are loaded
       loadCollapseChildrenOnly();
@@ -974,6 +987,7 @@ export const MainProvider = ({ children }) => {
       loadAutoRead();
 
       //things we need loaded before posts are rendered
+      let compactlinkpics = compactLinkPics(); 
       let autoseen = loadAutoSeen(); 
       let autorefreshfeed = autoRefreshFeed();
       let autorefreshcomments = autoRefreshComments();
@@ -1010,6 +1024,7 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
+        compactlinkpics,
         autoseen,
         autorefreshfeed,
         autorefreshcomments,
@@ -1060,6 +1075,11 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (compactLinkPics !== undefined) {
+      localForage.setItem("compactLinkPics", compactLinkPics);
+    }
+  }, [compactLinkPics]);
   useEffect(() => {
     if (slowRefreshInterval !== undefined) {
       localForage.setItem("slowRefreshInterval", slowRefreshInterval);
@@ -1414,6 +1434,8 @@ export const MainProvider = ({ children }) => {
         setFastRefreshInterval,
         slowRefreshInterval,
         setSlowRefreshInterval,
+        compactLinkPics,
+        toggleCompactLinkPics
       }}
     >
       {children}

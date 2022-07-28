@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import React,{ useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/dist/client/link";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import { GoRepoForked } from "react-icons/go";
@@ -10,6 +10,7 @@ import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
+import ExternalLink from "../ui/ExternalLink";
 
 //og card
 const Card1 = ({
@@ -20,7 +21,7 @@ const Card1 = ({
   postNum,
   read,
   handleClick,
-  origCommentCount
+  origCommentCount,
 }) => {
   const context: any = useMainContext();
   const [hovered, setHovered] = useState(false);
@@ -66,7 +67,17 @@ const Card1 = ({
       setHovered(false);
     }
   };
-
+  const linkMode =
+  context?.compactLinkPics && 
+  !context.mediaOnly && 
+    post?.mediaInfo?.isLink &&
+    !post?.mediaInfo?.isTweet &&
+    post?.mediaInfo?.imageInfo?.[0]?.url &&
+    !(
+      post?.mediaInfo?.isIframe &&
+      (context.embedsEverywhere ||
+        (context.columns === 1 && !context.disableEmbeds))
+    );
   return (
     <div
       className={
@@ -94,13 +105,19 @@ const Card1 = ({
             ? "  border-b-transparent rounded-b-none border-th-border2   "
             : " ") +
           " text-sm transition-colors border hover:cursor-pointer "
+          //+(post?.mediaInfo?.isLink ? " flex gap-4 items-center " : " ")
         }
       >
-        <div className="">
+        <div className={""}>
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
-              <div className="flex flex-row items-center py-1 text-xs truncate select-auto text-th-textLight ">
-                <div className="flex flex-row flex-wrap items-center text-xs truncate select-auto ">
+              <div className="relative flex flex-row items-center py-1 text-xs truncate select-auto text-th-textLight ">
+                <div
+                  className={
+                    "flex flex-row flex-wrap items-center text-xs truncate select-auto " +
+                    (linkMode ? " w-2/3 pr-2" : " ")
+                  }
+                >
                   <Link href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
@@ -142,7 +159,10 @@ const Card1 = ({
                     </a>
                   </Link>
                   <p>•</p>
-                  <p className="ml-1 " title={new Date(post?.created_utc * 1000)?.toString()}>
+                  <p
+                    className="ml-1 "
+                    title={new Date(post?.created_utc * 1000)?.toString()}
+                  >
                     {secondsToTime(post?.created_utc, [
                       "s ago",
                       "m ago",
@@ -173,7 +193,12 @@ const Card1 = ({
                     />
                   )}
                 </div>
-                <div className="flex flex-row flex-none mt-1 mb-auto ml-auto hover:underline">
+                <div
+                  className={
+                    "flex flex-row flex-none mt-1 mb-auto ml-auto hover:underline " +
+                    (linkMode ? " hidden " : " ")
+                  }
+                >
                   <a
                     title="open source"
                     href={`${post.url}`}
@@ -186,10 +211,17 @@ const Card1 = ({
                 </div>
               </div>
 
-              <div className="py-2">
+              <div
+                className={
+                  " " + (linkMode ? " flex gap-2 pt-2 " : " py-2 ")
+                }
+              >
                 <h1
                   className={
-                    " items-center text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap gap-2"
+                    "  text-lg font-semibold  leading-none cursor-pointer pb-2 flex flex-row flex-wrap gap-2 " +
+                    (linkMode
+                      ? " w-2/3 flex-col-reverse items-start justify-end "
+                      : " items-center ")
                   }
                 >
                   <a
@@ -203,7 +235,41 @@ const Card1 = ({
                     <TitleFlair post={post} />
                   </span>
                 </h1>
+                {linkMode && (
+                    <a
+                      aria-label={post?.title}
+                      href={post?.permalink}
+                      onClick={(e) => {
+                        e.preventDefault();
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                      }}
+                      className={
+                       "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
+                      }
+                    >
+                      <div className="w-full">
+                      <MediaWrapper
+                        hideNSFW={hideNSFW}
+                        post={post}
+                        forceMute={forceMute}
+                        postMode={false}
+                        imgFull={false}
+                        read={read}
+                        card={true}
+                        fill={true}
+                      />
+                      </div>
+                    
+                    </a>
+                )}
               </div>
+              {linkMode && (
+                <div className="mt-1 overflow-hidden rounded-md">
+                  <ExternalLink domain={post?.domain} url={post?.url} />
+                </div>
+              )}
             </div>
           )}
 
@@ -234,28 +300,32 @@ const Card1 = ({
               )}
             </div>
           ) : (
-            <a
-            aria-label={post?.title}
-              href={post?.permalink}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <div className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}>
-                <MediaWrapper
-                  hideNSFW={hideNSFW}
-                  post={post}
-                  forceMute={forceMute}
-                  postMode={false}
-                  imgFull={false}
-                  read={read}
-                  card={true}
-                />
-              </div>
-            </a>
+            !linkMode && (
+              <a
+                aria-label={post?.title}
+                href={post?.permalink}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <div
+                  className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}
+                >
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    postMode={false}
+                    imgFull={false}
+                    read={read}
+                    card={true}
+                  />
+                </div>
+              </a>
+            )
           )}
 
           {(!context.mediaOnly || !hasMedia) && (
@@ -288,10 +358,17 @@ const Card1 = ({
                     }
                   >
                     {`${numToString(post.num_comments, 1000)} ${
-                      post.num_comments === 1 ?  "comment" : "comments"
-                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
+                      post.num_comments === 1 ? "comment" : "comments"
+                    }`}{" "}
+                    {typeof origCommentCount === "number" &&
+                      post?.num_comments > origCommentCount && (
+                        <span className="text-xs italic font-medium">{`(${
+                          post?.num_comments - origCommentCount
+                        } new)`}</span>
+                      )}
                   </h1>
                 </a>
+
                 <PostOptButton post={post} postNum={postNum} mode="" />
               </div>
             </div>
@@ -368,7 +445,10 @@ const Card1 = ({
                 </Link>
                 <p>•</p>
 
-                <p className="ml-1" title={new Date(post?.created_utc * 1000)?.toString()}>
+                <p
+                  className="ml-1"
+                  title={new Date(post?.created_utc * 1000)?.toString()}
+                >
                   {secondsToTime(post?.created_utc, [
                     "s ago",
                     "m ago",
@@ -437,7 +517,13 @@ const Card1 = ({
                   >
                     {`${numToString(post.num_comments, 1000)} ${
                       post.num_comments === 1 ? "comment" : "comments"
-                    }`} {((typeof origCommentCount === "number") && (post?.num_comments > origCommentCount)) && <span className="text-xs italic font-medium">{`(${post?.num_comments - origCommentCount} new)`}</span>}
+                    }`}{" "}
+                    {typeof origCommentCount === "number" &&
+                      post?.num_comments > origCommentCount && (
+                        <span className="text-xs italic font-medium">{`(${
+                          post?.num_comments - origCommentCount
+                        } new)`}</span>
+                      )}
                   </h1>
                 </a>
               </div>

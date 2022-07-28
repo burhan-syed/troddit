@@ -201,9 +201,17 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       post?.domain?.includes("reddit") ||
       post?.domain?.includes("self.") ||
       post?.url?.includes("imgur") ||
-      isVideo
+      isVideo ||
+      isGallery ||
+      isSelf
     ) {
       isLink = false;
+    }
+    let domainEnd = post?.url?.split("?")?.[0]?.split(".")?.[post?.url?.split("?")?.[0]?.split(".")?.length-1]
+    //console.log(domainEnd);
+    if ((domainEnd === "jpg" || domainEnd === "png"|| domainEnd === "gif") && dimensions[0] > 0){
+      isLink = false;
+      isImage = true; 
     }
 
     //portrait && media check

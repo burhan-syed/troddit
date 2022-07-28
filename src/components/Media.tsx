@@ -11,6 +11,7 @@ import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
 import { ImEmbed, ImSpinner2 } from "react-icons/im";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
+import ExternalLink from "./ui/ExternalLink";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
   // try{
@@ -39,6 +40,7 @@ const Media = ({
   read = false,
   card = false,
   containerDims = undefined,
+  fill = false,
 }) => {
   const context: any = useMainContext();
   const [windowWidth, windowHeight] = useWindowSize();
@@ -348,7 +350,7 @@ const Media = ({
     //console.log(postMode, context.columns, imgFull)
     let cropamount = 0.95;
     if (postMode) {
-      cropamount = 0.75
+      cropamount = 0.75;
     } else if (context?.columns == 1 && !imgFull) {
       cropamount = 0.75;
     }
@@ -416,10 +418,13 @@ const Media = ({
   );
 
   return (
-    <div className="block select-none group" ref={mediaRef}>
+    <div
+      className={fill ? " block " : "block select-none group"}
+      ref={mediaRef}
+    >
       {loaded ? (
         <>
-          {isIFrame && (
+          {isIFrame && !fill && (
             <button
               aria-label="switch embed"
               onClick={(e) => {
@@ -510,8 +515,10 @@ const Media = ({
             <div
               className={
                 "relative  " +
-                ((imgFull || (!postMode && context.columns !== 1)) &&
-                !post?.mediaInfo?.isTweet
+                (fill
+                  ? " block "
+                  : (imgFull || (!postMode && context.columns !== 1)) &&
+                    !post?.mediaInfo?.isTweet
                   ? " block "
                   : post?.mediaInfo?.isTweet
                   ? "flex items-center justify-center  relative overflow-hidden rounded-lg " +
@@ -521,7 +528,9 @@ const Media = ({
                   : " flex items-center justify-center relative ")
               } //flex items-center justify-center "}
               style={
-                containerDims?.[1] && post.mediaInfo?.isTweet
+                fill
+                  ? {}
+                  : containerDims?.[1] && post.mediaInfo?.isTweet
                   ? { height: `${containerDims?.[1]}px` }
                   : (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
                     (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
@@ -542,7 +551,7 @@ const Media = ({
                   <AiOutlineTwitter className="absolute z-20 right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
                 </div>
               )}
-              {post?.mediaInfo?.isLink && (
+              {post?.mediaInfo?.isLink && !fill && (
                 <div
                   className={
                     "absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all " +
@@ -555,7 +564,11 @@ const Media = ({
               <Image
                 src={imageInfo.url}
                 height={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                  fill
+                    ? imageInfo?.height
+                    : !postMode &&
+                      context.columns > 1 &&
+                      !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
                       undefined
                     : post?.mediaInfo?.isTweet
@@ -569,7 +582,11 @@ const Media = ({
                     : imgWidthHeight[1] //scaled height to eliminate letterboxing
                 }
                 width={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                  fill
+                    ? imageInfo?.width
+                    : !postMode &&
+                      context.columns > 1 &&
+                      !post?.mediaInfo?.isTweet
                     ? undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
@@ -585,7 +602,11 @@ const Media = ({
                 }
                 alt={post?.title}
                 layout={
-                  !postMode && context.columns > 1 && !post?.mediaInfo?.isTweet
+                  fill
+                    ? "responsive"
+                    : !postMode &&
+                      context.columns > 1 &&
+                      !post?.mediaInfo?.isTweet
                     ? "fill"
                     : imgFull && !post?.mediaInfo?.isTweet
                     ? "responsive"
@@ -594,13 +615,22 @@ const Media = ({
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  imgFull || (context?.columns == 1 && !post.mediaInfo?.isTweet)
+                  fill
+                    ? "cover"
+                    : imgFull ||
+                      (context?.columns == 1 && !post.mediaInfo?.isTweet)
                     ? "contain"
                     : "fill"
                 }
                 priority={postMode}
                 unoptimized={true}
-                className={post?.mediaInfo?.isTweet ? "object-contain  " : ""}
+                className={
+                  fill
+                    ? " "
+                    : post?.mediaInfo?.isTweet
+                    ? "object-contain  "
+                    : ""
+                }
               />
             </div>
           )}
@@ -655,6 +685,7 @@ const Media = ({
           )}
         </>
       ) : (
+        !fill &&
         post?.mediaInfo?.dimensions?.[1] > 0 &&
         mediaRef?.current &&
         mediaRef?.current?.clientWidth > 0 &&
@@ -663,10 +694,12 @@ const Media = ({
             className=""
             style={{
               height: `${
-                (videoInfo?.height > 0 && videoInfo?.height < maxheightnum) ? videoInfo?.height : 
-                (mediaRef.current.clientWidth / post.mediaInfo.dimensions[0]) *
-                  post.mediaInfo.dimensions[1] >
-                maxheightnum
+                videoInfo?.height > 0 && videoInfo?.height < maxheightnum
+                  ? videoInfo?.height
+                  : (mediaRef.current.clientWidth /
+                      post.mediaInfo.dimensions[0]) *
+                      post.mediaInfo.dimensions[1] >
+                    maxheightnum
                   ? maxheightnum
                   : (mediaRef.current.clientWidth /
                       post.mediaInfo.dimensions[0]) *
@@ -681,18 +714,8 @@ const Media = ({
         !isMP4 &&
         !isIFrame &&
         !isGallery && (
-          <div className="">
-            <a
-              aria-label="external link"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center flex-grow gap-1 px-2 py-2 mt-auto text-xs bg-opacity-50 bg-black/80 text-th-link hover:text-th-linkHover "
-              target={"_blank"}
-              rel="noreferrer"
-              href={post?.url}
-            >
-              <span className="opacity-100 ">{post?.url?.split("?")?.[0]}</span>
-              <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto text-white group-hover:scale-110 " />
-            </a>
+          <div className="overflow-hidden rounded-md">
+            <ExternalLink domain={post?.domain} url={post.url} />
           </div>
         )}
     </div>
