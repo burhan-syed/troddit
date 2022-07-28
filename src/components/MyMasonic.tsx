@@ -199,6 +199,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     mediaOnly: context.mediaOnly,
     wideUI: context.wideUI,
     windowWidth: windowWidth,
+    compactLinkPics: context.compactLinkPics
   });
   useEffect(() => {
     if (

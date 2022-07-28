@@ -7,13 +7,14 @@ interface UseHeightMap {
   columns: number;
   mediaOnly: boolean;
   wideUI: boolean;
+  compactLinkPics: boolean;
 }
 
 const useHeightMap = (args: UseHeightMap) => {
-  const { windowWidth, cardStyle, columns, mediaOnly, wideUI } = args;
+  const { windowWidth, cardStyle, columns, mediaOnly, wideUI, compactLinkPics } = args;
   const card = cardStyle === "default" ? "card1" : cardStyle
-  const queryKeyHeights = ["heightMap", columns, card, mediaOnly, wideUI, windowWidth];
-  const queryKeySeen = ["seenMap", columns, card, mediaOnly, wideUI, windowWidth];
+  const queryKeyHeights = ["heightMap", columns, card, mediaOnly, wideUI, windowWidth, compactLinkPics];
+  const queryKeySeen = ["seenMap", columns, card, mediaOnly, wideUI, windowWidth, compactLinkPics];
 
   const queryClient = useQueryClient();
 
