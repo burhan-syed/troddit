@@ -51,6 +51,7 @@ const Thread = ({
   withContext = false,
   commentMode = false,
   commentsDirect = false,
+  direct = false,
   goBack = () => {},
 }) => {
   const context: any = useMainContext();
@@ -158,6 +159,7 @@ const Thread = ({
       windowHeight < windowWidth &&
       context?.postWideUI &&
       mediaInfo
+      && !direct
     ) {
       usePortrait === undefined &&
         setUsePortrait(mediaInfo?.isPortrait ? true : false);
@@ -166,7 +168,7 @@ const Thread = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaInfo]);
   useEffect(() => {
-    if (windowWidth < 1300 && usePortrait) setUsePortrait(false);
+    if (windowWidth < 1300 && usePortrait && !direct) setUsePortrait(false);
   }, [windowWidth]);
 
   useEffect(() => {
