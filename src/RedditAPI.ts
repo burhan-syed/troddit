@@ -1199,6 +1199,8 @@ export const loadPost = async (
     }
   } else {
     try {
+      console.log('p:',permalink);
+
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
           params: {
@@ -1217,7 +1219,7 @@ export const loadPost = async (
       //console.log(data);
       return data;
     } catch (err) {
-      console.log(err);
+      //console.log(err);
       return { post: undefined, post_comments: undefined, token: returnToken };
     }
   }

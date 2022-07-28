@@ -5,13 +5,15 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import { useEffect, useState } from "react";
 import SubredditBanner from "../../components/SubredditBanner";
-import { getWikiContent } from "../../RedditAPI";
+import { getWikiContent, loadPost } from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
 import PostModal from "../../components/PostModal";
 import LoginModal from "../../components/LoginModal";
 import React from "react";
-const SubredditPage = ({ query }) => {
+import useThread from "../../hooks/useThread";
+import { findMediaInfo } from "../../../lib/utils";
+const SubredditPage = ({ query, metaTags }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
@@ -65,7 +67,19 @@ const SubredditPage = ({ query }) => {
         <title>
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
         </title>
-        <meta
+        {metaTags?.ogSiteName && (
+          <>
+            <meta property="og:site_name" content={metaTags?.ogSiteName} />
+            {metaTags?.ogDescription && <meta property="og:description" content={metaTags?.ogDescription} />}
+            {metaTags?.ogTitle && <meta property="og:title" content={metaTags?.ogTitle} />}
+            {metaTags?.ogImage && <meta property="og:image" content={metaTags?.ogImage} />}
+            {metaTags?.ogHeight && <meta property="og:image:height" content={metaTags?.ogHeight} />}
+            {metaTags?.ogWidth && <meta property="og:image:width" content={metaTags?.ogWidth} />}
+            {metaTags?.ogType &&  <meta property="og:type" content={metaTags?.ogType} />}
+           
+          </>
+        )}
+        {/* <meta
           property="og:url"
           content="https://www.youtube.com/watch?v=ur3-A7ovGUk"
         />
@@ -80,7 +94,7 @@ const SubredditPage = ({ query }) => {
         />
         <meta property="og:video:height" content="720" />
         <meta property="og:video:width" content="1280" />
-        <meta property="og:type" content="video.other" />
+        <meta property="og:type" content="video.other" /> */}
       </Head>
       <main>
         {subsArray?.[0]?.toUpperCase() !== "ALL" &&
@@ -128,7 +142,30 @@ const SubredditPage = ({ query }) => {
 //     },
 //   };
 // }
-SubredditPage.getInitialProps = ({ query }) => {
+SubredditPage.getInitialProps = async ({ query }) => {
+  if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
+    const permalink = `${query?.slug?.join("/")}`;
+    console.log("pr", permalink);
+    //const {post} = await loadPost(`/${query?.slug?.join("/")}`);
+    const data = await fetch(`https://www.reddit.com/r/${permalink}/.json`);
+    try {
+      let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
+      const media = await findMediaInfo(post, true, undefined);
+      console.log(post, media);
+      let metaTags = {
+        ogSiteName: "troddit",
+        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score} points and ${post.num_comments} comments`,
+        ogTitle: post.title,
+        ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
+        ogHeight: media?.dimensions?.[1],
+        ogWidth: media?.dimensions?.[0],
+        ogType: `image`,
+      };
+      return { query, metaTags };
+    } catch (err) {
+      return { query };
+    }
+  }
   return { query };
 };
 
