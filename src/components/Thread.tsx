@@ -419,7 +419,7 @@ const Thread = ({
                           </a>
                         </Link>
 
-                        <p className="-translate-y-0.5">
+                        <p className="-translate-y-0.5" title={new Date(post?.created_utc * 1000)?.toString()}>
                           {secondsToTime(post?.created_utc)}
                         </p>
                         <p className="-translate-y-0.5 mx-1">•</p>

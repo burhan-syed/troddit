@@ -284,7 +284,7 @@ const ChildComments = ({
               )}
 
               <p>•</p>
-              <p className="">
+              <p className="" title={new Date(comment?.data?.created_utc * 1000)?.toString()}>
                 {secondsToTime(comment?.data?.created_utc, [
                   "s ago",
                   "min ago",

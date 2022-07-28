@@ -108,7 +108,7 @@ const Card1 = ({
                   </Link>
                   <p>•</p>
 
-                  <p className="ml-1">
+                  <p className="ml-1" title={new Date(post?.created_utc * 1000)?.toString()}>
                     {secondsToTime(post?.created_utc, [
                       "s ago",
                       "m ago",
