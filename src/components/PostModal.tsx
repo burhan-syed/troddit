@@ -218,6 +218,7 @@ const PostModal = ({
         commentsDirect={commentsDirect}
         goBack={handleBack}
         withContext={withcontext}
+        direct={direct}
       />
       {/* context.posts?.length > 0 */}
       {hasNextPost && (

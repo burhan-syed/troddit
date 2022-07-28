@@ -1140,7 +1140,8 @@ export const loadPost = async (
   sort = "top",
   loggedIn = false,
   token?,
-  withcontext?
+  withcontext?,
+  withDetail = false
 ) => {
   let accessToken = token?.accessToken;
   let returnToken = token;
@@ -1159,7 +1160,7 @@ export const loadPost = async (
       try {
         const res = await (
           await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
-            params: { raw_json: 1, profile_img: true, sr_detail: true },
+            params: { raw_json: 1, profile_img: true, sr_detail: withDetail },
           })
         ).data;
         path = res?.[0]?.data?.children?.[0].data?.permalink;
@@ -1184,7 +1185,7 @@ export const loadPost = async (
           threaded: true,
           truncate: true,
           profile_img: true,
-          sr_detail: true,
+          sr_detail: withDetail,
         },
       });
       let data = await res.data;
@@ -1204,7 +1205,7 @@ export const loadPost = async (
           params: {
             raw_json: 1,
             profile_img: true,
-            sr_detail: true,
+            sr_detail: withDetail,
             context: withcontext ? 10000 : "",
           },
         })
@@ -1217,7 +1218,7 @@ export const loadPost = async (
       //console.log(data);
       return data;
     } catch (err) {
-      console.log(err);
+      //console.log(err);
       return { post: undefined, post_comments: undefined, token: returnToken };
     }
   }

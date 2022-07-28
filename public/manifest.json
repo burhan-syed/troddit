@@ -1,5 +1,5 @@
 {
-  "name": "troddit · web app for Reddit",
+  "name": "troddit · a web app for Reddit",
   "short_name": "troddit",
   "icons": [
     {
@@ -14,8 +14,8 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#FFFFFF",
-  "background_color": "#FFFFFF",
+  "theme_color": "#60A5FA",
+  "background_color": "#1A1A1B",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait"
