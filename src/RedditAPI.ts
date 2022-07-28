@@ -1199,8 +1199,6 @@ export const loadPost = async (
     }
   } else {
     try {
-      console.log('p:',permalink);
-
       const res = await (
         await axios.get(`${REDDIT}${permalink}.json?sort=${sort}`, {
           params: {

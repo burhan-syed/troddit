@@ -13,7 +13,7 @@ import LoginModal from "../../components/LoginModal";
 import React from "react";
 import useThread from "../../hooks/useThread";
 import { findMediaInfo } from "../../../lib/utils";
-const SubredditPage = ({ query, metaTags }) => {
+const SubredditPage = ({ query, metaTags, post }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
@@ -96,7 +96,10 @@ const SubredditPage = ({ query, metaTags }) => {
                 <h1 className="text-lg font-bold">Wiki</h1>
               </a>
             </Link>
-            <ParseBodyHTML html={wikiContent} newTabLinks={false} />
+            {wikiContent ? 
+                        <ParseBodyHTML html={wikiContent} newTabLinks={false} />
+
+            : <div className="w-full rounded-md h-96 bg-th-highlight animate-pulse"></div>}
           </div>
         ) : postThread ? (
           <div className="mt-10">
@@ -108,6 +111,9 @@ const SubredditPage = ({ query, metaTags }) => {
               direct={true}
               commentMode={commentThread}
               withcontext={withCommentContext}
+              postData={post}
+              postNum={undefined}
+              curKey={undefined}
             />
           </div>
         ) : (
@@ -125,28 +131,30 @@ const SubredditPage = ({ query, metaTags }) => {
 //     },
 //   };
 // }
-SubredditPage.getInitialProps = async ({ query }) => {
-  if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
-    const permalink = `${query?.slug?.join("/")}`;
-    const data = await fetch(`https://www.reddit.com/r/${permalink}/.json`);
+SubredditPage.getInitialProps = async (d) => {
+  const {query, req} = d; 
+  const url = req?.url
+  if (url?.includes("/comments/")) {
     try {
-      let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
-      const media = await findMediaInfo(post, true, undefined);
-      //console.log(post,media);
+      const {post} = await loadPost(url);
+      //const data = await fetch(`https://www.reddit.com${url}.json`)
+      //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
+      const media = await findMediaInfo(post, true, d?.req?.headers.host?.split(":")?.[0]);
       let metaTags = {
         ogSiteName: "troddit",
-        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score?.toLocalString('en-US')} points and ${post.num_comments?.toLocalString('en-US')} comments`,
+        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score?.toLocaleString('en-US')} points and ${post.num_comments?.toLocaleString('en-US')} comments`,
         ogTitle: post.title,
         ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
         ogHeight: media?.dimensions?.[1],
         ogWidth: media?.dimensions?.[0],
         ogType: `image`,
       };
-      return { query, metaTags };
+      return { query, metaTags, post: post?.preview ? post : undefined };
     } catch (err) {
       return { query };
     }
   }
+
   return { query };
 };
 
