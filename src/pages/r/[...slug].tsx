@@ -10,6 +10,7 @@ import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
 import PostModal from "../../components/PostModal";
 import LoginModal from "../../components/LoginModal";
+import React from "react";
 const SubredditPage = ({ query }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
@@ -33,8 +34,8 @@ const SubredditPage = ({ query }) => {
         .join("+")
         .split("+")
     );
-    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS" ) {
-      setPostThread(true); 
+    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
+      setPostThread(true);
       query?.context && setWithCommentContext(true);
       query?.slug?.[4] && setCommentThread(true);
     } else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
@@ -64,6 +65,22 @@ const SubredditPage = ({ query }) => {
         <title>
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
         </title>
+        <meta
+          property="og:url"
+          content="https://www.youtube.com/watch?v=ur3-A7ovGUk"
+        />
+        <meta
+          property="og:image"
+          content="https://i.ytimg.com/vi/ur3-A7ovGUk/maxresdefault.jpg"
+        />
+        <meta property="og:video:type" content="text/html" />
+        <meta
+          property="og:video:url"
+          content="https://www.youtube.com/embed/ur3-A7ovGUk"
+        />
+        <meta property="og:video:height" content="720" />
+        <meta property="og:video:width" content="1280" />
+        <meta property="og:type" content="video.other" />
       </Head>
       <main>
         {subsArray?.[0]?.toUpperCase() !== "ALL" &&
@@ -97,7 +114,7 @@ const SubredditPage = ({ query }) => {
             />
           </div>
         ) : (
-          <Feed/>
+          <Feed />
         )}
       </main>
     </div>
