@@ -13,7 +13,11 @@ const Subs = ({ query, metaTags, post }) => {
     <div>
       <Head>
         <title>
-          {metaTags?.ogTitle ? `troddit · ${metaTags?.ogTitle}` : query?.frontsort ? `troddit · ${query?.frontsort}` : "troddit"}
+          {metaTags?.ogTitle
+            ? `troddit · ${metaTags?.ogTitle}`
+            : query?.frontsort
+            ? `troddit · ${query?.frontsort}`
+            : "troddit"}
         </title>
         {metaTags?.ogSiteName && (
           <>
@@ -75,7 +79,8 @@ const Subs = ({ query, metaTags, post }) => {
 
 Subs.getInitialProps = async (d) => {
   const { query, req } = d;
-  const url = req?.url;
+  let url = req?.url;
+  url = url?.split("?")?.[0];
   if (
     !(
       query.frontsort === "best" ||
@@ -86,7 +91,6 @@ Subs.getInitialProps = async (d) => {
     )
   ) {
     try {
-      console.log(url);
       const { post } = await loadPost(url);
       //const data = await fetch(`https://www.reddit.com${url}.json`)
       //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
@@ -95,7 +99,6 @@ Subs.getInitialProps = async (d) => {
         true,
         d?.req?.headers.host?.split(":")?.[0]
       );
-      console.log(post, media);
       let metaTags = {
         ogSiteName: "troddit",
         ogDescription: `Post on r/${post.subreddit} by u/${

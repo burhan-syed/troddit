@@ -70,12 +70,27 @@ const SubredditPage = ({ query, metaTags, post }) => {
         {metaTags?.ogSiteName && (
           <>
             <meta property="og:site_name" content={metaTags?.ogSiteName} />
-            {metaTags?.ogDescription && <meta property="og:description" content={metaTags?.ogDescription} />}
-            {metaTags?.ogTitle && <meta property="og:title" content={metaTags?.ogTitle} />}
-            {metaTags?.ogImage && <meta property="og:image" content={metaTags?.ogImage} />}
-            {metaTags?.ogHeight && <meta property="og:image:height" content={metaTags?.ogHeight} />}
-            {metaTags?.ogWidth && <meta property="og:image:width" content={metaTags?.ogWidth} />}
-            {metaTags?.ogType &&  <meta property="og:type" content={metaTags?.ogType} />}
+            {metaTags?.ogDescription && (
+              <meta
+                property="og:description"
+                content={metaTags?.ogDescription}
+              />
+            )}
+            {metaTags?.ogTitle && (
+              <meta property="og:title" content={metaTags?.ogTitle} />
+            )}
+            {metaTags?.ogImage && (
+              <meta property="og:image" content={metaTags?.ogImage} />
+            )}
+            {metaTags?.ogHeight && (
+              <meta property="og:image:height" content={metaTags?.ogHeight} />
+            )}
+            {metaTags?.ogWidth && (
+              <meta property="og:image:width" content={metaTags?.ogWidth} />
+            )}
+            {metaTags?.ogType && (
+              <meta property="og:type" content={metaTags?.ogType} />
+            )}
           </>
         )}
       </Head>
@@ -96,10 +111,11 @@ const SubredditPage = ({ query, metaTags, post }) => {
                 <h1 className="text-lg font-bold">Wiki</h1>
               </a>
             </Link>
-            {wikiContent ? 
-                        <ParseBodyHTML html={wikiContent} newTabLinks={false} />
-
-            : <div className="w-full rounded-md h-96 bg-th-highlight animate-pulse"></div>}
+            {wikiContent ? (
+              <ParseBodyHTML html={wikiContent} newTabLinks={false} />
+            ) : (
+              <div className="w-full rounded-md h-96 bg-th-highlight animate-pulse"></div>
+            )}
           </div>
         ) : postThread ? (
           <div className="mt-10">
@@ -132,17 +148,26 @@ const SubredditPage = ({ query, metaTags, post }) => {
 //   };
 // }
 SubredditPage.getInitialProps = async (d) => {
-  const {query, req} = d; 
-  const url = req?.url
+  const { query, req } = d;
+  let url = req?.url;
+  url = url?.split("?")?.[0];
   if (url?.includes("/comments/")) {
     try {
-      const {post} = await loadPost(url);
+      const { post } = await loadPost(url);
       //const data = await fetch(`https://www.reddit.com${url}.json`)
       //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
-      const media = await findMediaInfo(post, true, d?.req?.headers.host?.split(":")?.[0]);
+      const media = await findMediaInfo(
+        post,
+        true,
+        d?.req?.headers.host?.split(":")?.[0]
+      );
       let metaTags = {
         ogSiteName: "troddit",
-        ogDescription: `Post on r/${post.subreddit} by u/${post.author} • ${post.score?.toLocaleString('en-US')} points and ${post.num_comments?.toLocaleString('en-US')} comments`,
+        ogDescription: `Post on r/${post.subreddit} by u/${
+          post.author
+        } • ${post.score?.toLocaleString(
+          "en-US"
+        )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
         ogTitle: post.title,
         ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
         ogHeight: media?.dimensions?.[1],
