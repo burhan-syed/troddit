@@ -34,7 +34,7 @@ const VideoHandler = ({
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [manualPlay, setmanualPlay] = useState(false);
   const [muted, setMuted] = useState(!(context?.audioOnHover && postMode));
-
+  const [manualPause, setManualPause] = useState(false);
   const { volume, setVolume } = context;
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
@@ -61,7 +61,7 @@ const VideoHandler = ({
   });
 
   useEffect(() => {
-    if (videoLoaded && show) {
+    if (videoLoaded && show && !manualPause) {
       playVideo();
     } else if (!show && videoPlaying) {
       pauseVideo();
@@ -177,6 +177,7 @@ const VideoHandler = ({
     if (true) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
+        manual && setManualPause(false);
         //play the video
         video?.current
           ?.play()
@@ -199,6 +200,7 @@ const VideoHandler = ({
       }
       //pause the video
       else if (!video?.current?.paused && videoPlaying) {
+        manual && setManualPause(true);
         setVideoPlaying(false);
         setmanualPlay(false);
         video?.current?.pause();
@@ -437,10 +439,10 @@ const VideoHandler = ({
       }
     >
       {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
-          <div className="absolute z-10 text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-            <ImSpinner2 className="w-8 h-8 animate-spin" />
-          </div>
-        )}
+        <div className="absolute z-10 text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+          <ImSpinner2 className="w-8 h-8 animate-spin" />
+        </div>
+      )}
       {/* Background Span Image */}
       <div
         className="absolute z-0 min-w-full min-h-full overflow-hidden brightness-[0.2]"
