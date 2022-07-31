@@ -325,7 +325,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "")
-                + " outline " //outlines for debugging..
+               // + " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
@@ -342,9 +342,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                       }
                   : minHeight > 0
                   ? {
-                      minHeight: `${minHeight}px`,
-                      outlineWidth: "2px",
-                        outlineColor: "blue",
+                      minHeight: `${minHeight}px`
                     }
                   : {
                       minHeight: `${80}px`,

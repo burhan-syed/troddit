@@ -440,18 +440,18 @@ const Media = ({
           )}
 
           {isTweet && allowIFrame && (
-            <div
+            <div className={(!postMode || (!imgFull && !containerDims?.[1])
+              ? " h-96 max-h-96 overflow-auto w-full flex items-center justify-center  "
+              : "")}>
+ <div
               className={
-                " bg-transparent " +
-                scrollStyle +
-                (!postMode || (!imgFull && !containerDims?.[1])
-                  ? " h-96 max-h-96 overflow-auto "
-                  : "")
+                " bg-transparent w-full  " +
+                scrollStyle 
               }
             >
               <TwitterTweetEmbed
                 placeholder={
-                  <div className="relative mx-auto border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
+                  <div className="relative mx-auto border rounded-lg h-80 border-th-border w-60 animate-pulse bg-th-base">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
@@ -468,6 +468,8 @@ const Media = ({
                 }
               />
             </div>
+            </div>
+           
           )}
           {isIFrame && allowIFrame && !isTweet ? (
             <div
