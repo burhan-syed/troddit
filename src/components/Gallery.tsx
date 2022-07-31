@@ -5,6 +5,7 @@ import React from "react";
 import { useState, useEffect, createRef } from "react";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
 import { isContext } from "vm";
+import { findGreatestsImages } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 
 const Gallery = ({
@@ -55,40 +56,9 @@ const Gallery = ({
 
     if (images.length > 0) {
       if (maxheight > 0) {
-        let newimages = [] as any[];
-        images.forEach((img, i) => {
-          if (img.height > maxheight) {
-            ratio = maxheight / img.height;
-            newimages.push({
-              ...img,
-              url: img.url,
-              height: Math.floor(img.height * ratio),
-              width: Math.floor(img.width * ratio),
-            });
-          } else {
-            newimages.push({
-              ...img,
-              url: img.url,
-              height: img.height,
-              width: img.width,
-            });
-          }
-        });
-        let tallest = newimages[0];
-        let widest = newimages[0];
-        let ratio = newimages[0];
-        newimages.forEach((img, i) => {
-          if (img.height > tallest?.height) {
-            tallest = newimages[i];
-          }
-          if (img.width > widest?.width) {
-            widest = newimages[i];
-          }
-          if (img.height / img.width > ratio.height / ratio.width) {
-            ratio = newimages[i];
-          }
-        });
-        setImagesRender(newimages);
+        const {tallest, widest, ratio, fImages} = findGreatestsImages(images, maxheight) 
+        setImagesRender(fImages);
+
         setimgtall(tallest);
         setimgwide(widest);
         setImgRatio(ratio);

@@ -686,6 +686,7 @@ const Media = ({
         </>
       ) : (
         !fill &&
+        !post?.mediaInfo?.isGallery &&
         post?.mediaInfo?.dimensions?.[1] > 0 &&
         mediaRef?.current &&
         mediaRef?.current?.clientWidth > 0 &&

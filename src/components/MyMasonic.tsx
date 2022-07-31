@@ -14,6 +14,7 @@ import useRefresh from "../hooks/useRefresh";
 import useFeedGallery from "../hooks/useFeedGallery";
 import { InView } from "react-intersection-observer";
 import useHeightMap from "../hooks/useHeightMap";
+import { findGreatestsImages } from "../../lib/utils";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -268,6 +269,46 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       const post = props?.data;
       const seen = seenMap?.get(props?.data?.data?.name)?.seen === true; //getSeen()?.get(props?.data?.data?.name)?.seen === true;
       const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
+
+      let m = parseInt(margin.split("m-")?.[1] ?? 0);
+      let width = props.width -2 - m * 8; //-border-margin
+      if (context.cardStyle === "card1" && !context.mediaOnly) {
+        width -= 24;
+      }
+      let minHeight =
+        context.cardStyle !== "row1" &&
+        !post?.data?.mediaInfo?.isSelf &&
+        !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
+        !post?.data?.mediaInfo?.isTweet &&
+        !post?.data?.mediaInfo?.isGallery &&
+        post?.data?.mediaInfo?.dimensions?.[0] > 0
+          ? (width / post?.data?.mediaInfo?.dimensions[0]) *
+            post.data.mediaInfo.dimensions[1]
+          : 0;
+      let h = minHeight;
+
+      if (post?.data?.mediaInfo?.isGallery) {
+        let images = post.data.mediaInfo.gallery;
+        const { tallest, widest, ratio, fImages } = findGreatestsImages(
+          images,
+          cols === 1 ? windowHeight * 0.75 : 0
+        );
+        if (cols === 1) {
+          minHeight = Math.min(
+            windowHeight * 0.75,
+            ratio?.height * (width / ratio?.width)
+          );
+        } else {
+          minHeight = tallest.height * (width / widest.width);
+        }
+      }
+      if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
+        minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
+      }
+      if (cols === 1) {
+        minHeight = Math.min(windowHeight * 0.75, minHeight);
+      }
+
       return (
         <InView
           role={"gridcell"}
@@ -284,7 +325,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "")
-                // " outline " //outlines for debugging..
+                + " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
@@ -299,7 +340,15 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                         outlineWidth: "2px",
                         outlineColor: "green",
                       }
-                  : {}
+                  : minHeight > 0
+                  ? {
+                      minHeight: `${minHeight}px`,
+                      outlineWidth: "2px",
+                        outlineColor: "blue",
+                    }
+                  : {
+                      minHeight: `${80}px`,
+                    }
                 // seen === true
                 // ? { outlineWidth: "2px", outlineColor: "red" }
                 // : knownHeight > 0
