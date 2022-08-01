@@ -133,6 +133,51 @@ export const fixCommentFormat =  async (comments) => {
   return comments;
 };
 
+export const findGreatestsImages = (images: {height:number,width:number, url:string}[],maxheight=0)=>{
+  let fImages = [] as any[];
+  
+  if (maxheight > 0){
+    images.forEach((img, i) => {
+      if (img.height > maxheight) {
+        let ratio = maxheight / img.height;
+        fImages.push({
+          ...img,
+          url: img.url,
+          height: Math.floor(img.height * ratio),
+          width: Math.floor(img.width * ratio),
+        });
+      } else {
+        fImages.push({
+          ...img,
+          url: img.url,
+          height: img.height,
+          width: img.width,
+        });
+      }
+    });
+  } else {
+    fImages = images; 
+  }
+
+  let tallest = fImages[0];
+  let widest = fImages[0];
+  let ratio = fImages[0];
+  fImages.forEach((img, i) => {
+    if (img.height > tallest?.height) {
+      tallest = img;
+    }
+    if (img.width > widest?.width) {
+      widest = img;
+    }
+    if (img.height / img.width > ratio.height / ratio.width) {
+      ratio = img;
+    }
+  });
+
+  return {tallest, widest, ratio, fImages}
+
+}
+
 export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];

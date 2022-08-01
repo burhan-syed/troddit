@@ -1,6 +1,6 @@
 import SubInfoModal from "./SubInfoModal";
 
-import { useState, useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import { useSubsContext } from "../MySubs";
 import router, { useRouter } from "next/router";
 import SubPills from "./SubPills";
@@ -21,7 +21,7 @@ const SubredditBanner = ({
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const subsContext: any = useSubsContext();
-  const { currSubInfo, multi, myMultis, myLocalMultis } = subsContext;
+  const { currSubInfo, multi, myMultis, myLocalMultis, loadedSubs } = subsContext;
   const [currSubData, setCurrSubData] = useState<any>({});
   const [subreddit, setSubreddit] = useState("");
   const [multiSub, setMultiSub] = useState("");
@@ -165,7 +165,7 @@ const SubredditBanner = ({
       return matched;
     };
 
-    if (!loading && subreddits && multi) {
+    if (!loading && subreddits && multi && loadedSubs) {
       const currSubs: string[] = multiSub
         ? subArray?.map((s) => s?.toUpperCase())
         : subreddits?.map((s) => s?.toUpperCase());
@@ -183,7 +183,7 @@ const SubredditBanner = ({
     // return () => {
     //   setMyMultiInfo(undefined);
     // };
-  }, [subreddits, multi, myMultis, myLocalMultis, loading]);
+  }, [subreddits, multi, myMultis, myLocalMultis, loading, loadedSubs]);
 
   //kick out of multi if the multi is changed..
   useEffect(() => {if (mounted && myMultiInfo && router.query?.m){

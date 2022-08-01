@@ -53,7 +53,7 @@ const Feed = ({ initialData = {} as any }) => {
       <div className="flex flex-col items-center flex-none w-screen">
         <div
           className={
-            "w-full " +
+            "w-full overflow-hidden " +
             (context.columnOverride === 1 &&
             context.cardStyle !== "row1" &&
             !context.wideUI

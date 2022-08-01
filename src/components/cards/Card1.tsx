@@ -99,7 +99,7 @@ const Card1 = ({
             : "  ") +
           " rounded-lg    " +
           (context.mediaOnly && hasMedia
-            ? " border-transparent overflow-hidden "
+            ? ` border-transparent overflow-hidden ${hovered ? "bg-th-post" : ""} `
             : " hover:border-th-borderHighlight2 border-th-border2  hover:shadow-2xl  shadow-md group bg-th-post hover:bg-th-postHover ") +
           (context.mediaOnly && hasMedia && hovered
             ? "  border-b-transparent rounded-b-none border-th-border2   "
@@ -266,7 +266,7 @@ const Card1 = ({
                 )}
               </div>
               {linkMode && (
-                <div className="mt-1 overflow-hidden rounded-md">
+                <div className="mt-1 -ml-1 overflow-hidden rounded-md">
                   <ExternalLink domain={post?.domain} url={post?.url} />
                 </div>
               )}

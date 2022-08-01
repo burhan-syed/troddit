@@ -65,9 +65,9 @@ const Card1 = ({
             <div className="p-1 px-2 pt-1.5 select-auto">
               <div className={linkMode ? " flex justify-between gap-1  " : ""}>
                 <div className={linkMode ? "flex flex-col w-2/3 " : ""}>
-                  {linkMode && (
-                    <div className="-mt-0.5 -ml-1 overflow-hidden rounded-md">
-                      <ExternalLink domain={post?.domain} url={post?.url} />
+                {linkMode && (
+                    <div className="-mt-0.5  -ml-1 overflow-hidden rounded-md">
+                      <ExternalLink domain={post?.domain} url={post?.url} shorten={true} />
                     </div>
                   )}
                   <h1 className="my-auto">
@@ -96,6 +96,7 @@ const Card1 = ({
                       </span>
                     )}
                   </h1>
+                  
                 </div>
 
                 {linkMode && (

@@ -382,24 +382,22 @@ const Media = ({
     windowHeight,
     containerDims,
   ]);
+  const [tweetLoaded, setTweetLoaded] = useState(false);
   //scale images
   const [imgWidthHeight, setImageWidthHeight] = useState([
-    imageInfo.width,
-    imageInfo.height,
+    post?.mediaInfo?.dimensions[0],
+    post?.mediaInfo?.dimensions[1]
   ]);
   useEffect(() => {
     if (
       mediaRef.current &&
-      mediaRef.current.clientWidth &&
-      imageInfo.height &&
-      imageInfo.width
+      mediaRef.current.clientWidth && post?.mediaInfo?.dimensions[0] > 0
     ) {
-      let r = mediaRef.current.clientWidth / imageInfo.width;
-      let height = r * imageInfo.height;
+      let r = mediaRef.current.clientWidth / post?.mediaInfo?.dimensions[0];
+      let height = r * post?.mediaInfo?.dimensions[1];
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
-  }, [imageInfo, mediaRef?.current?.clientWidth]);
-  const [tweetLoaded, setTweetLoaded] = useState(false);
+  }, [ mediaRef?.current?.clientWidth]);
 
   const externalLink = (
     <a
@@ -440,18 +438,18 @@ const Media = ({
           )}
 
           {isTweet && allowIFrame && (
-            <div
+            <div className={(!postMode || (!imgFull && !containerDims?.[1])
+              ? " h-96 max-h-96 overflow-auto w-full flex items-center justify-center  "
+              : "")}>
+ <div
               className={
-                " bg-transparent " +
-                scrollStyle +
-                (!postMode || (!imgFull && !containerDims?.[1])
-                  ? " h-96 max-h-96 overflow-auto "
-                  : "")
+                " bg-transparent w-full  " +
+                scrollStyle 
               }
             >
               <TwitterTweetEmbed
                 placeholder={
-                  <div className="relative mx-auto border rounded-lg border-th-border w-60 h-96 animate-pulse bg-th-base">
+                  <div className="relative mx-auto border rounded-lg h-80 border-th-border w-60 animate-pulse bg-th-base">
                     <div className="absolute w-full h-full">
                       <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                     </div>
@@ -468,6 +466,8 @@ const Media = ({
                 }
               />
             </div>
+            </div>
+           
           )}
           {isIFrame && allowIFrame && !isTweet ? (
             <div
@@ -570,7 +570,8 @@ const Media = ({
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
-                      undefined
+                    post?.mediaInfo?.dimensions[1] *
+                    (mediaRef?.current?.clientWidth / post?.mediaInfo?.dimensions[0])//undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -587,7 +588,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? undefined
+                    ? mediaRef?.current?.clientWidth//undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -607,7 +608,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? "fill"
+                    ? "fixed"
                     : imgFull && !post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"
@@ -686,6 +687,7 @@ const Media = ({
         </>
       ) : (
         !fill &&
+        !post?.mediaInfo?.isGallery &&
         post?.mediaInfo?.dimensions?.[1] > 0 &&
         mediaRef?.current &&
         mediaRef?.current?.clientWidth > 0 &&

@@ -145,7 +145,7 @@ const useLocation = (params?) => {
         setSort(query?.slug?.[1] ?? "hot");
       }
       //subreddit OR username..
-      setSubreddits(query?.slug?.[0] ?? "");
+      setSubreddits(query?.slug?.[0]?.split(" ")?.join("+") ?? "");
       setRange((query?.t as string) ?? "");
     } else {
       //console.log(router);

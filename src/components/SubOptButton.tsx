@@ -1,5 +1,5 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
@@ -123,6 +123,8 @@ const SubOptButton = ({
       deleteLocalMulti(currMulti);
     }
   };
+  const feedMenuRef = useRef<HTMLButtonElement>(null);
+
   return (
     <>
       <MultiManageModal
@@ -168,12 +170,12 @@ const SubOptButton = ({
                       <div
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " block px-4 py-1 text-sm"
+                          " block  text-sm"
                         }
                       >
-                        <div className="relative flex flex-row justify-end py-0.5 cursor-pointer select-none">
-                          Add to Feed
-                        </div>
+                        <button onClick={(e) => {e.preventDefault(); feedMenuRef?.current?.click(); }} className="relative flex flex-row justify-end w-full px-4 py-1 cursor-pointer select-none">
+                          Add to Feed..
+                        </button>
                         <div
                           className={
                             "absolute top-0 -left-[10rem] w-40 max-h-96 overflow-y-scroll   rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border  select-none cursor-pointer py-1 scrollbar-thin  scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-th-scrollbar bg-th-background2 border-th-border ring-th-base" +
@@ -374,6 +376,87 @@ const SubOptButton = ({
             </Transition>
           </>
         )}
+      </Menu>
+      <Menu as={"div"} className={"relative"}>
+        <Menu.Button ref={feedMenuRef} className="hidden"></Menu.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-800"
+          enterFrom="transform opacity-100 scale-100"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items
+            as={"div"}
+            className={
+              "absolute z-50 top-11  right-1 w-40 max-h-96 overflow-y-scroll   rounded-md shadow-lg ring-1  ring-opacity-5 focus:outline-none border  select-none cursor-pointer py-1 scrollbar-thin  scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-th-scrollbar bg-th-background2 border-th-border ring-th-base"
+            }
+          >
+            <Menu.Item
+              as={"button"}
+              onClick={(e) => {
+                setopenMulti((s) => s + 1);
+              }}
+              className="w-full"
+              autoFocus
+            >
+              {({ active }) => (
+                <div
+                  className={
+                    "px-2 py-2  hover:cursor-pointer" +
+                    (active ? " bg-th-highlight " : "")
+                  }
+                  onClick={multiCreate}
+                >
+                  <h1 className="pl-2">Create New</h1>
+                </div>
+              )}
+            </Menu.Item>
+            {myMultis?.length > 0
+              ? myMultis?.map((multi, i) => {
+                  return (
+                    <Menu.Item
+                      as={"button"}
+                      className={"w-full"}
+                      key={`${i}_${multi.data.display_name}`}
+                      onClick={() => tryAddToMulti(multi.data.display_name)}
+                    >
+                      {({ active }) => (
+                        <div
+                          className={
+                            "px-2 py-2 " + (active ? " bg-th-highlight" : "")
+                          }
+                        >
+                          <DropdownItem sub={multi} />
+                        </div>
+                      )}
+                    </Menu.Item>
+                  );
+                })
+              : myLocalMultis?.length > 0 &&
+                !session &&
+                myLocalMultis?.map((multi, i) => {
+                  return (
+                    <Menu.Item
+                      key={`${i}_${multi.data.display_name}`}
+                      onClick={() => tryAddToMulti(multi.data.display_name)}
+                    >
+                      {({ active }) => (
+                        <div
+                          className={
+                            "px-2 py-2 " + (active ? " bg-th-highlight " : " ")
+                          }
+                        >
+                          <DropdownItem sub={multi} />
+                        </div>
+                      )}
+                    </Menu.Item>
+                  );
+                })}
+          </Menu.Items>
+        </Transition>
       </Menu>
     </>
   );

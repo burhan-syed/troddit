@@ -89,9 +89,10 @@ const PostModal = ({
   }, [curPostNum]);
 
   const changePost = (move: 1 | -1) => {
-    const multi = router?.asPath?.includes("m=")
-      ? router.asPath.split("m=")?.join("&")?.split("&")?.[1]
-      : "";
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop as string),
+    });    
+    const multi =  params?.["m"] ?? ""
     if (flattenedPosts?.[curPostNum + move]?.data) {
       const nextPost = flattenedPosts?.[curPostNum + move]?.data;
       setCurPost(nextPost);

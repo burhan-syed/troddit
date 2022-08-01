@@ -578,8 +578,12 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    router?.query?.m
-      ? setMulti(router?.query?.m?.toString())
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop as string),
+    });    
+    const lmulti = router?.query?.m ?? params?.["m"]
+    lmulti
+      ? setMulti(lmulti)
       : router?.asPath?.includes("m=")
       ? setMulti(router.asPath.split("m=").join("&")?.split("&")?.[1])
       : currSubs?.length > 1
