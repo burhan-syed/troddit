@@ -384,21 +384,19 @@ const Media = ({
   ]);
   //scale images
   const [imgWidthHeight, setImageWidthHeight] = useState([
-    imageInfo.width,
-    imageInfo.height,
+    post?.mediaInfo?.dimensions[0],
+    post?.mediaInfo?.dimensions[1]
   ]);
   useEffect(() => {
     if (
       mediaRef.current &&
-      mediaRef.current.clientWidth &&
-      imageInfo.height &&
-      imageInfo.width
+      mediaRef.current.clientWidth && post?.mediaInfo?.dimensions[0] > 0
     ) {
-      let r = mediaRef.current.clientWidth / imageInfo.width;
-      let height = r * imageInfo.height;
+      let r = mediaRef.current.clientWidth / post?.mediaInfo?.dimensions[0];
+      let height = r * post?.mediaInfo?.dimensions[1];
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
-  }, [imageInfo, mediaRef?.current?.clientWidth]);
+  }, [ mediaRef?.current?.clientWidth]);
   const [tweetLoaded, setTweetLoaded] = useState(false);
 
   const externalLink = (
@@ -572,7 +570,8 @@ const Media = ({
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
-                      undefined
+                    post?.mediaInfo?.dimensions[1] *
+                    (mediaRef?.current?.clientWidth / post?.mediaInfo?.dimensions[0])//undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -589,7 +588,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? undefined
+                    ? mediaRef?.current?.clientWidth//undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -609,7 +608,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? "fill"
+                    ? "fixed"
                     : imgFull && !post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"

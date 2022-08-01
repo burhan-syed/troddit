@@ -286,12 +286,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
             post.data.mediaInfo.dimensions[1]
           : 0;
       let h = minHeight;
-
       if (post?.data?.mediaInfo?.isGallery) {
         let images = post.data.mediaInfo.gallery;
         const { tallest, widest, ratio, fImages } = findGreatestsImages(
           images,
-          cols === 1 ? windowHeight * 0.75 : 0
+          cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
         );
         if (cols === 1) {
           minHeight = Math.min(

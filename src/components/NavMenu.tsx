@@ -306,7 +306,7 @@ const NavMenu = ({ hide = false }) => {
               )}
             </Menu.Item>
 
-            {["hoverplay", "autoplay", "audioOnHover", "theme", "nsfw"].map(
+            {["hoverplay", "autoplay", "audioOnHover", "theme"].map(
               (setting: any) => (
                 <Menu.Item key={setting}>
                   {({ active }) => (

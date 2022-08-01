@@ -52,11 +52,12 @@ const Gallery = ({
   };
 
   useEffect(() => {
-    let ratio = 1;
-
     if (images.length > 0) {
       if (maxheight > 0) {
-        const {tallest, widest, ratio, fImages} = findGreatestsImages(images, maxheight) 
+        const { tallest, widest, ratio, fImages } = findGreatestsImages(
+          images,
+          maxheight
+        );
         setImagesRender(fImages);
 
         setimgtall(tallest);
@@ -134,6 +135,13 @@ const Gallery = ({
         )}
 
         {sliderControl(true)}
+        {/* <div className="absolute bottom-0 right-0 z-50">
+          {(
+            imgtall.height *
+            (mediaRef.current.clientWidth / imgwide.width)
+          ).toFixed(0)}
+          ,{imgtall?.height?.toFixed(0)},{imgwide.width?.toFixed(0)}
+        </div> */}
         <div>
           {imagesRender.map((image, i) => {
             if (i < index + 3 || i > index - 3) {
@@ -145,7 +153,9 @@ const Gallery = ({
                       ? postMode || context.columns == 1
                         ? " flex items-center "
                         : " block "
-                      : postMode || context.columns == 1 ? ` flex absolute top-0 items-center ` : ' hidden'
+                      : postMode || context.columns == 1
+                      ? ` flex absolute top-0 items-center `
+                      : " hidden"
                   }`}
                   style={
                     imgRatio?.height && (postMode || context.columns === 1)
@@ -219,7 +229,11 @@ const Gallery = ({
                       unoptimized={true}
                     ></Image>
                   )}
-                  {i === index && image.caption && <div className="absolute bottom-0 left-0 z-20 flex text-sm p-0.5 py-1 bg-black/50 bg-opacity-80 w-full text-white text-left">{image.caption}</div>}
+                  {i === index && image.caption && (
+                    <div className="absolute bottom-0 left-0 z-20 flex text-sm p-0.5 py-1 bg-black/50 bg-opacity-80 w-full text-white text-left">
+                      {image.caption}
+                    </div>
+                  )}
                 </div>
               );
             }

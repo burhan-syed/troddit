@@ -15,7 +15,6 @@ const ExternalLink = ({ domain, url,shorten=false }) => {
       baseColor = "#000000"
     }
     setColor(baseColor);
-    console.log(baseColor);
     setMounted(true);
   }, []);
 
