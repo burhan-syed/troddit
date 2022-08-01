@@ -382,6 +382,7 @@ const Media = ({
     windowHeight,
     containerDims,
   ]);
+  const [tweetLoaded, setTweetLoaded] = useState(false);
   //scale images
   const [imgWidthHeight, setImageWidthHeight] = useState([
     post?.mediaInfo?.dimensions[0],
@@ -397,7 +398,6 @@ const Media = ({
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
   }, [ mediaRef?.current?.clientWidth]);
-  const [tweetLoaded, setTweetLoaded] = useState(false);
 
   const externalLink = (
     <a
