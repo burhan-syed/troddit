@@ -14,6 +14,7 @@ interface ToastCustomParams {
   message: string;
   mode?: "loading" | "error" | "version" | "alert" | "success" | "new_posts";
   action?: Function;
+  action2?: Function;
   actionLabel?: string;
 }
 
@@ -22,6 +23,7 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
   message,
   mode = "",
   action,
+  action2,
   actionLabel = "",
 }) => {
   const toastdiv = (
@@ -32,11 +34,11 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
         (t.visible ? " " : "  ") +
         (mode === "new_posts"
           ? " w-screen md:w-auto "
-          : "p-2 h-14 w-96 md:w-[40rem] lg:w-[52rem] xl:w-[56rem]")
+          : "p-2 py-3 w-96 md:w-[40rem] lg:w-[52rem] xl:w-[56rem]")
       }
     >
       {mode !== "new_posts" && (
-        <div className="flex justify-center w-14 ">
+        <div className="flex justify-center w-10 md:w-14 ">
           {mode === "loading" ? (
             <ImSpinner2 className="flex-none w-6 h-6 animate-spin" />
           ) : (
@@ -61,14 +63,40 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
         </div>
       )}
 
-      {mode === "new_posts" ? (
-        <div className="flex items-center flex-grow gap-2 p-1.5 px-3">
-          <div className="flex flex-grow md:flex-col">
-            <h1 className="md:text-xs">{message}</h1>
-            <h2 className="ml-auto md:text-sm">Update feed?</h2>
+      {action ? (
+        <div
+          className={
+            mode === "new_posts"
+              ? "flex items-center flex-grow gap-2 p-1.5 px-3"
+              : "flex items-center w-full justify-between gap-2 "
+          }
+        >
+          <div
+            className={
+              mode === "new_posts"
+                ? "flex flex-grow md:flex-col"
+                : "flex items-center flex-grow"
+            }
+          >
+            <h1 className={mode === "new_posts" ? "md:text-xs" : "hidden md:block"}>
+              {message}
+            </h1>
+            <h2
+              className={
+                mode === "new_posts" ? "ml-auto md:text-sm" : "ml-auto text-sm"
+              }
+            >
+              {actionLabel}
+            </h2>
           </div>
 
-          <div className="flex gap-1 ml-auto md:flex-col-reverse ">
+          <div
+            className={
+              mode === "new_posts"
+                ? "flex gap-1 ml-auto md:flex-col-reverse "
+                : "flex items-center gap-2"
+            }
+          >
             <button
               aria-label="apply"
               className="flex items-center gap-2 cursor-pointer group"
@@ -86,7 +114,12 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
             <button
               aria-label="close"
               className="flex items-center justify-center p-1 border rounded-md border-th-border hover:border-th-borderHighlight bg-th-background2"
-              onClick={() => toast.remove(t.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                action2 && action2();
+                toast.remove(t.id);
+              }}
             >
               <AiOutlineClose className="" />
             </button>

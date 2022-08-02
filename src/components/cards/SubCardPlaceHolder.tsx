@@ -1,17 +1,18 @@
+import React from "react";
 import SubButton from "../SubButton";
 
-const SubCardPlaceHolder = ({ user = false, tall=false }) => {
-
+const SubCardPlaceHolder = ({ user = false, tall = false }) => {
   return (
     <div
-    className={
-      "relative z-0 transition-colors bg-contain border  shadow-md  hover:bg-th-postHover hover:shadow-2xl bg-th-post border-th-border  group" +
-      ( " rounded-lg ")}
+      className={
+        "relative z-0 transition-colors bg-contain border  shadow-md  hover:bg-th-postHover hover:shadow-2xl bg-th-post border-th-border  group" +
+        " rounded-lg "
+      }
     >
       <div
         className={
           ` absolute w-full h-16 bg-cover bg-th-scrollbar bg-center z-[-1]  ` +
-          (" rounded-t-md ")
+          " rounded-t-md "
         }
         // style={{ zIndex: -1, backgroundColor: "#b8001f" }}
       ></div>

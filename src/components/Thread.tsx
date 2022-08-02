@@ -42,6 +42,7 @@ import { QueryClient, useQueryClient } from "react-query";
 import useSubreddit from "../hooks/useSubreddit";
 import ErrMessage from "./ErrMessage";
 import { useRead } from "../hooks/useRead";
+import toast from "react-hot-toast";
 
 const Thread = ({
   permalink,
@@ -282,24 +283,22 @@ const Thread = ({
   );
 
   if (thread.isError) {
-    return (
-      <div className="flex items-center justify-center h-screen ">
-        <div
-          className={
-            (!context?.postWideUI && !usePortrait && windowWidth > 768
-              ? " max-w-3xl w-[768px]"
-              : !usePortrait
-              ? " w-full md:w-10/12 lg:w-3/4 "
-              : " md:w-4/12 ") +
-            " z-10 flex items-center justify-center w-full h-96 border rounded-lg border-th-border2 bg-th-background2"
-          }
+    toast.custom(
+      (t) => (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toast.remove("feed_error");
+          }}
+          className="max-w-lg p-2 border rounded-lg bg-th-postHover border-th-border2"
         >
-          <div className="flex flex-col gap-2 px-4">
-            <h1 className="">{"unable to load post"}</h1>
-            <ErrMessage />
-          </div>
-        </div>
-      </div>
+          <p className="mb-2 text-center">{"Oops something went wrong :("}</p>
+
+          <ErrMessage />
+        </button>
+      ),
+      { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
   }
 

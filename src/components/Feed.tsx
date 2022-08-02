@@ -11,6 +11,8 @@ import useRefresh from "../hooks/useRefresh";
 import { IoMdRefresh } from "react-icons/io";
 import ErrMessage from "./ErrMessage";
 import useLocation from "../hooks/useLocation";
+import toast from "react-hot-toast";
+import ToastCustom from "./toast/ToastCustom";
 
 const Feed = ({ initialData = {} as any }) => {
   const { mode, subreddits } = useLocation();
@@ -38,18 +40,47 @@ const Feed = ({ initialData = {} as any }) => {
     subreddits &&
     !feed?.data?.pages
   ) {
-    router.replace(`/search?q=${subreddits}`);
+    toast.custom(
+      (t) => (
+        <ToastCustom
+          t={t}
+          message={`We couldn't find that ${
+            mode === "SUBREDDIT" ? "subreddit" : "user"
+          }. ${
+            mode === "SUBREDDIT" ? "It" : "They"
+          } may be banned or restricted.`}
+          mode={"alert"}
+          action={() => {
+            toast.remove("not_found");
+            router.replace(`/search?q=${subreddits}`);
+          }}
+          actionLabel={"Search Instead?"}
+        />
+      ),
+      { position: "bottom-center", duration: Infinity, id: "not_found" }
+    );
+  } else if (feed.error) {
+    toast.custom(
+      (t) => (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toast.remove("feed_error");
+          }}
+          className="max-w-lg p-2 border rounded-lg bg-th-postHover border-th-border2"
+        >
+          <p className="mb-2 text-center">{"Oops something went wrong :("}</p>
+
+          <ErrMessage />
+        </button>
+      ),
+      { position: "bottom-center", duration: Infinity, id: "feed_error" }
+    );
   }
   return (
     <main>
       <LoginModal />
-      {feed.error && (
-        <div className="fixed z-50 max-w-lg p-2 mx-auto -translate-x-1/2 -translate-y-1/2 border rounded-lg top-1/2 left-1/2 bg-th-post border-th-border2">
-          <p className="mb-2 text-center">{"Oops something went wrong :("}</p>
-
-          <ErrMessage />
-        </div>
-      )}
       <div className="flex flex-col items-center flex-none w-screen">
         <div
           className={
