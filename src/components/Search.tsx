@@ -6,7 +6,6 @@ import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/react";
 import Image from "next/dist/client/image";
-import AllSubs from "../../public/subs.json";
 // import { usePlausible } from "next-plausible";
 
 import {
@@ -189,32 +188,6 @@ const Search = ({ id }) => {
     }
     // }
     return [];
-  };
-
-  //https://frontpagemetrics.com/
-  //https://www.molbiotools.com/textextractor.html
-  //https://www.htmlstrip.com/string-text-to-json-list-to-json-converter
-  const localSearch = (value) => {
-    let suggestions = [];
-    try {
-      let data = AllSubs.SFW;
-      if (context.nsfw === true) data = [...data, ...AllSubs.NSFW];
-      const search = data
-        .filter((item) => {
-          return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
-        })
-        .slice(0, 4);
-      search.forEach((s) => {
-        if (s.toLowerCase() != value.toLowerCase()) {
-          suggestions.push({
-            data: { display_name_prefixed: s, display_name: s },
-          });
-        }
-      });
-    } catch (e) {
-      console.log(e);
-    }
-    return suggestions;
   };
 
   const onSuggestionsClearRequested = () => {

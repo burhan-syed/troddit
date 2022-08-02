@@ -11,7 +11,7 @@
 --textBody: theme('colors.stone.700');
 --textStrong: theme('colors.rose.700');
 --textHeading: theme('colors.stone.900');
---accent: theme('colors.blue.400');
+--accent: #00D2F7;/**theme('colors.blue.400');**/
 --base: theme('colors.gray.200');
 --background: theme('colors.slate.100');
 --background2: theme('colors.white');
@@ -27,11 +27,11 @@
 --upvote: theme('colors.orange.500');
 --downvote: theme('colors.blue.400');
 --red: theme('colors.red.400');
---scrollbar: theme('colors.blue.400');
+--scrollbar: #00D2F7;/**theme('colors.blue.400');**/
 --link: theme('colors.blue.700');
 --linkHover: theme('colors.blue.500');
 --commentRibbon: theme('colors.blue.600');
---commentRibbonHover: theme('colors.blue.400');
+--commentRibbonHover: #00D2F7;/**theme('colors.blue.400');**/
 --backgroundComment: theme('colors.white');
 --backgroundCommentAlternate: theme('colors.gray.100');
 --toggleColor: theme('colors.gray.300');
@@ -43,7 +43,7 @@
 --textBody: theme('colors.stone.100');
 --textStrong: theme('colors.rose.400');
 --textHeading: theme('colors.stone.200');
---accent: theme('colors.blue.600');
+--accent: #2C8EBB;/*theme('colors.blue.600');*/
 --base: theme('colors.black');
 --background: #1A1A1B;
 --background2: #1A1A1B;
@@ -58,12 +58,12 @@
 --green: #7AFBD6;
 --upvote: theme('colors.orange.500');
 --downvote: theme('colors.blue.400');
---scrollbar: theme('colors.red.800');
+--scrollbar: #2C8EBB;/*theme('colors.red.800');*/
 --red: theme('colors.red.700');
 --link: theme('colors.blue.400');
 --linkHover: theme('colors.blue.300');
---commentRibbon: theme('colors.red.700');
---commentRibbonHover: theme('colors.red.500');
+--commentRibbon: #2C8EBB; /**theme('colors.red.700');**/
+--commentRibbonHover: #00D2F7;/** theme('colors.red.500');**/
 --backgroundComment: #161616;
 --backgroundCommentAlternate: #1A1A1B;
 --toggleColor: theme('colors.gray.600');
