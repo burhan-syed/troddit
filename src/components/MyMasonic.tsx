@@ -200,7 +200,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     mediaOnly: context.mediaOnly,
     wideUI: context.wideUI,
     windowWidth: windowWidth,
-    compactLinkPics: context.compactLinkPics
+    compactLinkPics: context.compactLinkPics,
   });
   useEffect(() => {
     if (
@@ -271,41 +271,44 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       const knownHeight = getHeights()?.get(props?.data?.data?.name)?.height;
 
       let m = parseInt(margin.split("m-")?.[1] ?? 0);
-      let width = props.width -2 - m * 8; //-border-margin
+      let width = props.width - 2 - m * 8; //-border-margin
       if (context.cardStyle === "card1" && !context.mediaOnly) {
         width -= 24;
       }
-      let minHeight =
-        context.cardStyle !== "row1" &&
-        !post?.data?.mediaInfo?.isSelf &&
-        !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
-        !post?.data?.mediaInfo?.isTweet &&
-        !post?.data?.mediaInfo?.isGallery &&
-        post?.data?.mediaInfo?.dimensions?.[0] > 0
-          ? (width / post?.data?.mediaInfo?.dimensions[0]) *
-            post.data.mediaInfo.dimensions[1]
-          : 0;
-      let h = minHeight;
-      if (post?.data?.mediaInfo?.isGallery) {
-        let images = post.data.mediaInfo.gallery;
-        const { tallest, widest, ratio, fImages } = findGreatestsImages(
-          images,
-          cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
-        );
-        if (cols === 1) {
-          minHeight = Math.min(
-            windowHeight * 0.75,
-            ratio?.height * (width / ratio?.width)
+      let minHeight = 0;
+      if (context.cardStyle !== "row1") {
+        minHeight =
+          !post?.data?.mediaInfo?.isSelf &&
+          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
+          !post?.data?.mediaInfo?.isTweet &&
+          !post?.data?.mediaInfo?.isGallery &&
+          post?.data?.mediaInfo?.dimensions?.[0] > 0
+            ? (width / post?.data?.mediaInfo?.dimensions[0]) *
+              post.data.mediaInfo.dimensions[1]
+            : 0;
+
+        let h = minHeight;
+        if (post?.data?.mediaInfo?.isGallery) {
+          let images = post.data.mediaInfo.gallery;
+          const { tallest, widest, ratio, fImages } = findGreatestsImages(
+            images,
+            cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
           );
-        } else {
-          minHeight = tallest.height * (width / widest.width);
+          if (cols === 1) {
+            minHeight = Math.min(
+              windowHeight * 0.75,
+              ratio?.height * (width / ratio?.width)
+            );
+          } else {
+            minHeight = tallest.height * (width / widest.width);
+          }
         }
-      }
-      if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
-        minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
-      }
-      if (cols === 1) {
-        minHeight = Math.min(windowHeight * 0.75, minHeight);
+        if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
+          minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
+        }
+        if (cols === 1) {
+          minHeight = Math.min(windowHeight * 0.75, minHeight);
+        }
       }
 
       return (
@@ -324,7 +327,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "")
-               // + " outline " //outlines for debugging..
+                // + " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
@@ -341,7 +344,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                       }
                   : minHeight > 0
                   ? {
-                      minHeight: `${minHeight}px`
+                      minHeight: `${minHeight}px`,
                     }
                   : {
                       minHeight: `${80}px`,
