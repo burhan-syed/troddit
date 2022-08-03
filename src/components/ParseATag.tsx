@@ -8,6 +8,7 @@ const ParseATag = (props) => {
   const [expandable, setExpandable] = useState(false);
   const [expand, setExpand] = useState(false);
   useEffect(() => {
+    console.log(props);
     const checkSupport = (link: string) => {
       let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
       let redditRegex =
@@ -32,33 +33,28 @@ const ParseATag = (props) => {
     }
   };
   if (!expandable) {
-    return <>{props?.children?.data}</>;
+    return <>{props?.children?.children?.[0]?.data ?? props?.children?.data}</>;
   }
 
   return (
-    <div
-      className={
-        expand
-          ? "bg-th-post rounded-md border border-th-border overflow-hidden inline-block"
-          : " inline-block"
-      }
-      onClick={handleClick}
-    >
-      {props?.children?.data}
-      {expandable && (
-        <button
-          aria-label="expand"
-          className={
-            "flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight  text-th-text inline-block mx-1.5"
-          }
-        >
-          {expand ? (
-            <CgArrowsExpandUpLeft className="flex-none w-4 h-4" />
-          ) : (
-            <CgArrowsExpandDownRight className="flex-none w-4 h-4" />
-          )}
-        </button>
-      )}
+    <>
+      <div className={" inline-block"} onClick={handleClick}>
+        {props?.children?.data}
+        {expandable && (
+          <button
+            aria-label="expand"
+            className={
+              "flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight  text-th-text inline-block mx-1.5"
+            }
+          >
+            {expand ? (
+              <CgArrowsExpandUpLeft className="flex-none w-4 h-4" />
+            ) : (
+              <CgArrowsExpandDownRight className="flex-none w-4 h-4" />
+            )}
+          </button>
+        )}
+      </div>
       {expand && (
         <div
           className="flex flex-col"
@@ -70,7 +66,7 @@ const ParseATag = (props) => {
           <img className="max-h-[60vh] mx-auto py-0 my-0" src={link} alt="" />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
