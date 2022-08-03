@@ -178,6 +178,40 @@ export const findGreatestsImages = (images: {height:number,width:number, url:str
 
 }
 
+export const findOptimalImageIndex = (
+  images: any[],
+  params: { imgFull; fullRes; postMode; context; windowWidth; containerDims? }
+) => {
+  const { postMode, imgFull, fullRes, containerDims, windowWidth, context } = params;
+  let num = images?.length - 1;
+  let done = false;
+  let width = windowWidth;
+  if (!imgFull && !fullRes) {
+    if (containerDims?.[0]) {
+      width = containerDims?.[0];
+    } else if (
+      !context.saveWideUI &&
+      context.cardStyle !== "row1" &&
+      (context.columns === 1 || postMode)
+    ) {
+      width = 768; //3xl width
+    } else if (postMode) {
+      width = windowWidth;
+    } else {
+      width = width / (context?.columns ?? 1);
+    }
+    images.forEach((img, i) => {
+      if (!done) {
+        if (img.width > width) {
+          num = i;
+          done = true;
+        }
+      }
+    });
+  }
+  return num;
+};
+
 export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let videoInfo; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];

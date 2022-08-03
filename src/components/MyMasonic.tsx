@@ -67,10 +67,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const [newPostsCount, setNewPostsCount] = useState(0);
 
   useEffect(() => {
-    const tryUpdatePostsInPlace = (newPosts) => {
+    const updatePostsInPlace = (newPosts,appendNewPosts = false) => {
       setItems((pposts) => {
         let newPostCount = 0;
         let pPostMap = new Map();
+        let newPostArr = [] as any[]; 
         pposts.forEach((p) => pPostMap.set(p?.data?.name, p));
         newPosts.forEach((np) => {
           let prevPost = pPostMap.get(np?.data?.name);
@@ -78,8 +79,12 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
             pPostMap.set(prevPost?.data?.name, np);
           } else {
             newPostCount += 1;
+            newPostArr.push(np);
           }
         });
+        if (appendNewPosts){
+          return [...Array.from(pPostMap.values()),...newPostArr]
+        }
         setNewPostsCount(newPostCount);
         setNewPosts(() => (newPostCount > 0 ? newPosts : []));
         return Array.from(pPostMap.values());
@@ -92,9 +97,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
-        setItems(posts);
+        console.log('new posts')
+        updatePostsInPlace(posts,true);
       } else {
-        tryUpdatePostsInPlace(posts);
+        console.log('update in place posts')
+        updatePostsInPlace(posts);
       }
     } else if (feed.hasNextPage) {
       //console.log("nodata.. fetching more");
@@ -327,7 +334,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "")
-                // + " outline " //outlines for debugging..
+                 + " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
@@ -345,9 +352,13 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                   : minHeight > 0
                   ? {
                       minHeight: `${minHeight}px`,
+                      outlineWidth: "2px",
+                      outlineColor: "blue",
                     }
                   : {
                       minHeight: `${80}px`,
+                      outlineWidth: "2px",
+                      outlineColor: "red",
                     }
                 // seen === true
                 // ? { outlineWidth: "2px", outlineColor: "red" }
