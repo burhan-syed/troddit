@@ -21,7 +21,7 @@ class MyDocument extends Document {
           <meta />
           <link rel="manifest" href="/manifest.json" />
           <link rel="apple-touch-icon" href="/icon-512.png"></link>
-          <meta name="theme-color" content="#60A5FA" />
+          <meta name="theme-color" content="#384659" />
 
           <meta name="application-name" content="troddit" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -37,7 +37,7 @@ class MyDocument extends Document {
             name="msapplication-config"
             content="/icons/browserconfig.xml"
           /> */}
-          <meta name="msapplication-TileColor" content="#0108A7" />
+          <meta name="msapplication-TileColor" content="#384659" />
           <meta name="msapplication-tap-highlight" content="no" />
 
           <link rel="apple-touch-icon" href="/icon-512.png" />

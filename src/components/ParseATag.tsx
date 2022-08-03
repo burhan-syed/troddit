@@ -8,7 +8,7 @@ const ParseATag = (props) => {
   const [expandable, setExpandable] = useState(false);
   const [expand, setExpand] = useState(false);
   useEffect(() => {
-    console.log(props);
+    //console.log(props);
     const checkSupport = (link: string) => {
       let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
       let redditRegex =
