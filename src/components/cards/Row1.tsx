@@ -142,7 +142,7 @@ const Row1 = ({
               <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
                 <span
                   className={
-                    " group-hover:underline font-semibold text-base " +
+                    " group-hover:underline font-normal text-base " +
                     (post?.distinguished == "moderator" || post?.stickied
                       ? " text-th-green "
                       : " ") +
