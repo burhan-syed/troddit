@@ -14,7 +14,7 @@ import useRefresh from "../hooks/useRefresh";
 import useFeedGallery from "../hooks/useFeedGallery";
 import { InView } from "react-intersection-observer";
 import useHeightMap from "../hooks/useHeightMap";
-import { findGreatestsImages } from "../../lib/utils";
+import { findGreatestsImages, findOptimalImageIndex } from "../../lib/utils";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -97,10 +97,10 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     if (posts?.length > 0) {
       //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
-        console.log('new posts')
+        //console.log('new posts')
         updatePostsInPlace(posts,true);
       } else {
-        console.log('update in place posts')
+        //console.log('update in place posts')
         updatePostsInPlace(posts);
       }
     } else if (feed.hasNextPage) {
@@ -295,6 +295,28 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
             : 0;
 
         let h = minHeight;
+        if (
+          post?.data?.mediaInfo?.isImage &&
+          post?.data?.mediaInfo?.imageInfo?.length > 0 &&
+          !post?.mediaInfo?.isGallery && 
+          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
+        ) {
+          let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {
+            imgFull: false,
+            fullRes: false,
+            postMode: false,
+            context: {
+              cardStyle: context.cardStyle,
+              saveWideUI: context.saveWideUI,
+              columns: cols,
+            },
+            windowWidth,
+            containerDims: false,
+          });
+          minHeight =
+            (width / post?.data?.mediaInfo?.imageInfo?.[num]?.width) *
+            post?.data?.mediaInfo?.imageInfo?.[num]?.height;
+        }
         if (post?.data?.mediaInfo?.isGallery) {
           let images = post.data.mediaInfo.gallery;
           const { tallest, widest, ratio, fImages } = findGreatestsImages(
@@ -334,31 +356,31 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 (knownHeight && seen
                   ? " hover:z-50 overflow-hidden hover:overflow-visible"
                   : "")
-                 + " outline " //outlines for debugging..
+                // + " outline " //outlines for debugging..
               }
               style={
                 knownHeight > 0 && seen
                   ? context.cardStyle === "row1" //rows need to grow
                     ? {
                         minHeight: `${knownHeight}px`,
-                        outlineWidth: "2px",
-                        outlineColor: "green",
+                        // outlineWidth: "2px",
+                        // outlineColor: "green",
                       }
                     : {
                         height: `${knownHeight}px`,
-                        outlineWidth: "2px",
-                        outlineColor: "green",
+                        // outlineWidth: "2px",
+                        // outlineColor: "green",
                       }
                   : minHeight > 0
                   ? {
                       minHeight: `${minHeight}px`,
-                      outlineWidth: "2px",
-                      outlineColor: "blue",
+                      // outlineWidth: "2px",
+                      // outlineColor: "blue",
                     }
                   : {
                       minHeight: `${80}px`,
-                      outlineWidth: "2px",
-                      outlineColor: "red",
+                      // outlineWidth: "2px",
+                      // outlineColor: "red",
                     }
                 // seen === true
                 // ? { outlineWidth: "2px", outlineColor: "red" }

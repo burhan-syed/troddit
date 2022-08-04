@@ -385,19 +385,22 @@ const Media = ({
   const [tweetLoaded, setTweetLoaded] = useState(false);
   //scale images
   const [imgWidthHeight, setImageWidthHeight] = useState([
-    post?.mediaInfo?.dimensions[0],
-    post?.mediaInfo?.dimensions[1]
+    imageInfo?.width, //post?.mediaInfo?.dimensions[0],
+    imageInfo?.height, //post?.mediaInfo?.dimensions[1]
   ]);
   useEffect(() => {
     if (
       mediaRef.current &&
-      mediaRef.current.clientWidth && post?.mediaInfo?.dimensions[0] > 0
+      mediaRef.current.clientWidth &&
+      imageInfo?.height &&
+      imageInfo?.width
+      //post?.mediaInfo?.dimensions[0] > 0
     ) {
-      let r = mediaRef.current.clientWidth / post?.mediaInfo?.dimensions[0];
-      let height = r * post?.mediaInfo?.dimensions[1];
+      let r = mediaRef.current.clientWidth / imageInfo?.width; //post?.mediaInfo?.dimensions[0];
+      let height = r * imageInfo?.height; //post?.mediaInfo?.dimensions[1];
       setImageWidthHeight([mediaRef.current.clientWidth, height]);
     }
-  }, [ mediaRef?.current?.clientWidth]);
+  }, [mediaRef?.current?.clientWidth, imageInfo]);
 
   const externalLink = (
     <a
@@ -570,8 +573,7 @@ const Media = ({
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
-                    post?.mediaInfo?.dimensions[1] *
-                    (mediaRef?.current?.clientWidth / post?.mediaInfo?.dimensions[0])//undefined
+                    undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -588,7 +590,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? mediaRef?.current?.clientWidth//undefined
+                    ? undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -608,7 +610,7 @@ const Media = ({
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? "fixed"
+                    ? "fill"
                     : imgFull && !post?.mediaInfo?.isTweet
                     ? "responsive"
                     : "intrinsic"
