@@ -210,6 +210,7 @@ const useFeed = (params?: Params) => {
     refetchOnWindowFocus: context?.refreshOnFocus ?? true ? true : false,
     refetchOnMount: false,
     staleTime: 0,
+    cacheTime: Infinity,
     refetchInterval: context?.autoRefreshFeed
       ? (sort === "new" || sort === "rising")
         ? context?.fastRefreshInterval ?? 10 * 1000

@@ -1,5 +1,11 @@
 /* eslint-disable react/no-children-prop */
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useWindowSize } from "@react-hook/window-size";
 import { Masonry, useInfiniteLoader } from "masonic";
 
@@ -15,6 +21,7 @@ import useFeedGallery from "../hooks/useFeedGallery";
 import { InView } from "react-intersection-observer";
 import useHeightMap from "../hooks/useHeightMap";
 import { findGreatestsImages, findOptimalImageIndex } from "../../lib/utils";
+import useGlobalState from "../hooks/useGlobalState";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -67,11 +74,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const [newPostsCount, setNewPostsCount] = useState(0);
 
   useEffect(() => {
-    const updatePostsInPlace = (newPosts,appendNewPosts = false) => {
+    const updatePostsInPlace = (newPosts, appendNewPosts = false) => {
       setItems((pposts) => {
         let newPostCount = 0;
         let pPostMap = new Map();
-        let newPostArr = [] as any[]; 
+        let newPostArr = [] as any[];
         pposts.forEach((p) => pPostMap.set(p?.data?.name, p));
         newPosts.forEach((np) => {
           let prevPost = pPostMap.get(np?.data?.name);
@@ -82,8 +89,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
             newPostArr.push(np);
           }
         });
-        if (appendNewPosts){
-          return [...Array.from(pPostMap.values()),...newPostArr]
+        if (appendNewPosts) {
+          return [...Array.from(pPostMap.values()), ...newPostArr];
         }
         setNewPostsCount(newPostCount);
         setNewPosts(() => (newPostCount > 0 ? newPosts : []));
@@ -98,7 +105,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       //console.log("infinitequery?", posts);
       if (posts?.length > items?.length) {
         //console.log('new posts')
-        updatePostsInPlace(posts,true);
+        updatePostsInPlace(posts, true);
       } else {
         //console.log('update in place posts')
         updatePostsInPlace(posts);
@@ -209,6 +216,43 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     windowWidth: windowWidth,
     compactLinkPics: context.compactLinkPics,
   });
+  const {
+    createGlobalState,
+    clearGlobalState,
+    getGlobalData,
+    setGlobalData,
+    getGlobalKey,
+  } = useGlobalState([
+    "lastScrollTop",
+    curKey,
+    cols,
+    context.cardStyle,
+    context.mediaOnly,
+    context.wideUI,
+    windowWidth,
+    context.compactLinkPics,
+  ]);
+  const [jumped, setJumped] = useState(false);
+  
+  useLayoutEffect(() => {
+    if(context.cardStyle==="row1"){
+      const lastScroll = getGlobalData()?.get("lastTop");
+      if (lastScroll > 100 && !jumped) {
+        window.scrollTo({ top: lastScroll, behavior: "auto" });
+        //console.log("jump", lastScroll);
+        setJumped(true);
+      }
+    }
+  }, [
+    curKey,
+    cols,
+    context.cardStyle,
+    context.mediaOnly,
+    context.wideUI,
+    windowWidth,
+    context.compactLinkPics,
+  ]);
+
   useEffect(() => {
     if (
       !context.postOpen &&
@@ -254,7 +298,9 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       seenMap.set(post?.data?.name, { seen: true }); //using local map instead.. don't want to prerender heights if they haven't been scrolled onto the page yet
       context?.autoSeen &&
         localSeen.setItem(post?.data?.name, { time: new Date() });
-    }
+    } 
+    context.cardStyle==="row1" && setGlobalData("lastTop", window.scrollY);
+
   };
 
   const handleSizeChange = (postName, height) => {
@@ -298,7 +344,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         if (
           post?.data?.mediaInfo?.isImage &&
           post?.data?.mediaInfo?.imageInfo?.length > 0 &&
-          !post?.mediaInfo?.isGallery && 
+          !post?.mediaInfo?.isGallery &&
           !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
         ) {
           let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {

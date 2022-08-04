@@ -33,7 +33,7 @@ const Feed = ({ initialData = {} as any }) => {
       router.replace(router.asPath, undefined, { shallow: true });
     }
   }, []);
-
+  
   if (
     feed.error &&
     (mode === "USER" || mode === "SUBREDDIT") &&
