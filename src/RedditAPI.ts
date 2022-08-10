@@ -630,6 +630,8 @@ export const subToSub = async (action, name) => {
 };
 
 export const loadUserPosts = async (
+  token, 
+  loggedIn,
   username: string,
   sort: string = "hot",
   range: string,
@@ -638,28 +640,53 @@ export const loadUserPosts = async (
   type?
 ) => {
   //console.log(subreddits, sort, range);
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
   let c = 0;
   let filtered_children = [];
   let nextafter = after;
   while (c < 2 && filtered_children.length < 20 && (nextafter || c === 0)) {
     c = c + 1;
     try {
-      const res = await (
-        await axios.get(
-          `${REDDIT}/user/${username}/${
-            type ? type.toLowerCase() : ""
-          }.json?sort=${sort}`,
-          {
-            params: {
-              raw_json: 1,
-              t: range,
-              after: nextafter,
-              count: count,
-              sr_detail: true,
-            },
-          }
-        )
-      ).data;
+      let res;
+      if (loggedIn && accessToken) {
+        res = await (
+          await axios.get(
+            `https://oauth.reddit.com/user/${username}/${
+              type ? type.toLowerCase() : ""
+            }?sort=${sort}`,
+
+            {
+              headers: {
+                authorization: `bearer ${accessToken}`,
+              },
+              params: {
+                raw_json: 1,
+                t: range,
+                after: nextafter,
+                count: count,
+                sr_detail: true,
+              },
+            }
+          )
+        ).data;
+      } else {
+        res = await (
+          await axios.get(
+            `${REDDIT}/user/${username}/${
+              type ? type.toLowerCase() : ""
+            }.json?sort=${sort}`,
+            {
+              params: {
+                raw_json: 1,
+                t: range,
+                after: nextafter,
+                count: count,
+                sr_detail: true,
+              },
+            }
+          )
+        ).data;
+      }
       //console.log(res, after);
       filtered_children = [
         ...filtered_children,
@@ -671,6 +698,7 @@ export const loadUserPosts = async (
           after: res.data?.after,
           before: res.data?.before,
           children: filtered_children,
+          token: returnToken
         };
       }
       nextafter = res?.data?.after;
@@ -683,6 +711,7 @@ export const loadUserPosts = async (
     return {
       after: undefined,
       children: filtered_children,
+      token: returnToken
     };
   }
   return { after: undefined };

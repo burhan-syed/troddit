@@ -131,6 +131,8 @@ const useFeed = (params?: Params) => {
       );
     } else if (mode === "USER") {
       data = await loadUserPosts(
+        context.token,
+        feedParams.loggedIn,
         feedParams.subreddits as string,
         feedParams.sort,
         feedParams.range as string,
