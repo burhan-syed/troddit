@@ -5,7 +5,7 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import { useEffect, useState } from "react";
 import SubredditBanner from "../../components/SubredditBanner";
-import { getWikiContent, loadPost } from "../../RedditAPI";
+import { getWikiContent, loadPost, loadSubredditInfo, loadSubreddits } from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
 import PostModal from "../../components/PostModal";
@@ -13,7 +13,9 @@ import LoginModal from "../../components/LoginModal";
 import React from "react";
 import useThread from "../../hooks/useThread";
 import { findMediaInfo } from "../../../lib/utils";
-const SubredditPage = ({ query, metaTags, post }) => {
+import { getToken } from "next-auth/jwt";
+import { getSession } from "next-auth/react";
+const SubredditPage = ({ query, metaTags, post, postData }) => {
   const [subsArray, setSubsArray] = useState([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
@@ -67,6 +69,9 @@ const SubredditPage = ({ query, metaTags, post }) => {
         <title>
           {query?.slug?.[0] ? `troddit · ${query?.slug?.[0]}` : "troddit"}
         </title>
+        {metaTags?.ogDescription && (
+          <meta name="description" content={metaTags.ogDescription}></meta>
+        )}
         {metaTags?.ogSiteName && (
           <>
             <meta property="og:site_name" content={metaTags?.ogSiteName} />
@@ -133,7 +138,7 @@ const SubredditPage = ({ query, metaTags, post }) => {
             />
           </div>
         ) : (
-          <Feed />
+          <Feed initialData={postData} />
         )}
       </main>
     </div>
@@ -149,34 +154,82 @@ const SubredditPage = ({ query, metaTags, post }) => {
 // }
 SubredditPage.getInitialProps = async (d) => {
   const { query, req } = d;
-  let url = req?.url;
-  url = url?.split("?")?.[0];
-  if (url?.includes("/comments/")) {
-    try {
-      const { post } = await loadPost(url);
-      //const data = await fetch(`https://www.reddit.com${url}.json`)
-      //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
-      const media = await findMediaInfo(
-        post,
-        true,
-        d?.req?.headers.host?.split(":")?.[0]
-      );
-      let metaTags = {
-        ogSiteName: "troddit",
-        ogDescription: `Post on r/${post.subreddit} by u/${
-          post.author
-        } • ${post.score?.toLocaleString(
-          "en-US"
-        )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
-        ogTitle: post.title,
-        ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
-        ogHeight: media?.dimensions?.[1],
-        ogWidth: media?.dimensions?.[0],
-        ogType: `image`,
+  if (query?.slug?.length < 3 && req) {
+    let subreddits = query?.slug?.[0]; 
+    subreddits = query?.slug?.[0]?.split(" ")?.join("+")?.split("%2b")?.join("+"); 
+    const session = await getSession({ req });
+    let tokenData;
+    if (session?.user?.name) {
+      const token: any = await getToken({
+        req,
+        secret: process.env.NEXTAUTH_SECRET,
+      });
+      tokenData = {
+        accessToken: token.reddit.accessToken,
+        refreshToken: token.reddit.refreshToken,
+        expires: token.expires,
       };
-      return { query, metaTags, post: post?.preview ? post : undefined };
-    } catch (err) {
-      return { query };
+    }
+    let posts;
+    let subInfo;
+    const loadPosts = async () => {
+      const data = await loadSubreddits(
+        session?.user?.name ? true : false,
+        tokenData,
+        subreddits,
+        query?.slug?.[1] ?? "hot",
+        query?.t ?? "all"
+      );
+      posts = data?.children;
+    };
+    const loadSub = async () => {
+      const data = await loadSubredditInfo(subreddits?.split("+")?.[0]);
+      subInfo = data?.data;
+    };
+    await Promise.all([loadPosts(), loadSub()]);
+    let metaTags = {
+      ogSiteName: "troddit",
+      ogDescription: `r/${subInfo?.display_name}: ${subInfo?.public_description}`,
+      ogImage: subInfo?.icon_img ?? subInfo?.header_img,
+      ogTitle: `${subInfo?.display_name} on troddit`,
+      ogHeight: subInfo?.icon_size?.[0],
+      ogWidth: subInfo?.icon_size?.[1],
+    };
+    return {
+      query,
+      postData: { children: posts?.slice(0, 6) },
+      metaTags,
+    };
+  } else {
+    let url = req?.url;
+    url = url?.split("?")?.[0];
+    if (url?.includes("/comments/")) {
+      try {
+        const { post } = await loadPost(url);
+        //const data = await fetch(`https://www.reddit.com${url}.json`)
+        //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
+        const media = await findMediaInfo(
+          post,
+          true,
+          d?.req?.headers.host?.split(":")?.[0]
+        );
+        let metaTags = {
+          ogSiteName: "troddit",
+          ogDescription: `Post on r/${post.subreddit} by u/${
+            post.author
+          } • ${post.score?.toLocaleString(
+            "en-US"
+          )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
+          ogTitle: post.title,
+          ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
+          ogHeight: media?.dimensions?.[1],
+          ogWidth: media?.dimensions?.[0],
+          ogType: `image`,
+        };
+        return { query, metaTags, post: post?.preview ? post : undefined };
+      } catch (err) {
+        return { query };
+      }
     }
   }
 

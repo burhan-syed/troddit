@@ -272,7 +272,7 @@ export const loadSubreddits = async (
       return {
         after: res.data.after,
         before: res.data.before,
-        children: res.data.children,
+        children: filterPostChildren(res.data.children),
         token: returnToken,
       };
     } catch (err) {
@@ -294,7 +294,7 @@ export const loadSubreddits = async (
       return {
         after: res.data.after,
         before: res.data.before,
-        children: res.data.children,
+        children: filterPostChildren(res.data.children),
         token: returnToken,
       };
     } catch (err) {
