@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.15.5
+### New
+- Subscribe to subreddits or follow users directly from the post card overflow menu
+- Scroll position is remembered and restored when using classic rows card style
+### Changes
+- Menus are now more mobile friendly
+### Fixes
+- Miscellaneous fixes
+  
 ## v0.15.4
 ### Changes
 - Image previews for 'link' type posts are now shown as large thumbnails in Original and Compact Cards.
