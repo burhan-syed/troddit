@@ -6,6 +6,7 @@ import { useMainContext } from "../MainContext";
 import { useKeyPress } from "../hooks/KeyPress";
 import Thread from "./Thread";
 import useFeedGallery from "../hooks/useFeedGallery";
+import { useWindowWidth } from "@react-hook/window-size";
 
 const PostModal = ({
   setSelect,
@@ -69,16 +70,24 @@ const PostModal = ({
     setSort(sort);
   };
 
-  const handleBack = () => {
-    setSelect(false);
-    if (returnRoute === "multimode") {
-      //do nothing
-    } else if (returnRoute) {
-      //console.log("last route", returnRoute);
-      router.replace(returnRoute);
-    } else {
-      router.back();
-    }
+  const windowWidth = useWindowWidth();
+  const handleBack = (animation: boolean = false) => {
+    //setSelect(false);
+    setTranslateAmount(windowWidth);
+    setTimeout(
+      () => {
+        setSelect(false);
+        if (returnRoute === "multimode") {
+          //do nothing
+        } else if (returnRoute) {
+          //console.log("last route", returnRoute);
+          router.replace(returnRoute);
+        } else {
+          router.back();
+        }
+      },
+      animation ? 200 : 0
+    );
   };
 
   useEffect(() => {
@@ -91,8 +100,8 @@ const PostModal = ({
   const changePost = (move: 1 | -1) => {
     const params = new Proxy(new URLSearchParams(window.location.search), {
       get: (searchParams, prop) => searchParams.get(prop as string),
-    });    
-    const multi =  params?.["m"] ?? ""
+    });
+    const multi = params?.["m"] ?? "";
     if (flattenedPosts?.[curPostNum + move]?.data) {
       const nextPost = flattenedPosts?.[curPostNum + move]?.data;
       setCurPost(nextPost);
@@ -138,25 +147,49 @@ const PostModal = ({
     return () => {};
   }, [nextPress, backPress, escapePress, context.replyFocus]);
 
+  const [animate, setAnimate] = useState(false);
   const [touchStart, setTouchStart] = useState([0]);
   const [touchEnd, setTouchEnd] = useState([0]);
   const [touchStartY, setTouchStartY] = useState([0]);
   const [touchEndY, setTouchEndY] = useState([0]);
+  const [translateAmount, setTranslateAmount] = useState(0);
+  const [touchStartTime, setTouchStartTime] = useState([new Date().getTime()]);
+
   const handleTouchStart = (e) => {
+    setAnimate(false);
     touchStart[0] = e.targetTouches[0].clientX as number;
     touchStartY[0] = e.targetTouches[0].clientY as number;
+    touchStartTime[0] = new Date().getTime();
   };
   const handleTouchMove = (e) => {
+    e.preventDefault();
+    setAnimate(false);
     touchEnd[0] = e.targetTouches[0].clientX as number;
     touchEndY[0] = e.targetTouches[0].clientY as number;
-  };
-  const handleTouchEnd = (e) => {
-    if (touchStart[0] - touchEnd[0] > 100) {
-    } else if (
-      touchStart[0] - touchEnd[0] < -100 &&
+    if (
+      new Date().getTime() > touchStartTime[0] + 50 &&
+      Math.abs(touchStart[0] - touchEnd[0]) > 2 &&
       Math.abs(touchStartY[0] - touchEndY[0]) < 20
     ) {
-      handleBack();
+      setTranslateAmount(Math.max(0, -1 * (touchStart[0] - touchEnd[0])));
+    } else {
+      //setAnimate(true);
+      setTranslateAmount(0);
+      touchStart[0] = e.targetTouches[0].clientX as number;
+      touchStartTime[0] = new Date().getTime();
+    }
+  };
+  const handleTouchEnd = (e) => {
+    if (new Date().getTime() > touchStartTime[0] + 250) {
+      setAnimate(true);
+      if (touchStart[0] - touchEnd[0] > 100) {
+      } else if (touchStart[0] - touchEnd[0] < -100) {
+        handleBack(true);
+      } else {
+        setTranslateAmount(0);
+      }
+    } else {
+      setTranslateAmount(0);
     }
   };
 
@@ -166,11 +199,17 @@ const PostModal = ({
   return (
     <div
       className={
-        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain"
+        "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain " +
+        (animate ? " transition-transform duration-200 ease-out " : "")
       }
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}
       onTouchEnd={(e) => handleTouchEnd(e)}
+      style={{
+        transform: `translate(${translateAmount}px, ${0}px)`,
+        touchAction: `none`,
+        //opacity: `${100 - (translateAmount / 1000) * 100}%`,
+      }}
     >
       <div
         onClick={() => handleBack()}
