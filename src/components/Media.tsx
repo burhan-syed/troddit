@@ -122,7 +122,7 @@ const Media = ({
         post["mediaInfo"] = m;
       }
       let a, b, c;
-      if (post["mediaInfo"].isVideo && !post?.selftext_html) {
+      if (post["mediaInfo"].isVideo && (!post?.selftext_html || postMode)) {
         b = await findVideo();
         if (b && !context.preferEmbeds) {
           setAllowIFrame(false);
@@ -131,7 +131,7 @@ const Media = ({
       if (post["mediaInfo"].isIframe) {
         c = await findIframe();
       }
-      if (!b && !post?.selftext_html) {
+      if (!b && (!post?.selftext_html || postMode)) {
         a = await findImage();
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
@@ -441,36 +441,34 @@ const Media = ({
           )}
 
           {isTweet && allowIFrame && (
-            <div className={(!postMode || (!imgFull && !containerDims?.[1])
-              ? " h-96 max-h-96 overflow-auto w-full flex items-center justify-center  "
-              : "")}>
- <div
+            <div
               className={
-                " bg-transparent w-full  " +
-                scrollStyle 
+                !postMode || (!imgFull && !containerDims?.[1])
+                  ? " h-96 max-h-96 overflow-auto w-full  "
+                  : ""
               }
             >
-              <TwitterTweetEmbed
-                placeholder={
-                  <div className="relative mx-auto border rounded-lg h-80 border-th-border w-60 animate-pulse bg-th-base">
-                    <div className="absolute w-full h-full">
-                      <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
+              <div className={" bg-transparent w-full  " + scrollStyle}>
+                <TwitterTweetEmbed
+                  placeholder={
+                    <div className="relative mx-auto border rounded-lg h-80 border-th-border w-60 animate-pulse bg-th-base">
+                      <div className="absolute w-full h-full">
+                        <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
+                      </div>
                     </div>
-                  </div>
-                }
-                options={{
-                  theme: theme === "light" ? "light" : "dark",
-                  align: "center",
-                }}
-                tweetId={
-                  post.url
-                    .split("/")
-                    [post.url.split("/").length - 1].split("?")[0]
-                }
-              />
+                  }
+                  options={{
+                    theme: theme === "light" ? "light" : "dark",
+                    align: "center",
+                  }}
+                  tweetId={
+                    post.url
+                      .split("/")
+                      [post.url.split("/").length - 1].split("?")[0]
+                  }
+                />
+              </div>
             </div>
-            </div>
-           
           )}
           {isIFrame && allowIFrame && !isTweet ? (
             <div
@@ -573,7 +571,7 @@ const Media = ({
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
-                    undefined
+                      undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..

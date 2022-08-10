@@ -498,7 +498,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       if (
         purl.includes(".jpg") ||
         purl.includes(".png") ||
-        purl.includes(".gif") //gifs should be handled in findVideo with mp4 format
+        purl.includes(".gif") && !purl.includes(".gifv")//gifs should be handled in findVideo with mp4 format
       ) {
         if (!quick) {
           let info = await loadImg(purl);
