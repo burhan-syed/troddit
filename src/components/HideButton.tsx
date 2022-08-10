@@ -54,7 +54,7 @@ const HideButton = ({
     <div
       className={
         "flex flex-row items-center  " +
-        (menu ? " pr-4 pl-2 py-1 " : " space-x-1 ")
+        (menu ? " pr-4 pl-2 py-2.5 md:py-1 " : " space-x-1 ")
       }
       onClick={(e) => {
         e.preventDefault();

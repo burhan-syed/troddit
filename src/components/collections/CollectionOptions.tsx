@@ -127,7 +127,7 @@ const CollectionOptions = ({
                             e.preventDefault();
                             feedMenuRef?.current?.click();
                           }}
-                          className="relative flex flex-row justify-end w-full px-4 py-1 cursor-pointer select-none"
+                          className="relative flex flex-row justify-end w-full px-4 py-2.5 md:py-1 cursor-pointer select-none"
                         >
                           Add {subArray.length} to Feed
                         </button>
@@ -203,7 +203,7 @@ const CollectionOptions = ({
                       <div
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " flex justify-end px-4 py-1 text-sm" +
+                          " flex justify-end px-4 py-2.5 md:py-1  text-sm" +
                           (disabled ? " hidden " : "")
                         }
                         onClick={(e) => {
@@ -253,7 +253,7 @@ const CollectionOptions = ({
                       <div
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " block px-4 py-1 text-sm" +
+                          " block  text-sm" +
                           (disabled ? " hidden " : "")
                         }
                       >
@@ -267,7 +267,7 @@ const CollectionOptions = ({
                               toggleDeleteCheck();
                             }
                           }}
-                          className="flex flex-row justify-end text-right cursor-pointer select-none"
+                          className="flex px-4 py-2.5 md:py-1  flex-row justify-end text-right cursor-pointer select-none"
                         >
                           {deleteCheck ? (
                             <div>
@@ -304,7 +304,7 @@ const CollectionOptions = ({
                         <div
                           className={
                             (active ? "bg-th-highlight " : "") +
-                            " block px-4 py-1 text-sm" +
+                            " block px-4 py-2.5 md:py-1  text-sm" +
                             (disabled ? " hidden" : "")
                           }
                           onClick={JoinAll}

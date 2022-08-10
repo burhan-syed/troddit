@@ -53,7 +53,7 @@ const SaveButton = ({
     <div
       className={
         "flex flex-row items-center " +
-        (menu ? " pl-2 pr-4 py-1 " : " space-x-1 ")
+        (menu ? " pl-2 pr-4 py-2.5 md:py-1 " : " space-x-1 ")
       }
       onClick={(e) => {
         e.preventDefault();

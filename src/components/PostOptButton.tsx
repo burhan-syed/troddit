@@ -6,7 +6,7 @@ import { FiFilter } from "react-icons/fi";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Link from "next/link";
-
+import SubButton from "./SubButton";
 import SaveButton from "./SaveButton";
 import HideButton from "./HideButton";
 import { useMainContext, localRead } from "../MainContext";
@@ -80,7 +80,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
               >
                 <Menu.Item>
                   {({ active }) => (
-                    <MyLink
+                      <MyLink
                       href={`/r/${post?.subreddit}`}
                       passHref
                       onClick={(e) => e.stopPropagation()}
@@ -92,13 +92,16 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       <div className="flex items-center justify-center flex-none w-4 h-4 mr-2 overflow-hidden rounded-full select-none ">
                         <h1>r/</h1>
                       </div>
-                      <h1>{`Go to ${post?.subreddit}`}</h1>
+                      <h1 className="truncate">{`${post?.subreddit}`}</h1>
+                      <div className="flex-none w-8 h-8 ml-auto md:w-5 md:h-5">
+                        <SubButton sub={post?.subreddit} miniMode={true} />
+                      </div>
                     </MyLink>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <MyLink
+                      <MyLink
                       href={`/u/${post?.author}`}
                       passHref
                       onClick={(e) => e.stopPropagation()}
@@ -108,7 +111,14 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                       }
                     >
                       <BiUser className="flex-none w-4 h-4 mr-2" />
-                      <h1>{`About ${post?.author}`}</h1>
+                      <h1 className="truncate">{`${post?.author}`}</h1>
+                      <div className="flex-none w-8 h-8 ml-auto md:w-5 md:h-5">
+                        <SubButton
+                          sub={`u_${post?.author}`}
+                          userMode={true}
+                          miniMode={true}
+                        />
+                      </div>
                     </MyLink>
                   )}
                 </Menu.Item>
@@ -122,7 +132,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         onClick={(e) => e.stopPropagation()}
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " px-2 py-1 text-sm flex flex-row items-center"
+                          " px-2 py-2.5  md:py-1 text-sm flex flex-row items-center"
                         }
                       >
                         <BiLink className="flex-none w-4 h-4 mr-2" />
@@ -145,7 +155,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                         onClick={(e) => e.stopPropagation()}
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " px-2 py-1 text-sm flex flex-row items-center"
+                          " px-2 py-2.5  md:py-1 text-sm flex flex-row items-center"
                         }
                       >
                         <AiOutlineTag className="flex-none w-4 h-4 mr-2" />
@@ -169,7 +179,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                           //e.preventDefault();
                           //e.stopPropagation();
                         }}
-                        className="flex flex-row items-center min-w-full px-2 py-1 text-sm hover:cursor-pointer"
+                        className="flex flex-row items-center min-w-full px-2 py-2.5  md:py-1 text-sm hover:cursor-pointer"
                       >
                         <FiFilter className="flex-none w-4 h-4 mr-2 mt-0.5 " />
                         <h1>Filter...</h1>
@@ -234,7 +244,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                           e.preventDefault();
                           e.stopPropagation();
                         }}
-                        className="flex flex-row items-center min-w-full px-2 py-1 text-sm hover:cursor-pointer"
+                        className="flex flex-row items-center min-w-full px-2 py-2.5  md:py-1 text-sm hover:cursor-pointer"
                       >
                         <MdOutlineClear className="flex-none w-4 h-4 mr-2 mt-0.5 " />
                         <h1>{read ? "Mark Unread" : "Mark Read"}</h1>
@@ -285,7 +295,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                   }}
                   className={
                     (active ? "bg-th-highlight " : "") +
-                    " px-2 py-1 text-sm flex flex-row items-center w-full"
+                    " px-2 py-2.5  md:py-1 text-sm flex flex-row items-center w-full"
                   }
                 >
                   <div className="flex items-center justify-center flex-none w-4 h-4 mr-2 overflow-hidden border-black rounded-full select-none border-1">
@@ -305,7 +315,7 @@ const PostOptButton = ({ post, postNum, mode = "" }) => {
                   }}
                   className={
                     (active ? "bg-th-highlight " : "") +
-                    "  px-2 py-1 text-sm flex flex-row items-center w-full"
+                    "  px-2 py-2.5 md:py-1 text-sm flex flex-row items-center w-full"
                   }
                 >
                   <BiUser className="flex-none w-4 h-4 mr-2" />

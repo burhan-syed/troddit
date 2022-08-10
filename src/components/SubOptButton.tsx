@@ -169,11 +169,16 @@ const SubOptButton = ({
                     {({ active }) => (
                       <div
                         className={
-                          (active ? "bg-th-highlight " : "") +
-                          " block  text-sm"
+                          (active ? "bg-th-highlight " : "") + " block  text-sm"
                         }
                       >
-                        <button onClick={(e) => {e.preventDefault(); feedMenuRef?.current?.click(); }} className="relative flex flex-row justify-end w-full px-4 py-1 cursor-pointer select-none">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            feedMenuRef?.current?.click();
+                          }}
+                          className="relative flex flex-row justify-end w-full px-4 py-2.5 cursor-pointer select-none md:py-1"
+                        >
                           Add to Feed..
                         </button>
                         <div
@@ -244,7 +249,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active ? "bg-th-highlight " : "") +
-                            " block px-4 py-1 text-sm"
+                            " block px-4 py-2.5 md:py-1 text-sm"
                           }
                           onClick={removeFromMulti}
                         >
@@ -261,7 +266,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active ? "bg-th-highlight " : "") +
-                            " block px-4 py-1 text-sm"
+                            " block px-4 py-2.5 md:py-1 text-sm"
                           }
                         >
                           <div
@@ -309,7 +314,7 @@ const SubOptButton = ({
                       <div
                         className={
                           (active ? "bg-th-highlight " : "") +
-                          " block px-4 py-1 text-sm"
+                          " block px-4 py-2.5 md:py-1 text-sm"
                         }
                         onClick={() => addSubFilter(subInfo?.display_name)}
                       >
@@ -326,7 +331,7 @@ const SubOptButton = ({
                           <div
                             className={
                               (active ? "bg-th-highlight " : "") +
-                              " block px-4 py-1 text-sm"
+                              " block px-4 py-2.5 md:py-1 text-sm"
                             }
                             onClick={openDescription}
                           >
@@ -341,7 +346,7 @@ const SubOptButton = ({
                           <div
                             className={
                               (active ? "bg-th-highlight " : "") +
-                              " block px-4 py-1 text-sm cursor-pointer select-none"
+                              " block px-4 py-2.5 md:py-1 text-sm cursor-pointer select-none"
                             }
                           >
                             <Link href={`/r/${subInfo?.display_name}/wiki/`}>
@@ -360,7 +365,7 @@ const SubOptButton = ({
                         <div
                           className={
                             (active ? "bg-th-highlight " : "") +
-                            " block px-4 py-1 text-sm"
+                            " block px-4 py-2.5 md:py-1 text-sm"
                           }
                           onClick={JoinAll}
                         >
