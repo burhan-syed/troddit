@@ -156,7 +156,6 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     const domain = window?.location?.hostname;
     const check = (d) => {
-      console.log(window.location);
       setChecked(true);
       let c = 0;
       let p = process.env.NEXT_PUBLIC_CHECK;
@@ -186,7 +185,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     };
     if (items) {
       setFeedData(items);
-      domain === "troddit" && !checked && items.length > 50 && check(items);
+      domain === "www.troddit.com" && !checked && items.length > 50 && check(items);
     }
     return () => {
       setFeedData([]);
