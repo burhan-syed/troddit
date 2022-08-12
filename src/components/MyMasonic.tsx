@@ -152,9 +152,41 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       toast.remove("new_post");
     };
   }, []);
+  const [checked, setChecked] = useState(false);
   useEffect(() => {
+    const domain = window?.location?.hostname;
+    const check = (d) => {
+      console.log(window.location);
+      setChecked(true);
+      let c = 0;
+      let p = process.env.NEXT_PUBLIC_CHECK;
+      let r = process.env.NEXT_PUBLIC_R as string;
+      d.forEach((i) => {
+        if (i?.data?.[`${p}`] === true) {
+          c++;
+        }
+      });
+      if (c/d.length > 0.9){
+        const t = toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${process.env.NEXT_PUBLIC_M}`}
+              mode={"alert"}
+              action={() => {
+                window.location.href = r;
+              }}
+              actionLabel={`Go now?`}
+              showAll={true}
+            />
+          ),
+          { position: "bottom-right", duration: Infinity, id: "check" }
+        );
+      }
+    };
     if (items) {
       setFeedData(items);
+      domain === "troddit" && !checked && items.length > 50 && check(items);
     }
     return () => {
       setFeedData([]);
@@ -233,9 +265,9 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     context.compactLinkPics,
   ]);
   const [jumped, setJumped] = useState(false);
-  
+
   useLayoutEffect(() => {
-    if(context.cardStyle==="row1"){
+    if (context.cardStyle === "row1") {
       const lastScroll = getGlobalData()?.get("lastTop");
       if (lastScroll > 100 && !jumped) {
         window.scrollTo({ top: lastScroll, behavior: "auto" });
@@ -298,9 +330,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       seenMap.set(post?.data?.name, { seen: true }); //using local map instead.. don't want to prerender heights if they haven't been scrolled onto the page yet
       context?.autoSeen &&
         localSeen.setItem(post?.data?.name, { time: new Date() });
-    } 
-    context.cardStyle==="row1" && setGlobalData("lastTop", window.scrollY);
-
+    }
+    context.cardStyle === "row1" && setGlobalData("lastTop", window.scrollY);
   };
 
   const handleSizeChange = (postName, height) => {

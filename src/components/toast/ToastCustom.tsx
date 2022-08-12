@@ -16,6 +16,7 @@ interface ToastCustomParams {
   action?: Function;
   action2?: Function;
   actionLabel?: string;
+  showAll?:boolean
 }
 
 const ToastCustom: React.FC<ToastCustomParams> = ({
@@ -25,6 +26,7 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
   action,
   action2,
   actionLabel = "",
+  showAll=false
 }) => {
   const toastdiv = (
     <div
@@ -78,7 +80,7 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
                 : "flex items-center flex-grow"
             }
           >
-            <h1 className={mode === "new_posts" ? "md:text-xs" : "hidden md:block"}>
+            <h1 className={mode === "new_posts" ? "md:text-xs" : showAll ? "block" : "hidden md:block"}>
               {message}
             </h1>
             <h2
