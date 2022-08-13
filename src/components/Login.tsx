@@ -1,3 +1,4 @@
+import localforage from "localforage";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import useRefresh from "../hooks/useRefresh";
@@ -29,6 +30,7 @@ export default function Login() {
               aria-label="sign out"
               className="w-full h-full"
               onClick={() => {
+                localforage.removeItem('subSync')
                 invalidateAll();
                 signOut();
               }}

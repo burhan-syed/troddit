@@ -12,6 +12,7 @@ import Collection from "./collections/Collection";
 import MyMultiCollections from "./collections/MyMultiCollections";
 import SelectedSubs from "./collections/SelectedSubs";
 import { MyCollectionsProvider } from "./collections/CollectionContext";
+import { IoMdRefresh } from "react-icons/io";
 
 const SubredditsPage = ({ query = undefined }) => {
   const { data: session, status } = useSession();
@@ -21,6 +22,8 @@ const SubredditsPage = ({ query = undefined }) => {
   const context: any = useMainContext();
   const subsContext: any = useSubsContext();
   const {
+    loadingSubs,
+    loadAllFromReddit,
     mySubs,
     myFollowing,
     myLocalSubs,
@@ -447,6 +450,27 @@ const SubredditsPage = ({ query = undefined }) => {
           </div>
         </div>
       )}
+       {session &&
+        (categories[selectedIndex] === "mine" ||
+          categories[selectedIndex] === "follows" ||
+          categories[selectedIndex] === "feeds") && (
+          <div className="fixed bottom-0 left-0 md:bottom-2 md:left-2">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                loadAllFromReddit();
+              }}
+              disabled={loadingSubs}
+              className={"flex justify-center w-full text-xs p-1 text-th-textLight " + (loadingSubs ? "" : "hover:text-th-text")}
+            >
+              <span className="hidden md:block">refresh</span>
+              <IoMdRefresh
+                className={"w-6 h-6 md:w-4 md:h-4 " + (loadingSubs ? "animate-spin" : "")}
+              />
+            </button>
+          </div>
+        )}
     </>
   );
 };
