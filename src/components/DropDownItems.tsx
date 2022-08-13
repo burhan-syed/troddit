@@ -6,6 +6,7 @@ import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import { BsChevronDown, BsList } from "react-icons/bs";
+import { IoMdRefresh } from "react-icons/io";
 import { CgLivePhoto, CgPlayListSearch } from "react-icons/cg";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
@@ -23,6 +24,8 @@ const MyLink = (props) => {
 const DropDownItems = ({ show, hideExtra = false }) => {
   const subsContext: any = useSubsContext();
   const {
+    loadingSubs,
+    loadAllFromReddit,
     mySubs,
     myFollowing,
     myLocalSubs,
@@ -800,7 +803,22 @@ const DropDownItems = ({ show, hideExtra = false }) => {
           )}
         </>
       )}
-
+      {session && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            loadAllFromReddit();
+          }}
+          disabled={loadingSubs}
+          className="flex pl-2 w-full text-xs py-0.5 mb-1 text-th-textLight hover:text-th-text"
+        >
+          <span>refresh</span>
+          <IoMdRefresh
+            className={"w-4 h-4 " + (loadingSubs ? "animate-spin" : "")}
+          />
+        </button>
+      )}
       {session && error && (
         <>
           <div className="flex flex-row items-center justify-center p-4">

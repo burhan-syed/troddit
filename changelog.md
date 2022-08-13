@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.6
+
+### Changes
+- When logged in, your subreddits, follows, and custom feeds will be cached locally and synced with Reddit every 24 hours or when the refresh button is clicked. The refresh button is located at the bottom of the subreddits pane or subreddits page. Previously this information was fetched every time troddit was opened causing high network usage for power users. 
+  - Logging out of troddit will clear the local cache. 
+
 ## v0.15.5
 ### New
 - Subscribe to subreddits or follow users directly from the post card overflow menu

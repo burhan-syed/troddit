@@ -37,7 +37,7 @@ export const MySubsProvider = ({ children }) => {
   const loading = status === "loading";
   const [loadedMultis, setloadedMultis] = useState(false);
   const [loadedSubs, setloadedSubs] = useState(false);
-  const [loadingSubs, setLoadingSubs] = useState(false); 
+  const [loadingSubs, setLoadingSubs] = useState(false);
   const [currLocation, setCurrLocation] = useState("");
   const [currSubs, setCurrSubs] = useState([]);
   const [currSubInfo, setCurrSubInfo] = useState({});
@@ -72,7 +72,7 @@ export const MySubsProvider = ({ children }) => {
         ],
       },
     },
-  ];
+  ];  
   const [myLocalMultis, setMyLocalMultis] = useState<any[]>([]);
   const [myLocalMultiRender, setMyLocalMultiRender] = useState(0);
 
@@ -91,9 +91,9 @@ export const MySubsProvider = ({ children }) => {
         localStorage.removeItem("localMultis");
       }
       local_localMultis?.length > 0
-        ? setMyLocalMultis(local_localMultis)
-        : setMyLocalMultis(defaultMultis);
-    };
+      ? setMyLocalMultis(local_localMultis)
+      : setMyLocalMultis(defaultMultis);   
+     };
     loadMultis();
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
@@ -539,10 +539,7 @@ export const MySubsProvider = ({ children }) => {
     return cached;
   };
 
-  const addToSubCache = (data) => {
-    let subInfo = data?.data?.subreddit ?? data?.data;
-    //using display name as this is the only info we have immediately..
-    let sub = subInfo?.display_name?.toUpperCase();
+  const trimSubInfo = (subInfo) => {
     let subInfoLess = {
       data: {
         banner_background_color: subInfo?.banner_background_color,
@@ -561,8 +558,56 @@ export const MySubsProvider = ({ children }) => {
         subscribers: subInfo?.subscribers,
         title: subInfo?.title,
         url: subInfo?.url,
+        user_has_favorited: subInfo?.user_has_favorited,
+        user_is_banned: subInfo?.user_is_banned,
+        user_is_subscriber: subInfo?.user_is_subscriber,
       },
     };
+    return subInfoLess;
+  };
+  const trimUserInfo = (userInfo) => {
+    let subInfo = userInfo?.subreddit;
+    let userInfoLess = {
+      data: {
+        ...userInfo,
+        subreddit: {
+          accept_followers: subInfo?.accept_followers,
+          accounts_active: subInfo?.accounts_active,
+          active_user_count: subInfo?.active_user_count,
+          allow_discovery: subInfo?.allow_discovery,
+          banner_background_color: subInfo?.banner_background_color,
+          banner_background_image: subInfo?.banner_background_image,
+          banner_img: subInfo?.banner_img,
+          banner_size: subInfo?.banner_size,
+          community_icon: subInfo?.community_icon,
+          created_urc: subInfo?.created_utc,
+          display_name: subInfo?.display_name,
+          display_name_prefixed: subInfo?.display_name_prefixed,
+          header_img: subInfo?.header_img,
+          icon_img: subInfo?.icon_img,
+          icon_size: subInfo?.icon_size,
+          key_color: subInfo?.key_color,
+          name: subInfo?.name,
+          over18: subInfo?.over18,
+          primary_color: subInfo?.primary_color,
+          public_description: subInfo?.public_description,
+          subscribers: subInfo?.subscribers,
+          title: subInfo?.title,
+          url: subInfo?.url,
+          user_has_favorited: subInfo?.user_has_favorited,
+          user_is_banned: subInfo?.user_is_banned,
+          user_is_subscriber: subInfo?.user_is_subscriber,
+        },
+      },
+    };
+    return userInfoLess;
+  };
+
+  const addToSubCache = (data) => {
+    let subInfo = data?.data?.subreddit ?? data?.data;
+    //using display name as this is the only info we have immediately..
+    let sub = subInfo?.display_name?.toUpperCase();
+    let subInfoLess = trimSubInfo(subInfo);
 
     localSubInfoCache.setItem(sub, subInfoLess);
 
@@ -578,14 +623,13 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    //console.log(currSubs)
     const params = new Proxy(new URLSearchParams(window.location.search), {
       get: (searchParams, prop) => searchParams.get(prop as string),
-    });    
-    const lmulti = router?.query?.m ?? params?.["m"]
+    });
+    const lmulti = router?.query?.m ?? params?.["m"];
     lmulti
       ? setMulti(lmulti)
-      : router?.asPath?.includes("m=")
-      ? setMulti(router.asPath.split("m=").join("&")?.split("&")?.[1])
       : currSubs?.length > 1
       ? setMulti(`Feed`)
       : setMulti("");
@@ -633,21 +677,27 @@ export const MySubsProvider = ({ children }) => {
         loadCurrSubInfo(curr);
       }
     } else if (router?.route === "/search") {
+      setCurrSubs([]);
       setCurrLocation("SEARCH");
     } else if (router?.pathname?.includes("/subreddits")) {
+      setCurrSubs([]);
       setCurrLocation("SUBREDDITS");
-    } else if (router?.pathname === "/" || !router?.pathname.includes("/u")) {
+    } else if (router?.pathname === "/" || !router?.pathname?.includes("/u")) {
+      setCurrSubs([]);
       setCurrLocation("HOME");
     } else if (router?.pathname === "/u/[...slug]") {
+      setCurrSubs([router?.query?.slug?.[0]]);
       loadCurrSubInfo(`${router?.query?.slug?.[0]}`, true);
       setCurrLocation(router?.query?.slug?.[0]?.toString());
     } else {
+      setCurrSubs([]);
       setCurrLocation("");
       setCurrSubInfo({});
     }
     return () => {
       asynccheck = false;
       setCurrSubInfo({});
+      setCurrSubs([]);
     };
   }, [router?.query?.slug?.[0], router.route]);
 
@@ -686,7 +736,6 @@ export const MySubsProvider = ({ children }) => {
       loadAllFast();
     } else if (!session && !loading) {
       loadLocalSubs();
-      setloadedSubs(true);
     }
   }, [session, loading]);
 
@@ -704,7 +753,9 @@ export const MySubsProvider = ({ children }) => {
           name: s,
           display_name: s,
           url: s?.substring(0, 2) === "u_" ? `/u/${s.substring(2)}` : `/r/${s}`,
-          user_has_favorited: context.localFavoriteSubs.find((f) => f?.toUpperCase() === s?.toUpperCase())
+          user_has_favorited: context.localFavoriteSubs.find(
+            (f) => f?.toUpperCase() === s?.toUpperCase()
+          ),
         },
       };
       localsubs.push(sub);
@@ -714,45 +765,117 @@ export const MySubsProvider = ({ children }) => {
     );
     //console.log(localsubs);
     setMyLocalSubs(localsubs);
+    if (!(localsubs.length > 0)) {
+      setloadedSubs(true);
+      setLoadingSubs(true);
+    }
   };
+  useEffect(() => {
+    if (!session && !loading && myLocalSubs.length > 0) {
+      setloadedSubs(true);
+    }
+  }, [myLocalSubs, session, loading]);
 
   const loadUserSubInfos = async (users) => {
-    const follows = [];
-    await Promise.all([...users.map(async (user) => {
-      const info = await loadSubInfo(user?.data?.subreddit?.display_name);
-      info?.kind == "t5" ? follows.push({...user, data: {...user.data, subreddit: info.data}}) : follows.push(user)
-    })]);
-    setMyFollowing(follows); 
+    let follows = [];
+    await Promise.all([
+      ...users.map(async (user) => {
+        const info = await loadSubInfo(user?.data?.subreddit?.display_name);
+        info?.kind == "t5"
+          ? follows.push({
+              ...user,
+              data: { ...user.data, subreddit: info.data },
+            })
+          : follows.push(user);
+      }),
+    ]);
+
+    follows = follows.sort((a, b) => a.data.name.localeCompare(b.data.name));
+    updateLocalStore(
+      "follows",
+      follows.map((f) => ({
+        ...f,
+        data: { ...trimUserInfo(f.data).data },
+      }))
+    );
+
+    setMyFollowing(follows);
+  };
+
+  const loadAllFromReddit = async () => {
+    try {
+      //console.log('load subs');
+      setLoadingSubs(true);
+      const multis = getMyMultis();
+      const all = getAllMyFollows();
+      let loadedMultis = await multis;
+      setMyMultis(loadedMultis);
+      setloadedMultis(true);
+      let { subs, users } = await all;
+      let username = session?.user?.name;
+      if (username) {
+        let pData = (await localForage.getItem("subSync"))?.[username];
+        localForage.setItem("subSync", {
+          [`${username}`]: {
+            ...pData,
+            lastUpdate: new Date(),
+            multis: loadedMultis,
+            subs: subs.map((s) => ({
+              ...s,
+              data: { ...trimSubInfo(s.data).data },
+            })),
+          },
+        });
+      }
+
+      setMySubs(subs);
+      await loadUserSubInfos(users);
+      //setMyFollowing(users);
+      setLoadingSubs(false);
+      setloadedSubs(true);
+    } catch (err) {
+      setLoadingSubs(false);
+      console.log(err);
+    }
   };
 
   const loadAllFast = async () => {
-    try {
-      //console.log('load subs');
-      setLoadingSubs(true); 
-      const multis = getMyMultis();
-      const all = getAllMyFollows();
-      setMyMultis(await multis);
-      setloadedMultis(true);
-      let { subs, users } = await all;
-      setMySubs(subs);
-      await loadUserSubInfos(users); 
-      //setMyFollowing(users);
-      setLoadingSubs(false); 
-      setloadedSubs(true);
-    } catch (err) {
-      setLoadingSubs(false); 
-      console.log(err);
+    setLoadingSubs(true);
+    if (session?.user?.name) {
+      let username = session.user.name;
+      let d = await localForage.getItem("subSync");
+      let subs = d?.[username]?.subs;
+      let follows = d?.[username]?.follows;
+      let multis = d?.[username]?.multis;
+      let lastUpdate = d?.[username]?.lastUpdate
+      //console.log("subs?", subs);
+      //console.log("follows", follows);
+      //console.log("multis?", multis);
+      subs?.length > 0 && setMySubs(subs);
+      follows?.length > 0 && setMyFollowing(follows);
+      multis?.length > 0 && setMyMultis(multis);
+      //console.log("lU?",(lastUpdate?.getTime() + (24 * 60 * 60 * 1000)))
+      if (!(subs?.length > 0) || !(follows?.length > 0) || (new Date().getTime() > (lastUpdate?.getTime() + (24 * 60 * 60 * 1000)))) {
+        loadAllFromReddit();
+      } else {
+        setLoadingSubs(false);
+        setloadedSubs(true);
+      }
+      if (!(multis?.length > 0)) {
+        loadAllMultis();
+      } else {
+        setloadedMultis(true);
+      }
     }
   };
 
   const loadAllMultis = async () => {
     try {
-      //console.log("load multis");
       const multis = await getMyMultis();
-      //console.log(multis);
       if (multis) {
         setMyMultis(multis);
         setloadedMultis(true);
+        updateLocalStore("multis", multis);
       }
     } catch (err) {
       console.log(err);
@@ -766,7 +889,7 @@ export const MySubsProvider = ({ children }) => {
         setloadedSubs(false);
         let data = await getAllMyFollows();
         setMySubs(data.subs);
-        await loadUserSubInfos(data.users); 
+        await loadUserSubInfos(data.users);
         //setMyFollowing(data.users);
         //console.log('loaded subs', data);
         setloadedSubs(true);
@@ -782,17 +905,17 @@ export const MySubsProvider = ({ children }) => {
   };
 
   const [error, seterror] = useState(false);
-  useEffect(() => {
-    if (session && loadedSubs && mySubs.length < 1) {
-      //loadAllFast();
-      seterror(true);
-    } else {
-      seterror(false);
-    }
-    return () => {
-      seterror(false);
-    };
-  }, [mySubs, session, loadedSubs]);
+  // useEffect(() => {
+  //   if (session && loadedSubs && mySubs.length < 1) {
+  //     //loadAllFast();
+  //     seterror(true);
+  //   } else {
+  //     seterror(false);
+  //   }
+  //   return () => {
+  //     seterror(false);
+  //   };
+  // }, [mySubs, session, loadedSubs]);
 
   const favorite = async (
     makeFavorite: boolean,
@@ -804,7 +927,7 @@ export const MySubsProvider = ({ children }) => {
       const pState = isUser ? myFollowing : mySubs;
       if (isUser) {
         setMyFollowing((users) => {
-          return users.map((user) => {
+          let newFollows =  users.map((user) => {
             if (user?.data?.subreddit?.display_name === subname) {
               return {
                 ...user,
@@ -819,10 +942,18 @@ export const MySubsProvider = ({ children }) => {
             }
             return user;
           });
+          updateLocalStore('follows', [
+            ...newFollows.map((f) => ({
+              ...f,
+              data: { ...trimUserInfo(f.data).data },
+            })),
+          ]);
+          return newFollows;
+
         });
       } else {
-        setMySubs((subs) =>
-          subs.map((sub) => {
+        setMySubs((subs) => {
+          let newSubs = subs.map((sub) => {
             if (sub?.data?.display_name === subname) {
               return {
                 ...sub,
@@ -831,6 +962,14 @@ export const MySubsProvider = ({ children }) => {
             }
             return sub;
           })
+          updateLocalStore('subs', [
+            ...newSubs.map((f) => ({
+              ...f,
+              data: { ...trimSubInfo(f.data).data },
+            })),
+          ])
+          return newSubs; 
+        }
         );
       }
 
@@ -839,7 +978,68 @@ export const MySubsProvider = ({ children }) => {
         isUser ? setMyFollowing(pState) : setMySubs(pState);
       }
     } else {
-      context.favoriteLocalSub(makeFavorite, subname); 
+      context.favoriteLocalSub(makeFavorite, subname);
+    }
+  };
+
+  const updateLocalStore = async (key, data, update=false) => {
+    let username = session?.user?.name;
+    if (username) {
+      let pData = (await localForage.getItem("subSync"))?.[username];
+      await localForage.setItem("subSync", {
+        [`${username}`]: {
+          ...pData,
+          //lastUpdate: new Date(),
+          [key]: data,
+        },
+      });
+    }
+  };
+
+  const mutateLocalRedditSubs = (
+    action: "sub" | "unsub",
+    subInfo,
+    isUser = false
+  ) => {
+    if (isUser) {
+      setMyFollowing((follows) => {
+        let newFollows = follows;
+        if (action === "unsub") {
+          newFollows = follows.filter(
+            (f) => f?.data?.name !== subInfo?.data?.name
+          );
+        } else if (!follows.find((s) => s.data.name === subInfo.data.name)) {
+          newFollows = [...follows, subInfo].sort((a, b) =>
+            a.data.name.localeCompare(b.data.name)
+          );
+        }
+
+        updateLocalStore("follows", [
+          ...newFollows.map((f) => ({
+            ...f,
+            data: { ...trimUserInfo(f.data).data },
+          })),
+        ]);
+        return newFollows;
+      });
+    } else {
+      setMySubs((subs) => {
+        let newSubs = subs;
+        if (action === "unsub") {
+          newSubs = subs.filter((s) => s?.data?.name !== subInfo?.data?.name);
+        } else if (!subs.find((s) => s.data.name === subInfo.data.name)) {
+          newSubs = [...subs, subInfo].sort((a, b) =>
+            a.data.display_name.localeCompare(b.data.display_name)
+          );
+        }
+        updateLocalStore("subs", [
+          ...newSubs.map((f) => ({
+            ...f,
+            data: { ...trimSubInfo(f.data).data },
+          })),
+        ]);
+        return newSubs;
+      });
     }
   };
 
@@ -876,15 +1076,20 @@ export const MySubsProvider = ({ children }) => {
       //   sub = cachedInfo?.data?.name;
       // } else {
       if (isUser) sub = sub.substring(2);
-      let subInfo = await loadSubredditInfo(sub, isUser);
+      let subInfo = await loadSubInfo(isUser ? `u_${sub}` : sub);
+      if (isUser) {
+        let aboutUser = await loadSubredditInfo(sub, isUser);
+        aboutUser["data"]["subreddit"] = subInfo.data;
+        subInfo = aboutUser;
+      }
       subInfo && addToSubCache(subInfo);
       sub = isUser ? subInfo?.data?.subreddit?.name : subInfo?.data?.name;
       //}
 
       let status = await subToSub(action, sub);
-      //console.log('session:', status);
       if (status) {
-        loadAllSubs(loggedIn);
+        //loadAllSubs(loggedIn);
+        mutateLocalRedditSubs(action, subInfo, isUser);
         toast.custom(
           (t) => (
             <ToastCustom
@@ -1038,6 +1243,8 @@ export const MySubsProvider = ({ children }) => {
   return (
     <SubsContext.Provider
       value={{
+        loadingSubs,
+        loadAllFromReddit,
         myLocalSubs,
         mySubs,
         myFollowing,

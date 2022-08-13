@@ -179,7 +179,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
               showAll={true}
             />
           ),
-          { position: "bottom-right", duration: Infinity, id: "check" }
+          { position: "bottom-center", duration: Infinity, id: "check" }
         );
       }
     };

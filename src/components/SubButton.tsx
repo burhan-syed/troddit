@@ -6,6 +6,7 @@ import { useSubsContext } from "../MySubs";
 import { localSubInfoCache } from "../MainContext";
 import { loadSubredditInfo } from "../RedditAPI";
 import useRefresh from "../hooks/useRefresh";
+import React from "react";
 
 const SubButton = ({ sub, miniMode = false, userMode = false }) => {
   const [loadAPI, setloadAPI] = useState(true);
@@ -73,11 +74,9 @@ const SubButton = ({ sub, miniMode = false, userMode = false }) => {
     //don't send subscribe request if invalid sub or session not established
     if (sub2sub && !loading) {
       setloadAPI(true);
-      //console.log("attempting", session?.user?.name, action, sub2sub);
-
       let s = await subscribe(action, sub2sub, session);
       if (s){
-        setSubbed((p) => !p);
+        //setSubbed((p) => !p);
         invalidateKey(["feed", "HOME"])
       }
       setloadAPI(false);
