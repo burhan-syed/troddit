@@ -113,6 +113,7 @@ const Vote = ({
     <>
       <button
         aria-label="upvote"
+        className="upvote-btn"
         onClick={(e) => tryCastVote(e, 1)}
         disabled={archived || loading}
       >
@@ -156,6 +157,7 @@ const Vote = ({
       )}
       <button
         aria-label="downvote"
+        className="downvote-btn"
         onClick={(e) => tryCastVote(e, -1)}
         disabled={archived || loading}
       >
