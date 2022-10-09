@@ -196,7 +196,7 @@ const CommentReply = ({ parent, postName, getResponse }) => {
               setReplyFocus(false);
             }}
             ref={EditorRef}
-            className="flex-wrap w-full px-3 pt-3 pb-8 font-mono leading-tight border rounded-lg outline-none scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-thumb-rounded-full bg-th-postHover hover:cursor-text border-th-border focus-within:border-th-borderHighlight focus-within:brightness-100 brightness-80 "
+            className="flex-wrap w-full px-3 pt-3 pb-8 font-mono text-sm leading-tight border rounded-lg outline-none scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-thumb-rounded-full bg-th-postHover hover:cursor-text border-th-border focus-within:border-th-borderHighlight focus-within:brightness-100 brightness-80 "
             value={textValue}
             onChange={handleTextChange}
           ></textarea>

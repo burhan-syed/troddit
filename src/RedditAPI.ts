@@ -1362,7 +1362,7 @@ export const postComment = async (parent, text) => {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `api_type=${"json"}&return_rtjson=${true}&text=${text}&thing_id=${parent}`,
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(text)}&thing_id=${parent}`,
       });
       const data = await res.json();
       if (res.ok) {
