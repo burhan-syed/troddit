@@ -657,6 +657,7 @@ const Thread = ({
                   parent={post?.name}
                   getResponse={updateMyReplies}
                   postName={post?.name}
+                  onCancel={(e) => {setopenReply(false)}}
                 />
               </div>
             )}

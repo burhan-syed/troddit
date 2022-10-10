@@ -26,6 +26,9 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation, commentDelete } = useMutate();
   const { data: session, status } = useSession();
+  const [commentRawBody, setCommentRawBody] = useState(() => comment?.data?.body); 
+  const [commentBodyHTML, setCommentBodyHTML] = useState(() => comment?.data?.body_html); 
+  const [editTime, setEditTime] = useState(() => comment?.data?.edited)
   const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
   const [moreLoaded, setMoreLoaded] = useState(false);
@@ -101,6 +104,7 @@ const ChildComments = ({
   const [childcomments, setchildcomments] = useState<any[]>([]);
   const [myReplies, setmyReplies] = useState<any[]>([]);
   const [openReply, setopenReply] = useState(false);
+  const [editReply, seteditReply] = useState(false);
   const updateMyReplies = (resdata) => {
     const newreply = {
       myreply: true,
@@ -122,6 +126,14 @@ const ChildComments = ({
       setchildcomments((p) => [...myReplies, ...p]);
     }
   }, [myReplies]);
+
+  const updateHTMLBody = (resdata) => {
+    resdata?.body && setCommentRawBody(resdata?.body); 
+    resdata?.body_html && setCommentBodyHTML(resdata?.body_html );
+    resdata?.edited && setEditTime(resdata.edited); 
+    seteditReply(false); 
+
+  }
 
   const childCommentCount = useMemo(() => {
     let count = -1;
@@ -352,10 +364,10 @@ const ChildComments = ({
 
             <div className="flex items-center gap-1 pr-4 mt-1">
               {isNew && <p className="text-xs italic">{"(new)"}</p>}
-              {comment?.data?.edited && (
+              {editTime && (
                 <p className="text-xs italic ">
                   edited{" "}
-                  {secondsToTime(comment?.data?.edited, [
+                  {secondsToTime(editTime, [
                     "s ago",
                     "min ago",
                     "hr ago",
@@ -404,22 +416,42 @@ const ChildComments = ({
           >
             <div className="">
               {/* Comment Text */}
-              <div
-                onClick={(e: any) => {
-                  const cellText = document.getSelection();
-                  if (
-                    //cellText?.anchorNode?.nodeName !== "#text" ||
-                    cellText?.type === "Range" ||
-                    e?.target?.nodeName === "A" ||
-                    e?.target?.localName === "a"
-                  ) {
-                    e.stopPropagation();
-                  }
-                }}
-                className="py-2 ml-2 mr-4 "
-              >
-                <ParseBodyHTML html={comment?.data?.body_html} />
-              </div>
+              {
+              comment?.data?.author &&
+              comment.data.author === session?.user?.name &&
+              editReply ? (
+                <>
+                  <CommentReply
+                    mode="EDIT"
+                    initialValue={decodeURIComponent(commentRawBody)}
+                    parent={comment?.data?.name}
+                    getResponse={updateHTMLBody}
+                    postName={comment?.data?.link_id?.substring(3)}
+                    onCancel={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      seteditReply(false);
+                    }}
+                  />
+                </>
+              ) : (
+                <div
+                  onClick={(e: any) => {
+                    const cellText = document.getSelection();
+                    if (
+                      //cellText?.anchorNode?.nodeName !== "#text" ||
+                      cellText?.type === "Range" ||
+                      e?.target?.nodeName === "A" ||
+                      e?.target?.localName === "a"
+                    ) {
+                      e.stopPropagation();
+                    }
+                  }}
+                  className="py-2 ml-2 mr-4 "
+                >
+                  <ParseBodyHTML html={commentBodyHTML} />
+                </div>
+              )}
 
               {/* Bottom Row */}
               <div
@@ -433,7 +465,7 @@ const ChildComments = ({
                     <div
                       className={
                         (!portraitMode && " ") + //ml-1.5 md:ml-0
-                        " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
+                        " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-2 border border-transparent rounded-full   "
                       }
                     >
                       {(windowWidth > 640 || showOpts) && (
@@ -452,7 +484,7 @@ const ChildComments = ({
                         comment?.data?.author !== "[deleted]" && (
                           <button
                             aria-label="vote"
-                            className="pr-2 text-sm hover:underline"
+                            className="text-sm hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -475,7 +507,7 @@ const ChildComments = ({
                         comment?.data?.author === "[deleted]"
                       }
                       className={
-                        "text-sm pr-2 " +
+                        "text-sm " +
                         ((hideChildren && !context.collapseChildrenOnly) ||
                         //comment?.myreply ||
                         comment?.data?.archived ||
@@ -494,7 +526,7 @@ const ChildComments = ({
                     >
                       Reply
                     </button>
-                    <div className="pr-2 text-sm cursor-pointer hover:underline">
+                    <div className="text-sm cursor-pointer hover:underline">
                       <SaveButton
                         id={comment?.data?.name}
                         saved={comment?.data?.saved}
@@ -503,7 +535,7 @@ const ChildComments = ({
 
                     {comment?.data?.author &&
                       comment.data.author === session?.user?.name && (
-                        <>
+                        <div className="flex items-center">
                           {tryDelete ? (
                             <div className="flex items-center gap-1 text-sm">
                               Are you Sure?
@@ -526,7 +558,7 @@ const ChildComments = ({
                                     e.stopPropagation();
                                     setTryDelete(false);
                                   }}
-                                  className="hover:underline"
+                                  className="mr-2 hover:underline"
                                 >
                                   No
                                 </button>
@@ -550,7 +582,17 @@ const ChildComments = ({
                               {deleted ? "Deleted" : "Delete"}
                             </button>
                           )}
-                        </>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              seteditReply((e) => !e);
+                            }}
+                            className={"text-sm block hover:underline"}
+                          >
+                            Edit
+                          </button>
+                        </div>
                       )}
                     <button
                       onClick={(e) => {
@@ -589,6 +631,11 @@ const ChildComments = ({
                     parent={comment?.data?.name}
                     getResponse={updateMyReplies}
                     postName={comment?.data?.link_id?.substring(3)}
+                    onCancel={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setopenReply(false);
+                    }}
                   />
                 </div>
               )}

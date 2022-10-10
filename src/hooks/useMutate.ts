@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { fixCommentFormat } from "../../lib/utils";
 import {
   deleteLink,
+  editUserText,
   hideLink,
   loadMoreComments,
   postComment,
@@ -247,7 +248,7 @@ const useMutate = () => {
               const editNestedComment = (comment, data, parent_id) => {
                 //console.log("edit?", comment,data);
                 if (comment.data.name === parent_id) {
-                  console.log("FOUND", parent_id, comment);
+                  //console.log("FOUND", parent_id, comment);
                   if (comment?.data?.replies?.data?.children) {
                     comment["data"]["replies"]["data"]["children"] = [
                       { kind: "t1", data: data },
@@ -260,10 +261,10 @@ const useMutate = () => {
                         ...comment?.data?.replies?.data,
                         children: [{ kind: "t1", data: data }],
                       },
-                      kind: "Listing"
+                      kind: "Listing",
                     };
                   }
-                  console.log("edited,", comment); 
+                  //console.log("edited,", comment);
                 }
                 if (
                   comment.kind === "t1" &&
@@ -337,12 +338,29 @@ const useMutate = () => {
     }
   );
 
+  const editCommentMutation = useMutation(
+    ({ parent, text }: { parent: string; text: string }) =>
+      editUserText(parent, text),
+    {
+      onSuccess: (data) => {
+        //console.log("success:", data, data.permalink.split("/")?.[4]);
+        queryClient.setQueriesData(
+          ["thread", data.permalink.split("/")?.[4]],
+          (pCommentsData: any) =>
+            updateCommentProperties(pCommentsData, data.name, [
+              { property: "body_html", value: data.body_html },
+              { property: "body", value: data.body },
+              { property: "edited", value: data.edited },
+            ])
+        );
+      },
+    }
+  );
   const dummy = async () => "";
   const editNestedCommentProperty = (
     name,
     comment,
-    property,
-    value,
+    propertyArray: { property: string; value: any }[],
     found: boolean,
     updateChildren = false
   ) => {
@@ -350,16 +368,18 @@ const useMutate = () => {
       return [comment, found];
     }
     if (comment?.data?.name && comment?.data?.name == name) {
-      if (updateChildren) {
-        comment["data"]["replies"]["data"]["children"] = [
-          ...comment?.data?.replies?.data?.children?.filter(
-            (child) => child.kind === "t1"
-          ),
-          ...value,
-        ];
-      } else {
-        comment["data"][property] = value;
-      }
+      propertyArray.forEach(({ property, value }) => {
+        if (updateChildren) {
+          comment["data"]["replies"]["data"]["children"] = [
+            ...comment?.data?.replies?.data?.children?.filter(
+              (child) => child.kind === "t1"
+            ),
+            ...value,
+          ];
+        } else {
+          comment["data"][property] = value;
+        }
+      });
       found = true;
     }
     if (
@@ -370,8 +390,7 @@ const useMutate = () => {
         let [c, f] = editNestedCommentProperty(
           name,
           comment.data.replies.data.children[i],
-          property,
-          value,
+          propertyArray,
           found,
           updateChildren
         );
@@ -381,11 +400,10 @@ const useMutate = () => {
     }
     return [comment, found];
   };
-  const updateCommentProperty = (
+  const updateCommentProperties = (
     pCommentsData,
     name,
-    property,
-    value,
+    propertyArray: { property: string; value: any }[],
     updateChildren = false
   ) => {
     let found = false;
@@ -397,8 +415,7 @@ const useMutate = () => {
           let [c, f] = editNestedCommentProperty(
             name,
             comment,
-            property,
-            value,
+            propertyArray,
             found,
             updateChildren
           );
@@ -416,12 +433,9 @@ const useMutate = () => {
         queryClient.setQueriesData(
           ["thread", update.thread],
           (pCommentsData: any) =>
-            updateCommentProperty(
-              pCommentsData,
-              update.name,
-              "collapsed",
-              update.collapse
-            )
+            updateCommentProperties(pCommentsData, update.name, [
+              { property: "collapsed", value: update.collapse },
+            ])
         );
       },
     }
@@ -434,7 +448,9 @@ const useMutate = () => {
         queryClient.setQueriesData(
           ["thread", update.thread],
           (pCommentsData: any) =>
-            updateCommentProperty(pCommentsData, update.name, "deleted", true)
+            updateCommentProperties(pCommentsData, update.name, [
+              { property: "deleted", value: true },
+            ])
         );
       },
     }
@@ -499,11 +515,10 @@ const useMutate = () => {
         queryClient.setQueriesData(
           ["thread", data?.link_id?.substring(3)],
           (pCommentsData: any) =>
-            updateCommentProperty(
+            updateCommentProperties(
               pCommentsData,
               data.parentName,
-              "",
-              data.newComments,
+              [{ property: "", value: data.newComments }],
               true
             )
         );
@@ -516,6 +531,7 @@ const useMutate = () => {
     saveMutation,
     hideMutation,
     postCommentMutation,
+    editCommentMutation,
     commentCollapse,
     commentDelete,
     loadCommentsMutation,
