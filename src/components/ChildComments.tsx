@@ -120,14 +120,17 @@ const ChildComments = ({
     });
     setopenReply(false);
   };
-
   useEffect(() => {
     setchildcomments(comment?.data?.replies?.data?.children);
   }, [comment]);
 
   useEffect(() => {
-    if (myReplies.length > 0) {
-      setchildcomments((p) => [...myReplies, ...p]);
+    if(myReplies?.length > 0){
+      if (childcomments?.length > 0) {
+        setchildcomments((p) => [...myReplies, ...p?.filter((pr: any) => pr?.myreply !== true)]);
+      }else{
+        setchildcomments(myReplies);
+      }
     }
   }, [myReplies]);
 
