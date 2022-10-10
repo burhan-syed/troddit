@@ -4,6 +4,7 @@ import React from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { fixCommentFormat } from "../../lib/utils";
 import {
+  deleteLink,
   hideLink,
   loadMoreComments,
   postComment,
@@ -19,7 +20,7 @@ const useMutate = () => {
   interface Change {
     property: string;
     value: any;
-    increment?:any;
+    increment?: any;
   }
   const optimisticUpdate = async (
     key: string[],
@@ -41,8 +42,9 @@ const useMutate = () => {
             filtered: page?.filtered?.map((post) => {
               if (id === post?.data?.name) {
                 post.data[change.property] = change.value;
-                if(change.property === "likes"){
-                  post["data"]["score"] = post["data"]["score"] + (change?.increment ?? 0);
+                if (change.property === "likes") {
+                  post["data"]["score"] =
+                    post["data"]["score"] + (change?.increment ?? 0);
                 }
               }
               return post;
@@ -57,93 +59,97 @@ const useMutate = () => {
     return { previousData };
   };
 
-  const voteMutation = useMutation(({ vote, id, increment }: any) => postVote(vote, id), {
-    onMutate: async (update) => {
-      if (update.id.substring(0, 3) === "t3_") {
-        return optimisticUpdate(["feed"], update.id, {
-          property: "likes",
-          value: update.vote,
-          increment: update.increment,
-        });
-      }
-    },
-    onSuccess: (data: any, variables) => {
-      if (data.id.substring(0, 3) === "t3_") {
-        if (session?.user?.name) {
-          data.vote == 1 &&
-            queryClient.invalidateQueries([
-              "feed",
-              "SELF",
-              session.user.name,
-              "upvoted",
-            ]);
-          data.vote == -1 &&
-            queryClient.invalidateQueries([
-              "feed",
-              "SELF",
-              session.user.name,
-              "downvoted",
-            ]);
-        } else {
-          queryClient.invalidateQueries(["feed"]);
+  const voteMutation = useMutation(
+    ({ vote, id, increment }: any) => postVote(vote, id),
+    {
+      onMutate: async (update) => {
+        if (update.id.substring(0, 3) === "t3_") {
+          return optimisticUpdate(["feed"], update.id, {
+            property: "likes",
+            value: update.vote,
+            increment: update.increment,
+          });
         }
-      } else if (data.id.substring(0, 3) === "t1_") {
-        const updateCommentValue = (prevData, commentId, key, value) => {
-          const iterComments = (comment, commentId, key, value) => {
-            if (comment?.data?.name === commentId) {
-              comment["data"][key] = value;
-              if (key === "likes") {
-                comment["data"]["score"] = comment["data"]["score"] + (variables?.increment ?? 0);
+      },
+      onSuccess: (data: any, variables) => {
+        if (data.id.substring(0, 3) === "t3_") {
+          if (session?.user?.name) {
+            data.vote == 1 &&
+              queryClient.invalidateQueries([
+                "feed",
+                "SELF",
+                session.user.name,
+                "upvoted",
+              ]);
+            data.vote == -1 &&
+              queryClient.invalidateQueries([
+                "feed",
+                "SELF",
+                session.user.name,
+                "downvoted",
+              ]);
+          } else {
+            queryClient.invalidateQueries(["feed"]);
+          }
+        } else if (data.id.substring(0, 3) === "t1_") {
+          const updateCommentValue = (prevData, commentId, key, value) => {
+            const iterComments = (comment, commentId, key, value) => {
+              if (comment?.data?.name === commentId) {
+                comment["data"][key] = value;
+                if (key === "likes") {
+                  comment["data"]["score"] =
+                    comment["data"]["score"] + (variables?.increment ?? 0);
+                }
+                return comment;
+              }
+              for (
+                let i = 0;
+                i < comment?.data?.replies?.data?.children?.length ?? 0;
+                i++
+              ) {
+                iterComments(
+                  comment?.data?.replies?.data?.children[i],
+                  commentId,
+                  key,
+                  value
+                );
               }
               return comment;
-            }
-            for (
-              let i = 0;
-              i < comment?.data?.replies?.data?.children?.length ?? 0;
-              i++
-            ) {
-              iterComments(
-                comment?.data?.replies?.data?.children[i],
-                commentId,
-                key,
-                value
-              );
-            }
-            return comment;
+            };
+
+            let newpages = prevData?.pages?.map((page) => {
+              return {
+                ...page,
+                comments: page.comments?.map((comment) =>
+                  iterComments(comment, commentId, key, value)
+                ),
+              };
+            });
+            return { ...prevData, pages: newpages };
           };
 
-          let newpages = prevData?.pages?.map((page) => {
-            return {
-              ...page,
-              comments: page.comments?.map((comment) =>
-                iterComments(comment, commentId, key, value)
-              ),
-            };
-          });
-          return { ...prevData, pages: newpages };
-        };
+          const path = router?.asPath?.split("/");
+          const cIndex = path?.indexOf("comments");
+          let postId;
+          if (cIndex) {
+            postId = path?.[cIndex + 1] as string;
+          }
 
-        const path = router?.asPath?.split("/");
-        const cIndex = path?.indexOf("comments");
-        let postId;
-        if (cIndex) {
-          postId = path?.[cIndex + 1] as string;
+          //this check could be better
+          postId?.match(/[A-z0-9]/g)?.length === 6
+            ? queryClient.setQueriesData(["thread", postId], (prevData) =>
+                updateCommentValue(prevData, data.id, "likes", data.vote)
+              )
+            : queryClient.invalidateQueries(["thread"]);
         }
-
-        //this check could be better
-        postId?.match(/[A-z0-9]/g)?.length === 6
-          ? queryClient.setQueriesData(["thread", postId], (prevData) =>
-              updateCommentValue(prevData, data.id, "likes", data.vote)
-            )
-          : queryClient.invalidateQueries(["thread"]);
-      }
-    },
-    onError: (err, update, context: any) => {
-      if (update.id.substring(0, 3) === "t3_") {
-        queryClient.setQueriesData(["feed"], context.previousData);
-      }
-    },
-  });
+      },
+      onError: (err, update, context: any) => {
+        if (update.id.substring(0, 3) === "t3_") {
+          queryClient.setQueriesData(["feed"], context.previousData);
+        }
+      },
+    }
+  );
 
   const saveMutation = useMutation(
     ({ id, isSaved }: any) => saveLink("", id, isSaved),
@@ -239,11 +245,25 @@ const useMutate = () => {
             ["thread", data?.link_id?.substring?.(3)],
             (pCommentsData: any) => {
               const editNestedComment = (comment, data, parent_id) => {
+                //console.log("edit?", comment,data);
                 if (comment.data.name === parent_id) {
-                  comment["data"]["replies"]["data"]["children"] = [
-                    { kind: "t1", data: data },
-                    ...comment?.data?.replies?.data?.children,
-                  ];
+                  console.log("FOUND", parent_id, comment);
+                  if (comment?.data?.replies?.data?.children) {
+                    comment["data"]["replies"]["data"]["children"] = [
+                      { kind: "t1", data: data },
+                      ...comment?.data?.replies?.data?.children,
+                    ];
+                  } else {
+                    comment["data"]["replies"] = {
+                      //...comment?.data?.replies,
+                      data: {
+                        ...comment?.data?.replies?.data,
+                        children: [{ kind: "t1", data: data }],
+                      },
+                      kind: "Listing"
+                    };
+                  }
+                  console.log("edited,", comment); 
                 }
                 if (
                   comment.kind === "t1" &&
@@ -407,6 +427,19 @@ const useMutate = () => {
     }
   );
 
+  const commentDelete = useMutation(
+    ({ name, thread }: { name: string; thread: string }) => deleteLink(name),
+    {
+      onMutate: async (update) => {
+        queryClient.setQueriesData(
+          ["thread", update.thread],
+          (pCommentsData: any) =>
+            updateCommentProperty(pCommentsData, update.name, "deleted", true)
+        );
+      },
+    }
+  );
+
   const loadChildComments = async (
     parentName,
     children: any[],
@@ -484,6 +517,7 @@ const useMutate = () => {
     hideMutation,
     postCommentMutation,
     commentCollapse,
+    commentDelete,
     loadCommentsMutation,
   };
 };

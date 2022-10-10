@@ -1366,6 +1366,9 @@ export const postComment = async (parent, text) => {
       });
       const data = await res.json();
       if (res.ok) {
+        if(data?.json?.errors){
+          throw new Error("Comment error")
+        }
         return data;
       } else {
         throw new Error("Unable to comment")
@@ -1376,6 +1379,31 @@ export const postComment = async (parent, text) => {
   }
   throw new Error("Unable to comment")
 };
+
+export const deleteLink = async(id:string) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch("https://oauth.reddit.com/api/del", {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `id=${id}`,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        return data;
+      } else {
+        throw new Error("Unable to delete")
+      }
+    } catch (err) {
+      throw new Error("Unable to delete")
+    }
+  }
+  throw new Error("Unable to delete")
+}
 
 export const getUserVotes = async () => {
   const data = await getToken();

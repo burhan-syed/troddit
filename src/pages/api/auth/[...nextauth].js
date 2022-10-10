@@ -90,7 +90,7 @@ async function refreshAccessToken(token) {
 }
 
 const redditScope =
-  "identity mysubreddits read vote submit report save subscribe history"; //Check Reddit API Documentation for more. The identity scope is required.
+  "identity mysubreddits read edit vote submit report save subscribe history"; //Check Reddit API Documentation for more. The identity scope is required.
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -105,7 +105,7 @@ export default NextAuth({
       token: " https://www.reddit.com/api/v1/access_token",
       accessTokenUrl: " https://www.reddit.com/api/v1/access_token",
       authorization:
-        "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=identity mysubreddits read vote submit report save subscribe history",
+        `https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=${redditScope}`,
       userinfo: "https://oauth.reddit.com/api/v1/me",
       profile: (profile) => {
         return {
