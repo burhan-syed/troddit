@@ -180,15 +180,17 @@ const Thread = ({
   }, [usePortrait]);
 
   const commentsRef = useRef<HTMLDivElement>(null);
+  const [jumped, setJumped] = useState(false); 
   useEffect(() => {
     const executeScroll = () => {
       commentsRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
+      setJumped(true); 
     };
 
-    if (commentsRef?.current && commentsDirect && postComments?.length > 0)
+    if (commentsRef?.current && commentsDirect && postComments?.length > 0 && !jumped)
       executeScroll();
   }, [commentsRef, commentsDirect, postComments]);
 
