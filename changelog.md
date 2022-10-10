@@ -13,6 +13,7 @@
 - Volume will now be saved between sessions
 - Image galleries were improved including swipe action
 - Swipe to close threads has been disabled
+- Default column counts have changed
 
 ### Fixes
 

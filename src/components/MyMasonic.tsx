@@ -52,9 +52,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       setCols(context.columnOverride);
     } else if (!context.postOpen) {
       //prevent layout shift when resize with post open
-      if (windowWidth > 2560) {
+      if (windowWidth > 1920) {
+        setCols(5);
+      } else if (windowWidth > 1400) {
         setCols(4);
-      } else if (windowWidth > 1280) {
+      } else if (windowWidth > 1000) {
         setCols(3);
       } else if (windowWidth > 767) {
         setCols(2);
