@@ -202,14 +202,14 @@ const PostModal = ({
         "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain " +
         (animate ? " transition-transform duration-200 ease-out " : "")
       }
-      onTouchStart={(e) => handleTouchStart(e)}
-      onTouchMove={(e) => handleTouchMove(e)}
-      onTouchEnd={(e) => handleTouchEnd(e)}
-      style={{
-        transform: `translate(${translateAmount}px, ${0}px)`,
-        touchAction: `none`,
-        //opacity: `${100 - (translateAmount / 1000) * 100}%`,
-      }}
+      // onTouchStart={(e) => handleTouchStart(e)}
+      // onTouchMove={(e) => handleTouchMove(e)}
+      // onTouchEnd={(e) => handleTouchEnd(e)}
+      // style={{
+      //   transform: `translate(${translateAmount}px, ${0}px)`,
+      //   touchAction: `none`,
+      //   //opacity: `${100 - (translateAmount / 1000) * 100}%`,
+      // }}
     >
       <div
         onClick={() => handleBack()}
