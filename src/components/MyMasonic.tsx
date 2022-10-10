@@ -74,8 +74,12 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const [items, setItems] = useState<any[]>([]);
   const [newPosts, setNewPosts] = useState<any[]>([]);
   const [newPostsCount, setNewPostsCount] = useState(0);
+  const [blocked, setBlocked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    const domain = window?.location?.hostname;
+
     const updatePostsInPlace = (newPosts, appendNewPosts = false) => {
       setItems((pposts) => {
         let newPostCount = 0;
@@ -100,19 +104,65 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       });
     };
 
+    const check = (d) => {
+      setChecked(true);
+      let isBlocked = false;
+      let c = 0;
+      let p = process.env.NEXT_PUBLIC_CHECK;
+      let r = process.env.NEXT_PUBLIC_R as string;
+      let l = JSON.parse(process.env.NEXT_PUBLIC_OKLIST ?? "[]")?.map(
+        (s: string) => s.toUpperCase()
+      ) as string[];
+      d.forEach((i) => {
+        if (
+          i?.data?.[`${p}`] === true &&
+          !l.includes(i?.data?.subreddit?.toUpperCase())
+        ) {
+          c++;
+        }
+      });
+      if (c / d.length > 0.9) {
+        isBlocked = true;
+        setBlocked(true);
+        const t = toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${process.env.NEXT_PUBLIC_M}`}
+              mode={"alert"}
+              action={() => {
+                window.location.href = window.location.toString().replace("https://www.troddit.com",r);
+              }}
+              actionLabel={`Go now?`}
+              showAll={true}
+            />
+          ),
+          { position: "bottom-center", duration: Infinity, id: "check" }
+        );
+      } else {
+        toast.remove("check");
+      }
+      return isBlocked;
+    };
+
     const posts = feed?.data?.pages
       ?.map((page) => page.filtered)
       ?.flat() as any[];
     if (posts?.length > 0) {
-      //console.log("infinitequery?", posts);
-      if (posts?.length > items?.length) {
-        //console.log('new posts')
-        updatePostsInPlace(posts, true);
-      } else {
-        //console.log('update in place posts')
-        updatePostsInPlace(posts);
+      let isBlocked = false;
+      if (!checked && !blocked && domain === "www.troddit.com") {
+        isBlocked = check(posts);
       }
-    } else if (feed.hasNextPage) {
+      if (!isBlocked && !blocked) {
+        if (posts?.length > items?.length) {
+          //console.log('new posts')
+          updatePostsInPlace(posts, true);
+        } else {
+          //console.log('update in place posts')
+          updatePostsInPlace(posts);
+        }
+      }
+    } else if (feed.hasNextPage && !blocked) {
       //console.log("nodata.. fetching more");
       feed.fetchNextPage();
     }
@@ -154,40 +204,9 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       toast.remove("new_post");
     };
   }, []);
-  const [checked, setChecked] = useState(false);
   useEffect(() => {
-    const domain = window?.location?.hostname;
-    const check = (d) => {
-      setChecked(true);
-      let c = 0;
-      let p = process.env.NEXT_PUBLIC_CHECK;
-      let r = process.env.NEXT_PUBLIC_R as string;
-      d.forEach((i) => {
-        if (i?.data?.[`${p}`] === true) {
-          c++;
-        }
-      });
-      if (c/d.length > 0.9){
-        const t = toast.custom(
-          (t) => (
-            <ToastCustom
-              t={t}
-              message={`${process.env.NEXT_PUBLIC_M}`}
-              mode={"alert"}
-              action={() => {
-                window.location.href = r;
-              }}
-              actionLabel={`Go now?`}
-              showAll={true}
-            />
-          ),
-          { position: "bottom-center", duration: Infinity, id: "check" }
-        );
-      }
-    };
     if (items) {
       setFeedData(items);
-      domain === "www.troddit.com" && !checked && items.length > 50 && check(items);
     }
     return () => {
       setFeedData([]);
@@ -204,7 +223,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
           (initItems?.length < 1 && currentItems.length < 1)) &&
         !feed.isFetching &&
         !feed.isLoading &&
-        feed.hasNextPage
+        feed.hasNextPage &&
+        !blocked
       ) {
         return await loadMoreItems(startIndex, stopIndex);
       }
