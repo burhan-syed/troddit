@@ -1,48 +1,84 @@
 # Changelog
 
+## v0.16.0
+
+### New
+
+- You can now edit and delete your comments from troddit
+  - This requires new Reddit permissions so you may need to re-login with your Reddit account
+- You can now copy comment permalinks to share
+- You can now collapse comments only when the comment ribbon is pressed. Find the "Ribbon Collapse" toggle in the Comments section of the Settings page. By default pressing anywhere on the comment will collapse the comment
+
+### Changes
+- Volume will now be saved between sessions
+- Image galleries were improved including swipe action
+- Swipe to close threads has been disabled
+
+### Fixes
+
+- Miscellaneous fixes to commenting
+
 ## v0.15.6
 
 ### Changes
-- When logged in, your subreddits, follows, and custom feeds will be cached locally and synced with Reddit every 24 hours or when the refresh button is clicked. The refresh button is located at the bottom of the subreddits pane or subreddits page. Previously this information was fetched every time troddit was opened causing high network usage for power users. 
-  - Logging out of troddit will clear the local cache. 
+
+- When logged in, your subreddits, follows, and custom feeds will be cached locally and synced with Reddit every 24 hours or when the refresh button is clicked. The refresh button is located at the bottom of the subreddits pane or subreddits page. Previously this information was fetched every time troddit was opened causing high network usage for power users.
+  - Logging out of troddit will clear the local cache.
 
 ## v0.15.5
+
 ### New
+
 - Subscribe to subreddits or follow users directly from the post card overflow menu
 - Scroll position is remembered and restored when using classic rows card style
+
 ### Changes
+
 - Menus are now more mobile friendly
+
 ### Fixes
+
 - Miscellaneous fixes
-  
+
 ## v0.15.4
+
 ### Changes
+
 - Image previews for 'link' type posts are now shown as large thumbnails in Original and Compact Cards.
-  - This behavior can be reverted with the toggle labeled "Link Thumbnails" in the Appearance section of the  settings page. 
-- Other slight UI changes including a slimmer nav bar. 
+  - This behavior can be reverted with the toggle labeled "Link Thumbnails" in the Appearance section of the settings page.
+- Other slight UI changes including a slimmer nav bar.
 
 ## v0.15.3
+
 ### New
-- New filter to remove 'seen' posts from the feed. 
-  - Posts are considered seen when they are scrolled off the page 
+
+- New filter to remove 'seen' posts from the feed.
+  - Posts are considered seen when they are scrolled off the page
   - Option to disable logging seen posts in settings
 - New buttons to clear seen and read history in settings
 
 ### Changes
+
 - General performance improvements
 - Comment score now shown when collapsed
 - Vote options hidden until opened on mobile devices
-  
+
 ## v0.15.2
+
 ### New
-- Support for favorite subreddits: 
-  - Click the star next to subscribed subreddits and followed users in the dropdown pane to pin them to the top. Works with and without a Reddit login. 
+
+- Support for favorite subreddits:
+  - Click the star next to subscribed subreddits and followed users in the dropdown pane to pin them to the top. Works with and without a Reddit login.
+
 ### Changes
-- Rows view is now more mobile friendly. On small devices the thumbnail has moved to the right and expanding media button is no longer available. 
-- Post navigation buttons have been added to threads on small devices. 
+
+- Rows view is now more mobile friendly. On small devices the thumbnail has moved to the right and expanding media button is no longer available.
+- Post navigation buttons have been added to threads on small devices.
 
 ## v0.15.1
+
 ## Changes
+
 - Posts are now automatically marked as read when the thread is closed instead of when it is opened
 - Improved new comment detection so new comments are highlighted between sessions
 - Votes on comments now update quickly without triggering a refetch of comment scores
@@ -51,38 +87,41 @@
 
 ### New
 
-- Auto-updating feeds: 
+- Auto-updating feeds:
   - Feeds now automatically update posts periodically with the latest score, comment count, and awards.
   - A prompt will appear to update the feed if any new posts are found
-  - New options to configure this behavior in the settings page: 
+  - New options to configure this behavior in the settings page:
     - Monitor Feed: To toggle checking for feed updates.
-    - Refresh Intervals: To set the number of seconds between checking for updates. Different intervals for "new" and "rising" compared to other sorts can be set. 
-    - Ask To Update: To update the feed with new posts immediately without a prompt this can be disabled. 
+    - Refresh Intervals: To set the number of seconds between checking for updates. Different intervals for "new" and "rising" compared to other sorts can be set.
+    - Ask To Update: To update the feed with new posts immediately without a prompt this can be disabled.
     - Check on Focus: Control whether the feed is checked when returning to troddit from another window
-- Auto-updating threads: 
-  - Similar to feeds, comment threads will be checked for new comments when a post is re-opened or the window re-focused. Any new comments will be highlighted and marked "new". 
+- Auto-updating threads:
+  - Similar to feeds, comment threads will be checked for new comments when a post is re-opened or the window re-focused. Any new comments will be highlighted and marked "new".
   - This behavior can be disabled with the "Monitor Comments" setting.
-- 'New Comment' counts: 
+- 'New Comment' counts:
   - A count for new comments since the thread was last read will now appear next to the comment count
 
 ### Changes
-- Cached feeds and comments: 
+
+- Cached feeds and comments:
   - Now feeds and comments will load immediately if they have been previously loaded.
   - Any recently collapsed comments or more loaded comments will remain collapsed or loaded
 - Comment scores will now be hidden if the subreddit hides scores sometime after posting.
-- Comments will now appear collapsed if they're collapsed on Reddit. If available, the collapse reason is shown. 
-- Consistent video volumes: changing a video's volume will now update other videos as well. 
-- Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal. 
+- Comments will now appear collapsed if they're collapsed on Reddit. If available, the collapse reason is shown.
+- Consistent video volumes: changing a video's volume will now update other videos as well.
+- Previously any changed filters would apply to new pages without pressing "Apply". Now the Apply button must be pressed to apply filters if using the filters modal.
 - Switching to portrait mode in a thread will now auto expand and align any text in self posts to the top
 - Miscellaneous style changes
 
 ## v0.14.2
 
 ### New
+
 - Added Dracula theme
 
 ### Fixes
-- For those self hosting, Reddit links will now be replaced with the current hostname instead of troddit.com. 
+
+- For those self hosting, Reddit links will now be replaced with the current hostname instead of troddit.com.
 
 ## v0.14.1
 
