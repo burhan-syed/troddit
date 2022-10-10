@@ -22,6 +22,8 @@ import { InView } from "react-intersection-observer";
 import useHeightMap from "../hooks/useHeightMap";
 import { findGreatestsImages, findOptimalImageIndex } from "../../lib/utils";
 import useGlobalState from "../hooks/useGlobalState";
+import PostModal from "./PostModal";
+import { useRouter } from "next/router";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -131,7 +133,9 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
               message={`${process.env.NEXT_PUBLIC_M}`}
               mode={"alert"}
               action={() => {
-                window.location.href = window.location.toString().replace("https://www.troddit.com",r);
+                window.location.href = window.location
+                  .toString()
+                  .replace("https://www.troddit.com", r);
               }}
               actionLabel={`Go now?`}
               showAll={true}
@@ -490,8 +494,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
               <Post
                 post={props.data}
                 postNum={props.index}
-                fetchNextPage={feed.fetchNextPage}
-                curKey={curKey}
+                openPost={openPost}
                 handleSizeChange={handleSizeChange}
                 forceSizeChange={forceSizeChange}
               />
@@ -509,49 +512,89 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const aveHeight =
     filteredHeights?.reduce((a: any, b: any) => a + b, 0) /
     filteredHeights.length;
+
+  const router = useRouter();
+  const [lastRoute, setLastRoute] = useState("");
+  const [selectedPost, setSelectedPost] = useState<any>();
+  const openPost = (post, postNum, commentsDirect) => {
+    setLastRoute(router.asPath);
+    setSelectedPost({
+      post: post,
+      postNum: postNum,
+      commentsDirect: commentsDirect,
+    });
+  };
+  useEffect(() => {
+    if (lastRoute === router.asPath) {
+      setSelectedPost(undefined);
+      context.setPauseAll(false);
+    }
+    //don't add lastRoute to the array, breaks things
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.asPath]);
+
   return (
-    <div>
-      <Masonry
-        role="list"
-        key={masonicKey}
-        onRender={maybeLoadMorePosts}
-        columnGutter={0}
-        columnCount={cols}
-        items={items}
-        itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
-        overscanBy={2}
-        render={PostCard}
-        className="outline-none"
-        ssrWidth={500}
-      />
-
-      {!context?.infiniteLoading && feed.hasNextPage && (
-        <div className="flex items-center justify-center mt-6 mb-6">
-          <button
-            aria-label="load more"
-            disabled={feed.isLoading || feed.isFetchingNextPage}
-            onClick={() => {
-              loadMoreItems(items.length, items.length + 20);
-            }}
-            className={
-              (feed.isLoading || feed.isFetchingNextPage
-                ? " animate-pulse "
-                : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
-              "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
-            }
-          >
-            <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
-          </button>
-        </div>
+    <>
+      {selectedPost && (
+        <PostModal
+          permalink={selectedPost?.data?.permalink}
+          setSelect={setSelectedPost}
+          returnRoute={
+            router.query?.slug?.[1]?.toUpperCase() === "M"
+              ? "multimode"
+              : undefined
+          }
+          postData={selectedPost?.post?.data}
+          postNum={selectedPost?.postNum}
+          commentMode={selectedPost?.kind === "t1"}
+          commentsDirect={selectedPost?.commentsDirect}
+          curKey={curKey}
+          fetchMore={feed.fetchNextPage}
+        />
       )}
-      {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
-        <h1 className="text-center">
-          Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
-        </h1>
-      )}
+      <div>
+        <Masonry
+          role="list"
+          key={masonicKey}
+          onRender={maybeLoadMorePosts}
+          columnGutter={0}
+          columnCount={cols}
+          items={items}
+          itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
+          overscanBy={2}
+          render={PostCard}
+          className="outline-none"
+          ssrWidth={500}
+        />
 
-      {loadInfo}
-    </div>
+        {!context?.infiniteLoading && feed.hasNextPage && (
+          <div className="flex items-center justify-center mt-6 mb-6">
+            <button
+              aria-label="load more"
+              disabled={feed.isLoading || feed.isFetchingNextPage}
+              onClick={() => {
+                loadMoreItems(items.length, items.length + 20);
+              }}
+              className={
+                (feed.isLoading || feed.isFetchingNextPage
+                  ? " animate-pulse "
+                  : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
+                "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
+              }
+            >
+              <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
+            </button>
+          </div>
+        )}
+        {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
+          <h1 className="text-center">
+            Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
+          </h1>
+        )}
+
+        {loadInfo}
+      </div>
+    </>
   );
 };
 

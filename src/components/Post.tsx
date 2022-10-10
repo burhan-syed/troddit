@@ -10,7 +10,7 @@ import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
 import  useResizeObserver  from "@react-hook/resize-observer";
 
-const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeChange, forceSizeChange }) => {
+const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }) => {
   const postRef = useRef<HTMLDivElement>(null);
   useResizeObserver(postRef, () => handleSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height))
   const recomputeSize = () => {
@@ -35,30 +35,14 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
     };
   }, [context, post]);
 
- 
-  const [lastRoute, setLastRoute] = useState("");
-  const [returnRoute, setReturnRoute] = useState("");
 
-  useEffect(() => {
-    if (lastRoute === router.asPath) {
-      setSelect(false);
-      setCommentsDirect(false);
-      context.setPauseAll(false);
-    }
-    //don't add lastRoute to the array, breaks things
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath]);
 
   const handleClick = (e, toComments) => {
     e.stopPropagation();
     const multi = router.query?.m ?? ""
-    if (toComments){
-      setCommentsDirect(true); 
-    }
     if (!e.ctrlKey && !e.metaKey) {
-      setLastRoute(router.asPath);
       context.setPauseAll(true);
-      setSelect(true);
+      openPost(post,postNum,toComments);
       if (router.query?.frontsort) {
         router.push("", post?.data.id, { shallow: true });
       } 
@@ -98,24 +82,6 @@ const Post = ({ post, curKey, postNum = 0, fetchNextPage = () => {}, handleSizeC
 
   return (
     <div ref={postRef} className={""}>
-      {select && (
-        <PostModal
-          permalink={post?.data?.permalink}
-          setSelect={setSelect}
-          returnRoute={
-            router.query?.slug?.[1]?.toUpperCase() === "M"
-              ? "multimode"
-              : undefined
-          }
-          postData={post?.data}
-          postNum={postNum}
-          commentMode={post?.kind === "t1"}
-          commentsDirect={commentsDirect}
-          curKey={curKey}
-          fetchMore={fetchNextPage}
-        />
-      )}
-
       {/* Click wrappter */}
       <div className="select-none" > 
         {post?.kind === "t1" ? (
