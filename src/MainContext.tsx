@@ -32,7 +32,7 @@ export const MainProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
   const [safeSearch, setSafeSearch] = useState(true);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState<number>(undefined);
   //const [forceRefresh, setForceRefresh] = useState(0);
   //update key whenever items may change for Masonic component
   const [progressKey, setProgressKey] = useState(0);
@@ -947,6 +947,10 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("refreshOnFocus");
         saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
       };
+      const loadVolume = async () => {
+        let saved = await localForage.getItem("volume");
+        if(saved >= 0 && saved <= 1 && typeof saved === "number")  {setVolume(saved)} else {setVolume(0.5)};
+      };
       const fastRefreshInterval = async () => {
         let saved = (await localForage.getItem(
           "fastRefreshInterval"
@@ -995,6 +999,7 @@ export const MainProvider = ({ children }) => {
       let refreshonfocus = refreshOnFocus();
       let fastrefreshinterval = fastRefreshInterval();
       let slowrefreshinterval = slowRefreshInterval();
+      let volumes = loadVolume(); 
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
       let hoverplay = loadHoverPlay();
@@ -1024,6 +1029,7 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
+        volumes,
         compactlinkpics,
         autoseen,
         autorefreshfeed,
@@ -1253,6 +1259,11 @@ export const MainProvider = ({ children }) => {
       localForage.setItem("autoplay", autoplay);
     }
   }, [autoplay]);
+  useEffect(() => {
+    if (volume !== undefined) {
+      localForage.setItem("volume", volume);
+    }
+  }, [volume]);
   useEffect(() => {
     if (hoverplay !== undefined) {
       localForage.setItem("hoverplay", hoverplay);
