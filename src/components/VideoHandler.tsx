@@ -364,7 +364,7 @@ const VideoHandler = ({
 
   useEffect(() => {
     if (audioRef?.current) {
-      audioRef.current.volume = volume;
+      audioRef.current.volume = (volume ?? 0.5);
     }
     return () => {
       //
@@ -545,7 +545,7 @@ const VideoHandler = ({
                         muted || volume === 0
                           ? { bottom: 0 }
                           : {
-                              bottom: `${volume * 100 - 10}%`,
+                              bottom: `${(volume ?? 0.5) * 100 - 10}%`,
                             }
                       }
                       onMouseDown={() => setVolMouseDown(true)}
@@ -554,7 +554,7 @@ const VideoHandler = ({
                     <div
                       //vol container
                       className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-th-scrollbar"
-                      style={{ height: `${muted ? 0 : volume * 100}%` }}
+                      style={{ height: `${muted ? 0 : (volume ?? 0.5) * 100}%` }}
                     ></div>
                     <div className="absolute bottom-0 z-0 w-full h-full bg-white bg-opacity-50 rounded-full"></div>
                   </div>
