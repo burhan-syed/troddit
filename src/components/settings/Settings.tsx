@@ -3,7 +3,14 @@ import React from "react";
 import { useState, useRef, useEffect, createRef } from "react";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 
-import { BiImages, BiComment, BiDetail, BiCog, BiPaint, BiHistory } from "react-icons/bi";
+import {
+  BiImages,
+  BiComment,
+  BiDetail,
+  BiCog,
+  BiPaint,
+  BiHistory,
+} from "react-icons/bi";
 import { BsColumnsGap } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
 import FilterSubs from "../FilterSubs";
@@ -53,14 +60,16 @@ const Settings = () => {
             <ColumnCardOptions mode="cards" />
           </div>
         </label>,
-        ...["compactLinkPics", "dimRead", "showAwardings", "showFlairs"].map((s: any) => (
-          <Toggles
-            key={s}
-            setting={s}
-            withSubtext={true}
-            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
-          />
-        )),
+        ...["compactLinkPics", "dimRead", "showAwardings", "showFlairs"].map(
+          (s: any) => (
+            <Toggles
+              key={s}
+              setting={s}
+              withSubtext={true}
+              externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
+            />
+          )
+        ),
       ],
     },
     Layout: {
@@ -132,6 +141,7 @@ const Settings = () => {
         ...[
           "showUserIcons",
           "showUserFlairs",
+          "ribbonCollapseOnly",
           "collapseChildrenOnly",
           "defaultCollapseChildren",
         ].map((s: any) => (

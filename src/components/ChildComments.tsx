@@ -26,9 +26,13 @@ const ChildComments = ({
   const context: any = useMainContext();
   const { commentCollapse, loadCommentsMutation, commentDelete } = useMutate();
   const { data: session, status } = useSession();
-  const [commentRawBody, setCommentRawBody] = useState(() => comment?.data?.body); 
-  const [commentBodyHTML, setCommentBodyHTML] = useState(() => comment?.data?.body_html); 
-  const [editTime, setEditTime] = useState(() => comment?.data?.edited)
+  const [commentRawBody, setCommentRawBody] = useState(
+    () => comment?.data?.body
+  );
+  const [commentBodyHTML, setCommentBodyHTML] = useState(
+    () => comment?.data?.body_html
+  );
+  const [editTime, setEditTime] = useState(() => comment?.data?.edited);
   const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
   const [moreLoaded, setMoreLoaded] = useState(false);
@@ -128,12 +132,11 @@ const ChildComments = ({
   }, [myReplies]);
 
   const updateHTMLBody = (resdata) => {
-    resdata?.body && setCommentRawBody(resdata?.body); 
-    resdata?.body_html && setCommentBodyHTML(resdata?.body_html );
-    resdata?.edited && setEditTime(resdata.edited); 
-    seteditReply(false); 
-
-  }
+    resdata?.body && setCommentRawBody(resdata?.body);
+    resdata?.body_html && setCommentBodyHTML(resdata?.body_html);
+    resdata?.edited && setEditTime(resdata.edited);
+    seteditReply(false);
+  };
 
   const childCommentCount = useMemo(() => {
     let count = -1;
@@ -224,8 +227,10 @@ const ChildComments = ({
         className={"flex flex-row"}
         onClick={(e) => {
           e.stopPropagation();
-          toggleHidden();
-          executeScroll();
+          if (!context.ribbonCollapseOnly) {
+            toggleHidden();
+            executeScroll();
+          }
         }}
       >
         {/* Left Ribbon */}
@@ -259,8 +264,10 @@ const ChildComments = ({
           }
           onClick={(e) => {
             e.stopPropagation();
-            toggleHidden();
-            executeScroll();
+            if (!context.ribbonCollapseOnly) {
+              toggleHidden();
+              executeScroll();
+            }
           }}
         >
           {/* comment metadata*/}
@@ -416,8 +423,7 @@ const ChildComments = ({
           >
             <div className="">
               {/* Comment Text */}
-              {
-              comment?.data?.author &&
+              {comment?.data?.author &&
               comment.data.author === session?.user?.name &&
               editReply ? (
                 <>
