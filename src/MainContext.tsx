@@ -32,7 +32,7 @@ export const MainProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [gAfter, setGAfter] = useState("");
   const [safeSearch, setSafeSearch] = useState(true);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState<number>(undefined);
   //const [forceRefresh, setForceRefresh] = useState(0);
   //update key whenever items may change for Masonic component
   const [progressKey, setProgressKey] = useState(0);
@@ -54,14 +54,15 @@ export const MainProvider = ({ children }) => {
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
-  const [compactLinkPics, setCompactLinkPics] = useState<boolean>(); 
+  const [compactLinkPics, setCompactLinkPics] = useState<boolean>();
   const toggleCompactLinkPics = () => {
-    setCompactLinkPics(c => !c);
-  }
+    setCompactLinkPics((c) => !c);
+  };
   //new settings..
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
     useState<boolean>();
+  const [ribbonCollapseOnly, setRibbonCollapseOnly] = useState<boolean>();
   const [showUserIcons, setShowUserIcons] = useState<boolean>();
   const [showAwardings, setShowAwardings] = useState<boolean>();
   const [showFlairs, setShowFlairs] = useState<boolean>();
@@ -83,6 +84,9 @@ export const MainProvider = ({ children }) => {
   const [fastRefreshInterval, setFastRefreshInterval] = useState<number>();
   const [slowRefreshInterval, setSlowRefreshInterval] = useState<number>();
 
+  const toggleRibbonCollapseOnly = () => {
+    setRibbonCollapseOnly((c) => !c);
+  };
   const toggleDefaultCollapseChildren = () => {
     setDefaultCollapseChildren((d) => !d);
   };
@@ -158,16 +162,16 @@ export const MainProvider = ({ children }) => {
 
   const [readPosts, setReadPosts] = useState<{}>({});
   const [readPostsChange, setReadPostsChange] = useState<number>(0);
-  const clearReadPosts = async() => {
-    try{
-      await localRead.clear(); 
+  const clearReadPosts = async () => {
+    try {
+      await localRead.clear();
       setReadPosts({});
-      setReadPostsChange(n => n+1);
-      return true; 
-    } catch(err){
-      return false; 
+      setReadPostsChange((n) => n + 1);
+      return true;
+    } catch (err) {
+      return false;
     }
-  }
+  };
   const addReadPost = ({ postId, numComments }) => {
     localRead.setItem(postId, { postId, numComments, time: new Date() });
     setReadPosts((read) => {
@@ -856,6 +860,14 @@ export const MainProvider = ({ children }) => {
       };
 
       //new settings don't need localstorage fallback..
+      const loadRibbonCollapseOnly = async () => {
+        let saved = await localForage.getItem(
+          "ribbonCollapseOnly"
+        );
+        saved === true
+          ? setRibbonCollapseOnly(true)
+          : setRibbonCollapseOnly(false);
+      };
       const loadCollapseChildrenOnly = async () => {
         let saved_collapseChildrenOnly = await localForage.getItem(
           "collapseChildrenOnly"
@@ -947,6 +959,14 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("refreshOnFocus");
         saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
       };
+      const loadVolume = async () => {
+        let saved = await localForage.getItem("volume");
+        if (saved >= 0 && saved <= 1 && typeof saved === "number") {
+          setVolume(saved);
+        } else {
+          setVolume(0.5);
+        }
+      };
       const fastRefreshInterval = async () => {
         let saved = (await localForage.getItem(
           "fastRefreshInterval"
@@ -968,10 +988,8 @@ export const MainProvider = ({ children }) => {
         }
       };
       const compactLinkPics = async () => {
-        let saved = (await localForage.getItem(
-          "compactLinkPics"
-        ));
-        if (saved===false) {
+        let saved = await localForage.getItem("compactLinkPics");
+        if (saved === false) {
           setCompactLinkPics(saved);
         } else {
           setCompactLinkPics(true);
@@ -979,6 +997,7 @@ export const MainProvider = ({ children }) => {
       };
 
       //things we dont' really need loaded before posts are loaded
+      loadRibbonCollapseOnly(); 
       loadCollapseChildrenOnly();
       loadDefaultCollapseChildren();
       loadShowUserIcons();
@@ -987,14 +1006,15 @@ export const MainProvider = ({ children }) => {
       loadAutoRead();
 
       //things we need loaded before posts are rendered
-      let compactlinkpics = compactLinkPics(); 
-      let autoseen = loadAutoSeen(); 
+      let compactlinkpics = compactLinkPics();
+      let autoseen = loadAutoSeen();
       let autorefreshfeed = autoRefreshFeed();
       let autorefreshcomments = autoRefreshComments();
       let asktoupdatefeed = askToUpdateFeed();
       let refreshonfocus = refreshOnFocus();
       let fastrefreshinterval = fastRefreshInterval();
       let slowrefreshinterval = slowRefreshInterval();
+      let volumes = loadVolume();
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
       let hoverplay = loadHoverPlay();
@@ -1015,7 +1035,7 @@ export const MainProvider = ({ children }) => {
       let linkfilter = loadLinkFilter();
       let selffilter = loadSelfFilter();
       let readfilter = loadReadFilter();
-      let seenfilter = loadSeenFilter(); 
+      let seenfilter = loadSeenFilter();
       let showflairs = loadShowFlairs();
       let showawardings = loadShowAwardings();
       let infiniteLoading = loadInfiniteLoading();
@@ -1024,6 +1044,7 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
+        volumes,
         compactlinkpics,
         autoseen,
         autorefreshfeed,
@@ -1171,6 +1192,11 @@ export const MainProvider = ({ children }) => {
     }
   }, [showUserIcons]);
   useEffect(() => {
+    if (ribbonCollapseOnly !== undefined) {
+      localForage.setItem("ribbonCollapseOnly", ribbonCollapseOnly);
+    }
+  }, [ribbonCollapseOnly]);
+  useEffect(() => {
     if (defaultCollapseChildren !== undefined) {
       localForage.setItem("defaultCollapseChildren", defaultCollapseChildren);
     }
@@ -1253,6 +1279,11 @@ export const MainProvider = ({ children }) => {
       localForage.setItem("autoplay", autoplay);
     }
   }, [autoplay]);
+  useEffect(() => {
+    if (volume !== undefined) {
+      localForage.setItem("volume", volume);
+    }
+  }, [volume]);
   useEffect(() => {
     if (hoverplay !== undefined) {
       localForage.setItem("hoverplay", hoverplay);
@@ -1384,6 +1415,8 @@ export const MainProvider = ({ children }) => {
         clearReadPosts,
         postOpen,
         setPostOpen,
+        ribbonCollapseOnly,
+        toggleRibbonCollapseOnly,
         collapseChildrenOnly,
         toggleCollapseChildrenOnly,
         defaultCollapseChildren,
@@ -1435,7 +1468,7 @@ export const MainProvider = ({ children }) => {
         slowRefreshInterval,
         setSlowRefreshInterval,
         compactLinkPics,
-        toggleCompactLinkPics
+        toggleCompactLinkPics,
       }}
     >
       {children}

@@ -1362,10 +1362,13 @@ export const postComment = async (parent, text) => {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `api_type=${"json"}&return_rtjson=${true}&text=${text}&thing_id=${parent}`,
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(text)}&thing_id=${parent}`,
       });
       const data = await res.json();
       if (res.ok) {
+        if(data?.json?.errors){
+          throw new Error("Comment error")
+        }
         return data;
       } else {
         throw new Error("Unable to comment")
@@ -1376,6 +1379,60 @@ export const postComment = async (parent, text) => {
   }
   throw new Error("Unable to comment")
 };
+
+export const editUserText = async(id:string, text:string) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      //console.log(parent, text, token);
+      const res = await fetch("https://oauth.reddit.com/api/editusertext", {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(text)}&thing_id=${id}`,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if(data?.json?.errors){
+          throw new Error("Edit text error")
+        }
+        return data;
+      } else {
+        throw new Error("Unable to edit text")
+      }
+    } catch (err) {
+      throw new Error("Unable to edit text")
+    }
+  }
+  throw new Error("Unable to edit text")
+}
+
+export const deleteLink = async(id:string) => {
+  const token = await (await getToken())?.accessToken;
+  if (token && ratelimit_remaining > 1) {
+    try {
+      const res = await fetch("https://oauth.reddit.com/api/del", {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `id=${id}`,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        return data;
+      } else {
+        throw new Error("Unable to delete")
+      }
+    } catch (err) {
+      throw new Error("Unable to delete")
+    }
+  }
+  throw new Error("Unable to delete")
+}
 
 export const getUserVotes = async () => {
   const data = await getToken();

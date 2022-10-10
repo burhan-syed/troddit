@@ -24,8 +24,15 @@ const ChildComments = ({
   scoreHideMins = 0,
 }) => {
   const context: any = useMainContext();
-  const { commentCollapse, loadCommentsMutation } = useMutate();
+  const { commentCollapse, loadCommentsMutation, commentDelete } = useMutate();
   const { data: session, status } = useSession();
+  const [commentRawBody, setCommentRawBody] = useState(
+    () => comment?.data?.body
+  );
+  const [commentBodyHTML, setCommentBodyHTML] = useState(
+    () => comment?.data?.body_html
+  );
+  const [editTime, setEditTime] = useState(() => comment?.data?.edited);
   const parentRef = useRef<HTMLDivElement | any>(null);
   const [hovered, setHovered] = useState(false);
   const [moreLoaded, setMoreLoaded] = useState(false);
@@ -48,6 +55,40 @@ const ChildComments = ({
       return collapsed;
     });
   };
+  const [tryDelete, setTryDelete] = useState(false);
+  const [deleted, setDeleted] = useState(() =>
+    comment?.data?.deleted ? true : false
+  );
+  const deleteComment = () => {
+    setDeleted(true);
+    commentDelete.mutate({
+      name: comment?.data?.name,
+      thread: comment?.data?.link_id?.substring(3),
+    });
+  };
+  const [copied, setCopied] = useState(false);
+  const copyPermalink = () => {
+    const url = `${window.location.protocol}//${window.location.host}${comment?.data?.permalink}`;
+    try {
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+    } catch (err) {
+      window.location.href = url;
+    }
+  };
+  useEffect(() => {
+    let timeout;
+    if (copied) {
+      timeout = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [copied]);
 
   useEffect(() => {
     context?.defaultCollapseChildren && setHideChildren(true);
@@ -67,13 +108,16 @@ const ChildComments = ({
   const [childcomments, setchildcomments] = useState<any[]>([]);
   const [myReplies, setmyReplies] = useState<any[]>([]);
   const [openReply, setopenReply] = useState(false);
+  const [editReply, seteditReply] = useState(false);
   const updateMyReplies = (resdata) => {
     const newreply = {
       myreply: true,
       kind: "t1",
       data: resdata,
     };
-    setmyReplies((replies) => [newreply, ...replies]);
+    setmyReplies((replies) => {
+      return [newreply, ...replies];
+    });
     setopenReply(false);
   };
 
@@ -82,13 +126,17 @@ const ChildComments = ({
   }, [comment]);
 
   useEffect(() => {
-    if (childcomments?.length > 0) {
-      setchildcomments((p) => p.filter((pr: any) => pr?.myreply !== true));
+    if (myReplies.length > 0) {
       setchildcomments((p) => [...myReplies, ...p]);
-    } else if (!comment?.data?.replies?.data?.children) {
-      setchildcomments(myReplies);
     }
   }, [myReplies]);
+
+  const updateHTMLBody = (resdata) => {
+    resdata?.body && setCommentRawBody(resdata?.body);
+    resdata?.body_html && setCommentBodyHTML(resdata?.body_html);
+    resdata?.edited && setEditTime(resdata.edited);
+    seteditReply(false);
+  };
 
   const childCommentCount = useMemo(() => {
     let count = -1;
@@ -179,8 +227,10 @@ const ChildComments = ({
         className={"flex flex-row"}
         onClick={(e) => {
           e.stopPropagation();
-          toggleHidden();
-          executeScroll();
+          if (!context.ribbonCollapseOnly) {
+            toggleHidden();
+            executeScroll();
+          }
         }}
       >
         {/* Left Ribbon */}
@@ -214,8 +264,10 @@ const ChildComments = ({
           }
           onClick={(e) => {
             e.stopPropagation();
-            toggleHidden();
-            executeScroll();
+            if (!context.ribbonCollapseOnly) {
+              toggleHidden();
+              executeScroll();
+            }
           }}
         >
           {/* comment metadata*/}
@@ -246,7 +298,9 @@ const ChildComments = ({
                   ) : (
                     context.showUserIcons && (
                       <div className="flex items-center mr-0.5 justify-center w-6 h-6 border-2 rounded-full overflow-hidden bg-th-accent">
-                        <span className="text-xl ml-0.5 mb-1 text-white">u/</span>
+                        <span className="text-xl ml-0.5 mb-1 text-white">
+                          u/
+                        </span>
                       </div>
                     )
                   )}
@@ -284,7 +338,10 @@ const ChildComments = ({
               )}
 
               <p>•</p>
-              <p className="" title={new Date(comment?.data?.created_utc * 1000)?.toString()}>
+              <p
+                className=""
+                title={new Date(comment?.data?.created_utc * 1000)?.toString()}
+              >
                 {secondsToTime(comment?.data?.created_utc, [
                   "s ago",
                   "min ago",
@@ -314,10 +371,10 @@ const ChildComments = ({
 
             <div className="flex items-center gap-1 pr-4 mt-1">
               {isNew && <p className="text-xs italic">{"(new)"}</p>}
-              {comment?.data?.edited && (
+              {editTime && (
                 <p className="text-xs italic ">
                   edited{" "}
-                  {secondsToTime(comment?.data?.edited, [
+                  {secondsToTime(editTime, [
                     "s ago",
                     "min ago",
                     "hr ago",
@@ -332,9 +389,11 @@ const ChildComments = ({
                   <span
                     className={
                       "text-xs " +
-                      (comment?.data?.likes === true || comment?.data?.likes === 1
+                      (comment?.data?.likes === true ||
+                      comment?.data?.likes === 1
                         ? " text-th-upvote "
-                        : comment?.data?.likes === false|| comment?.data?.likes === -1
+                        : comment?.data?.likes === false ||
+                          comment?.data?.likes === -1
                         ? " text-th-downvote "
                         : "")
                     }
@@ -364,22 +423,41 @@ const ChildComments = ({
           >
             <div className="">
               {/* Comment Text */}
-              <div
-                onClick={(e: any) => {
-                  const cellText = document.getSelection();
-                  if (
-                    //cellText?.anchorNode?.nodeName !== "#text" ||
-                    cellText?.type === "Range" ||
-                    e?.target?.nodeName === "A" ||
-                    e?.target?.localName === "a"
-                  ) {
-                    e.stopPropagation();
-                  }
-                }}
-                className="py-2 ml-2 mr-4 "
-              >
-                <ParseBodyHTML html={comment?.data?.body_html} />
-              </div>
+              {comment?.data?.author &&
+              comment.data.author === session?.user?.name &&
+              editReply ? (
+                <>
+                  <CommentReply
+                    mode="EDIT"
+                    initialValue={decodeURIComponent(commentRawBody)}
+                    parent={comment?.data?.name}
+                    getResponse={updateHTMLBody}
+                    postName={comment?.data?.link_id?.substring(3)}
+                    onCancel={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      seteditReply(false);
+                    }}
+                  />
+                </>
+              ) : (
+                <div
+                  onClick={(e: any) => {
+                    const cellText = document.getSelection();
+                    if (
+                      //cellText?.anchorNode?.nodeName !== "#text" ||
+                      cellText?.type === "Range" ||
+                      e?.target?.nodeName === "A" ||
+                      e?.target?.localName === "a"
+                    ) {
+                      e.stopPropagation();
+                    }
+                  }}
+                  className="py-2 ml-2 mr-4 "
+                >
+                  <ParseBodyHTML html={commentBodyHTML} />
+                </div>
+              )}
 
               {/* Bottom Row */}
               <div
@@ -388,69 +466,154 @@ const ChildComments = ({
                   " flex-row flex items-center justify-start flex-none flex-wrap gap-2  text-th-textLight "
                 }
               >
-                <div
-                  className={
-                    (!portraitMode && " ") + //ml-1.5 md:ml-0
-                    " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-1.5 border border-transparent rounded-full   "
-                  }
-                >
-                  {(windowWidth > 640 || showOpts) && (
-                    <Vote
-                      name={comment?.data?.name}
-                      likes={comment?.data?.likes}
-                      score={comment?.data?.score}
-                      archived={comment?.data?.archived}
-                      scoreHideMins={scoreHideMins}
-                      postTime={comment?.data?.created_utc}
-                    />
-                  )}
-                  {/* chrome struggles with svgs.. hiding on low end devices */}
-                  {!showOpts && windowWidth <= 640 && (
+                {comment?.data?.author !== "[deleted]" ? (
+                  <>
+                    <div
+                      className={
+                        (!portraitMode && " ") + //ml-1.5 md:ml-0
+                        " flex flex-row items-center justify-center sm:p-0.5 md:p-0 gap-2 border border-transparent rounded-full   "
+                      }
+                    >
+                      {(windowWidth > 640 || showOpts) && (
+                        <Vote
+                          name={comment?.data?.name}
+                          likes={comment?.data?.likes}
+                          score={comment?.data?.score}
+                          archived={comment?.data?.archived}
+                          scoreHideMins={scoreHideMins}
+                          postTime={comment?.data?.created_utc}
+                        />
+                      )}
+                      {/* chrome struggles with svgs.. hiding on low end devices */}
+                      {!showOpts &&
+                        windowWidth <= 640 &&
+                        comment?.data?.author !== "[deleted]" && (
+                          <button
+                            aria-label="vote"
+                            className="text-sm hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!session?.user?.name) {
+                                context.setLoginModal(true);
+                              } else {
+                                setShowOpts(true);
+                              }
+                            }}
+                          >
+                            Vote
+                          </button>
+                        )}
+                    </div>
                     <button
-                      aria-label="vote"
-                      className="pr-2 text-sm hover:underline"
+                      aria-label="reply"
+                      disabled={
+                        comment?.data?.archived ||
+                        locked ||
+                        comment?.data?.author === "[deleted]"
+                      }
+                      className={
+                        "text-sm " +
+                        ((hideChildren && !context.collapseChildrenOnly) ||
+                        //comment?.myreply ||
+                        comment?.data?.archived ||
+                        locked ||
+                        comment?.data?.author === "[deleted]"
+                          ? "hidden"
+                          : "block hover:underline")
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (!session?.user?.name) {
-                          context.setLoginModal(true);
-                        } else {
-                          setShowOpts(true);
-                        }
+                        session && !comment?.data?.archived
+                          ? setopenReply((p) => !p)
+                          : context.toggleLoginModal();
                       }}
                     >
-                      Vote
+                      Reply
                     </button>
-                  )}
-                </div>
-                <button
-                  aria-label="reply"
-                  disabled={comment?.data?.archived || locked}
-                  className={
-                    "text-sm " +
-                    ((hideChildren && !context.collapseChildrenOnly) ||
-                    //comment?.myreply ||
-                    comment?.data?.archived ||
-                    locked
-                      ? "hidden"
-                      : "block hover:underline")
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    session && !comment?.data?.archived
-                      ? setopenReply((p) => !p)
-                      : context.toggleLoginModal();
-                  }}
-                >
-                  Reply
-                </button>
-                <div className="pl-2 text-sm cursor-pointer hover:underline">
-                  <SaveButton
-                    id={comment?.data?.name}
-                    saved={comment?.data?.saved}
-                  />
-                </div>
+                    <div className="text-sm cursor-pointer hover:underline">
+                      <SaveButton
+                        id={comment?.data?.name}
+                        saved={comment?.data?.saved}
+                      />
+                    </div>
+
+                    {comment?.data?.author &&
+                      comment.data.author === session?.user?.name && (
+                        <div className="flex items-center">
+                          {tryDelete ? (
+                            <div className="flex items-center gap-1 text-sm">
+                              Are you Sure?
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    deleteComment();
+                                    setTryDelete(false);
+                                  }}
+                                  className="hover:underline"
+                                >
+                                  Yes
+                                </button>
+                                <span>/</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setTryDelete(false);
+                                  }}
+                                  className="mr-2 hover:underline"
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              disabled={deleted}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setTryDelete(true);
+                              }}
+                              className={
+                                "block mr-2 text-sm " +
+                                (deleted
+                                  ? " font-semibold "
+                                  : " hover:underline")
+                              }
+                            >
+                              {deleted ? "Deleted" : "Delete"}
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              seteditReply((e) => !e);
+                            }}
+                            className={"text-sm block hover:underline"}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      )}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        copyPermalink();
+                      }}
+                      className="block text-sm hover:underline"
+                    >
+                      {copied ? "Copied!" : "Permalink"}
+                    </button>
+                  </>
+                ) : (
+                  <div className="py-2.5"></div>
+                )}
 
                 {hideChildren &&
                   context.collapseChildrenOnly &&
@@ -474,6 +637,11 @@ const ChildComments = ({
                     parent={comment?.data?.name}
                     getResponse={updateMyReplies}
                     postName={comment?.data?.link_id?.substring(3)}
+                    onCancel={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setopenReply(false);
+                    }}
                   />
                 </div>
               )}

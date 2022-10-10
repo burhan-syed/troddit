@@ -509,6 +509,7 @@ const Media = ({
               postMode={postMode}
               mediaRef={mediaRef}
               uniformHeight={containerDims ? false : true}
+              mediaMode={false}
             />
           )}
 

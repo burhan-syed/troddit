@@ -4168,6 +4168,11 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha1-LRDAa9/TEuqXd2laTShDlFa3WUI=
 
+nuka-carousel@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/nuka-carousel/-/nuka-carousel-5.4.0.tgz#47987ff86b3fe8d39260e20b23b32dff7259e1d8"
+  integrity sha512-y0GRUl94y5CmwjFcPIssY2FV2UEUmiJ4Zui15lgpqzfNPKXbr/10xqPpFAb1Gs3e8jqi5WE3V3CVCb3Rvtd9CQ==
+
 oauth@^0.9.15:
   version "0.9.15"
   resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.9.15.tgz#bd1fefaf686c96b75475aed5196412ff60cfb9c1"

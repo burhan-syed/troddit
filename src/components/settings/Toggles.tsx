@@ -30,6 +30,7 @@ interface ToggleProps {
     | "postWideUI"
     | "collapseChildrenOnly"
     | "defaultCollapseChildren"
+    | "ribbonCollapseOnly"
     | "showUserIcons"
     | "showAwardings"
     | "showFlairs"
@@ -139,7 +140,9 @@ const Toggles = ({
         !label && setSwitchLabel("NSFW");
         !subtext &&
           setSwitchSubtext(
-            context.nsfw ? "18+ posts shown as normal" : "18+ posts are blurred and search results hidden"
+            context.nsfw
+              ? "18+ posts shown as normal"
+              : "18+ posts are blurred and search results hidden"
           );
         setTitle("blur 18+ posts");
         setCheckedIcon(<VscEye />);
@@ -202,6 +205,13 @@ const Toggles = ({
           );
         setCheckedIcon(<CgArrowsShrinkH />);
         setUncheckedIcon(<CgArrowsMergeAltH />);
+        break;
+      case "ribbonCollapseOnly":
+        !label && setSwitchLabel("Ribbon Collapse");
+        !subtext &&
+          setSwitchSubtext(
+            "Enable to only collapse comments when the comment ribbon is clicked."
+          );
         break;
       case "collapseChildrenOnly":
         !label && setSwitchLabel("Collapse Mode");
@@ -368,6 +378,9 @@ const Toggles = ({
         break;
       case "postWideUI":
         context.togglePostWideUI();
+        break;
+      case "ribbonCollapseOnly":
+        context.toggleRibbonCollapseOnly();
         break;
       case "collapseChildrenOnly":
         context.toggleCollapseChildrenOnly();
