@@ -11,7 +11,7 @@
 --textBody: theme('colors.stone.700');
 --textStrong: theme('colors.rose.700');
 --textHeading: theme('colors.stone.900');
---accent: #00D2F7;/**theme('colors.blue.400');**/
+--accent: theme('colors.blue.400');
 --base: theme('colors.gray.200');
 --background: theme('colors.slate.100');
 --background2: theme('colors.white');
@@ -27,11 +27,11 @@
 --upvote: theme('colors.orange.500');
 --downvote: theme('colors.blue.400');
 --red: theme('colors.red.400');
---scrollbar: #00D2F7;/**theme('colors.blue.400');**/
+--scrollbar: theme('colors.blue.400');
 --link: theme('colors.blue.700');
 --linkHover: theme('colors.blue.500');
 --commentRibbon: theme('colors.blue.600');
---commentRibbonHover: #00D2F7;/**theme('colors.blue.400');**/
+--commentRibbonHover: theme('colors.blue.400');
 --backgroundComment: theme('colors.white');
 --backgroundCommentAlternate: theme('colors.gray.100');
 --toggleColor: theme('colors.gray.300');
