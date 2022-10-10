@@ -139,14 +139,11 @@ const GalleryCarousel = ({
                         }
                       : {
                           height: `${height}px`,
-                          aspectRatio: `${Math.round(
-                            image.width
-                          )} / ${Math.round(image.height)}`,
                           //width: `${(height/image.height)*image.width}px`,
                           backgroundImage: `url(${image.url})`,
                         }
                   }
-                  className="absolute inset-0 brightness-[0.2] -z-10 bg-center bg-no-repeat bg-cover blur-md scale-110 "
+                  className="absolute w-full inset-0 brightness-[0.2] -z-10 bg-center bg-no-repeat bg-cover blur-md scale-110 "
                 ></div>
               </>
             ) : (
