@@ -15,6 +15,7 @@ import Vote from "./Vote";
 import Link from "next/link";
 import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
+import { IoMdExpand } from "react-icons/io";
 
 const MediaModal = ({
   hide,
@@ -247,7 +248,7 @@ const MediaModal = ({
           aria-label={"toggle full resolution"}
           title={context?.highRes ? "" : "load full res"}
           className={
-            "flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-14 md:left-auto md:right-24 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 " +
+            "flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-14 md:left-auto md:right-36 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 " +
             (showUI && !hideArrows
               ? ` md:text-opacity-50 backdrop-blur-lg md:backdrop-blur-none ${
                   scale > 1 ? " md:text-opacity-50 " : " md:text-opacity-0 "
@@ -261,6 +262,16 @@ const MediaModal = ({
           ) : (
             <MdOutlineHighQuality className={"w-5 h-5 md:w-8 md:h-8  "} />
           )}
+        </button>
+      )}
+      {scale > 1 && (
+        <button
+          onClick={() => {
+            onReset();
+          }}
+          className="flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-24 md:left-auto md:right-24 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 md:text-opacity-50 "
+        >
+          <IoMdExpand className="w-5 h-5 md:w-8 md:h-8 " />
         </button>
       )}
       <div
@@ -307,6 +318,15 @@ const MediaModal = ({
                   }}
                   ref={i === curPostNum ? containerRef : null}
                   onMouseDown={(e) => {
+                    if (
+                      (
+                        scale > 1
+                      )
+                    ) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+
                     setAnimate(false);
                     i === curPostNum && scale > 1 && onMouseDown(e);
                   }}
