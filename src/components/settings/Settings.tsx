@@ -92,7 +92,7 @@ const Settings = () => {
           </div>
         </label>,
 
-        ...["wideUI", "syncWideUI", "postWideUI", "expandedSubPane"].map(
+        ...["uniformHeights","wideUI", "syncWideUI", "postWideUI", "expandedSubPane"].map(
           (s: any) => (
             <Toggles
               key={s}

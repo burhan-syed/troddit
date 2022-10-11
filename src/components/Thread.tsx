@@ -43,17 +43,20 @@ import useSubreddit from "../hooks/useSubreddit";
 import ErrMessage from "./ErrMessage";
 import { useRead } from "../hooks/useRead";
 import toast from "react-hot-toast";
+import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 
 const Thread = ({
   permalink,
   sort = "top",
   updateSort,
   initialData,
+  setMediaMode,
   withContext = false,
   commentMode = false,
   commentsDirect = false,
   direct = false,
   goBack = () => {},
+  setCurPost
 }) => {
   const context: any = useMainContext();
   const { data: session, status } = useSession();
@@ -102,6 +105,7 @@ const Thread = ({
       setNewReadTime(new Date().getTime());
       setPost(thread?.data?.pages?.[0].post);
     }
+    if (!initialData?.name) setCurPost(thread?.data?.pages?.[0].post);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread.data?.pages]);
@@ -159,8 +163,8 @@ const Thread = ({
       windowWidth > 1300 &&
       windowHeight < windowWidth &&
       context?.postWideUI &&
-      mediaInfo
-      && !direct
+      mediaInfo &&
+      !direct
     ) {
       usePortrait === undefined &&
         setUsePortrait(mediaInfo?.isPortrait ? true : false);
@@ -180,17 +184,22 @@ const Thread = ({
   }, [usePortrait]);
 
   const commentsRef = useRef<HTMLDivElement>(null);
-  const [jumped, setJumped] = useState(false); 
+  const [jumped, setJumped] = useState(false);
   useEffect(() => {
     const executeScroll = () => {
       commentsRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-      setJumped(true); 
+      setJumped(true);
     };
 
-    if (commentsRef?.current && commentsDirect && postComments?.length > 0 && !jumped)
+    if (
+      commentsRef?.current &&
+      commentsDirect &&
+      postComments?.length > 0 &&
+      !jumped
+    )
       executeScroll();
   }, [commentsRef, commentsDirect, postComments]);
 
@@ -367,7 +376,6 @@ const Thread = ({
                       name={post?.name}
                       score={post?.score}
                       size={7}
-                      postindex={context.postNum}
                       postMode={true}
                       archived={post?.archived === true}
                       //scoreHideMins={sub?.data?.data?.comment_score_hide_mins} //only hide score for comments.. not posts
@@ -422,7 +430,10 @@ const Thread = ({
                           </a>
                         </Link>
 
-                        <p className="-translate-y-0.5" title={new Date(post?.created_utc * 1000)?.toString()}>
+                        <p
+                          className="-translate-y-0.5"
+                          title={new Date(post?.created_utc * 1000)?.toString()}
+                        >
                           {secondsToTime(post?.created_utc)}
                         </p>
                         <p className="-translate-y-0.5 mx-1">•</p>
@@ -527,18 +538,37 @@ const Thread = ({
                         )}
                         {true && (
                           <button
-                            aria-label="expand media"
+                            aria-label="full screen media"
                             autoFocus={windowWidth < 1300}
-                            onClick={(e) => setimgFull((p) => !p)}
+                            onClick={() => {
+                              if (mediaInfo?.isSelf && false) {
+                                setimgFull((p) => !p);
+                              } else {
+                                setMediaMode(true);
+                              }
+                            }}
+                            className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
+                          >
+                            <BiExpand className={"flex-none w-5 h-5 "} />
+                          </button>
+                        )}
+                        {mediaInfo?.isSelf && (
+                          <button
+                            onClick={() => setimgFull((p) => !p)}
+                            aria-label="expand text"
                             className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
                           >
                             {imgFull ? (
                               <>
-                                <BiCollapse className={"flex-none w-5 h-5 "} />
+                                <MdOutlineCompress
+                                  className={"flex-none w-5 h-5 "}
+                                />
                               </>
                             ) : (
                               <>
-                                <BiExpand className={"flex-none w-5 h-5 "} />
+                                <MdOutlineExpand
+                                  className={"flex-none w-5 h-5 "}
+                                />
                               </>
                             )}
                           </button>
@@ -548,10 +578,14 @@ const Thread = ({
                         <div>
                           <button
                             aria-label="reply"
-                            disabled={post?.archived === true || post?.locked === true}
+                            disabled={
+                              post?.archived === true || post?.locked === true
+                            }
                             onClick={(e) => {
                               e.preventDefault();
-                              session && !(post?.archived === true) && !post?.locked
+                              session &&
+                              !(post?.archived === true) &&
+                              !post?.locked
                                 ? setopenReply((r) => !r)
                                 : !session && context.toggleLoginModal();
                             }}
@@ -587,7 +621,6 @@ const Thread = ({
                             saved={post?.saved}
                             post={true}
                             isPortrait={usePortrait}
-                            postindex={context.postNum}
                           ></SaveButton>
                         </div>
                         <a
@@ -638,7 +671,7 @@ const Thread = ({
                           </div>
                         </a>
                         <div className="ml-0.5">
-                          <PostOptButton post={post} postNum={0} mode="post" />
+                          <PostOptButton post={post} mode="post" />
                         </div>
                       </div>
                     </div>
@@ -659,7 +692,9 @@ const Thread = ({
                   parent={post?.name}
                   getResponse={updateMyReplies}
                   postName={post?.name}
-                  onCancel={(e) => {setopenReply(false)}}
+                  onCancel={(e) => {
+                    setopenReply(false);
+                  }}
                 />
               </div>
             )}

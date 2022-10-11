@@ -13,6 +13,7 @@ import {
   BsArrowRight,
 } from "react-icons/bs";
 import { useCollectionContext } from "./CollectionContext";
+import React from "react";
 const CheckBox = ({ toggled }) => {
   return (
     <div

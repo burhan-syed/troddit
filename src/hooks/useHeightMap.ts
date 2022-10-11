@@ -8,27 +8,50 @@ interface UseHeightMap {
   mediaOnly: boolean;
   wideUI: boolean;
   compactLinkPics: boolean;
+  uniformMediaMode: boolean;
 }
 
 const useHeightMap = (args: UseHeightMap) => {
-  const { windowWidth, cardStyle, columns, mediaOnly, wideUI, compactLinkPics } = args;
-  const card = cardStyle === "default" ? "card1" : cardStyle
-  const queryKeyHeights = ["heightMap", columns, card, mediaOnly, wideUI, windowWidth, compactLinkPics];
-  const queryKeySeen = ["seenMap", columns, card, mediaOnly, wideUI, windowWidth, compactLinkPics];
+  const {
+    windowWidth,
+    cardStyle,
+    columns,
+    mediaOnly,
+    wideUI,
+    compactLinkPics,
+    uniformMediaMode,
+  } = args;
+  const card = cardStyle === "default" ? "card1" : cardStyle;
+  const queryKeyHeights = [
+    "heightMap",
+    columns,
+    card,
+    mediaOnly,
+    wideUI,
+    windowWidth,
+    compactLinkPics,
+  ];
+  const queryKeySeen = [
+    "seenMap",
+    columns,
+    card,
+    mediaOnly,
+    wideUI,
+    windowWidth,
+    compactLinkPics,
+  ];
 
   const queryClient = useQueryClient();
 
   const createMaps = () => {
-    queryClient.fetchQuery(
-      queryKeyHeights,
-      () => ({ heightMap: new Map()}),
-      { staleTime: Infinity, cacheTime: Infinity }
-    );
-    queryClient.fetchQuery(
-      queryKeySeen,
-      () => ({ seenMap: new Map()}),
-      { staleTime: Infinity, cacheTime: Infinity }
-    );
+    queryClient.fetchQuery(queryKeyHeights, () => ({ heightMap: new Map() }), {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    });
+    queryClient.fetchQuery(queryKeySeen, () => ({ seenMap: new Map() }), {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    });
   };
 
   const setHeight = (key, value) => {
@@ -36,10 +59,10 @@ const useHeightMap = (args: UseHeightMap) => {
       if (!pData) {
         let heightMap = new Map();
         heightMap.set(key, value);
-        return {heightMap: heightMap};
+        return { heightMap: heightMap };
       } else {
-        pData?.heightMap?.set(key,value); 
-        return pData; 
+        pData?.heightMap?.set(key, value);
+        return pData;
       }
     });
   };
@@ -48,28 +71,28 @@ const useHeightMap = (args: UseHeightMap) => {
       if (!pData) {
         let seenMap = new Map();
         seenMap.set(key, value);
-        return {seenMap: seenMap};
+        return { seenMap: seenMap };
       } else {
-        pData?.seenMap?.set(key,value); 
-        return pData; 
+        pData?.seenMap?.set(key, value);
+        return pData;
       }
     });
-  }
+  };
   const getHeights = () => {
-    const heights = queryClient.getQueryData(queryKeyHeights) as any; 
-    return heights?.heightMap; 
-  }
+    const heights = queryClient.getQueryData(queryKeyHeights) as any;
+    return heights?.heightMap;
+  };
   const getSeen = () => {
-    const seen = queryClient.getQueryData(queryKeySeen) as any; 
-    return seen?.seenMap; 
-  }
+    const seen = queryClient.getQueryData(queryKeySeen) as any;
+    return seen?.seenMap;
+  };
 
   return {
     createMaps,
     setHeight,
-    setSeen, 
-    getHeights, 
-    getSeen, 
+    setSeen,
+    getHeights,
+    getSeen,
   };
 };
 

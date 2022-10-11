@@ -1,4 +1,9 @@
-import { localRead, localSeen, subredditFilters, userFilters } from "../src/MainContext";
+import {
+  localRead,
+  localSeen,
+  subredditFilters,
+  userFilters,
+} from "../src/MainContext";
 
 const DOMAIN = "www.troddit.com";
 export const secondsToTime = (
@@ -85,20 +90,21 @@ export const checkVersion = (a, b) => {
 
 export function debounce(func, wait, immediate) {
   var timeout;
-  return function() {
-      var context = this, args = arguments;
-      var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
   };
-};
+}
 
-export const fixCommentFormat =  async (comments) => {
+export const fixCommentFormat = async (comments) => {
   if (comments?.length > 0) {
     let basedepth = comments[0].data.depth;
 
@@ -133,10 +139,13 @@ export const fixCommentFormat =  async (comments) => {
   return comments;
 };
 
-export const findGreatestsImages = (images: {height:number,width:number, url:string}[],maxheight=0)=>{
+export const findGreatestsImages = (
+  images: { height: number; width: number; url: string }[],
+  maxheight = 0
+) => {
   let fImages = [] as any[];
-  
-  if (maxheight > 0){
+
+  if (maxheight > 0) {
     images.forEach((img, i) => {
       if (img.height > maxheight) {
         let ratio = maxheight / img.height;
@@ -156,7 +165,7 @@ export const findGreatestsImages = (images: {height:number,width:number, url:str
       }
     });
   } else {
-    fImages = images; 
+    fImages = images;
   }
 
   let tallest = fImages[0];
@@ -174,15 +183,15 @@ export const findGreatestsImages = (images: {height:number,width:number, url:str
     }
   });
 
-  return {tallest, widest, ratio, fImages}
-
-}
+  return { tallest, widest, ratio, fImages };
+};
 
 export const findOptimalImageIndex = (
   images: any[],
   params: { imgFull; fullRes; postMode; context; windowWidth; containerDims? }
 ) => {
-  const { postMode, imgFull, fullRes, containerDims, windowWidth, context } = params;
+  const { postMode, imgFull, fullRes, containerDims, windowWidth, context } =
+    params;
   let num = images?.length - 1;
   let done = false;
   let width = windowWidth;
@@ -212,8 +221,14 @@ export const findOptimalImageIndex = (
   return num;
 };
 
-export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
-  let videoInfo; // = { url: "", height: 0, width: 0 };
+export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
+  let videoInfo: {
+    url: string;
+    height: number;
+    width: number;
+    hasAudio?: boolean;
+    duration?: number;
+  }[]; // = { url: "", height: 0, width: 0 };
   let imageInfo; // = [{ url: "", height: 0, width: 0 }];
   let thumbnailInfo;
   let iFrameHTML;
@@ -226,7 +241,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   let isSelf = false; //self text post
   let isTweet = false;
   let isIframe = false;
-  let isMedia = false; 
+  let isMedia = false;
 
   let dimensions = [0, 0]; //x,y pixels
 
@@ -234,8 +249,8 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     let a = await findVideo(post);
     if (a) {
       isVideo = true;
-      dimensions[0] = videoInfo.width;
-      dimensions[1] = videoInfo.height;
+      dimensions[0] = videoInfo[0].width;
+      dimensions[1] = videoInfo[0].height;
     } else {
       let b = await findImage(post, quick);
       if (b) {
@@ -263,14 +278,14 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       let i = await findIframe(post);
       if (i) {
         isIframe = true;
-        isMedia = true; 
+        isMedia = true;
       }
     }
 
     if (
       post.thumbnail === "self" ||
       post.is_self ||
-      post?.domain?.includes("self") || 
+      post?.domain?.includes("self") ||
       post?.selftext_html
     ) {
       isSelf = true;
@@ -291,11 +306,10 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     if ((domainEnd === "jpg" || domainEnd === "png"|| domainEnd === "gif") && dimensions[0] > 0){
       isLink = false;
       isImage = true; 
-    }
-
+    }    
     //portrait && media check
     if (dimensions[0] > 0) {
-      isMedia = true; 
+      isMedia = true;
       if (dimensions[1] >= dimensions[0]) {
         isPortrait = true;
       } else if (dimensions[1] < dimensions[0]) {
@@ -310,7 +324,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       isGallery = false;
       isLink = false;
       isPortrait = false;
-      isMedia = false; 
+      isMedia = false;
     }
 
     return {
@@ -328,7 +342,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       isLink,
       isSelf,
       dimensions,
-      isMedia
+      isMedia,
     };
   };
 
@@ -343,12 +357,22 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     let req = await fetch(`https://api.gfycat.com/v1/gfycats/${id}`);
     if (req?.ok) {
       let data = await req.json();
-      videoInfo = {
-        url: data["gfyItem"]["mp4Url"],
-        height: data["gfyItem"]["height"],
-        width: data["gfyItem"]["width"],
-        hasAudio: data["gfyItem"]["hasAudio"],
-      };
+      videoInfo = [
+        {
+          url: data["gfyItem"]["mp4Url"],
+          height: data["gfyItem"]["height"],
+          width: data["gfyItem"]["width"],
+          hasAudio: data["gfyItem"]["hasAudio"],
+        },
+      ];
+      if (data["gfyItem"]["mobileUrl"]) {
+        videoInfo.push({
+          url: data["gfyItem"]["mobileUrl"],
+          height: data["gfyItem"]["height"],
+          width: data["gfyItem"]["width"],
+          hasAudio: data["gfyItem"]["hasAudio"],
+        });
+      }
       findImage(post);
       isVideo = true;
       return true;
@@ -358,7 +382,6 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
   };
 
   const findVideo = async (post, skipGfy = false) => {
-    // console.log("find vid", post?.title);
     if (
       post?.url_overridden_by_dest?.includes("https://gfycat.com") &&
       post?.url_overridden_by_dest?.split("/")?.[3] &&
@@ -372,11 +395,14 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     }
     if (post.preview) {
       if (post.preview.reddit_video_preview) {
-        videoInfo = {
-          url: checkURL(post.preview.reddit_video_preview.fallback_url),
-          height: post.preview.reddit_video_preview.height,
-          width: post.preview.reddit_video_preview.width,
-        };
+        videoInfo = [
+          {
+            url: checkURL(post.preview.reddit_video_preview.fallback_url),
+            height: post.preview.reddit_video_preview.height,
+            width: post.preview.reddit_video_preview.width,
+            duration: post.preview.reddit_video_preview?.duration,
+          },
+        ];
 
         thumbnailInfo = [
           {
@@ -392,11 +418,15 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
       }
       //gifs are stored as mp4s here, also with resolutions but just using source for now
       else if (post?.preview?.images?.[0]?.variants?.mp4) {
-        videoInfo = {
-          url: checkURL(post?.preview?.images?.[0]?.variants?.mp4?.source?.url),
-          height: post?.preview?.images?.[0]?.variants?.mp4?.source?.height,
-          width: post?.preview?.images?.[0]?.variants?.mp4?.source?.width,
-        };
+        videoInfo = [
+          {
+            url: checkURL(
+              post?.preview?.images?.[0]?.variants?.mp4?.source?.url
+            ),
+            height: post?.preview?.images?.[0]?.variants?.mp4?.source?.height,
+            width: post?.preview?.images?.[0]?.variants?.mp4?.source?.width,
+          },
+        ];
 
         thumbnailInfo = [
           {
@@ -412,11 +442,13 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     }
     if (post.media) {
       if (post.media.reddit_video) {
-        videoInfo = {
-          url: checkURL(post.media.reddit_video.fallback_url),
-          height: post.media.reddit_video.height,
-          width: post.media.reddit_video.width,
-        };
+        videoInfo = [
+          {
+            url: checkURL(post.media.reddit_video.fallback_url),
+            height: post.media.reddit_video.height,
+            width: post.media.reddit_video.width,
+          },
+        ];
         thumbnailInfo = [
           {
             url: checkURL(post?.thumbnail),
@@ -458,7 +490,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
               ),
               height: image.p[num].y,
               width: image.p[num].x,
-              caption: caption
+              caption: caption,
             });
           }
         }
@@ -496,9 +528,9 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
     } else if (post.url) {
       let purl: string = post.url;
       if (
-        purl.includes(".jpg") ||
-        purl.includes(".png") ||
-        purl.includes(".gif") && !purl.includes(".gifv")//gifs should be handled in findVideo with mp4 format
+        purl?.includes(".jpg") ||
+        purl?.includes(".png") ||
+        (purl?.includes(".gif") && !purl?.includes(".gifv")) //gifs should be handled in findVideo with mp4 format
       ) {
         if (!quick) {
           let info = await loadImg(purl);
@@ -542,7 +574,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
 
   const findIframe = async (post) => {
     if (post?.media_embed?.content) {
-      if (post.media_embed.content.includes("iframe")) {
+      if (post.media_embed.content?.includes("iframe")) {
         let html: Element = stringToHTML(post.media_embed.content);
         html.setAttribute("height", "100%");
         html.setAttribute("width", "100%");
@@ -554,7 +586,7 @@ export const findMediaInfo = async (post, quick = false, domain=DOMAIN) => {
               post?.url.split("/")?.[3]
             }&parent=${domain}`
           );
-        } 
+        }
         iFrameHTML = html;
         return true;
       }
@@ -571,7 +603,7 @@ export const filterPosts = async (
   prevposts = {},
   checkSubs = false,
   checkUsers = true,
-  domain=DOMAIN
+  domain = DOMAIN
 ) => {
   let {
     seenFilter,
@@ -587,105 +619,117 @@ export const filterPosts = async (
   } = filters;
   let filtercount = 0;
 
-  const filterChildren = async (data: Array<any>, domain=DOMAIN) => {
-    async function filter(arr, callback) {
-      const fail = Symbol();
-      return (
-        await Promise.all(
-          arr.map(async (item) => ((await callback(item)) ? item : fail))
-        )
-      ).filter((i) => i !== fail);
+  async function filter(arr, callback) {
+    const fail = Symbol();
+    return (
+      await Promise.all(
+        arr.map(async (item) => ((await callback(item)) ? item : fail))
+      )
+    ).filter((i) => i !== fail);
+  }
+
+  const preFilterCheck = async (d) => {
+    //check duplicate
+    if (prevposts?.[d?.name] == 1) {
+      return false;
     }
 
-    const filterCheck = async (d) => {
-      //check duplicate
-      if (prevposts?.[d?.name] == 1) {
-        return false;
-      }
+    //check subs / users. Done in background without increasing filter count
+    if (checkUsers && (await userFilters.getItem(d?.author?.toUpperCase()))) {
+      return false;
+    }
+    if (
+      checkSubs &&
+      (await subredditFilters.getItem(d?.subreddit?.toUpperCase()))
+    ) {
+      return false;
+    }
 
-      //check subs / users. Done in background without increasing filter count
-      if (checkUsers && (await userFilters.getItem(d?.author?.toUpperCase()))) {
-        return false;
-      }
-      if (
-        checkSubs &&
-        (await subredditFilters.getItem(d?.subreddit?.toUpperCase()))
-      ) {
-        return false;
-      }
+    //if filtering read, no need for other content checks
+    if (!seenFilter && (await localSeen.getItem(d?.name))) {
+      filtercount += 1;
+      return false;
+    }
+    if (!readFilter && (await localRead.getItem(d?.name))) {
+      filtercount += 1;
+      return false;
+    }
+    return true;
+  };
 
-      //if filtering read, no need for other content checks
-      if (!seenFilter && (await localSeen.getItem(d?.name))){
-        filtercount +=1; 
-        return false; 
-      }
-      if (!readFilter && (await localRead.getItem(d?.name))) {
-        filtercount += 1;
-        return false;
-      }
+  const filterCheck = async (d) => {
+    let quick = true;
+    //need to get all resolution data if filtering out orientations
+    if (!imgPortraitFilter || !imgLandscapeFilter) {
+      quick = false;
+    }
 
-      let quick = true;
-      //need to get all resolution data if filtering out orientations
-      if (!imgPortraitFilter || !imgLandscapeFilter) {
-        quick = false;
-      }
+    let mediaInfo = d?.mediaInfo ?? (await findMediaInfo(d, quick, domain));
+    //orientation check
+    if (!imgPortraitFilter || !imgLandscapeFilter) {
+      //only check on videos or images (galleries consider images)
+      if (mediaInfo?.isVideo || mediaInfo?.isImage) {
+        //hide portrait if they are portrait, square is considered portrait
 
-      let mediaInfo = d?.mediaInfo ?? (await findMediaInfo(d, quick, domain));
-      //orientation check
-      if (!imgPortraitFilter || !imgLandscapeFilter) {
-        //only check on videos or images (galleries consider images)
-        if (mediaInfo?.isVideo || mediaInfo?.isImage) {
-          //hide portrait if they are portrait, square is considered portrait
-
-          if (!imgPortraitFilter && mediaInfo?.isPortrait) {
-            filtercount += 1;
-
-            return false;
-          }
-          //hide landscape if not portrait (are landscape)
-          if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
-            filtercount += 1;
-
-            return false;
-          }
-        }
-      }
-
-      if (!vidFilter && mediaInfo.isVideo) {
-        //if video is not in self post, filter out
-        if (!(selfFilter && mediaInfo.isSelf)) {
+        if (!imgPortraitFilter && mediaInfo?.isPortrait) {
           filtercount += 1;
+
           return false;
         }
-      } else if (!imgFilter && mediaInfo.isImage) {
-        //if image is not in self post, filter out
-        if (!(selfFilter && mediaInfo.isSelf)) {
+        //hide landscape if not portrait (are landscape)
+        if (!imgLandscapeFilter && mediaInfo?.isPortrait === false) {
           filtercount += 1;
+
           return false;
         }
-      } else if (!linkFilter && mediaInfo.isLink) {
-        filtercount += 1;
-        return false;
       }
-      //if self post, filter out
-      else if (!selfFilter && mediaInfo.isSelf) {
-        filtercount += 1;
-        return false;
-      }
-      // else if (!galFilter && mediaInfo.isGallery) {
-      // filtercount += 1;
-      //   return false;
-      // }
-      else {
-        return true;
-      }
-    };
+    }
 
+    if (!vidFilter && mediaInfo.isVideo) {
+      //if video is not in self post, filter out
+      if (!(selfFilter && mediaInfo.isSelf)) {
+        filtercount += 1;
+        return false;
+      }
+    } else if (!imgFilter && mediaInfo.isImage) {
+      //if image is not in self post, filter out
+      if (!(selfFilter && mediaInfo.isSelf)) {
+        filtercount += 1;
+        return false;
+      }
+    } else if (!linkFilter && mediaInfo.isLink) {
+      filtercount += 1;
+      return false;
+    }
+    //if self post, filter out
+    else if (!selfFilter && mediaInfo.isSelf) {
+      filtercount += 1;
+      return false;
+    }
+    // else if (!galFilter && mediaInfo.isGallery) {
+    // filtercount += 1;
+    //   return false;
+    // }
+    else {
+      return true;
+    }
+  };
+
+  const prefilterChildren = async (data: Array<any>) => {
     let f = await filter(data, async (d) => {
+      let r = await preFilterCheck(d.data);
+      return r;
+    });
+    //console.log("prefilter?", f.length, data.length)
+    return f;
+  };
+
+  const filterChildren = async (data: Array<any>, domain = DOMAIN) => {
+    let f = await filter(data, async (d) => {
+      //console.log(d);
       let mediaInfo = await findMediaInfo(d.data, false, domain);
       d.data["mediaInfo"] = mediaInfo;
       let r = await filterCheck(d.data);
-      //console.log(d, r);
       return r;
     });
     return f;
@@ -695,7 +739,8 @@ export const filterPosts = async (
   if (
     true //always going to do this to get mediaInfo initally, additional filter steps decided in filterCheck()
   ) {
-    filtered = await filterChildren(posts, domain);
+    filtered = await prefilterChildren(posts);
+    filtered = await filterChildren(filtered, domain);
   }
   return {
     filtered: filtered,

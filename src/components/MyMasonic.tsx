@@ -24,6 +24,7 @@ import { findGreatestsImages, findOptimalImageIndex } from "../../lib/utils";
 import useGlobalState from "../hooks/useGlobalState";
 import PostModal from "./PostModal";
 import { useRouter } from "next/router";
+import MasonicStatic from "./MasonicStatic";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -44,6 +45,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const { setFeedData } = useFeedGallery();
 
   const [cols, setCols] = useState(3);
+  const [uniformMediaMode, setUniformMediaMode] = useState<boolean>();
   const [masonicKey, setMasonicKey] = useState(curKey);
   const [windowWidth, windowHeight] = useWindowSize();
 
@@ -72,6 +74,13 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     context.setColumns(cols);
   }, [cols]);
+  useEffect(() => {
+    if (context.mediaOnly && cols > 1 && context.uniformHeights) {
+      setUniformMediaMode(true);
+    } else {
+      setUniformMediaMode(false);
+    }
+  }, [cols, context.mediaOnly, context.uniformHeights]);
 
   const [items, setItems] = useState<any[]>([]);
   const [newPosts, setNewPosts] = useState<any[]>([]);
@@ -263,7 +272,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   // }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
   const seenMap = useMemo(
     () => new Map(),
-    [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
+    [
+      cols,
+      windowWidth,
+      context.cardStyle,
+      context.mediaOnly,
+      context.wideUI,
+      uniformMediaMode,
+    ]
   );
   const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap({
     columns: cols,
@@ -272,6 +288,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     wideUI: context.wideUI,
     windowWidth: windowWidth,
     compactLinkPics: context.compactLinkPics,
+    uniformMediaMode: uniformMediaMode as boolean,
   });
   const {
     createGlobalState,
@@ -288,6 +305,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     context.wideUI,
     windowWidth,
     context.compactLinkPics,
+    uniformMediaMode,
   ]);
   const [jumped, setJumped] = useState(false);
 
@@ -321,7 +339,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     ) {
       createMaps();
     }
-  }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
+  }, [
+    cols,
+    windowWidth,
+    context.cardStyle,
+    context.mediaOnly,
+    context.wideUI,
+    uniformMediaMode,
+  ]);
 
   const margin = useMemo(
     () =>
@@ -385,63 +410,64 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         width -= 24;
       }
       let minHeight = 0;
-      if (context.cardStyle !== "row1") {
-        minHeight =
-          !post?.data?.mediaInfo?.isSelf &&
-          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
-          !post?.data?.mediaInfo?.isTweet &&
-          !post?.data?.mediaInfo?.isGallery &&
-          post?.data?.mediaInfo?.dimensions?.[0] > 0
-            ? (width / post?.data?.mediaInfo?.dimensions[0]) *
-              post.data.mediaInfo.dimensions[1]
-            : 0;
-
-        let h = minHeight;
-        if (
-          post?.data?.mediaInfo?.isImage &&
-          post?.data?.mediaInfo?.imageInfo?.length > 0 &&
-          !post?.mediaInfo?.isGallery &&
-          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
-        ) {
-          let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {
-            imgFull: false,
-            fullRes: false,
-            postMode: false,
-            context: {
-              cardStyle: context.cardStyle,
-              saveWideUI: context.saveWideUI,
-              columns: cols,
-            },
-            windowWidth,
-            containerDims: false,
-          });
+      if (!uniformMediaMode) {
+        if (context.cardStyle !== "row1") {
           minHeight =
-            (width / post?.data?.mediaInfo?.imageInfo?.[num]?.width) *
-            post?.data?.mediaInfo?.imageInfo?.[num]?.height;
-        }
-        if (post?.data?.mediaInfo?.isGallery) {
-          let images = post.data.mediaInfo.gallery;
-          const { tallest, widest, ratio, fImages } = findGreatestsImages(
-            images,
-            cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
-          );
-          if (cols === 1) {
-            minHeight = Math.min(
-              windowHeight * 0.75,
-              ratio?.height * (width / ratio?.width)
+            !post?.data?.mediaInfo?.isSelf &&
+            !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
+            !post?.data?.mediaInfo?.isTweet &&
+            !post?.data?.mediaInfo?.isGallery &&
+            post?.data?.mediaInfo?.dimensions?.[0] > 0
+              ? (width / post?.data?.mediaInfo?.dimensions[0]) *
+                post.data.mediaInfo.dimensions[1]
+              : 0;
+          let h = minHeight;
+          if (
+            post?.data?.mediaInfo?.isImage &&
+            post?.data?.mediaInfo?.imageInfo?.length > 0 &&
+            !post?.mediaInfo?.isGallery &&
+            !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
+          ) {
+            let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {
+              imgFull: false,
+              fullRes: false,
+              postMode: false,
+              context: {
+                cardStyle: context.cardStyle,
+                saveWideUI: context.saveWideUI,
+                columns: cols,
+              },
+              windowWidth,
+              containerDims: false,
+            });
+            minHeight =
+              (width / post?.data?.mediaInfo?.imageInfo?.[num]?.width) *
+              post?.data?.mediaInfo?.imageInfo?.[num]?.height;
+          }
+
+          if (post?.data?.mediaInfo?.isGallery) {
+            let images = post.data.mediaInfo.gallery;
+            const { tallest, widest, ratio, fImages } = findGreatestsImages(
+              images,
+              cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
             );
-          } else {
-            minHeight = tallest.height * (width / widest.width);
+            if (cols === 1) {
+              minHeight = Math.min(
+                windowHeight * 0.75,
+                ratio?.height * (width / ratio?.width)
+              );
+            } else {
+              minHeight = tallest?.height * (width / widest?.width);
+            }
+          }
+          if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
+            minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
+          }
+          if (cols === 1) {
+            minHeight = Math.min(windowHeight * 0.75, minHeight);
           }
         }
-        if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
-          minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
-        }
-        if (cols === 1) {
-          minHeight = Math.min(windowHeight * 0.75, minHeight);
-        }
       }
-
       return (
         <InView
           role={"gridcell"}
@@ -461,7 +487,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 // + " outline " //outlines for debugging..
               }
               style={
-                knownHeight > 0 && seen
+                uniformMediaMode
+                  ? {
+                      height: `${(width * 16) / 9}px`,
+                    }
+                  : knownHeight > 0 && seen
                   ? context.cardStyle === "row1" //rows need to grow
                     ? {
                         minHeight: `${knownHeight}px`,
@@ -497,6 +527,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 openPost={openPost}
                 handleSizeChange={handleSizeChange}
                 forceSizeChange={forceSizeChange}
+                uniformMediaMode={uniformMediaMode}
               />
             </div>
           )}
@@ -504,7 +535,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       );
     },
 
-    [cols, windowWidth, context.cardStyle, context.wideUI, context.mediaOnly]
+    [
+      cols,
+      windowWidth,
+      context.cardStyle,
+      context.wideUI,
+      context.mediaOnly,
+      uniformMediaMode,
+    ]
   );
   const filteredHeights = Array.from(getHeights()?.values() ?? [])
     .filter((m: any) => m?.height > 0)
@@ -516,17 +554,18 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const router = useRouter();
   const [lastRoute, setLastRoute] = useState("");
   const [selectedPost, setSelectedPost] = useState<any>();
-  const openPost = (post, postNum, commentsDirect) => {
+  const openPost = (post, postNum, nav) => {
     setLastRoute(router.asPath);
     setSelectedPost({
       post: post,
       postNum: postNum,
-      commentsDirect: commentsDirect,
+      nav: nav,
     });
   };
   useEffect(() => {
     if (lastRoute === router.asPath) {
       setSelectedPost(undefined);
+      context.setMediaMode(false);
       context.setPauseAll(false);
     }
     //don't add lastRoute to the array, breaks things
@@ -547,25 +586,41 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
           postData={selectedPost?.post?.data}
           postNum={selectedPost?.postNum}
           commentMode={selectedPost?.kind === "t1"}
-          commentsDirect={selectedPost?.commentsDirect}
+          commentsDirect={selectedPost?.nav?.toComments}
+          mediaMode={selectedPost?.nav?.toMedia}
           curKey={curKey}
           fetchMore={feed.fetchNextPage}
         />
       )}
       <div>
-        <Masonry
-          role="list"
-          key={masonicKey}
-          onRender={maybeLoadMorePosts}
-          columnGutter={0}
-          columnCount={cols}
-          items={items}
-          itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
-          overscanBy={2}
-          render={PostCard}
-          className="outline-none"
-          ssrWidth={500}
-        />
+        {uniformMediaMode ? (
+          <MasonicStatic
+            items={items}
+            render={PostCard}
+            onRender={maybeLoadMorePosts}
+            cols={cols}
+            margin={margin}
+            key={`${masonicKey}_${uniformMediaMode ? "uniform" : "variable"}_${
+              cols === 1 ? "1col" : "multiCol"
+            }`}
+          />
+        ) : (
+          <Masonry
+            role="list"
+            key={`${masonicKey}_${uniformMediaMode ? "uniform" : "variable"}_${
+              cols === 1 ? "1col" : "multiCol"
+            }`}
+            onRender={maybeLoadMorePosts}
+            columnGutter={0}
+            columnCount={cols}
+            items={items}
+            itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
+            overscanBy={2}
+            render={PostCard}
+            className="outline-none"
+            ssrWidth={500}
+          />
+        )}
 
         {!context?.infiniteLoading && feed.hasNextPage && (
           <div className="flex items-center justify-center mt-6 mb-6">

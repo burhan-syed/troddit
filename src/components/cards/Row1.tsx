@@ -20,6 +20,7 @@ import { hideLink } from "../../RedditAPI";
 import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
+import { useWindowWidth } from "@react-hook/window-size";
 const Row1 = ({
   post,
   hasMedia,
@@ -32,6 +33,7 @@ const Row1 = ({
   recomputeSize,
 }) => {
   const context: any = useMainContext();
+  const windowWidth = useWindowWidth(); 
   const [expand, setexpand] = useState<boolean>();
   useEffect(() => {
     if (expand === false) recomputeSize();
@@ -68,7 +70,6 @@ const Row1 = ({
               likes={post?.likes}
               score={post?.score ?? 0}
               name={post?.name}
-              postindex={postNum}
               archived={post?.archived}
               postTime={post?.created_utc}
             />
@@ -83,8 +84,9 @@ const Row1 = ({
           target={"_blank"}
           rel="noreferrer"
           onClick={(e) => {
-            // e.stopPropagation();
+            e.stopPropagation();
             e.preventDefault();
+            handleClick(e, {toMedia: true})
           }}
         >
           <div
@@ -160,12 +162,13 @@ const Row1 = ({
         <div className="flex flex-row flex-wrap items-center pt-1 text-xs truncate text-th-textLight ">
           <Link href={`/r/${post?.subreddit}`}>
             <a
-              className="mr-1"
+              className={"mr-1 "}
               onClick={(e) => {
                 e.stopPropagation();
+                windowWidth < 640 && e.preventDefault(); 
               }}
             >
-              <h2 className="hover:underline">r/{post?.subreddit ?? "ERR"}</h2>
+              <h2 className="cursor-default sm:hover:underline sm:cursor-pointer">r/{post?.subreddit ?? "ERR"}</h2>
             </a>
           </Link>
           {post?.crosspost_parent_list?.[0] ? (
@@ -180,9 +183,10 @@ const Row1 = ({
             <a
               onClick={(e) => {
                 e.stopPropagation();
+                windowWidth < 640 && e.preventDefault(); 
               }}
             >
-              <h2 className="ml-1 mr-1 hover:underline">
+              <h2 className="ml-1 mr-1 cursor-default sm:hover:underline sm:cursor-pointer">
                 u/{post?.author ?? ""}
               </h2>
             </a>
@@ -199,6 +203,10 @@ const Row1 = ({
               "yr ago",
             ])}
           </p>
+          {post?.num_duplicates > 0 && <span className="flex">
+                    <p className="mx-1">•</p>
+                    <p className="">{post?.num_duplicates} duplicate{post?.num_duplicates === 1 ? "" : "s"}</p>
+                    </span>}
           {post?.over_18 && (
             <div className="flex flex-row pl-1 space-x-1">
               <p>•</p>
@@ -229,7 +237,7 @@ const Row1 = ({
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="ml-auto flex items-center gap-0.5 "
+              className={"ml-auto  items-center gap-0.5 hidden md:flex "}
             >
               <BsBoxArrowInUpRight className="flex-none w-3 h-3 ml-auto group-hover:scale-110 " />
 
@@ -246,7 +254,7 @@ const Row1 = ({
               {")"}
             </a>
           ) : (
-            <span className="ml-auto text-xs font-xs hover:underline">
+            <span className="hidden ml-auto text-xs font-xs hover:underline md:block">
               <a
                 title="open source"
                 href={`${post.url}`}
@@ -304,9 +312,9 @@ const Row1 = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  handleClick(e, true);
+                  handleClick(e, { toComments: true });
                 }}
-                className="flex flex-row items-center px-2 py-1 h-[26px] space-x-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  "
+                className="flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] space-x-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  "
               >
                 <BiComment className="flex-none w-4 h-4 " />
                 <h1 className="">{`${
@@ -323,22 +331,20 @@ const Row1 = ({
                   )}
               </button>
             </a>
-            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">
+            <div className="flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">
               <SaveButton
                 id={post?.name}
                 saved={post?.saved}
                 row={true}
                 isPortrait={false}
-                postindex={postNum}
               />
             </div>
-            <div className="flex flex-row items-center px-2 h-[26px] py-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 hover:cursor-pointer ">
+            <div className="flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 hover:cursor-pointer ">
               <HideButton
                 id={post?.name}
                 hidden={post?.hidden}
                 row={true}
                 isPortrait={false}
-                postindex={postNum}
               />
             </div>
             <a
@@ -346,7 +352,7 @@ const Row1 = ({
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex flex-row h-[26px] items-center px-2 py-1 space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 ">
+              <div className="flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 ">
                 <BiExit className="flex-none w-4 h-4 " />
                 <h1 className="hidden md:block">Source</h1>
               </div>
@@ -361,8 +367,8 @@ const Row1 = ({
                 <h1 className="hidden md:block ">Original</h1>
               </div>
             </a>
-            <div className="relative flex justify-end flex-grow sm:flex-grow-0 text-th-textLight">
-              <PostOptButton post={post} postNum={postNum} mode={"row"} />
+            <div className="relative flex justify-end flex-grow sm:flex-grow-0 text-th-textLight ">
+              <PostOptButton post={post} mode={"row"} />
             </div>
           </div>
         </div>
@@ -377,7 +383,11 @@ const Row1 = ({
           >
             <a
               href={post?.permalink}
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClick(e, { toMedia: true });
+              }}
               onMouseDown={(e) => e.preventDefault()}
             >
               <MediaWrapper
@@ -386,6 +396,7 @@ const Row1 = ({
                 forceMute={forceMute}
                 postMode={false}
                 imgFull={false}
+                handleClick={handleClick}
               />
             </a>
           </div>

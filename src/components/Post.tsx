@@ -1,4 +1,4 @@
-import React,{ useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useMainContext } from "../MainContext";
 import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
@@ -8,23 +8,33 @@ import Card2 from "./cards/Card2";
 import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
-import  useResizeObserver  from "@react-hook/resize-observer";
+import useResizeObserver from "@react-hook/resize-observer";
+import ResizeObserverComponent from "./ResizeObserverComponent";
 
-const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }) => {
+const Post = ({
+  post,
+  postNum = 0,
+  openPost,
+  handleSizeChange,
+  forceSizeChange,
+  uniformMediaMode = false,
+}) => {
   const postRef = useRef<HTMLDivElement>(null);
-  useResizeObserver(postRef, () => handleSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height))
   const recomputeSize = () => {
-    forceSizeChange(post?.data?.name, postRef?.current?.getBoundingClientRect()?.height)
-  }
+    forceSizeChange(
+      post?.data?.name,
+      postRef?.current?.getBoundingClientRect()?.height
+    );
+  };
   const context: any = useMainContext();
   const [hideNSFW, setHideNSFW] = useState(false);
   const [select, setSelect] = useState(false);
   const [forceMute, setforceMute] = useState(0);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const {read} = useRead(post?.data?.name)
-  const [commentsDirect, setCommentsDirect] = useState(false); 
-  const [origCommentCount, setOrigCommentCount] = useState<number>(); 
+  const { read } = useRead(post?.data?.name);
+  const [commentsDirect, setCommentsDirect] = useState(false);
+  const [origCommentCount, setOrigCommentCount] = useState<number>();
   useEffect(() => {
     context.nsfw === false && post?.data?.over_18
       ? setHideNSFW(true)
@@ -35,41 +45,57 @@ const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }
     };
   }, [context, post]);
 
-
-
-  const handleClick = (e, toComments) => {
+  const handleClick = (e, nav: { toComments?: boolean; toMedia?: boolean }) => {
     e.stopPropagation();
-    const multi = router.query?.m ?? ""
+    const multi = router.query?.m ?? "";
     if (!e.ctrlKey && !e.metaKey) {
       context.setPauseAll(true);
-      openPost(post,postNum,toComments);
+      openPost(post, postNum, nav);
       if (router.query?.frontsort) {
         router.push("", post?.data.id, { shallow: true });
-      } 
-      else if (
+      } else if (
         router.pathname.includes("/u/") &&
         session?.user?.name?.toUpperCase() ===
           router?.query?.slug?.[0]?.toUpperCase()
       ) {
         router.push(
           "",
-          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}${multi ? `?m=${multi}` : ""}`,
+          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}${
+            multi ? `?m=${multi}` : ""
+          }`,
           { shallow: true }
         );
       } else if (router.pathname.includes("/u/")) {
-        if (router.query?.slug?.[1]?.toUpperCase() === "M" && router?.query?.slug?.[2]) {
-          router.push("", `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}${multi ? `?m=${multi}` : ""}`, {
-            shallow: true,
-          });
+        if (
+          router.query?.slug?.[1]?.toUpperCase() === "M" &&
+          router?.query?.slug?.[2]
+        ) {
+          router.push(
+            "",
+            `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${
+              post.data.permalink
+            }${multi ? `?m=${multi}` : ""}`,
+            {
+              shallow: true,
+            }
+          );
         } else {
-
-          router.push("", `/u/${post?.data.author}/${post.data.permalink}${multi ? `?m=${multi}` : ""}`, {
-            shallow: true,
-          });
+          router.push(
+            "",
+            `/u/${post?.data.author}/${post.data.permalink}${
+              multi ? `?m=${multi}` : ""
+            }`,
+            {
+              shallow: true,
+            }
+          );
         }
-      } 
-      else {
-        router.push("", `${post?.data.permalink}${multi ? `?m=${multi}` : ""}`, { shallow: true });
+      } else {
+        router.push(
+          "",
+          `${post?.data.permalink}${multi ? `?m=${multi}` : ""}`,
+          { shallow: true }
+        );
       }
     } else {
       window.open(`${post?.data.permalink}`, "_blank");
@@ -77,15 +103,25 @@ const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }
   };
 
   useEffect(() => {
-    if (read) {setOrigCommentCount(read?.numComments)} else {setOrigCommentCount(undefined)};
-  }, [read])
+    if (read) {
+      setOrigCommentCount(read?.numComments);
+    } else {
+      setOrigCommentCount(undefined);
+    }
+  }, [read]);
 
   return (
     <div ref={postRef} className={""}>
+      {!uniformMediaMode && <ResizeObserverComponent post={post} postRef={postRef} handleSizeChange={handleSizeChange}/>}
+
       {/* Click wrappter */}
-      <div className="select-none" > 
+      <div className="select-none">
         {post?.kind === "t1" ? (
-          <CommentCard data={post?.data} postNum={postNum} handleClick={handleClick}/>
+          <CommentCard
+            data={post?.data}
+            postNum={postNum}
+            handleClick={handleClick}
+          />
         ) : context?.cardStyle === "row1" ? (
           <Row1
             post={post?.data}
@@ -108,7 +144,6 @@ const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }
             read={read}
             handleClick={handleClick}
             origCommentCount={origCommentCount}
-
           />
         ) : (
           <Card1
@@ -120,7 +155,7 @@ const Post = ({ post, postNum = 0, openPost, handleSizeChange, forceSizeChange }
             read={read}
             handleClick={handleClick}
             origCommentCount={origCommentCount}
-
+            uniformMediaMode={uniformMediaMode}
           />
         )}
       </div>
