@@ -348,6 +348,27 @@ const NavMenu = ({ hide = false }) => {
                 </Menu.Item>
               )
             )}
+               {context.cardStyle === "card1" && context.mediaOnly && (
+                <>
+                  {["uniformHeights"].map((setting: any) => (
+                    <Menu.Item key={setting}>
+                      {({ active }) => (
+                        <div
+                          className={classNames(
+                            active ? "bg-th-highlight " : "",
+                            "block px-4 text-sm "
+                          )}
+                        >
+                          <Toggles
+                            setting={setting}
+                            externalStyles="py-2 cursor-pointer"
+                          />
+                        </div>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </>
+              )}
             <Menu.Item>
               {({ active }) => (
                 <div

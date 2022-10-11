@@ -48,7 +48,8 @@ interface ToggleProps {
     | "autoRefreshComments"
     | "askToUpdateFeed"
     | "refreshOnFocus"
-    | "compactLinkPics";
+    | "compactLinkPics"
+    | "uniformHeights";
 
   label?: string;
   externalStyles?: string;
@@ -334,6 +335,13 @@ const Toggles = ({
             "Enable to check for new posts when the window is refocused"
           );
         break;
+      case "uniformHeights":
+        !label && setSwitchLabel("Uniform Heights");
+        !subtext &&
+          setSwitchSubtext(
+            "When using media card: sets all cards to uniform heights."
+          );
+        break;
       default:
         break;
     }
@@ -438,6 +446,9 @@ const Toggles = ({
         break;
       case "autoRefreshComments":
         context.setAutoRefreshComments((f) => !f);
+        break;
+      case "uniformHeights":
+        context.setUniformHeights((f) => !f);
         break;
       default:
         break;

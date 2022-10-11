@@ -77,6 +77,8 @@ const Feed = ({ initialData = {} as any }) => {
       ),
       { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
+  } else{
+    toast.remove("not_found");
   }
   return (
     <main>

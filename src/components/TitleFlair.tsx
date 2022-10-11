@@ -2,8 +2,9 @@ import { useState } from "react";
 import Image from "next/dist/client/image";
 import Link from "next/dist/client/link";
 import { useMainContext } from "../MainContext";
+import React from "react";
 
-const TitleFlair = ({ post }) => {
+const TitleFlair = ({ post, padding="p-0.5 px-1", noClick = false }) => {
   const context: any = useMainContext();
 
   if (
@@ -12,7 +13,7 @@ const TitleFlair = ({ post }) => {
   )
     return (
       <div
-        className={`p-0.5 px-1 rounded-lg inline-block select-none ${
+        className={`${padding} rounded-lg inline-block select-none ${
           post?.link_flair_text_color == "light"
             ? " text-white "
             : "text-black"
@@ -36,7 +37,7 @@ const TitleFlair = ({ post }) => {
             post?.link_flair_text
           )}`}
         >
-          <a>
+          <a onClick={(e) => {if(noClick){e.preventDefault(); e.stopPropagation()}}}>
             {post?.link_flair_richtext?.length > 0 ? (
               <div className="flex flex-row items-center justify-center">
                 {post?.link_flair_richtext.map((e, i) => (

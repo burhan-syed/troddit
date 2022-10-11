@@ -25,6 +25,9 @@ export const MainProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); //used in feed to display load bar
   const [ready, setReady] = useState(false); //prevents any feed load until settings are loaded
   const [postOpen, setPostOpen] = useState(false); //using pauseAll instead..
+  const [mediaMode, setMediaMode] = useState(false);
+  const [uniformHeights, setUniformHeights] = useState<boolean>();
+  const [highRes, setHighRes] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);
@@ -83,7 +86,9 @@ export const MainProvider = ({ children }) => {
   const [refreshOnFocus, setRefreshOnFocus] = useState<boolean>();
   const [fastRefreshInterval, setFastRefreshInterval] = useState<number>();
   const [slowRefreshInterval, setSlowRefreshInterval] = useState<number>();
-
+  const [autoPlayInterval, setAutoPlayInterval] = useState<number>();
+  const [waitForVidInterval, setWaitForVidInterval] = useState<boolean>();
+  const [autoPlayMode, setAutoPlayMode] = useState<boolean>();
   const toggleRibbonCollapseOnly = () => {
     setRibbonCollapseOnly((c) => !c);
   };
@@ -171,6 +176,26 @@ export const MainProvider = ({ children }) => {
     } catch (err) {
       return false;
     }
+  };
+  const bulkAddReadPosts = (posts: { postId; numComments }[]) => {
+    setReadPosts((read) => {
+      let now = new Date();
+      let updatedRead = {};
+      posts.forEach(({ postId, numComments }) => {
+        updatedRead[postId] = { postId, numComments, time: now };
+        localRead.setItem(postId, { postId, numComments, time: now });
+      });
+      //console.log("updated:", posts, updatedRead);
+
+      if (Object.keys(read).length + Object.keys(updatedRead).length < 10000) {
+        //console.log({...read, ...updatedRead});
+        return { ...read, ...updatedRead };
+      }
+      //resetting object if space becomes too large
+
+      return updatedRead;
+    });
+    setReadPostsChange((n) => n + 1);
   };
   const addReadPost = ({ postId, numComments }) => {
     localRead.setItem(postId, { postId, numComments, time: new Date() });
@@ -861,9 +886,7 @@ export const MainProvider = ({ children }) => {
 
       //new settings don't need localstorage fallback..
       const loadRibbonCollapseOnly = async () => {
-        let saved = await localForage.getItem(
-          "ribbonCollapseOnly"
-        );
+        let saved = await localForage.getItem("ribbonCollapseOnly");
         saved === true
           ? setRibbonCollapseOnly(true)
           : setRibbonCollapseOnly(false);
@@ -987,6 +1010,32 @@ export const MainProvider = ({ children }) => {
           setSlowRefreshInterval(30 * 60 * 1000);
         }
       };
+      const autoPlayInterval = async () => {
+        let saved = (await localForage.getItem("autoPlayInterval")) as number;
+        if (typeof saved === "number" && saved >= 1) {
+          setAutoPlayInterval(saved);
+        } else {
+          setAutoPlayInterval(5);
+        }
+      };
+      const waitForVidInterval = async () => {
+        let saved = (await localForage.getItem(
+          "waitForVidInterval"
+        )) as boolean;
+        if (saved === false) {
+          setWaitForVidInterval(false);
+        } else {
+          setWaitForVidInterval(true);
+        }
+      };
+      const loadUniformHeights = async () => {
+        let s = await localForage.getItem("uniformHeights");
+        if (s === false) {
+          setUniformHeights(false);
+        } else {
+          setUniformHeights(true);
+        }
+      };
       const compactLinkPics = async () => {
         let saved = await localForage.getItem("compactLinkPics");
         if (saved === false) {
@@ -997,7 +1046,7 @@ export const MainProvider = ({ children }) => {
       };
 
       //things we dont' really need loaded before posts are loaded
-      loadRibbonCollapseOnly(); 
+      loadRibbonCollapseOnly();
       loadCollapseChildrenOnly();
       loadDefaultCollapseChildren();
       loadShowUserIcons();
@@ -1014,6 +1063,9 @@ export const MainProvider = ({ children }) => {
       let refreshonfocus = refreshOnFocus();
       let fastrefreshinterval = fastRefreshInterval();
       let slowrefreshinterval = slowRefreshInterval();
+      let autoplayinterval = autoPlayInterval();
+      let waitforvidinterval = waitForVidInterval();
+      let uniformheights = loadUniformHeights();
       let volumes = loadVolume();
       let nsfw = loadNSFW();
       let autoplay = loadAutoplay();
@@ -1044,6 +1096,9 @@ export const MainProvider = ({ children }) => {
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
       await Promise.all([
+        autoplayinterval,
+        waitforvidinterval,
+        uniformheights,
         volumes,
         compactlinkpics,
         autoseen,
@@ -1096,6 +1151,22 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (uniformHeights !== undefined) {
+      localForage.setItem("uniformHeights", uniformHeights);
+    }
+  }, [uniformHeights]);
+
+  useEffect(() => {
+    if (waitForVidInterval !== undefined) {
+      localForage.setItem("waitForVidInterval", waitForVidInterval);
+    }
+  }, [waitForVidInterval]);
+  useEffect(() => {
+    if (autoPlayInterval !== undefined) {
+      localForage.setItem("autoPlayInterval", autoPlayInterval);
+    }
+  }, [autoPlayInterval]);
   useEffect(() => {
     if (compactLinkPics !== undefined) {
       localForage.setItem("compactLinkPics", compactLinkPics);
@@ -1411,6 +1482,7 @@ export const MainProvider = ({ children }) => {
         readPosts,
         readPostsChange,
         addReadPost,
+        bulkAddReadPosts,
         toggleReadPost,
         clearReadPosts,
         postOpen,
@@ -1467,8 +1539,20 @@ export const MainProvider = ({ children }) => {
         setFastRefreshInterval,
         slowRefreshInterval,
         setSlowRefreshInterval,
+        autoPlayInterval,
+        setAutoPlayInterval,
+        waitForVidInterval,
+        setWaitForVidInterval,
+        mediaMode,
+        setMediaMode,
+        autoPlayMode,
+        setAutoPlayMode,
         compactLinkPics,
         toggleCompactLinkPics,
+        uniformHeights,
+        setUniformHeights,
+        highRes,
+        setHighRes,
       }}
     >
       {children}

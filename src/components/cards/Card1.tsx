@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/dist/client/link";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import { GoRepoForked } from "react-icons/go";
@@ -10,7 +10,21 @@ import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import SubIcon from "../SubIcon";
+import { useWindowWidth } from "@react-hook/window-size";
+import { BiPlay } from "react-icons/bi";
 import ExternalLink from "../ui/ExternalLink";
+
+const VoteFilledUp = (
+  <svg
+    stroke="currentColor"
+    fill="currentColor"
+    strokeWidth="0"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12.781,2.375C12.4,1.9,11.6,1.9,11.219,2.375l-8,10c-0.24,0.301-0.286,0.712-0.12,1.059C3.266,13.779,3.615,14,4,14h2h2 v3v4c0,0.553,0.447,1,1,1h6c0.553,0,1-0.447,1-1v-5v-2h2h2c0.385,0,0.734-0.221,0.901-0.566c0.166-0.347,0.12-0.758-0.12-1.059 L12.781,2.375z"></path>
+  </svg>
+);
 
 //og card
 const Card1 = ({
@@ -22,12 +36,25 @@ const Card1 = ({
   read,
   handleClick,
   origCommentCount,
+  uniformMediaMode = false,
 }) => {
   const context: any = useMainContext();
   const [hovered, setHovered] = useState(false);
   const [mediaInfoHeight, setMediaInfoHeight] = useState(0);
   const mediaBox = useRef(null);
   const infoBox = useRef<HTMLDivElement>(null);
+  const windowWidth = useWindowWidth();
+
+  const voteScore = useMemo(() => {
+    let x = post?.score ?? 0;
+    if (x < 1000) {
+      return x.toString(); // + (x === 1 ? " pt" : " pts");
+    } else {
+      let y = Math.floor(x / 1000);
+      let z = (x / 1000).toFixed(1);
+      return z.toString() + "k";
+    }
+  }, [post?.score]);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -68,8 +95,8 @@ const Card1 = ({
     }
   };
   const linkMode =
-  context?.compactLinkPics && 
-  !context.mediaOnly && 
+    context?.compactLinkPics &&
+    !context.mediaOnly &&
     post?.mediaInfo?.isLink &&
     !post?.mediaInfo?.isTweet &&
     post?.mediaInfo?.imageInfo?.[0]?.url &&
@@ -99,16 +126,17 @@ const Card1 = ({
             : "  ") +
           " rounded-lg    " +
           (context.mediaOnly && hasMedia
-            ? ` border-transparent overflow-hidden ${hovered ? "bg-th-post" : ""} `
+            ? ` border-transparent overflow-hidden ${
+                hovered ? "bg-th-post " : " "
+              }  `
             : " hover:border-th-borderHighlight2 border-th-border2  hover:shadow-2xl  shadow-md group bg-th-post hover:bg-th-postHover ") +
           (context.mediaOnly && hasMedia && hovered
             ? "  border-b-transparent rounded-b-none border-th-border2   "
             : " ") +
           " text-sm transition-colors border hover:cursor-pointer "
-          //+(post?.mediaInfo?.isLink ? " flex gap-4 items-center " : " ")
         }
       >
-        <div className={""}>
+        <div className="">
           {(!context?.mediaOnly || !hasMedia) && (
             <div>
               <div className="relative flex flex-row items-center py-1 text-xs truncate select-auto text-th-textLight ">
@@ -172,6 +200,15 @@ const Card1 = ({
                       "yr ago",
                     ])}
                   </p>
+                  {post?.num_duplicates > 0 && (
+                    <span className="flex">
+                      <p className="mx-1">•</p>
+                      <p className="">
+                        {post?.num_duplicates} duplicate
+                        {post?.num_duplicates === 1 ? "" : "s"}
+                      </p>
+                    </span>
+                  )}
                   {post?.over_18 && (
                     <div className="flex flex-row pl-1 space-x-1">
                       <p>•</p>
@@ -212,9 +249,7 @@ const Card1 = ({
               </div>
 
               <div
-                className={
-                  " " + (linkMode ? " flex gap-2 pt-2 " : " py-2 ")
-                }
+                className={" " + (linkMode ? " flex gap-2 pt-2 " : " py-2 ")}
               >
                 <h1
                   className={
@@ -236,20 +271,20 @@ const Card1 = ({
                   </span>
                 </h1>
                 {linkMode && (
-                    <a
-                      aria-label={post?.title}
-                      href={post?.permalink}
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      className={
-                       "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
-                      }
-                    >
-                      <div className="w-full">
+                  <a
+                    aria-label={post?.title}
+                    href={post?.permalink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                    }}
+                    className={
+                      "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
+                    }
+                  >
+                    <div className="w-full">
                       <MediaWrapper
                         hideNSFW={hideNSFW}
                         post={post}
@@ -260,9 +295,8 @@ const Card1 = ({
                         card={true}
                         fill={true}
                       />
-                      </div>
-                    
-                    </a>
+                    </div>
+                  </a>
                 )}
               </div>
               {linkMode && (
@@ -286,17 +320,138 @@ const Card1 = ({
               }}
             >
               {hasMedia && (
-                <div className={"relative group"}>
-                  <MediaWrapper
-                    hideNSFW={hideNSFW}
-                    post={post}
-                    forceMute={forceMute}
-                    postMode={false}
-                    imgFull={false}
-                    read={read}
-                    card={true}
-                  />
-                </div>
+                <>
+                  <div
+                    onContextMenuCapture={(e) => {
+                      if (windowWidth < 460) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                    }}
+                    onTouchStart={() => setHovered(true)}
+                    onTouchEnd={() => setHovered(false)}
+                    className={"relative group"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleClick(e, { toMedia: post?.mediaInfo?.isSelf ? false : true });
+                    }}
+                  >
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={post}
+                      forceMute={forceMute}
+                      postMode={false}
+                      imgFull={false}
+                      read={read}
+                      card={true}
+                      handleClick={handleClick}
+                      uniformMediaMode={uniformMediaMode}
+                    />
+                    {uniformMediaMode && windowWidth < 640 && (
+                      <div
+                        onMouseEnter={() => setHovered(true)}
+                        onTouchStart={() => setHovered(true)}
+                        onTouchEnd={() => setHovered(false)}
+                        className={
+                          "absolute bottom-0 z-20 flex flex-col justify-between w-full min-h-full " +
+                          (hovered && windowWidth < 640
+                            ? "bg-gradient-to-b from-black/90 via-transparent to-black/90"
+                            : "bg-gradient-to-t from-black/40")
+                        }
+                      >
+                        {post?.mediaInfo?.isVideo &&
+                          (!hovered || windowWidth > 640) && (
+                            <div className="absolute top-0 left-0 text-th-accent">
+                              <BiPlay
+                                className="flex-none w-6 h-6 md:w-10 md:h-10 "
+                                style={{
+                                  filter:
+                                    "drop-shadow(0px 2px 2px rgba(0, 0, 0, 1))",
+                                }}
+                              />
+                            </div>
+                          )}
+                        {hovered && windowWidth < 640 && (
+                          <div className="p-0.5 flex flex-col gap-1">
+                            <h1 className="inline-flex flex-wrap items-center gap-1 text-sm font-light ">
+                              {post.title}
+                              <span className="text-xs">
+                                <TitleFlair
+                                  post={post}
+                                  padding={"py-0 px-2"}
+                                  noClick={true}
+                                />
+                              </span>
+                            </h1>
+                            <span className="text-xs font-light truncate">
+                              r/{post.subreddit}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between w-full mt-auto pb-0.5 gap-0.5">
+                          <span className="text-xs font-light truncate md:pl-1">
+                            u/{post.author}
+                          </span>
+                          <span
+                            className={
+                              " text-white text-xs font-light flex items-center gap-0.5 pr-0.5 " +
+                              (post?.likes === true || post?.likes === 1
+                                ? " text-th-upvote "
+                                : post?.likes === false || post?.likes === -1
+                                ? " text-th-downvote "
+                                : "")
+                            }
+                          >
+                            <span>{voteScore}</span>
+                            <span className="flex-none w-3 h-3 mb-0.5 opacity-60">
+                              {VoteFilledUp}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {!hovered && windowWidth > 640 && (
+                    <>
+                      {post?.mediaInfo?.isVideo &&
+                        !hovered &&
+                        uniformMediaMode && (
+                          <div className="absolute top-0 left-0 text-th-accent">
+                            <BiPlay
+                              className="flex-none w-6 h-6 md:w-10 md:h-10 "
+                              style={{
+                                filter:
+                                  "drop-shadow(0px 2px 2px rgba(0, 0, 0, 1))",
+                              }}
+                            />
+                          </div>
+                        )}
+                      <div className="absolute bottom-0 w-full text-white bg-gradient-to-t from-black/20">
+                        <div className="flex justify-between w-full mt-auto pb-0.5 gap-0.5">
+                          <span className="text-xs font-light truncate md:pl-1">
+                            u/{post.author} • r/{post.subreddit}
+                          </span>
+                          <span
+                            className={
+                              " text-white text-xs font-light flex items-center gap-0.5 pr-0.5 " +
+                              (post?.likes === true || post?.likes === 1
+                                ? " text-th-upvote "
+                                : post?.likes === false || post?.likes === -1
+                                ? " text-th-downvote "
+                                : "")
+                            }
+                          >
+                            <span>{voteScore}</span>
+                            <span className="flex-none w-3 h-3 mb-0.5 opacity-60">
+                              {VoteFilledUp}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
               )}
             </div>
           ) : (
@@ -306,10 +461,17 @@ const Card1 = ({
                 href={post?.permalink}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
+                  handleClick(e, { toMedia: post?.mediaInfo?.isSelf ? false : true  });
                 }}
                 onMouseDown={(e) => {
                   e.preventDefault();
                 }}
+                className={
+                  context.clickCount > 10 && Math.random() > 0.3
+                    ? " click-zone "
+                    : ""
+                }
               >
                 <div
                   className={!context.mediaOnly ? "pt-1 pb-1.5 " : undefined}
@@ -322,6 +484,7 @@ const Card1 = ({
                     imgFull={false}
                     read={read}
                     card={true}
+                    handleClick={handleClick}
                   />
                 </div>
               </a>
@@ -336,7 +499,6 @@ const Card1 = ({
                   score={post?.score}
                   likes={post?.likes}
                   size={5}
-                  postindex={postNum}
                   archived={post?.archived}
                   postTime={post?.created_utc}
                 />
@@ -348,7 +510,7 @@ const Card1 = ({
                     e.preventDefault();
                     e.stopPropagation();
                     setHovered(false);
-                    handleClick(e, true);
+                    handleClick(e, { toComments: true });
                   }}
                 >
                   <h1
@@ -368,179 +530,193 @@ const Card1 = ({
                       )}
                   </h1>
                 </a>
-
-                <PostOptButton post={post} postNum={postNum} mode="" />
+                <PostOptButton post={post} mode="" />
               </div>
             </div>
           )}
         </div>
       </div>
-      {context.mediaOnly && hasMedia && (
-        <div
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={(e) => {
-            handleMouseOut(e, infoBox, "top");
-          }}
-        >
+      {context.mediaOnly &&
+        hasMedia &&
+        (!uniformMediaMode || windowWidth >= 640) && (
           <div
-            ref={infoBox}
-            className={
-              (hovered ? "" : " hidden ") +
-              " absolute w-full mr-1 px-2 pb-1  -mt-8 rounded-b-lg border-t-0 -z-10 drop-shadow-xl bg-th-post border-th-border2 border-t-transparent border shadow-2xl"
-            }
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={(e) => {
+              handleMouseOut(e, infoBox, "top");
+            }}
           >
-            <div className="bg-transparent pt-9"></div>
-            <h1 className="">
-              <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
-                <span
-                  className={
-                    " hover:underline font-semibold text-base mr-2 " +
-                    (post?.distinguished == "moderator" || post?.stickied
-                      ? " text-th-green "
-                      : " ") +
-                    (read && context.dimRead ? " opacity-50 " : "")
-                  }
-                >{`${post?.title ?? ""}`}</span>
-              </a>
-              {(post?.link_flair_text?.length > 0 ||
-                post?.link_flair_richtext?.length > 0) && (
-                <span className="text-xs font-medium">
-                  <TitleFlair post={post} />
-                </span>
-              )}
-            </h1>
-
-            <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight">
-              <div className="flex flex-row flex-wrap items-start ">
-                <Link href={`/r/${post?.subreddit}`}>
-                  <a
-                    className="mr-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <h2 className="font-semibold text-th-text hover:underline">
-                      r/{post?.subreddit ?? ""}
-                    </h2>
-                  </a>
-                </Link>
-                {post?.crosspost_parent_list?.[0] ? (
-                  <div className="flex flex-row gap-1">
-                    <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
-                    <span className="italic font-semibold">crosspost by</span>
-                  </div>
-                ) : (
-                  <p>•</p>
-                )}
-                <Link href={`/u/${post?.author}`}>
-                  <a
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <h2 className="ml-1 mr-1 hover:underline">
-                      u/{post?.author ?? ""}
-                    </h2>
-                  </a>
-                </Link>
-                <p>•</p>
-
-                <p
-                  className="ml-1"
-                  title={new Date(post?.created_utc * 1000)?.toString()}
-                >
-                  {secondsToTime(post?.created_utc, [
-                    "s ago",
-                    "m ago",
-                    "h ago",
-                    "d ago",
-                    "mo ago",
-                    "yr ago",
-                  ])}
-                </p>
-                {post?.over_18 && (
-                  <div className="flex flex-row pl-1 space-x-1">
-                    <p>•</p>
-                    <span className="text-th-red ">NSFW</span>
-                  </div>
-                )}
-                {post?.spoiler && (
-                  <div className="flex flex-row pl-1 space-x-1">
-                    <p>•</p>
-                    <span className="text-th-red">SPOILER</span>
-                  </div>
-                )}
-                <div className="mx-0.5"></div>
-                {post?.all_awardings?.length > 0 && (
-                  <Awardings all_awardings={post?.all_awardings} />
-                )}
-              </div>
-              <div className="flex flex-row ml-auto">
-                <a
-                  title="open source"
-                  href={`${post.url}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <p className="hover:underline">{`(${post?.domain})`}</p>
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-row flex-wrap items-center py-1 pt-1 text-sm select-none">
-              <div className="flex flex-row items-center space-x-1 font-semibold">
-                <Vote
-                  name={post?.name}
-                  score={post?.score}
-                  likes={post?.likes}
-                  size={5}
-                  postindex={postNum}
-                  archived={post?.archived}
-                  postTime={post?.created_utc}
-                />
-              </div>
-              <div className="flex flex-row items-center gap-2 ml-auto mr-6">
+            <div
+              ref={infoBox}
+              className={
+                (hovered ? "" : " hidden ") +
+                " absolute w-full mr-1 px-2 pb-1  -mt-8 rounded-b-lg border-t-0 -z-10 drop-shadow-xl bg-th-post border-th-border2 border-t-transparent border shadow-2xl"
+              }
+            >
+              <div className="bg-transparent pt-9"></div>
+              <h1 className="">
                 <a
                   href={post?.permalink}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setHovered(false);
-                    handleClick(e, true);
-                  }}
+                  onClick={(e) => e.preventDefault()}
                 >
-                  <h1
+                  <span
                     className={
-                      "cursor-pointer hover:underline font-semibold " +
-                      " text-th-textLight group-hover:text-th-text   "
+                      " hover:underline font-light text-xs md:font-semibold md:text-base mr-2 " +
+                      (post?.distinguished == "moderator" || post?.stickied
+                        ? " text-th-green "
+                        : " ") +
+                      (read && context.dimRead ? " opacity-50 " : "")
                     }
-                  >
-                    {`${numToString(post.num_comments, 1000)} ${
-                      post.num_comments === 1 ? "comment" : "comments"
-                    }`}{" "}
-                    {typeof origCommentCount === "number" &&
-                      post?.num_comments > origCommentCount && (
-                        <span className="text-xs italic font-medium">{`(${
-                          post?.num_comments - origCommentCount
-                        } new)`}</span>
-                      )}
-                  </h1>
+                  >{`${post?.title ?? ""}`}</span>
                 </a>
+                {(post?.link_flair_text?.length > 0 ||
+                  post?.link_flair_richtext?.length > 0) && (
+                  <span className="text-xs font-medium">
+                    <TitleFlair post={post} />
+                  </span>
+                )}
+              </h1>
+
+              <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight">
+                <div className="flex flex-row flex-wrap items-start ">
+                  <Link href={`/r/${post?.subreddit}`}>
+                    <a
+                      className={
+                        "mr-1 "
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <h2 className="font-semibold text-th-text hover:underline">
+                        r/{post?.subreddit ?? ""}
+                      </h2>
+                    </a>
+                  </Link>
+                  {post?.crosspost_parent_list?.[0] ? (
+                    <div className="flex flex-row gap-1">
+                      <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
+                      <span className="italic font-semibold">crosspost by</span>
+                    </div>
+                  ) : (
+                    <p>•</p>
+                  )}
+                  <Link href={`/u/${post?.author}`}>
+                    <a
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <h2 className="ml-1 mr-1 hover:underline">
+                        u/{post?.author ?? ""}
+                      </h2>
+                    </a>
+                  </Link>
+                  <p>•</p>
+
+                  <p
+                    className="ml-1"
+                    title={new Date(post?.created_utc * 1000)?.toString()}
+                  >
+                    {secondsToTime(post?.created_utc, [
+                      "s ago",
+                      "m ago",
+                      "h ago",
+                      "d ago",
+                      "mo ago",
+                      "yr ago",
+                    ])}
+                  </p>
+                  {post?.num_duplicates > 0 && (
+                    <span className="flex">
+                      <p className="mx-1">•</p>
+                      <p className="">
+                        {post?.num_duplicates} duplicate
+                        {post?.num_duplicates === 1 ? "" : "s"}
+                      </p>
+                    </span>
+                  )}
+                  {post?.over_18 && (
+                    <div className="flex flex-row pl-1 space-x-1">
+                      <p>•</p>
+                      <span className="text-th-red ">NSFW</span>
+                    </div>
+                  )}
+                  {post?.spoiler && (
+                    <div className="flex flex-row pl-1 space-x-1">
+                      <p>•</p>
+                      <span className="text-th-red">SPOILER</span>
+                    </div>
+                  )}
+                  <div className="mx-0.5"></div>
+                  {post?.all_awardings?.length > 0 && (
+                    <Awardings all_awardings={post?.all_awardings} />
+                  )}
+                </div>
+                <div className="flex flex-row ml-auto">
+                  <a
+                    title="open source"
+                    href={`${post.url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="hover:underline">{`(${post?.domain})`}</p>
+                  </a>
+                </div>
+              </div>
+              <div className="flex flex-row flex-wrap items-center py-1 pt-1 text-sm select-none">
+                <div className="flex flex-row items-center space-x-1 font-semibold">
+                  <Vote
+                    name={post?.name}
+                    score={post?.score}
+                    likes={post?.likes}
+                    size={5}
+                    archived={post?.archived}
+                    postTime={post?.created_utc}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2 ml-auto mr-6">
+                  <a
+                    href={post?.permalink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setHovered(false);
+                      handleClick(e, { toComments: true });
+                    }}
+                  >
+                    <h1
+                      className={
+                        "cursor-pointer hover:underline font-semibold " +
+                        " text-th-textLight group-hover:text-th-text   "
+                      }
+                    >
+                      {`${numToString(post.num_comments, 1000)} ${
+                        post.num_comments === 1 ? "comment" : "comments"
+                      }`}{" "}
+                      {typeof origCommentCount === "number" &&
+                        post?.num_comments > origCommentCount && (
+                          <span className="text-xs italic font-medium">{`(${
+                            post?.num_comments - origCommentCount
+                          } new)`}</span>
+                        )}
+                    </h1>
+                  </a>
+                </div>
               </div>
             </div>
+            {hovered && (
+              <div
+                className="absolute right-2 "
+                style={{
+                  bottom: `-${mediaInfoHeight - 36}px`, //36px == pt-9
+                }}
+              >
+                <PostOptButton post={post} mode={"media"} />
+              </div>
+            )}
           </div>
-          {hovered && (
-            <div
-              className="absolute right-2 "
-              style={{
-                bottom: `-${mediaInfoHeight - 36}px`, //36px == pt-9
-              }}
-            >
-              <PostOptButton post={post} postNum={postNum} mode={"media"} />
-            </div>
-          )}
-        </div>
-      )}
+        )}
     </div>
   );
 };

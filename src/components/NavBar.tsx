@@ -1,5 +1,5 @@
 import Search from "./Search";
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Login from "./Login";
 import DropdownPane from "./DropdownPane";
@@ -28,6 +28,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
 
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
+  const [allowShow, setAllowShow] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   //add some delay before navbar can be hidden again.. resolves some issues with immediate hide after navigation
   const [timeSinceNav, setTimeSinceNav] = useState(() => new Date().getTime());
@@ -40,42 +41,79 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     };
   }, [toggleSideNav]);
   useEffect(() => {
-    if (allowHide) {
       const now = new Date().getTime();
-      if (scrollDirection === "down" || !scrollY) {
-        setHidden(false);
-      } else if (
-        scrollY > 300 &&
-        scrollDirection === "up" &&
-        now > timeSinceNav + 1000
-      ) {
-        setHidden(true);
-      } else if (scrollY <= 300) {
-        setHidden(false);
+      if (allowHide && now > timeSinceNav + 1000) {
+        if (scrollDirection === "down" || (!scrollY && allowShow)) {
+          setHidden(false);
+        } else if (scrollY && scrollY > 300 && scrollDirection === "up") {
+          setHidden(true);
+        } else if ((!scrollY || scrollY <= 300) && allowShow) {
+          setHidden(false);
+        }
+      } else {
+        if (allowShow) {
+          setHidden(false);
+        }
       }
-    } else {
-      setHidden(false);
-    }
   }, [scrollDirection, allowHide, scrollY]);
 
   useEffect(() => {
     setTimeSinceNav(() => new Date().getTime());
-    setHidden(false);
-    if (
-      router.asPath.includes("/comments/") ||
-      router.asPath.includes("/about") ||
-      router.asPath.includes("/settings") ||
-      router.asPath.includes("/changelog") ||
-      router.asPath.includes("/subreddits")
-    ) {
-      setallowHide(false);
+    if (router.pathname === "/download") {
+      setHidden(true);
+      setAllowShow(false);
     } else {
-      setallowHide(true);
+      if (!context?.mediaMode) {
+        setAllowShow(true);
+        setHidden(false);
+        if (
+          router.asPath?.includes("/comments/") ||
+          router.asPath?.includes("/about") ||
+          router.asPath?.includes("/settings") ||
+          router.asPath?.includes("/changelog") ||
+          router.asPath?.includes("/subreddits")
+        ) {
+          setallowHide(false);
+        } else {
+          setallowHide(true);
+        }
+      }
     }
+
     return () => {
       //setallowHide(true);
     };
   }, [router]);
+  
+  useEffect(() => {
+    if (context.mediaMode) {
+      setTimeSinceNav(() => new Date().getTime());
+      setHidden(true);
+      setallowHide(true);
+      setAllowShow(false);
+    } else if (
+      context?.mediaMode === false &&
+      router.pathname !== "/download"
+    ) {
+      setHidden(false);
+      setAllowShow(true);
+    } else if (router.pathname !== "/download") {
+      setAllowShow(true);
+    }
+  }, [context.mediaMode]);
+
+  useEffect(() => {
+    const updateMousePosition = (ev) => {
+      //console.log({ x: ev.clientX, y: ev.clientY });
+      if (allowShow && ev.clientY < 100) {
+        setHidden(false);
+      }
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => {
+      window.removeEventListener("mousemove", updateMousePosition);
+    };
+  }, [allowShow]);  
 
   const homeClick = () => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
@@ -85,7 +123,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     <>
       <header
         className={
-          `${hidden ? "-translate-y-full" : ""}` +
+          `${hidden ? "-translate-y-full" : " translate-y-0 "}` +
           " z-50 fixed top-0 transition ease-in-out transform h-12 w-screen  " +
           (hidden ? " duration-500" : " duration-0")
         }
@@ -155,10 +193,6 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           </div>
         )}
       </header>
-      <div
-        onMouseOver={(e) => setHidden(false)}
-        className="fixed top-0 z-40 w-full bg-transparent h-14 opacity-10 "
-      ></div>
     </>
   );
 };

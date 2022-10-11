@@ -4,6 +4,7 @@ import ParseBodyHTML from "../ParseBodyHTML";
 import { BiComment } from "react-icons/bi";
 import Link from "next/link";
 import { secondsToTime } from "../../../lib/utils";
+import React from "react";
 
 const CommentCard = ({ data, postNum, handleClick }) => {
   const context: any = useMainContext();
@@ -72,7 +73,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
                   </h2>
                 </a>
               </Link>
-              <p className="text-th-textLight">
+              <p className="text-th-textLight" title={new Date(data?.created_utc * 1000)?.toString()}>
                 {secondsToTime(data?.created_utc, [
                   "s ago",
                   "min ago",

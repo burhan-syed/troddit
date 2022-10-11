@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.17.0
+
+### New
+
+- You can now open media to fill the window (full media mode). Self posts will fill the window in a reader view.
+- You can now autoplay posts in full media mode.
+- You can now vertically swipe between posts in full media mode.
+- There is a new button when a self post is opened to vertically expand text.
+- There is now an option to uniformly size cards when using media cards.
+
+### Changes
+
+- Clicking an image or thumbnail in a card will open the post in full media mode.
+- When a post is open, the expand button will now open the media in full media mode.
+
+### Fixes
+
+- Window size changes will no longer close open posts.
+  - So you can now go full screen on videos when a post is open.
+
 ## v0.16.0
 
 ### New
@@ -10,6 +30,7 @@
 - You can now collapse comments only when the comment ribbon is pressed. Find the "Ribbon Collapse" toggle in the Comments section of the Settings page. By default pressing anywhere on the comment will collapse the comment
 
 ### Changes
+
 - Volume will now be saved between sessions
 - Image galleries were improved including swipe action
 - Swipe to close threads has been disabled

@@ -4,37 +4,50 @@ import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
 import { useMainContext } from "../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
-import { useWindowSize } from "@react-hook/window-size";
 import { secondsToHMS } from "../../lib/utils";
 import { useKeyPress } from "../hooks/KeyPress";
 import { ImSpinner2 } from "react-icons/im";
 import React from "react";
+import useGlobalState from "../hooks/useGlobalState";
 const VideoHandler = ({
+  name,
+  curPostName = undefined,
   thumbnail,
   placeholder,
   videoInfo,
   maxHeight = {},
   maxHeightNum = -1,
+  fullMediaMode = false,
   imgFull = false,
   postMode = false,
+  hide = false,
   audio,
   containerDims = undefined,
+  uniformMediaMode = false,
 }) => {
   const context: any = useMainContext();
+  const [vodInfo, setVodInfo] = useState(() => videoInfo);
+  const { getGlobalData, setGlobalData, clearGlobalState } = useGlobalState([
+    "videoLoadData",
+  ]);
   const video: any = useRef();
   const volControls = useRef<HTMLDivElement>(null);
   const audioRef: any = useRef();
   const fullWidthRef: any = useRef();
   const seekRef: any = useRef();
 
-  const [hasAudio, sethasAudio] = useState(false);
+  const [hasAudio, sethasAudio] = useState(videoInfo?.hasAudio ?? false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [preventPlay, setPreventPlay] = useState(hide);
   const [manualPlay, setmanualPlay] = useState(false);
-  const [muted, setMuted] = useState(!(context?.audioOnHover && postMode));
   const [manualPause, setManualPause] = useState(false);
+  const [muted, setMuted] = useState(
+    !(context?.audioOnHover && postMode) || preventPlay
+  );
+
   const { volume, setVolume } = context;
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
@@ -49,7 +62,7 @@ const VideoHandler = ({
   const { ref } = useInView({
     threshold: [0, 0.7, 0.8, 0.9, 1],
     onChange: (inView, entry) => {
-      if (!postMode) {
+      if (!postMode && !preventPlay && !context?.mediaMode) {
         entry.intersectionRatio == 0
           ? setShow(false)
           : entry.intersectionRatio >= 0.8 && setShow(true);
@@ -61,12 +74,22 @@ const VideoHandler = ({
   });
 
   useEffect(() => {
-    if (videoLoaded && show && !manualPause) {
+    if (name === curPostName && fullMediaMode) {
+      setPreventPlay(false);
+    } else if (fullMediaMode && name !== curPostName) {
+      setPreventPlay(true);
+    }
+  }, [curPostName]);
+
+  useEffect(() => {
+    if (videoLoaded && show && !manualPause && !preventPlay) {
       playVideo();
     } else if (!show && videoPlaying) {
       pauseVideo();
+    } else if (fullMediaMode && preventPlay) {
+      pauseVideo();
     }
-  }, [videoLoaded, show]);
+  }, [videoLoaded, show, preventPlay]);
 
   const onLoadedData = () => {
     setVideoDuration(video?.current?.duration);
@@ -146,7 +169,6 @@ const VideoHandler = ({
   }, []);
 
   //unify overall heights to avoid weird sizing issues
-  const windowSize = useWindowSize();
   useEffect(() => {
     let h = (video?.current?.clientWidth / vidWidth) * vidHeight;
     if (h > 0) {
@@ -157,12 +179,18 @@ const VideoHandler = ({
   }, [video?.current?.clientWidth, vidHeight, vidWidth]);
 
   useEffect(() => {
-    if (context?.autoplay && !videoPlaying && !context.pauseAll && show) {
+    if (
+      ((context?.autoplay && !fullMediaMode) ||
+        (context?.autoPlayMode && fullMediaMode && !preventPlay)) &&
+      !videoPlaying &&
+      (!context.pauseAll || fullMediaMode) &&
+      show
+    ) {
       video?.current?.play().catch((e) => console.log(e));
-    } else if (!context?.autoplay && videoPlaying) {
+    } else if (!context?.autoplay && videoPlaying && !fullMediaMode) {
       video?.current?.pause()?.catch((e) => console.log(e));
     }
-  }, [context.autoplay, context.pauseAll]);
+  }, [context.autoplay, context.pauseAll, context?.autoPlayMode]);
   useEffect(() => {
     if (context.pauseAll) {
       pauseAll();
@@ -177,8 +205,9 @@ const VideoHandler = ({
     if (true) {
       //when video is paused/stopped
       if ((video?.current?.paused || video?.current?.ended) && !videoPlaying) {
-        manual && setManualPause(false);
         //play the video
+        manual && setManualPause(false);
+        setBuffering(true);
         video?.current
           ?.play()
           .then(() => {
@@ -205,7 +234,7 @@ const VideoHandler = ({
         setmanualPlay(false);
         video?.current?.pause();
         if (!audioRef?.current?.paused && !videoInfo.hasAudio) {
-          audioRef.current.pause();
+          audioRef.current?.pause();
           setAudioPlaying(false);
         }
       }
@@ -216,7 +245,7 @@ const VideoHandler = ({
     e?.preventDefault();
     e?.stopPropagation();
     //if audio exists
-    if (audioRef?.current?.muted !== undefined && hasAudio) {
+    if (audioRef?.current?.muted !== undefined && hasAudio && !preventPlay) {
       if (!videoInfo.hasAudio) {
         // sync audio
         audioRef.current.currentTime = video.current.currentTime;
@@ -238,13 +267,14 @@ const VideoHandler = ({
   };
 
   const pauseVideo = () => {
+    pauseAudio();
     videoLoaded && video?.current?.pause();
   };
 
   //pause Audio while video is loading
   const pauseAudio = () => {
     if (hasAudio) {
-      audioRef.current.pause();
+      audioRef.current?.pause();
     }
   };
   //play Audio..
@@ -257,7 +287,11 @@ const VideoHandler = ({
 
   //play Video..
   const playVideo = () => {
-    videoLoaded && video?.current?.play().catch((e) => console.log(e));
+    videoLoaded &&
+      video?.current
+        ?.play()
+        .then(() => playAudio())
+        .catch((e) => console.log(e));
   };
 
   const handleMouseIn = (e) => {
@@ -272,7 +306,7 @@ const VideoHandler = ({
         playControl(e);
       }
     }
-    if (!postMode && !manualAudio && context.audioOnHover) {
+    if (!postMode && !manualAudio && context.audioOnHover && !preventPlay) {
       setMuted(false);
     }
   };
@@ -282,7 +316,7 @@ const VideoHandler = ({
     //not in manual play, then pause audio and video
     if (context.hoverplay && context.cardStyle !== "row1") {
       if (!manualPlay && !context.autoplay && !postMode) {
-        pauseAudio();
+        // pauseAudio();
         pauseVideo();
       }
     }
@@ -345,7 +379,10 @@ const VideoHandler = ({
   };
 
   useEffect(() => {
-    if ((!show || !context?.audioOnHover || left) && !postMode) {
+    if (
+      (!show || !context?.audioOnHover || left) &&
+      (!postMode || fullMediaMode)
+    ) {
       setMuted(true);
     } else if (
       context?.audioOnHover &&
@@ -375,7 +412,12 @@ const VideoHandler = ({
   const [progressPerc, setProgressPerc] = useState(0);
   const [intervalID, setIntervalID] = useState<any>();
   useEffect(() => {
-    if (videoPlaying && video?.current && mouseIn) {
+    if (
+      videoPlaying &&
+      video?.current &&
+      (mouseIn || fullMediaMode) &&
+      !preventPlay
+    ) {
       let initial = Date.now();
       let timepassed = 0;
       let duration = video?.current?.duration * 1000;
@@ -389,7 +431,10 @@ const VideoHandler = ({
           setCurrentTime((initialTime + timepassed) / 1000);
           setProgressPerc(delta);
           //handle out of range..
-          if ((initialTime + timepassed) / 1000 > duration) {
+          if (
+            (initialTime + timepassed) / 1000 > duration &&
+            video?.current?.currentTime >= 0
+          ) {
             video.current.currentTime = 0;
           }
         }
@@ -403,13 +448,36 @@ const VideoHandler = ({
       clearInterval(intervalID);
     }
     return () => {};
-  }, [videoPlaying, mouseIn]);
+  }, [videoPlaying, mouseIn, fullMediaMode, preventPlay]);
+
+  const setData = useRef<any>();
+  useEffect(() => {
+    //console.log(progressPerc, context?.autoPlayMode);
+    if (
+      progressPerc >= 0.9 &&
+      fullMediaMode &&
+      !setData.current &&
+      !preventPlay
+    ) {
+      //console.log("ended!", progressPerc);
+      setData.current = true;
+      setTimeout(
+        () => {
+          //console.log('set', name)
+          setGlobalData(name, true);
+        },
+        videoDuration > 0 ? videoDuration * 0.1 * 1000 : 100
+      );
+    } else if (progressPerc < 0.9) {
+      setData.current = false;
+    }
+  }, [progressPerc, fullMediaMode, name, videoDuration, preventPlay]);
 
   const kPress = useKeyPress("k");
   const mPress = useKeyPress("m");
 
   useEffect(() => {
-    if (focused && !context?.replyFocus) {
+    if (focused && !context?.replyFocus && !preventPlay) {
       kPress && playControl();
       mPress && audioControl();
     }
@@ -417,13 +485,33 @@ const VideoHandler = ({
     return () => {};
   }, [kPress, mPress, context.replyFocus, focused]);
 
+  const timeoutRef = useRef<any>(null);
+
   return (
     <div
       className={
-        "flex items-center justify-center min-w-full group hover:cursor-pointer overflow-hidden "
+        " min-w-full group hover:cursor-pointer overflow-hidden " +
+        (uniformMediaMode
+          ? "object-cover object-center aspect-[9/16] "
+          : " flex items-center justify-center")
       }
       onClick={(e) => {
-        playControl(e, true);
+        if (fullMediaMode) {
+          if (timeoutRef.current === null) {
+            timeoutRef.current = setTimeout(() => {
+              playControl(e, true);
+              timeoutRef.current = null;
+            }, 300);
+          }
+        } else if (!uniformMediaMode) {
+          playControl(e, true);
+        }
+      }}
+      onDoubleClick={(e) => {
+        if (fullMediaMode) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
       }}
       onMouseEnter={(e) => {
         setFocused(true);
@@ -435,7 +523,11 @@ const VideoHandler = ({
       }}
       ref={ref}
       style={
-        containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
+        containerDims?.[1]
+          ? { height: `${containerDims[1]}px` }
+          : uniformMediaMode
+          ? { minHeight: "100%" }
+          : heightStyle
       }
     >
       {((!videoLoaded && (context?.autoPlay || postMode)) || buffering) && (
@@ -462,13 +554,19 @@ const VideoHandler = ({
       </div>
       {/* Controls */}
       <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-white">
-        <div className="flex items-center space-x-2">
+        <div
+          className={
+            (fullMediaMode ? "hidden md:flex" : "flex") +
+            " items-center space-x-2"
+          }
+        >
           <button
             aria-label="play"
             onClick={(e) => {
               playControl(e, true);
             }}
             className={
+              (uniformMediaMode ? (mouseIn ? " block  " : " hidden ") : "") +
               (context?.autoplay
                 ? `${mouseIn ? " flex " : " hidden "}`
                 : " flex ") +
@@ -556,7 +654,7 @@ const VideoHandler = ({
                       className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-th-scrollbar"
                       style={{ height: `${muted ? 0 : (volume ?? 0.5) * 100}%` }}
                     ></div>
-                    <div className="absolute bottom-0 z-0 w-full h-full bg-white bg-opacity-50 rounded-full"></div>
+                    <div className="absolute bottom-0 z-0 w-full h-full rounded-full bg-white/10"></div>
                   </div>
                 </div>
               </div>
@@ -567,7 +665,12 @@ const VideoHandler = ({
               onClick={(e) => audioControl(e, true)}
               onMouseEnter={() => setShowVol(true)}
               onMouseLeave={() => setShowVol(false)}
-              className="relative flex items-center justify-center w-8 h-8 ml-auto bg-black rounded-md bg-opacity-20 hover:bg-opacity-40"
+              className={
+                (fullMediaMode || uniformMediaMode
+                  ? " hidden md:flex"
+                  : "  flex ") +
+                " w-8 h-8 relative  items-center justify-center ml-auto bg-black rounded-md bg-opacity-20 hover:bg-opacity-40"
+              }
             >
               {muted ? (
                 <BiVolumeMute className="flex-none w-4 h-4" />
@@ -584,7 +687,7 @@ const VideoHandler = ({
           ref={seekRef}
           className={
             "absolute bottom-0 left-0 z-10  w-full h-5  " +
-            (mouseIn ? " block " : " hidden ")
+            (mouseIn || fullMediaMode ? " block " : " hidden ")
           }
         >
           {seekTime !== "" && (
@@ -621,15 +724,23 @@ const VideoHandler = ({
 
       {/* Video */}
       <div
-        className={"relative overflow-hidden flex  object-fill"}
+        className={
+          uniformMediaMode
+            ? "min-h-full min-w-full object-cover object-center "
+            : "relative overflow-hidden flex  object-fill"
+        }
         style={
-          containerDims?.[1] ? { height: `${containerDims[1]}px` } : heightStyle
+          uniformMediaMode
+            ? { height: `100%` }
+            : containerDims?.[1]
+            ? { height: `${containerDims[1]}px` }
+            : heightStyle
         }
       >
         <div
           //high res placeholder image
           className={
-            `  ` +
+            ` ` +
             `${
               !videoLoaded
                 ? " opacity-100 "
@@ -654,6 +765,8 @@ const VideoHandler = ({
             }
             height={vidHeight}
             width={vidWidth}
+            layout={uniformMediaMode ? "fill" : undefined}
+            objectFit={uniformMediaMode ? "cover" : undefined}
             alt="placeholder"
             unoptimized={true}
             priority={imgFull}
@@ -668,25 +781,28 @@ const VideoHandler = ({
           ref={video}
           className={
             (videoLoaded ? "opacity-100 " : " opacity-0") +
-            (!containerDims?.[1] ? " absolute top-0 left-0 " : "  ") //!postMode
+            (!containerDims?.[1] ? " absolute top-0 left-0 " : "  ") +
+            (uniformMediaMode
+              ? " min-w-full min-h-full max-w-full max-h-full m-auto block absolute inset-0 w-0 h-0 "
+              : "")
           }
           width={`${vidWidth}`}
           height={`${vidHeight}`}
           autoPlay={false}
           muted
-          loop
+          loop={true}
           preload={context?.autoplay || postMode ? "auto" : "none"}
           onWaiting={() => {
             if (!muted) setPrevMuted(false);
             //pauseAll();
             setBuffering(true);
             setVideoPlaying(false);
-            !videoInfo.hasAudio && pauseAudio();
+            !vodInfo.hasAudio && pauseAudio();
           }}
           onPlaying={() => {
             setBuffering(false);
             setVideoPlaying(true);
-            !videoInfo.hasAudio && playAudio();
+            !vodInfo.hasAudio && playAudio();
           }}
           onPause={() => {
             setVideoPlaying(false);
@@ -695,18 +811,14 @@ const VideoHandler = ({
           onLoadedData={onLoadedData}
           playsInline
           onCanPlay={() => {
-            videoInfo.hasAudio && onAudioLoaded();
+            vodInfo.hasAudio && onAudioLoaded();
           }}
           draggable={false}
         >
-          <source
-            data-src={videoInfo.url}
-            src={videoInfo.url}
-            type="video/mp4"
-          />
+          <source data-src={vodInfo.url} src={vodInfo.url} type="video/mp4" />
         </video>
         {/* if video doesn't have its own audio (v.reddits) */}
-        {!videoInfo?.hasAudio && (
+        {!videoInfo?.hasAudio && audio && (
           <video
             autoPlay={false}
             controls={false}

@@ -11,13 +11,20 @@ import { useMainContext } from "../MainContext";
 const MediaWrapper = ({
   hideNSFW,
   post,
+  curPostName=undefined,
   forceMute,
   imgFull,
   postMode,
+  handleClick = () => {},
+  fullMediaMode=false,
+  showCrossPost = true,
   containerDims = undefined as any,
   read = false,
   card = false,
-  fill = false
+  fill = false,
+  hide = false,
+  fullRes = false,
+  uniformMediaMode = false,
 }) => {
   const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
@@ -58,11 +65,11 @@ const MediaWrapper = ({
 
   const NSFWWrapper = (
     <div
-      className={hideNSFW && hidden ? "relative overflow-hidden " : undefined}
+      className={hideNSFW && hidden ? "relative overflow-hidden " : " "}
       onClick={toggleHide}
     >
       <div
-        className={"relative " + (hideNSFW && hidden ? " blur-3xl" : undefined)}
+        className={"relative  " + (hideNSFW && hidden ? " blur-3xl" : "")}
       >
         <Media
           post={postData}
@@ -73,6 +80,12 @@ const MediaWrapper = ({
           read={read}
           card={card}
           fill={fill}
+          handleClick={handleClick}
+          fullMediaMode={fullMediaMode}
+          hide={hide}
+          fullRes={fullRes}
+          uniformMediaMode={uniformMediaMode}
+          curPostName={curPostName}
         />
       </div>
       {hideNSFW && hidden && (
@@ -189,7 +202,7 @@ const MediaWrapper = ({
     </div>
   );
 
-  if (postData && !isXPost) return <>{NSFWWrapper}</>;
+  if (postData && (!isXPost || !showCrossPost)) return <>{NSFWWrapper}</>;
   if (postData && isXPost)
     return (
       <div

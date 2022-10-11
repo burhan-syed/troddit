@@ -6,11 +6,14 @@ import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
 import { useWindowSize } from "@react-hook/window-size";
-import { findMediaInfo } from "../../lib/utils";
+import { findMediaInfo, findOptimalImageIndex } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import ParseBodyHTML from "./ParseBodyHTML";
 import { ImEmbed, ImSpinner2 } from "react-icons/im";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
+import { BiExpand } from "react-icons/bi";
+import toast from "react-hot-toast";
+import ToastCustom from "./toast/ToastCustom";
 import ExternalLink from "./ui/ExternalLink";
 let regex = /([A-Z])\w+/g;
 async function fileExists(url) {
@@ -33,13 +36,19 @@ const scrollStyle =
 
 const Media = ({
   post,
+  curPostName = undefined,
+  handleClick = (a: any, b: any) => {},
   imgFull = false,
   forceMute = 0,
   portraitMode = false,
+  fullMediaMode = false,
   postMode = false,
   read = false,
   card = false,
+  hide = false,
+  fullRes = false,
   containerDims = undefined,
+  uniformMediaMode = false,
   fill = false,
 }) => {
   const context: any = useMainContext();
@@ -122,17 +131,24 @@ const Media = ({
         post["mediaInfo"] = m;
       }
       let a, b, c;
-      if (post["mediaInfo"].isVideo && (!post?.selftext_html || postMode)) {
+      if (
+        post["mediaInfo"].isVideo &&
+        !post?.selftext_html &&
+        !(uniformMediaMode && windowWidth < 640)
+      ) {
         b = await findVideo();
         if (b && !context.preferEmbeds) {
           setAllowIFrame(false);
         }
       }
-      if (post["mediaInfo"].isIframe) {
+      if (post["mediaInfo"].isIframe && !uniformMediaMode) {
         c = await findIframe();
       }
-      if (!b && (!post?.selftext_html || postMode)) {
+      if (!b && !post?.selftext_html) {
         a = await findImage();
+        if (a && !context.preferEmbeds && context.mediaMode) {
+          setAllowIFrame(false);
+        }
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
     };
@@ -146,7 +162,7 @@ const Media = ({
           return { ...imageInfo, url: placeholder };
         });
       }
-      if (videoInfo.url === "self") {
+      if (videoInfo?.[0]?.url === "self") {
         setVideoInfo((imgInfo) => {
           return { ...imageInfo, url: placeholder, hasAudio: false };
         });
@@ -185,8 +201,14 @@ const Media = ({
       let optimize = "720";
       let url = "";
       if (!imgFull) {
-        if (postMode) {
+        if (fullMediaMode) {
+          if (!context.highRes && windowWidth < 640) {
+            optimize = "480";
+          }
+        } else if (postMode) {
           optimize = "720";
+        } else if (context?.columns > 1 && windowWidth < 640) {
+          optimize = "360";
         } else if (context?.columns >= 3 && context?.columns < 5) {
           optimize = "480";
         } else if (context?.columns === 2) {
@@ -195,27 +217,32 @@ const Media = ({
           optimize = "360";
         } else if (context?.columns > 5) {
           optimize = "360";
+        } else if (windowWidth < 640) {
+          optimize = "480";
         }
       }
 
       if (post?.mediaInfo?.videoInfo) {
-        url = post.mediaInfo.videoInfo.url;
-        if (url.includes("DASH_1080") && !imgFull) {
+        url = post.mediaInfo.videoInfo?.[0]?.url;
+        if (url?.includes("DASH_1080") && !imgFull) {
           url = url.replace("DASH_1080", `DASH_${optimize}`);
         }
-        if (url.includes("DASH_720") && !imgFull) {
+        if (url?.includes("DASH_720") && !imgFull) {
           url = url.replace("DASH_720", `DASH_${optimize}`);
+        }
+        if (post?.mediaInfo?.videoInfo?.[1]?.url && optimize !== "720") {
+          url = post.mediaInfo.videoInfo?.[1]?.url;
         }
         setVideoInfo({
           url: url,
-          height: post.mediaInfo.videoInfo.height,
-          width: post.mediaInfo.videoInfo.width,
-          hasAudio: post.mediaInfo.videoInfo?.hasAudio,
+          height: post.mediaInfo.videoInfo[0].height,
+          width: post.mediaInfo.videoInfo[0].width,
+          hasAudio: post.mediaInfo.videoInfo[0]?.hasAudio,
         });
         setPlaceholderInfo({
           url: checkURL(post?.thumbnail),
-          height: post.mediaInfo.videoInfo.height,
-          width: post.mediaInfo.videoInfo.width,
+          height: post.mediaInfo.videoInfo[0].height,
+          width: post.mediaInfo.videoInfo[0].width,
         });
         // setImageInfo({
         //   url: checkURL(post?.thumbnail),
@@ -223,8 +250,8 @@ const Media = ({
         //   width: post.mediaInfo.videoInfo.width,
         // });
         await findImage();
-        if (url.includes("v.redd.it")) {
-          findAudio(post.mediaInfo.videoInfo.url);
+        if (url?.includes("v.redd.it")) {
+          findAudio(post.mediaInfo.videoInfo[0].url);
         }
         setIsMP4(true);
         setIsImage(false);
@@ -253,10 +280,9 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url.includes("twitter.com")) {
+      if (post.url?.includes("twitter.com")) {
         setIsTweet(true);
         setIsIFrame(true);
-        //return true;
       }
 
       if (post?.mediaInfo?.gallery) {
@@ -264,34 +290,15 @@ const Media = ({
         setIsGallery(true);
         return true;
       } else if (post?.mediaInfo?.imageInfo) {
-        let num = post.mediaInfo.imageInfo.length - 1;
-
-        //choose smallest image possible
-        let done = false;
-        let width = windowWidth; // screen.width;
-        if (!imgFull) {
-          if (containerDims?.[0]) {
-            width = containerDims?.[0];
-          } else if (
-            !context.saveWideUI &&
-            context.cardStyle !== "row1" &&
-            (context.columns === 1 || postMode)
-          ) {
-            width = 768; //3xl width
-          } else if (postMode) {
-            width = windowWidth;
-          } else {
-            width = width / (context?.columns ?? 1);
-          }
-        }
-        post.mediaInfo.imageInfo.forEach((res, i) => {
-          if (!done) {
-            if (res.width > width) {
-              num = i;
-              done = true;
-            }
-          }
+        let num = findOptimalImageIndex(post.mediaInfo.imageInfo, {
+          windowWidth,
+          imgFull,
+          fullRes: fullRes || context.highRes,
+          containerDims,
+          context,
+          postMode,
         });
+
         let imgheight = post.mediaInfo.imageInfo[num].height;
         let imgwidth = post.mediaInfo.imageInfo[num].width;
         setImageInfo({
@@ -316,6 +323,7 @@ const Media = ({
     } else {
     }
     return () => {
+      setvideoAudio("");
       setIsGallery(false);
       setIsIFrame(false);
       setGalleryInfo([]);
@@ -330,7 +338,7 @@ const Media = ({
       setMediaLoaded(false);
       setLoaded(false);
     };
-  }, [post, context?.columns, imgFull]);
+  }, [post, context?.columns, imgFull, fullRes, context.highRes]);
 
   //scale media
   const [imgheight, setimgheight] = useState({}); //sets style height for image
@@ -383,6 +391,39 @@ const Media = ({
     containerDims,
   ]);
   const [tweetLoaded, setTweetLoaded] = useState(false);
+  useEffect(() => {
+    let toastId = "autoPlayWarning";
+    if (
+      isIFrame &&
+      allowIFrame &&
+      context?.autoPlayMode &&
+      fullMediaMode &&
+      post.name === curPostName
+    ) {
+      toast.remove(toastId);
+      toast.custom(
+        (t) => (
+          <ToastCustom
+            t={t}
+            message={`Auto play may not work for external sources`}
+            mode={"alert"}
+          />
+        ),
+        { position: "top-center", id: toastId, duration: 10000 }
+      );
+    } else {
+      //toast.remove(toastId)
+    }
+    () => {
+      toast.remove(toastId);
+    };
+  }, [
+    isIFrame,
+    allowIFrame,
+    context?.autoPlayMode,
+    fullMediaMode,
+    curPostName,
+  ]);
   //scale images
   const [imgWidthHeight, setImageWidthHeight] = useState([
     imageInfo?.width, //post?.mediaInfo?.dimensions[0],
@@ -420,7 +461,13 @@ const Media = ({
 
   return (
     <div
-      className={fill ? " block " : "block select-none group"}
+      className={
+        fill
+          ? "block"
+          : uniformMediaMode
+          ? "aspect-[9/16] overflow-hidden object-cover object-center"
+          : "block select-none group"
+      }
       ref={mediaRef}
     >
       {loaded ? (
@@ -433,14 +480,19 @@ const Media = ({
                 e.preventDefault();
                 setAllowIFrame((f) => !f);
               }}
-              className="absolute z-10 items-center hidden gap-1 p-1 text-xs text-white bg-black rounded-md group-hover:flex left-1 bottom-24 bg-opacity-20 hover:bg-opacity-40"
+              className={
+                "absolute  items-center z-10 gap-1 p-1 text-xs text-white bg-black rounded-md group-hover:flex   bg-opacity-20 hover:bg-opacity-40  " +
+                (fullMediaMode
+                  ? `bottom-1.5 left-10 md:bottom-24 md:left-1 flex `
+                  : "bottom-24 hidden z-10 left-1 ")
+              }
             >
               <ImEmbed />
               switch embed
             </button>
           )}
 
-          {isTweet && allowIFrame && (
+          {isTweet && allowIFrame && !hide && (
             <div
               className={
                 !postMode || (!imgFull && !containerDims?.[1])
@@ -451,7 +503,7 @@ const Media = ({
               <div className={" bg-transparent w-full  " + scrollStyle}>
                 <TwitterTweetEmbed
                   placeholder={
-                    <div className="relative mx-auto border rounded-lg h-80 border-th-border w-60 animate-pulse bg-th-base">
+                    <div className="relative mx-auto border rounded-lg border-th-border w-60 h-80 animate-pulse bg-th-base">
                       <div className="absolute w-full h-full">
                         <AiOutlineTwitter className="absolute w-7 h-7 right-2 top-2 fill-[#1A8CD8]" />
                       </div>
@@ -470,7 +522,7 @@ const Media = ({
               </div>
             </div>
           )}
-          {isIFrame && allowIFrame && !isTweet ? (
+          {isIFrame && allowIFrame && !isTweet && !hide ? (
             <div
               className={"relative w-full h-full"}
               //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
@@ -497,6 +549,21 @@ const Media = ({
                 }
                 dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
               ></div>
+              {!postMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleClick(e, { toMedia: true });
+                  }}
+                  className={
+                    (uniformMediaMode ? "hidden md:flex" : "flex") +
+                    " absolute items-center justify-center w-8 h-8 text-white bg-black rounded-md md:hidden md:group-hover:flex top-2 right-2 bg-opacity-20 hover:bg-opacity-40 "
+                  }
+                >
+                  <BiExpand className="flex-none w-4 h-4" />
+                </button>
+              )}
             </div>
           ) : (
             ""
@@ -507,9 +574,10 @@ const Media = ({
               images={galleryInfo}
               maxheight={imgFull ? 0 : maxheightnum}
               postMode={postMode}
+              mediaMode={fullMediaMode}
               mediaRef={mediaRef}
               uniformHeight={containerDims ? false : true}
-              mediaMode={false}
+              fillHeight={uniformMediaMode ? true : false}
             />
           )}
 
@@ -517,10 +585,9 @@ const Media = ({
             <div
               className={
                 "relative  " +
-                (fill
-                  ? " block "
-                  : (imgFull || (!postMode && context.columns !== 1)) &&
-                    !post?.mediaInfo?.isTweet
+                (uniformMediaMode ? " min-h-full " : "") +
+                ((imgFull || (!postMode && context.columns !== 1)) &&
+                !post?.mediaInfo?.isTweet
                   ? " block "
                   : post?.mediaInfo?.isTweet
                   ? "flex items-center justify-center  relative overflow-hidden rounded-lg " +
@@ -566,13 +633,17 @@ const Media = ({
               <Image
                 src={imageInfo.url}
                 height={
-                  fill
+                  uniformMediaMode
+                    ? post?.mediaInfo?.dimensions[1]
+                    : fill
                     ? imageInfo?.height
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
                     ? //layout in fill mode, no height needed
-                      undefined
+                      post?.mediaInfo?.dimensions[1] *
+                      (mediaRef?.current?.clientWidth /
+                        post?.mediaInfo?.dimensions[0]) //undefined
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.height
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -584,12 +655,14 @@ const Media = ({
                     : imgWidthHeight[1] //scaled height to eliminate letterboxing
                 }
                 width={
-                  fill
+                  uniformMediaMode
+                    ? post?.mediaInfo?.dimensions[0]
+                    : fill
                     ? imageInfo?.width
                     : !postMode &&
                       context.columns > 1 &&
                       !post?.mediaInfo?.isTweet
-                    ? undefined
+                    ? mediaRef?.current?.clientWidth
                     : post?.mediaInfo?.isTweet
                     ? imageInfo.width
                     : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
@@ -617,7 +690,7 @@ const Media = ({
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={
-                  fill
+                  uniformMediaMode || fill
                     ? "cover"
                     : imgFull ||
                       (context?.columns == 1 && !post.mediaInfo?.isTweet)
@@ -639,8 +712,10 @@ const Media = ({
 
           {isMP4 && (!allowIFrame || !isIFrame) ? (
             showMP4 ? (
-              <div className="flex flex-col items-center flex-none ">
+              <div className="relative flex flex-col items-center flex-none">
                 <VideoHandler
+                  name={post?.name}
+                  curPostName={curPostName}
                   thumbnail={placeholderInfo}
                   placeholder={imageInfo} //{placeholderInfo}
                   videoInfo={videoInfo}
@@ -650,7 +725,25 @@ const Media = ({
                   audio={videoAudio}
                   postMode={postMode}
                   containerDims={containerDims}
+                  fullMediaMode={fullMediaMode}
+                  hide={hide}
+                  uniformMediaMode={uniformMediaMode}
                 />
+                {!postMode && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleClick(e, { toMedia: true });
+                    }}
+                    className={
+                      (uniformMediaMode ? "hidden md:flex" : "flex") +
+                      " absolute items-center justify-center w-8 h-8 text-white bg-black rounded-md md:hidden md:group-hover:flex top-2 right-2 bg-opacity-20 hover:bg-opacity-40 "
+                    }
+                  >
+                    <BiExpand className="flex-none w-4 h-4" />
+                  </button>
+                )}
               </div>
             ) : (
               ""

@@ -5,18 +5,21 @@ import { useMainContext } from "../../MainContext";
 interface IntInputProps {
   label?: string;
   subtext?: string;
-  setting: "fastRefreshInterval" | "slowRefreshInterval";
+  setting: "fastRefreshInterval" | "slowRefreshInterval" | "autoPlayInterval";
+  mini?: boolean;
+  rounded?: boolean; 
+  styles?: string
 }
 
-const IntInput = ({ label, subtext, setting }: IntInputProps) => {
+const IntInput = ({ label, subtext, setting, mini = false, rounded=true, styles="" }: IntInputProps) => {
   const context: any = useMainContext();
   const [defaultValue, setDefaultValue] = useState<number>();
   const [inputValue, setInputValue] = useState<number>();
   const [inputLabel, setInputLabel] = useState<string | undefined>(label);
   const [inputSubtext, setInputSubtext] = useState<string | undefined>(subtext);
   const [errMessage, setErrMessage] = useState("");
-  const [MAX] = useState(24 * 60 * 60);
-  const [MIN] = useState(5);
+  const [MAX, setMAX] = useState(24 * 60 * 60);
+  const [MIN, setMIN] = useState(5);
   const [disabled, setDisabled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +44,17 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
               `The interval, in seconds, to check for new posts when not sorted by new or rising. "Monitor Feed" must be enabled.`
             );
           break;
+        case "autoPlayInterval":
+          setMIN(1);
+          setMAX(9999);
+          setDefaultValue(10);
+          setInputValue(context?.autoPlayInterval ?? 10);
+          !label && setInputLabel("Auto Play Interval");
+          !subtext &&
+            setInputSubtext(
+              `The interval, in seconds, before moving to the next post`
+            );
+          break;
         default:
           break;
       }
@@ -48,10 +62,15 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
   }, [context.ready]);
 
   useEffect(() => {
-    if (!context.autoRefreshFeed) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
+    if (
+      setting === "fastRefreshInterval" ||
+      setting === "slowRefreshInterval"
+    ) {
+      if (!context.autoRefreshFeed) {
+        setDisabled(true);
+      } else {
+        setDisabled(false);
+      }
     }
   }, [context.autoRefreshFeed]);
 
@@ -70,7 +89,9 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
             break;
           case "slowRefreshInterval":
             context.setSlowRefreshInterval(inputValue * 1000);
-
+            break;
+          case "autoPlayInterval":
+            context.setAutoPlayInterval(inputValue);
             break;
           default:
             break;
@@ -82,8 +103,9 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
   return (
     <form
       className={
-        "flex gap-2 p-2 rounded-md hover:cursor-pointer hover:bg-th-highlight" +
-        (disabled ? " opacity-50 pointer-events-none  " : "")
+        "flex gap-2  hover:cursor-pointer " +
+        (disabled ? " opacity-50 pointer-events-none  " : "") + (rounded ? " rounded-md " : " ") + (mini ? "" : " p-2 hover:bg-th-highlight ")
+        + styles
       }
       onSubmit={(e) => e.preventDefault()}
       onClick={(e) => {
@@ -91,14 +113,15 @@ const IntInput = ({ label, subtext, setting }: IntInputProps) => {
         inputRef?.current?.select();
       }}
     >
-      <label className="flex flex-col gap-0.5 hover:cursor-pointer">
+      {mini ? <></>: <label className="flex flex-col gap-0.5 hover:cursor-pointer">
         <span>{inputLabel}</span>
         {inputSubtext && (
           <span className="mr-2 text-xs opacity-70">{inputSubtext}</span>
         )}
-      </label>
+      </label>}
+      
       <div
-        className={"flex flex-col items-end justify-center min-h-full my-3 "}
+        className={"flex flex-col items-end justify-center min-h-full " + (mini ? "" : " my-3  ")}
       >
         <div className="relative flex justify-end flex-grow w-20 h-full px-1 text-sm text-right border rounded-md outline-none ring-0 border-th-border bg-th-highlight focus:border-th-borderHighlight">
           {defaultValue && (

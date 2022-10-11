@@ -1,20 +1,9 @@
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 import React, { useEffect } from "react";
-import { postVote } from "../RedditAPI";
 import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import { useKeyPress } from "../hooks/KeyPress";
 import useVote from "../hooks/useVote";
-
-const calculateScore = (x: number) => {
-  if (x < 1000) {
-    return x.toString();
-  } else {
-    let y = Math.floor(x / 1000);
-    let z = (x / 1000).toFixed(1);
-    return z.toString() + "k";
-  }
-};
 
 const Vote = ({
   name,
@@ -23,10 +12,10 @@ const Vote = ({
   size = 6,
   archived = false,
   hideScore = false,
-  postindex = undefined,
   postMode = false,
   scoreHideMins = 0,
   postTime = 0,
+  triggerVote = 0
 }) => {
   const context: any = useMainContext();
   const { data: session, status } = useSession();
@@ -49,6 +38,12 @@ const Vote = ({
       context.setLoginModal(true);
     }
   };
+
+  useEffect(() => {
+    if(triggerVote > 0){
+      tryCastVote(undefined,1);
+    }
+  }, [triggerVote])
 
   useEffect(() => {
     if (!context.replyFocus && postMode) {
@@ -147,7 +142,7 @@ const Vote = ({
                 ? " text-th-upvote "
                 : liked === -1
                 ? "text-th-downvote "
-                : " ") + " text-sm"
+                : " ") + " "
             }
           >
             {voteDisplay ?? "Vote"}

@@ -22,6 +22,9 @@ import { InView } from "react-intersection-observer";
 import useHeightMap from "../hooks/useHeightMap";
 import { findGreatestsImages, findOptimalImageIndex } from "../../lib/utils";
 import useGlobalState from "../hooks/useGlobalState";
+import PostModal from "./PostModal";
+import { useRouter } from "next/router";
+import MasonicStatic from "./MasonicStatic";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -42,6 +45,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const { setFeedData } = useFeedGallery();
 
   const [cols, setCols] = useState(3);
+  const [uniformMediaMode, setUniformMediaMode] = useState<boolean>();
   const [masonicKey, setMasonicKey] = useState(curKey);
   const [windowWidth, windowHeight] = useWindowSize();
 
@@ -70,12 +74,23 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   useEffect(() => {
     context.setColumns(cols);
   }, [cols]);
+  useEffect(() => {
+    if (context.mediaOnly && cols > 1 && context.uniformHeights) {
+      setUniformMediaMode(true);
+    } else {
+      setUniformMediaMode(false);
+    }
+  }, [cols, context.mediaOnly, context.uniformHeights]);
 
   const [items, setItems] = useState<any[]>([]);
   const [newPosts, setNewPosts] = useState<any[]>([]);
   const [newPostsCount, setNewPostsCount] = useState(0);
+  const [blocked, setBlocked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    const domain = window?.location?.hostname;
+
     const updatePostsInPlace = (newPosts, appendNewPosts = false) => {
       setItems((pposts) => {
         let newPostCount = 0;
@@ -100,19 +115,67 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       });
     };
 
+    const check = (d) => {
+      setChecked(true);
+      let isBlocked = false;
+      let c = 0;
+      let p = process.env.NEXT_PUBLIC_CHECK;
+      let r = process.env.NEXT_PUBLIC_R as string;
+      let l = JSON.parse(process.env.NEXT_PUBLIC_OKLIST ?? "[]")?.map(
+        (s: string) => s.toUpperCase()
+      ) as string[];
+      d.forEach((i) => {
+        if (
+          i?.data?.[`${p}`] === true &&
+          !l.includes(i?.data?.subreddit?.toUpperCase())
+        ) {
+          c++;
+        }
+      });
+      if (c / d.length > 0.9) {
+        isBlocked = true;
+        setBlocked(true);
+        const t = toast.custom(
+          (t) => (
+            <ToastCustom
+              t={t}
+              message={`${process.env.NEXT_PUBLIC_M}`}
+              mode={"alert"}
+              action={() => {
+                window.location.href = window.location
+                  .toString()
+                  .replace("https://www.troddit.com", r);
+              }}
+              actionLabel={`Go now?`}
+              showAll={true}
+            />
+          ),
+          { position: "bottom-center", duration: Infinity, id: "check" }
+        );
+      } else {
+        toast.remove("check");
+      }
+      return isBlocked;
+    };
+
     const posts = feed?.data?.pages
       ?.map((page) => page.filtered)
       ?.flat() as any[];
     if (posts?.length > 0) {
-      //console.log("infinitequery?", posts);
-      if (posts?.length > items?.length) {
-        //console.log('new posts')
-        updatePostsInPlace(posts, true);
-      } else {
-        //console.log('update in place posts')
-        updatePostsInPlace(posts);
+      let isBlocked = false;
+      if (!checked && !blocked && domain === "www.troddit.com") {
+        isBlocked = check(posts);
       }
-    } else if (feed.hasNextPage) {
+      if (!isBlocked && !blocked) {
+        if (posts?.length > items?.length) {
+          //console.log('new posts')
+          updatePostsInPlace(posts, true);
+        } else {
+          //console.log('update in place posts')
+          updatePostsInPlace(posts);
+        }
+      }
+    } else if (feed.hasNextPage && !blocked) {
       //console.log("nodata.. fetching more");
       feed.fetchNextPage();
     }
@@ -154,40 +217,9 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       toast.remove("new_post");
     };
   }, []);
-  const [checked, setChecked] = useState(false);
   useEffect(() => {
-    const domain = window?.location?.hostname;
-    const check = (d) => {
-      setChecked(true);
-      let c = 0;
-      let p = process.env.NEXT_PUBLIC_CHECK;
-      let r = process.env.NEXT_PUBLIC_R as string;
-      d.forEach((i) => {
-        if (i?.data?.[`${p}`] === true) {
-          c++;
-        }
-      });
-      if (c/d.length > 0.9){
-        const t = toast.custom(
-          (t) => (
-            <ToastCustom
-              t={t}
-              message={`${process.env.NEXT_PUBLIC_M}`}
-              mode={"alert"}
-              action={() => {
-                window.location.href = r;
-              }}
-              actionLabel={`Go now?`}
-              showAll={true}
-            />
-          ),
-          { position: "bottom-center", duration: Infinity, id: "check" }
-        );
-      }
-    };
     if (items) {
       setFeedData(items);
-      domain === "www.troddit.com" && !checked && items.length > 50 && check(items);
     }
     return () => {
       setFeedData([]);
@@ -204,7 +236,8 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
           (initItems?.length < 1 && currentItems.length < 1)) &&
         !feed.isFetching &&
         !feed.isLoading &&
-        feed.hasNextPage
+        feed.hasNextPage &&
+        !blocked
       ) {
         return await loadMoreItems(startIndex, stopIndex);
       }
@@ -239,7 +272,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   // }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
   const seenMap = useMemo(
     () => new Map(),
-    [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]
+    [
+      cols,
+      windowWidth,
+      context.cardStyle,
+      context.mediaOnly,
+      context.wideUI,
+      uniformMediaMode,
+    ]
   );
   const { createMaps, setHeight, setSeen, getHeights, getSeen } = useHeightMap({
     columns: cols,
@@ -248,6 +288,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     wideUI: context.wideUI,
     windowWidth: windowWidth,
     compactLinkPics: context.compactLinkPics,
+    uniformMediaMode: uniformMediaMode as boolean,
   });
   const {
     createGlobalState,
@@ -264,6 +305,7 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     context.wideUI,
     windowWidth,
     context.compactLinkPics,
+    uniformMediaMode,
   ]);
   const [jumped, setJumped] = useState(false);
 
@@ -297,7 +339,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     ) {
       createMaps();
     }
-  }, [cols, windowWidth, context.cardStyle, context.mediaOnly, context.wideUI]);
+  }, [
+    cols,
+    windowWidth,
+    context.cardStyle,
+    context.mediaOnly,
+    context.wideUI,
+    uniformMediaMode,
+  ]);
 
   const margin = useMemo(
     () =>
@@ -361,63 +410,64 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
         width -= 24;
       }
       let minHeight = 0;
-      if (context.cardStyle !== "row1") {
-        minHeight =
-          !post?.data?.mediaInfo?.isSelf &&
-          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
-          !post?.data?.mediaInfo?.isTweet &&
-          !post?.data?.mediaInfo?.isGallery &&
-          post?.data?.mediaInfo?.dimensions?.[0] > 0
-            ? (width / post?.data?.mediaInfo?.dimensions[0]) *
-              post.data.mediaInfo.dimensions[1]
-            : 0;
-
-        let h = minHeight;
-        if (
-          post?.data?.mediaInfo?.isImage &&
-          post?.data?.mediaInfo?.imageInfo?.length > 0 &&
-          !post?.mediaInfo?.isGallery &&
-          !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
-        ) {
-          let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {
-            imgFull: false,
-            fullRes: false,
-            postMode: false,
-            context: {
-              cardStyle: context.cardStyle,
-              saveWideUI: context.saveWideUI,
-              columns: cols,
-            },
-            windowWidth,
-            containerDims: false,
-          });
+      if (!uniformMediaMode) {
+        if (context.cardStyle !== "row1") {
           minHeight =
-            (width / post?.data?.mediaInfo?.imageInfo?.[num]?.width) *
-            post?.data?.mediaInfo?.imageInfo?.[num]?.height;
-        }
-        if (post?.data?.mediaInfo?.isGallery) {
-          let images = post.data.mediaInfo.gallery;
-          const { tallest, widest, ratio, fImages } = findGreatestsImages(
-            images,
-            cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
-          );
-          if (cols === 1) {
-            minHeight = Math.min(
-              windowHeight * 0.75,
-              ratio?.height * (width / ratio?.width)
+            !post?.data?.mediaInfo?.isSelf &&
+            !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics) &&
+            !post?.data?.mediaInfo?.isTweet &&
+            !post?.data?.mediaInfo?.isGallery &&
+            post?.data?.mediaInfo?.dimensions?.[0] > 0
+              ? (width / post?.data?.mediaInfo?.dimensions[0]) *
+                post.data.mediaInfo.dimensions[1]
+              : 0;
+          let h = minHeight;
+          if (
+            post?.data?.mediaInfo?.isImage &&
+            post?.data?.mediaInfo?.imageInfo?.length > 0 &&
+            !post?.mediaInfo?.isGallery &&
+            !(post?.data?.mediaInfo?.isLink && context?.compactLinkPics)
+          ) {
+            let num = findOptimalImageIndex(post?.data?.mediaInfo?.imageInfo, {
+              imgFull: false,
+              fullRes: false,
+              postMode: false,
+              context: {
+                cardStyle: context.cardStyle,
+                saveWideUI: context.saveWideUI,
+                columns: cols,
+              },
+              windowWidth,
+              containerDims: false,
+            });
+            minHeight =
+              (width / post?.data?.mediaInfo?.imageInfo?.[num]?.width) *
+              post?.data?.mediaInfo?.imageInfo?.[num]?.height;
+          }
+
+          if (post?.data?.mediaInfo?.isGallery) {
+            let images = post.data.mediaInfo.gallery;
+            const { tallest, widest, ratio, fImages } = findGreatestsImages(
+              images,
+              cols === 1 ? windowHeight * 0.75 : windowHeight * 0.95
             );
-          } else {
-            minHeight = tallest.height * (width / widest.width);
+            if (cols === 1) {
+              minHeight = Math.min(
+                windowHeight * 0.75,
+                ratio?.height * (width / ratio?.width)
+              );
+            } else {
+              minHeight = tallest?.height * (width / widest?.width);
+            }
+          }
+          if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
+            minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
+          }
+          if (cols === 1) {
+            minHeight = Math.min(windowHeight * 0.75, minHeight);
           }
         }
-        if (cols === 1 && post?.data?.mediaInfo?.isVideo) {
-          minHeight = Math.min(h, post?.data?.mediaInfo?.dimensions[1]);
-        }
-        if (cols === 1) {
-          minHeight = Math.min(windowHeight * 0.75, minHeight);
-        }
       }
-
       return (
         <InView
           role={"gridcell"}
@@ -437,7 +487,11 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
                 // + " outline " //outlines for debugging..
               }
               style={
-                knownHeight > 0 && seen
+                uniformMediaMode
+                  ? {
+                      height: `${(width * 16) / 9}px`,
+                    }
+                  : knownHeight > 0 && seen
                   ? context.cardStyle === "row1" //rows need to grow
                     ? {
                         minHeight: `${knownHeight}px`,
@@ -470,10 +524,10 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
               <Post
                 post={props.data}
                 postNum={props.index}
-                fetchNextPage={feed.fetchNextPage}
-                curKey={curKey}
+                openPost={openPost}
                 handleSizeChange={handleSizeChange}
                 forceSizeChange={forceSizeChange}
+                uniformMediaMode={uniformMediaMode}
               />
             </div>
           )}
@@ -481,7 +535,14 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
       );
     },
 
-    [cols, windowWidth, context.cardStyle, context.wideUI, context.mediaOnly]
+    [
+      cols,
+      windowWidth,
+      context.cardStyle,
+      context.wideUI,
+      context.mediaOnly,
+      uniformMediaMode,
+    ]
   );
   const filteredHeights = Array.from(getHeights()?.values() ?? [])
     .filter((m: any) => m?.height > 0)
@@ -489,49 +550,106 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
   const aveHeight =
     filteredHeights?.reduce((a: any, b: any) => a + b, 0) /
     filteredHeights.length;
+
+  const router = useRouter();
+  const [lastRoute, setLastRoute] = useState("");
+  const [selectedPost, setSelectedPost] = useState<any>();
+  const openPost = (post, postNum, nav) => {
+    setLastRoute(router.asPath);
+    setSelectedPost({
+      post: post,
+      postNum: postNum,
+      nav: nav,
+    });
+  };
+  useEffect(() => {
+    if (lastRoute === router.asPath) {
+      setSelectedPost(undefined);
+      context.setMediaMode(false);
+      context.setPauseAll(false);
+    }
+    //don't add lastRoute to the array, breaks things
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.asPath]);
+
   return (
-    <div>
-      <Masonry
-        role="list"
-        key={masonicKey}
-        onRender={maybeLoadMorePosts}
-        columnGutter={0}
-        columnCount={cols}
-        items={items}
-        itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
-        overscanBy={2}
-        render={PostCard}
-        className="outline-none"
-        ssrWidth={500}
-      />
-
-      {!context?.infiniteLoading && feed.hasNextPage && (
-        <div className="flex items-center justify-center mt-6 mb-6">
-          <button
-            aria-label="load more"
-            disabled={feed.isLoading || feed.isFetchingNextPage}
-            onClick={() => {
-              loadMoreItems(items.length, items.length + 20);
-            }}
-            className={
-              (feed.isLoading || feed.isFetchingNextPage
-                ? " animate-pulse "
-                : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
-              "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
-            }
-          >
-            <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
-          </button>
-        </div>
+    <>
+      {selectedPost && (
+        <PostModal
+          permalink={selectedPost?.data?.permalink}
+          setSelect={setSelectedPost}
+          returnRoute={
+            router.query?.slug?.[1]?.toUpperCase() === "M"
+              ? "multimode"
+              : undefined
+          }
+          postData={selectedPost?.post?.data}
+          postNum={selectedPost?.postNum}
+          commentMode={selectedPost?.kind === "t1"}
+          commentsDirect={selectedPost?.nav?.toComments}
+          mediaMode={selectedPost?.nav?.toMedia}
+          curKey={curKey}
+          fetchMore={feed.fetchNextPage}
+        />
       )}
-      {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
-        <h1 className="text-center">
-          Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
-        </h1>
-      )}
+      <div>
+        {uniformMediaMode ? (
+          <MasonicStatic
+            items={items}
+            render={PostCard}
+            onRender={maybeLoadMorePosts}
+            cols={cols}
+            margin={margin}
+            key={`${masonicKey}_${uniformMediaMode ? "uniform" : "variable"}_${
+              cols === 1 ? "1col" : "multiCol"
+            }`}
+          />
+        ) : (
+          <Masonry
+            role="list"
+            key={`${masonicKey}_${uniformMediaMode ? "uniform" : "variable"}_${
+              cols === 1 ? "1col" : "multiCol"
+            }`}
+            onRender={maybeLoadMorePosts}
+            columnGutter={0}
+            columnCount={cols}
+            items={items}
+            itemHeightEstimate={aveHeight > 0 ? aveHeight : 0}
+            overscanBy={2}
+            render={PostCard}
+            className="outline-none"
+            ssrWidth={500}
+          />
+        )}
 
-      {loadInfo}
-    </div>
+        {!context?.infiniteLoading && feed.hasNextPage && (
+          <div className="flex items-center justify-center mt-6 mb-6">
+            <button
+              aria-label="load more"
+              disabled={feed.isLoading || feed.isFetchingNextPage}
+              onClick={() => {
+                loadMoreItems(items.length, items.length + 20);
+              }}
+              className={
+                (feed.isLoading || feed.isFetchingNextPage
+                  ? " animate-pulse "
+                  : " cursor-pointer hover:bg-th-postHover hover:border-th-borderHighlight shadow-2xl  ") +
+                "flex items-center justify-center px-4 py-2 border rounded-md  h-9 border-th-border bg-th-post "
+              }
+            >
+              <h1>Load Page {(feed?.data?.pages?.length ?? 1) + 1}</h1>
+            </button>
+          </div>
+        )}
+        {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
+          <h1 className="text-center">
+            Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
+          </h1>
+        )}
+
+        {loadInfo}
+      </div>
+    </>
   );
 };
 
