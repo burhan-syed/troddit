@@ -144,9 +144,9 @@ const Media = ({
       if (post["mediaInfo"].isIframe && !uniformMediaMode) {
         c = await findIframe();
       }
-      if (!b && !post?.selftext_html) {
+      if (!b && (!post?.selftext_html || postMode)) {
         a = await findImage();
-        if (a && !context.preferEmbeds && context.mediaMode) {
+        if (a && !context.preferEmbeds && fullMediaMode && context.autoPlayMode) {
           setAllowIFrame(false);
         }
       }
@@ -462,9 +462,7 @@ const Media = ({
   return (
     <div
       className={
-        fill
-          ? "block"
-          : uniformMediaMode
+          uniformMediaMode
           ? "aspect-[9/16] overflow-hidden object-cover object-center"
           : "block select-none group"
       }
@@ -586,7 +584,7 @@ const Media = ({
               className={
                 "relative  " +
                 (uniformMediaMode ? " min-h-full " : "") +
-                ((imgFull || (!postMode && context.columns !== 1)) &&
+                ((imgFull || (!postMode && context.columns !== 1) || fill) &&
                 !post?.mediaInfo?.isTweet
                   ? " block "
                   : post?.mediaInfo?.isTweet
