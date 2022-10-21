@@ -144,7 +144,7 @@ const Media = ({
       if (post["mediaInfo"].isIframe && !uniformMediaMode) {
         c = await findIframe();
       }
-      if (!b && (!post?.selftext_html || postMode)) {
+      if (!b && (!post?.selftext_html || fullMediaMode)) {
         a = await findImage();
         if (a && !context.preferEmbeds && fullMediaMode && context.autoPlayMode) {
           setAllowIFrame(false);

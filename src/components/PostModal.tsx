@@ -444,7 +444,7 @@ const PostModal = ({
             " outline-none select-none md:rounded-lg flex items-center justify-center  md:bg-transparent bg-black/40 rounded-full backdrop-blur-lg md:backdrop-blur-none md:hover:bg-black/20 w-10 h-10 md:w-12 md:h-12 flex-none  md:text-opacity-50 hover:text-opacity-100 cursor-pointer border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-sm " +
             (context?.mediaMode
               ? " md:top-4 md:right-2 md:left-auto left-1 top-1 " +
-              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-th-text " : " text-white " ) + 
+              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
                 " transition ease-in-out duration-200 " +
                 (showUI && !hideArrows
                   ? " opacity-100 "
@@ -470,7 +470,7 @@ const PostModal = ({
               "fixed z-[98] rotate-90  outline-none cursor-pointer select-none md:p-2 rounded-full md:text-opacity-50 hover:text-opacity-100  bg-black/40 backdrop-blur-lg md:backdrop-blur-none md:bg-transparent md:hover:bg-black/20 md:rounded-md flex items-center justify-center  border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12  " +
               (useMediaMode
                 ? " md:top-[7.6rem] md:right-2 right-1.5 md:left-auto bottom-[20.5rem] " +
-                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-th-text " : " text-white " ) + 
+                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
                   " transition ease-in-out duration-200 " +
                   (showUI && !hideArrows
                     ? " opacity-100 "
@@ -514,7 +514,7 @@ const PostModal = ({
                 showUI={showUI}
                 setShowUI={setShowUI}
                 buttonStyles={"md:text-opacity-50 md:hover:text-opacity-100 "
-                + (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-th-text " : " text-white " )}
+                + (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " )}
               />
             </div>
           </>
@@ -551,7 +551,7 @@ const PostModal = ({
               "fixed z-[98]  rotate-90 outline-none cursor-pointer select-none md:text-opacity-50 hover:text-opacity-100   md:p-2 flex items-center justify-center md:bg-transparent md:backdrop-blur-none bg-black/40 rounded-full md:hover:bg-black/20 md:rounded-md  border border-transparent  backdrop-blur-lg hover:border-th-borderHighlight hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12  " +
               (useMediaMode
                 ? "  md:top-[10.5rem] md:right-2 right-1.5 md:left-auto bottom-[17rem] " +
-                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-th-text " : " text-white " ) + 
+                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
                   " transition ease-in-out duration-200 " +
                   (showUI && !hideArrows
                     ? " opacity-100 "
@@ -569,7 +569,7 @@ const PostModal = ({
             className={
               "fixed z-[99] right-1.5 top-14 md:right-2 md:top-[4.5rem] md:text-opacity-50 hover:text-opacity-100 md:bg-transparent bg-black/40  md:hover:bg-black/20 rounded-full md:rounded-md  flex items-center justify-center border border-transparent hover:border-th-borderHighlight outline-none hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12 " +
               " transition ease-in-out duration-200 select-none " +
-              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-th-text " : " text-white " ) + 
+              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
               (showUI && (!hideArrows || autoPlay)
                 ? " opacity-100 backdrop-blur-lg md:backdrop-blur-none "
                 : " opacity-0 hover:opacity-100")
