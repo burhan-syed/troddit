@@ -125,10 +125,13 @@ const ChildComments = ({
   }, [comment]);
 
   useEffect(() => {
-    if(myReplies?.length > 0){
+    if (myReplies?.length > 0) {
       if (childcomments?.length > 0) {
-        setchildcomments((p) => [...myReplies, ...p?.filter((pr: any) => pr?.myreply !== true)]);
-      }else{
+        setchildcomments((p) => [
+          ...myReplies,
+          ...p?.filter((pr: any) => pr?.myreply !== true),
+        ]);
+      } else {
         setchildcomments(myReplies);
       }
     }
@@ -478,14 +481,16 @@ const ChildComments = ({
                       }
                     >
                       {(windowWidth > 640 || showOpts) && (
-                        <Vote
-                          name={comment?.data?.name}
-                          likes={comment?.data?.likes}
-                          score={comment?.data?.score}
-                          archived={comment?.data?.archived}
-                          scoreHideMins={scoreHideMins}
-                          postTime={comment?.data?.created_utc}
-                        />
+                        <div className="flex flex-row items-center gap-1 text-sm">
+                          <Vote
+                            name={comment?.data?.name}
+                            likes={comment?.data?.likes}
+                            score={comment?.data?.score}
+                            archived={comment?.data?.archived}
+                            scoreHideMins={scoreHideMins}
+                            postTime={comment?.data?.created_utc}
+                          />
+                        </div>
                       )}
                       {/* chrome struggles with svgs.. hiding on low end devices */}
                       {!showOpts &&

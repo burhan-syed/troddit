@@ -74,6 +74,7 @@ const Search = ({ id }) => {
         ?.split("+")?.[0];
       setCurrSub(sub);
       setAddMode("subs");
+      setSrRestrict(true);
     } else {
       setCurrSub("");
       setSrRestrict(false);
@@ -486,7 +487,7 @@ const Search = ({ id }) => {
     placeholder: placeHolder,
     value: value,
     onChange: onChange,
-    onFocus: () => context.setReplyFocus(true),
+    onFocus: () => {context.setReplyFocus(true); if(router?.query?.q){setValue(router?.query?.q?.toString()); }},
     onBlur: () => context.setReplyFocus(false),
     type: 'search'
   };
