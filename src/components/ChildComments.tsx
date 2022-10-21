@@ -284,6 +284,9 @@ const ChildComments = ({
                 <a
                   onClick={(e) => {
                     e.stopPropagation();
+                    if(comment?.data?.author === "[deleted]"){
+                      e.preventDefault(); 
+                    }
                   }}
                   className={
                     "flex items-center group justify-start group gap-1"
