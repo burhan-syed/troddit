@@ -1,6 +1,6 @@
 {
   "name": "troddit",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,7 @@
     "localforage": "^1.10.0",
     "markdown-draft-js": "^2.4.0",
     "masonic": "^3.6.4",
-    "next": "12",
+    "next": "^12.3.1",
     "next-auth": "^4.10.3",
     "next-cookies": "^2.0.3",
     "next-plausible": "^3.1.4",

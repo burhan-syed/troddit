@@ -541,18 +541,14 @@ const Thread = ({
                             aria-label="full screen media"
                             autoFocus={windowWidth < 1300}
                             onClick={() => {
-                              if (mediaInfo?.isSelf && false) {
-                                setimgFull((p) => !p);
-                              } else {
-                                setMediaMode(true);
-                              }
+                              setMediaMode(true);
                             }}
                             className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
                           >
                             <BiExpand className={"flex-none w-5 h-5 "} />
                           </button>
                         )}
-                        {mediaInfo?.isSelf && (
+                        {mediaInfo?.isSelf && post?.selftext_html && (
                           <button
                             onClick={() => setimgFull((p) => !p)}
                             aria-label="expand text"
@@ -654,7 +650,7 @@ const Thread = ({
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
+                          <div className="flex-row items-center hidden p-2 space-x-1 border rounded-md sm:flex border-th-border hover:border-th-borderHighlight ">
                             <ImReddit
                               className={
                                 "flex-none w-5 h-5 " +

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.17.1
+
+### Changes
+- Search will now default to subreddit search when possible
+- Minor style changes to reader mode and comment votes
+### Fixes
+- Prevent links to deleted users
+
 ## v0.17.0
 
 ### New
