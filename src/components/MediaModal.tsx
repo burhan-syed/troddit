@@ -206,7 +206,7 @@ const MediaModal = ({
       <>
         <MediaWrapper
           post={post}
-          hideNSFW={!context.nsfw}
+          hideNSFW={(context.nsfw === false && post?.over_18) || post?.spoiler} 
           forceMute={false}
           containerDims={[windowWidth, windowHeight]}
           imgFull={post?.mediaInfo?.isSelf}
