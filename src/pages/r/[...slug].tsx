@@ -178,7 +178,10 @@ SubredditPage.getInitialProps = async (d) => {
         tokenData,
         subreddits,
         query?.slug?.[1] ?? "hot",
-        query?.t ?? "all"
+        query?.t ?? "all",
+        "",
+        0,
+        true
       );
       posts = data?.children;
     };

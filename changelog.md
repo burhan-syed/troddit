@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.2
+
+### Changes
+- Galleries wrap around and images will fill available space
+
+### Fixes
+- Fix some missing comment links
+- Fix videos in crossposts
+- Show initial feed loading state
+
 ## v0.17.1
 
 ### Changes
