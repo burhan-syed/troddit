@@ -6,8 +6,8 @@ export const useKeyPress = (targetKey) => {
   // State for keeping track of whether key is pressed
   const [keyPressed, setKeyPressed] = useState<boolean>(false);
   // If pressed key is our target key then set to true
-  function downHandler({ metaKey,cntrlKey ,key }) {
-    if (key === targetKey && !(cntrlKey || metaKey)) {
+  function downHandler({ metaKey,ctrlKey,key }) {
+    if (key === targetKey && !(ctrlKey || metaKey)) {
       setKeyPressed(true);
     } 
   }
