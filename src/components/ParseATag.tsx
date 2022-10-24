@@ -7,8 +7,8 @@ const ParseATag = (props) => {
   const [link, setLink] = useState("");
   const [expandable, setExpandable] = useState(false);
   const [expand, setExpand] = useState(false);
+  const [linkText, setLinkText] = useState(props?.children?.data);
   useEffect(() => {
-    //console.log(props);
     const checkSupport = (link: string) => {
       let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
       let redditRegex =
@@ -20,7 +20,22 @@ const ParseATag = (props) => {
         link.match(greedyRegex)
       );
     };
+
+    const findLinkText = (data, iter = 0) => {
+      if (iter > 5) {
+        return;
+      }
+      if (data?.data) {
+        setLinkText(data?.data);
+        return;
+      } else if (data?.children?.[0]) {
+        findLinkText(data?.children[0], iter + 1);
+      }
+      return;
+    };
+
     const link = props?.children?.parent?.attribs?.href;
+    findLinkText(props?.children);
     setLink(link);
     setExpandable(checkSupport(link));
   }, []);
@@ -33,13 +48,13 @@ const ParseATag = (props) => {
     }
   };
   if (!expandable) {
-    return <>{props?.children?.children?.[0]?.data ?? props?.children?.data}</>;
+    return <>{linkText}</>;
   }
 
   return (
     <>
       <div className={" inline-block"} onClick={handleClick}>
-        {props?.children?.data}
+        {linkText}
         {expandable && (
           <button
             aria-label="expand"

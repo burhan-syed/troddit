@@ -7,12 +7,12 @@ import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 const GalleryCarousel = ({
   media,
   height,
-  layout,
+  objectFit,
   mediaMode = false,
 }: {
   media: any;
   height?: number;
-  layout?: "fixed" | "fill" | "intrinsic" | "responsive" | undefined;
+  objectFit?: "cover" | "contain";
   mediaMode?: boolean;
 }) => {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -26,6 +26,7 @@ const GalleryCarousel = ({
       <Carousel
         speed={200}
         onDragStart={() => setAnimate(true)}
+        wrapAround={true}
         //disableAnimation={!animate}
         swiping={mediaMode === true ? false : true}
         disableEdgeSwiping={true}
@@ -116,8 +117,8 @@ const GalleryCarousel = ({
                   height={image.height}
                   width={image.width}
                   alt=""
-                  layout={"intrinsic"}
-                  objectFit="cover"
+                  layout={"fill"}
+                  objectFit={objectFit}
                   priority={true}
                   unoptimized={true}
                   className={""}

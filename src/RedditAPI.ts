@@ -38,6 +38,7 @@ const filterPostChildren = (children) => {
       archived: child?.data?.archived,
       author: child?.data?.author,
       created_utc: child?.data?.created_utc, 
+      crosspost_parent_list: child?.data?.crosspost_parent_list,
       distinguished: child?.data?.distinguished,
       domain: child?.data?.domain, 
       downs: child?.data?.downs,

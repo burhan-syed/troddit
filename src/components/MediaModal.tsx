@@ -206,18 +206,19 @@ const MediaModal = ({
       <>
         <MediaWrapper
           post={post}
-          hideNSFW={false}
+          hideNSFW={(context.nsfw === false && post?.over_18) || post?.spoiler} 
           forceMute={false}
           containerDims={[windowWidth, windowHeight]}
           imgFull={post?.mediaInfo?.isSelf}
           postMode={true}
           hide={hidden}
           fullMediaMode={true}
+          showCrossPost={false}
           curPostName={curPostName}
         />
       </>
     ),
-    [curPostName, windowHeight, windowWidth, hide]
+    [curPostName, windowHeight, windowWidth, context.nsfw]
   );
 
   const [showAd, setShowAd] = useState(true);
@@ -512,10 +513,9 @@ const MediaModal = ({
                   {i === curPostNum && (
                     <>
                       {post?.data?.mediaInfo?.isVideo &&
-                        !post?.data?.mediaInfo?.isSelf(
-                          !post?.data?.mediaInfo?.iFrameHTML ||
-                            !context?.preferEmbeds
-                        ) && (
+                        !post?.data?.mediaInfo?.isSelf &&
+                        (!post?.data?.mediaInfo?.iFrameHTML ||
+                          !context?.preferEmbeds) && (
                           <button
                             onClick={() => context.toggleAudioOnHover()}
                             className={

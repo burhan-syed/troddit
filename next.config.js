@@ -1,9 +1,16 @@
 const { withPlausibleProxy } = require("next-plausible");
-const withPWA = require("next-pwa");
-
+const withPWA = require("next-pwa")({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+});
 module.exports = withPlausibleProxy()(
   withPWA({
     reactStrictMode: false, //true
+    swcMinify: true,
+    compiler: {
+      removeConsole: process.env.NODE_ENV !== "development",
+    },
     images: {
       domains: [],
     },
@@ -15,7 +22,11 @@ module.exports = withPlausibleProxy()(
           permanent: true,
         },
         { source: "/comments/:path*", destination: "/:path*", permanent: true },
-      {source: "/r/:sub/w/:page*", destination: "/r/:sub/wiki/:page*", permanent: true}
+        {
+          source: "/r/:sub/w/:page*",
+          destination: "/r/:sub/wiki/:page*",
+          permanent: true,
+        },
       ];
     },
     async rewrites() {
@@ -29,12 +40,6 @@ module.exports = withPlausibleProxy()(
           destination: "https://plausible.io/api/event",
         },
       ];
-    },
-    pwa: {
-      disable: process.env.NODE_ENV === "development",
-      dest: "public",
-      register: true,
-      skipWaiting: true,
     },
   })
 );

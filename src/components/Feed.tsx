@@ -33,7 +33,7 @@ const Feed = ({ initialData = {} as any }) => {
       router.replace(router.asPath, undefined, { shallow: true });
     }
   }, []);
-  
+
   if (
     feed.error &&
     (mode === "USER" || mode === "SUBREDDIT") &&
@@ -77,7 +77,7 @@ const Feed = ({ initialData = {} as any }) => {
       ),
       { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
-  } else{
+  } else {
     toast.remove("not_found");
   }
   return (
@@ -97,22 +97,18 @@ const Feed = ({ initialData = {} as any }) => {
               : " ")
           }
         >
-          {" "}
-          {/* + (context?.maximize ? " " : " md:w-5/6") */}
-          {!feed.isLoading && (
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
-            >
-              <MyMasonic
-                initItems={[]}
-                feed={feed}
-                curKey={key}
-                key={`${key}_${context.fastRefresh}_${context.progressKey}`}
-              />
-              <div className="relative w-full"></div>
-            </ErrorBoundary>
-          )}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
+          >
+            <MyMasonic
+              initItems={[]}
+              feed={feed}
+              curKey={key}
+              key={`${key}_${context.fastRefresh}_${context.progressKey}`}
+            />
+            <div className="relative w-full"></div>
+          </ErrorBoundary>
         </div>
       </div>
       <button
