@@ -25,6 +25,7 @@ import useGlobalState from "../hooks/useGlobalState";
 import PostModal from "./PostModal";
 import { useRouter } from "next/router";
 import MasonicStatic from "./MasonicStatic";
+import Spinner from "./ui/Spinner";
 
 interface MyMasonicProps {
   initItems: any[];
@@ -327,6 +328,15 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
     windowWidth,
     context.compactLinkPics,
   ]);
+
+  const [feedLoading, setFeedLoading] = useState(true);
+  useEffect(() => {
+    if (feed.isFetching && !feed.isError && context.infiniteLoading) {
+      setFeedLoading(true);
+    } else {
+      setFeedLoading(false);
+    }
+  }, [feed, context?.infiniteLoading]);
 
   useEffect(() => {
     if (
@@ -641,10 +651,13 @@ const MyMasonic = ({ initItems, feed, curKey }: MyMasonicProps) => {
             </button>
           </div>
         )}
-        {feed.hasNextPage && feed.isFetching && context?.infiniteLoading && (
-          <h1 className="text-center">
-            Loading page {(feed?.data?.pages?.length ?? 0) + 1}...
-          </h1>
+        {feedLoading && (
+          <div className="flex flex-col items-center justify-center w-full gap-2 py-4 text-center">
+            <span>Loading page {(feed?.data?.pages?.length ?? 0) + 1} </span>
+            <div className="opacity-80 text-th-accent">
+              <Spinner size={20} />
+            </div>
+          </div>
         )}
 
         {loadInfo}
