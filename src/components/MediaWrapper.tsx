@@ -18,6 +18,7 @@ const MediaWrapper = ({
   handleClick = () => {},
   fullMediaMode=false,
   showCrossPost = true,
+  showCrossPostMedia = true,
   containerDims = undefined as any,
   read = false,
   card = false,
@@ -217,7 +218,7 @@ const MediaWrapper = ({
           context?.cardStyle == "row1" ||
           postMode) &&
           (!context.mediaOnly || postMode) && <>{XPostData}</>}
-        {NSFWWrapper}
+        {showCrossPostMedia && <>{NSFWWrapper}</>}
         {context?.cardStyle == "card2" && !postMode && <>{XPostData}</>}
       </div>
     );

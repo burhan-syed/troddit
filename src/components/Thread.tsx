@@ -56,7 +56,7 @@ const Thread = ({
   commentsDirect = false,
   direct = false,
   goBack = () => {},
-  setCurPost
+  setCurPost,
 }) => {
   const context: any = useMainContext();
   const { data: session, status } = useSession();
@@ -337,6 +337,7 @@ const Thread = ({
                     imgFull={mediaInfo?.isSelf ? true : imgFull}
                     postMode={true}
                     containerDims={[pWidth, pHeight]}
+                    showCrossPost={false}
                   />
                 </div>
               )}
@@ -505,6 +506,18 @@ const Thread = ({
                           />
                         </div>
                       </>
+                    )}
+                    {usePortrait && post?.crosspost_parent_list?.[0] && (
+                      <div className={"block relative md:ml-3 "}>
+                        <MediaWrapper
+                          hideNSFW={hideNSFW}
+                          post={initPost}
+                          forceMute={false}
+                          imgFull={imgFull}
+                          postMode={true}
+                          showCrossPostMedia={false}
+                        />
+                      </div>
                     )}
                     {/* Bottom Buttons */}
 
