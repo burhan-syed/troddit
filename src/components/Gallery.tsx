@@ -73,7 +73,7 @@ const Gallery = ({
       <GalleryCarousel
         media={imagesRender}
         mediaMode={mediaMode}
-        //layout={!postMode && context.columns !== 1 ? "fill" : "intrinsic"}
+        objectFit={postMode || context.columns === 1 ? "contain" : "cover"}
         height={
           mediaMode
             ? undefined
