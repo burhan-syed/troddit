@@ -133,7 +133,7 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
               commentMode={commentThread}
               withcontext={withCommentContext}
               postData={post}
-              postNum={undefined}
+              postNum={0}
               curKey={undefined}
             />
           </div>
