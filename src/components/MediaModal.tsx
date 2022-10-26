@@ -206,7 +206,7 @@ const MediaModal = ({
       <>
         <MediaWrapper
           post={post}
-          hideNSFW={(context.nsfw === false && post?.over_18) || post?.spoiler} 
+          hideNSFW={(context.nsfw === false && post?.over_18) || post?.spoiler}
           forceMute={false}
           containerDims={[windowWidth, windowHeight]}
           imgFull={post?.mediaInfo?.isSelf}
@@ -290,11 +290,12 @@ const MediaModal = ({
         onDoubleClick={(e) => {
           e.preventDefault();
           if (
-            !flattenedPosts[curPostNum]?.data?.mediaInfo?.isGallery ||
-            ((e.clientX > 48 ||
-              e.clientY > windowHeight / 2 + 48 ||
-              e.clientY < windowHeight / 2 - 48) &&
-              e.clientX < windowWidth - 48)
+            !flattenedPosts[curPostNum]?.data?.mediaInfo?.isSelf &&
+            (!flattenedPosts[curPostNum]?.data?.mediaInfo?.isGallery ||
+              ((e.clientX > 48 ||
+                e.clientY > windowHeight / 2 + 48 ||
+                e.clientY < windowHeight / 2 - 48) &&
+                e.clientX < windowWidth - 48))
           ) {
             setTriggerVote((v) => (v += 1));
           }
@@ -339,7 +340,7 @@ const MediaModal = ({
                       style={{ height: `${windowHeight}px` }}
                     >
                       <div
-                        className="max-w-2xl "
+                        className="max-w-[100vw] md:max-w-3xl"
                         onTouchMove={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
