@@ -10,6 +10,11 @@ const ParseATag = (props) => {
   const [linkText, setLinkText] = useState(props?.children?.data);
   useEffect(() => {
     const checkSupport = (link: string) => {
+      //prevent recurring nodes from all having expansion buttons
+      if(props?.children?.next?.parent?.attribs?.href === link){
+        return false;
+      }
+
       let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
       let redditRegex =
         /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg))\./gm;
@@ -21,6 +26,7 @@ const ParseATag = (props) => {
       );
     };
 
+    //todo: preserve text formatting
     const findLinkText = (data, iter = 0) => {
       if (iter > 5) {
         return;
@@ -53,10 +59,11 @@ const ParseATag = (props) => {
 
   return (
     <>
-      <div className={" inline-block"} onClick={handleClick}>
+      <>
         {linkText}
         {expandable && (
           <button
+            onClick={handleClick}
             aria-label="expand"
             className={
               "flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight  text-th-text inline-block mx-1.5"
@@ -69,7 +76,7 @@ const ParseATag = (props) => {
             )}
           </button>
         )}
-      </div>
+      </>
       {expand && (
         <div
           className="flex flex-col"

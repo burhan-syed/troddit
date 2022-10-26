@@ -22,6 +22,7 @@ const processingInstructions = [
         node.parent.name &&
         node.parent.name === "a" &&
         node.parent?.attribs?.href?.includes("https://") &&
+        checkSupport(node.parent?.attribs?.href, node) &&
         node.name !== "img"; //leave comment gifs alone
       return check;
     },
@@ -37,6 +38,22 @@ const processingInstructions = [
     processNode: processNodeDefinitions.processDefaultNode,
   },
 ];
+const checkSupport = (link: string,node:any) => {
+  //prevent recurring nodes from all having expansion buttons
+  if(node?.next?.parent?.attribs?.href === link){
+    return false;
+  }
+
+  let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
+  let redditRegex =
+    /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg))\./gm;
+  let greedyRegex = /(\.(png|jpg))/gm;
+  return !!(
+    link.match(imgurRegex) ||
+    link.match(redditRegex) ||
+    link.match(greedyRegex)
+  );
+};
 
 const ErrorFallBack = () => {
   return (

@@ -69,7 +69,7 @@ const SaveButton = ({
       className={
         "flex flex-row items-center outline-none w-full " +
         (menu ? " pl-2 pr-4 py-2.5  md:py-1 " : " space-x-1 ") + 
-        (isSaved ? " hover:text-white " : " hover:text-th-upvote ")
+        (isSaved ? " " : " hover:text-th-upvote ")
         + (fullmedia ? "w-10 h-10 bg-black/40 backdrop-blur-lg rounded-full justify-center text-white" : "")
       }
       onClick={(e) => {
