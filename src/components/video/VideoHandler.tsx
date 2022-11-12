@@ -63,7 +63,7 @@ const VideoHandler = ({
   );
 
   const { volume, setVolume } = context;
-  const [hasAudio, setHasAudio] = useState(() => (!videoInfo.hslUrl && !videoInfo.hasAudio) ? false : true);
+  const [hasAudio, setHasAudio] = useState(() => (!videoInfo.hlsUrl && !videoInfo.hasAudio) ? false : true);
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
   const [currentTime, setCurrentTime] = useState(0.0);
