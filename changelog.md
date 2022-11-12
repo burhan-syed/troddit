@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.17.3
+
+### Changes
+- Changes to video player inner-workings
+- Minor video player visual updates on mobile
+- Now if a video cannot autoplay un-muted (for example, because of browser security restrictions) it will try to autoplay muted. 
+
+### Fixes
+- Reddit video audio now works on iOS and other browsers previously unsupported
+- Video autoplay now works on iOS
+
 ## v0.17.2
 
 ### Changes

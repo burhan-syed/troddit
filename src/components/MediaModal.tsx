@@ -16,6 +16,7 @@ import Link from "next/link";
 import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { IoMdExpand } from "react-icons/io";
+import useBrowser from "../hooks/useBrowser";
 
 const MediaModal = ({
   hide,
@@ -32,6 +33,7 @@ const MediaModal = ({
   setReadPosts,
 }) => {
   const windowWidth = useWindowWidth();
+  const browser = useBrowser();
   const [windowHeight, setWindowHeight] = useState<number>(0);
   useEffect(() => {
     setWindowHeight(window.innerHeight);
@@ -57,7 +59,7 @@ const MediaModal = ({
   } = usePanAndZoom();
   const [animate, setAnimate] = useState(true);
   const [curPostName, setCurPostName] = useState(
-    () => flattenedPosts?.[curPostName]?.data?.name
+    () => flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ?? flattenedPosts?.[curPostNum]?.data?.name
   );
   const [touched, setTouched] = useState(false);
   const [touchStartY, setTouchStartY] = useState<any[]>([0]);
@@ -145,7 +147,7 @@ const MediaModal = ({
     if (firstNum !== curPostNum && touched) {
       setAnimateY(true);
     }
-    setCurPostName(flattenedPosts?.[curPostNum]?.data?.name);
+    setCurPostName(flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ?? flattenedPosts?.[curPostNum]?.data?.name);
     touchEndY[0] = undefined;
     touchStartTime[0] = Infinity;
     touchStartY[0] = undefined;
@@ -218,7 +220,7 @@ const MediaModal = ({
         />
       </>
     ),
-    [curPostName, windowHeight, windowWidth, context.nsfw]
+    [curPostName, windowHeight, windowWidth, context.nsfw, curPostNum]
   );
 
   const [showAd, setShowAd] = useState(true);
@@ -516,7 +518,8 @@ const MediaModal = ({
                       {post?.data?.mediaInfo?.isVideo &&
                         !post?.data?.mediaInfo?.isSelf &&
                         (!post?.data?.mediaInfo?.iFrameHTML ||
-                          !context?.preferEmbeds) && (
+                          !context?.preferEmbeds) &&
+                        !(browser.includes("Safari") && windowWidth < 640) && (
                           <button
                             onClick={() => context.toggleAudioOnHover()}
                             className={
