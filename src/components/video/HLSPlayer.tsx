@@ -67,7 +67,7 @@ function HlsPlayer({
         hls.destroy();
       }
       const newHls = new Hls({
-        enableWorker: true,
+        enableWorker: false,
         debug: false,
         maxLoadingDelay: 1,
         ...hlsConfig,
