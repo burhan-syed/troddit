@@ -1,7 +1,7 @@
 import Image from "next/dist/client/image";
 import Gallery from "./Gallery";
-import VideoHandler from "./VideoHandler";
-import React, { useEffect, useRef, useState } from "react";
+import VideoHandler from "./video/VideoHandler";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
@@ -15,21 +15,6 @@ import { BiExpand } from "react-icons/bi";
 import toast from "react-hot-toast";
 import ToastCustom from "./toast/ToastCustom";
 import ExternalLink from "./ui/ExternalLink";
-let regex = /([A-Z])\w+/g;
-async function fileExists(url) {
-  // try{
-  // let http = new XMLHttpRequest();
-  // http.open('HEAD', url, false);
-  // http.send();
-  // //console.log(http.status);
-  // return http.status != (403 || 404);
-
-  // } catch (e) {
-  //   //console.log('err',e)
-  //   return false;
-  // }
-  return true;
-}
 
 const scrollStyle =
   " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
@@ -64,12 +49,12 @@ const Media = ({
   const [showMP4, setShowMP4] = useState(true);
   const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({
+    hlsUrl: "",
     url: "",
     height: 0,
     width: 0,
     hasAudio: false,
   });
-  const [videoAudio, setvideoAudio] = useState("");
   const [placeholderInfo, setPlaceholderInfo] = useState({
     url: "",
     height: 0,
@@ -92,7 +77,7 @@ const Media = ({
     //
     return () => {
       setIsIFrame(false);
-      setIFrame(null);
+      setIFrame(undefined);
     };
   }, [post]);
 
@@ -146,32 +131,16 @@ const Media = ({
       }
       if (!b && (!post?.selftext_html || fullMediaMode)) {
         a = await findImage();
-        if (a && !context.preferEmbeds && fullMediaMode && context.autoPlayMode) {
+        if (
+          a &&
+          !context.preferEmbeds &&
+          fullMediaMode &&
+          context.autoPlayMode
+        ) {
           setAllowIFrame(false);
         }
       }
       a || b || c || post?.selftext_html ? setLoaded(true) : setLoaded(false);
-    };
-
-    //if deleted by copyright notice may be set to 'self'
-    const checkURLs = () => {
-      //console.log(imageInfo, videoInfo, placeholderInfo);
-      const placeholder = "http://goo.gl/ijai22";
-      if (imageInfo.url === "self") {
-        setImageInfo((imgInfo) => {
-          return { ...imageInfo, url: placeholder };
-        });
-      }
-      if (videoInfo?.[0]?.url === "self") {
-        setVideoInfo((imgInfo) => {
-          return { ...imageInfo, url: placeholder, hasAudio: false };
-        });
-      }
-      if (placeholderInfo.url === "self") {
-        setPlaceholderInfo((imgInfo) => {
-          return { ...imageInfo, url: placeholder };
-        });
-      }
     };
 
     const checkURL = (url) => {
@@ -180,21 +149,6 @@ const Media = ({
       //if (!url) return placeholder;
       if (!url?.includes("http")) return placeholder;
       return url;
-    };
-
-    const findAudio = async (url) => {
-      let a: string = url;
-      a = a.replace(regex, "DASH_audio");
-      let status = await fileExists(a);
-      //console.log(status);
-      if (status) {
-        setvideoAudio(a);
-      } else {
-        a = a.split("DASH")[0] + "audio";
-        status = await fileExists(a);
-        if (status) setvideoAudio(a);
-        else setvideoAudio("");
-      }
     };
 
     const findVideo = async () => {
@@ -235,6 +189,7 @@ const Media = ({
         }
         setVideoInfo({
           url: url,
+          hlsUrl: post.mediaInfo.videoInfo[0]?.hlsUrl,
           height: post.mediaInfo.videoInfo[0].height,
           width: post.mediaInfo.videoInfo[0].width,
           hasAudio: post.mediaInfo.videoInfo[0]?.hasAudio,
@@ -244,15 +199,7 @@ const Media = ({
           height: post.mediaInfo.videoInfo[0].height,
           width: post.mediaInfo.videoInfo[0].width,
         });
-        // setImageInfo({
-        //   url: checkURL(post?.thumbnail),
-        //   height: post.mediaInfo.videoInfo.height,
-        //   width: post.mediaInfo.videoInfo.width,
-        // });
         await findImage();
-        if (url?.includes("v.redd.it")) {
-          findAudio(post.mediaInfo.videoInfo[0].url);
-        }
         setIsMP4(true);
         setIsImage(false);
         return true;
@@ -323,7 +270,6 @@ const Media = ({
     } else {
     }
     return () => {
-      setvideoAudio("");
       setIsGallery(false);
       setIsIFrame(false);
       setGalleryInfo([]);
@@ -333,7 +279,13 @@ const Media = ({
       setIsTweet(false);
       setShowMP4(true);
       setImageInfo({ url: "", height: 0, width: 0 });
-      setVideoInfo({ url: "", height: 0, width: 0, hasAudio: false });
+      setVideoInfo({
+        url: "",
+        hlsUrl: "",
+        height: 0,
+        width: 0,
+        hasAudio: false,
+      });
       setPlaceholderInfo({ url: "", height: 0, width: 0 });
       setMediaLoaded(false);
       setLoaded(false);
@@ -443,6 +395,34 @@ const Media = ({
     }
   }, [mediaRef?.current?.clientWidth, imageInfo]);
 
+  const videoQuality = useMemo(
+    () =>
+      (context.highRes && fullMediaMode) || fullRes
+        ? "full"
+        : fullMediaMode
+        ? windowWidth <= 640
+          ? "hd"
+          : "full"
+        : postMode
+        ? windowWidth <= 640
+          ? "sd"
+          : "full"
+        : context.columns === 1
+        ? windowWidth <= 640
+          ? "sd"
+          : "full"
+        : context.columns > 1 && windowWidth <= 640
+        ? "min"
+        : context.columns <= 3
+        ? "hd"
+        : windowWidth <= 1440 || context.columns >= 5
+        ? "sd"
+        : "hd"
+        
+        ,
+    [context.columns, context.highRes, windowWidth, fullMediaMode, postMode,fullRes]
+  );
+
   const externalLink = (
     <a
       aria-label="external link"
@@ -462,7 +442,7 @@ const Media = ({
   return (
     <div
       className={
-          uniformMediaMode
+        uniformMediaMode
           ? "aspect-[9/16] overflow-hidden object-cover object-center"
           : "block select-none group"
       }
@@ -520,7 +500,7 @@ const Media = ({
               </div>
             </div>
           )}
-          {isIFrame && allowIFrame && !isTweet && !hide ? (
+          {isIFrame && iFrame && allowIFrame && !isTweet && !hide ? (
             <div
               className={"relative w-full h-full"}
               //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
@@ -717,15 +697,14 @@ const Media = ({
                   thumbnail={placeholderInfo}
                   placeholder={imageInfo} //{placeholderInfo}
                   videoInfo={videoInfo}
-                  maxHeight={maxheight}
                   maxHeightNum={maxheightnum}
                   imgFull={imgFull}
-                  audio={videoAudio}
                   postMode={postMode}
                   containerDims={containerDims}
                   fullMediaMode={fullMediaMode}
                   hide={hide}
                   uniformMediaMode={uniformMediaMode}
+                  quality={videoQuality}
                 />
                 {!postMode && (
                   <button

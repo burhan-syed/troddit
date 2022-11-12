@@ -65,7 +65,7 @@ function MyApp({ Component, pageProps }) {
                   <div className="mb-14"></div>
                   <Component {...pageProps} />
                   <Toaster position="bottom-center" />
-                  <ReactQueryDevtools initialIsOpen={false} />
+                  {/* <ReactQueryDevtools initialIsOpen={false} /> */}
                 </QueryClientProvider>
               </MyCollectionsProvider>
             </MySubsProvider>

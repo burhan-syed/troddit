@@ -223,6 +223,7 @@ export const findOptimalImageIndex = (
 
 export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
   let videoInfo: {
+    hlsUrl?: string;
     url: string;
     height: number;
     width: number;
@@ -397,7 +398,8 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       if (post.preview.reddit_video_preview) {
         videoInfo = [
           {
-            url: checkURL(post.preview.reddit_video_preview.fallback_url),
+            hlsUrl: post.preview?.reddit_video?.hls_url,
+            url: post.preview.reddit_video_preview.fallback_url,
             height: post.preview.reddit_video_preview.height,
             width: post.preview.reddit_video_preview.width,
             duration: post.preview.reddit_video_preview?.duration,
@@ -444,9 +446,11 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       if (post.media.reddit_video) {
         videoInfo = [
           {
-            url: checkURL(post.media.reddit_video.fallback_url),
+            hlsUrl: post.media?.reddit_video?.hls_url,
+            url: post.media.reddit_video.fallback_url,
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
+            duration: post.media?.reddit_video?.duration,
           },
         ];
         thumbnailInfo = [

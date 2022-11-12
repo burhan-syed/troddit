@@ -16,6 +16,7 @@
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "eslint-plugin-react-hooks": "^4.2.1-alpha-8723e772b-20210826",
+    "hls.js": "^1.2.5",
     "html-to-react": "^1.4.8",
     "localforage": "^1.10.0",
     "markdown-draft-js": "^2.4.0",
