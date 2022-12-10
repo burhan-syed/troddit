@@ -49,7 +49,8 @@ interface ToggleProps {
     | "askToUpdateFeed"
     | "refreshOnFocus"
     | "compactLinkPics"
-    | "uniformHeights";
+    | "uniformHeights"
+    | "autoHideNav";
 
   label?: string;
   externalStyles?: string;
@@ -342,6 +343,13 @@ const Toggles = ({
             "When using media card: sets all cards to uniform heights."
           );
         break;
+      case "autoHideNav":
+        !label && setSwitchLabel("Hide NavBar");
+        !subtext &&
+          setSwitchSubtext(
+            "Hide the navbar when scrolling."
+          );
+        break;
       default:
         break;
     }
@@ -450,6 +458,9 @@ const Toggles = ({
       case "uniformHeights":
         context.setUniformHeights((f) => !f);
         break;
+      case "autoHideNav": 
+      context.toggleAutoHideNav(); 
+      break; 
       default:
         break;
     }

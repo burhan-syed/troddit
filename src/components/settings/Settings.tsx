@@ -92,7 +92,7 @@ const Settings = () => {
           </div>
         </label>,
 
-        ...["uniformHeights","wideUI", "syncWideUI", "postWideUI", "expandedSubPane"].map(
+        ...["autoHideNav","uniformHeights","wideUI", "syncWideUI", "postWideUI", "expandedSubPane"].map(
           (s: any) => (
             <Toggles
               key={s}
@@ -103,7 +103,6 @@ const Settings = () => {
           )
         ),
       ],
-      // "auto hide nav bar",
     },
     Media: {
       icon: <BiImages className={icons} />,

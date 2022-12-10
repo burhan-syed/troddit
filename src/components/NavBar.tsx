@@ -1,7 +1,6 @@
 import Search from "./Search";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Login from "./Login";
 import DropdownPane from "./DropdownPane";
 
 import { CgMenu } from "react-icons/cg";
@@ -11,14 +10,12 @@ import NavMenu from "./NavMenu";
 import { useRouter } from "next/router";
 import SortMenu from "./SortMenu";
 
-import { useSession } from "next-auth/react";
-import { useScroll } from "../hooks/useScroll";
-
 import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
 import useRefresh from "../hooks/useRefresh";
+import useNavBarScrollHelper from "../hooks/useNavBarScrollHelper";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
@@ -32,7 +29,14 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   //add some delay before navbar can be hidden again.. resolves some issues with immediate hide after navigation
   const [timeSinceNav, setTimeSinceNav] = useState(() => new Date().getTime());
-  const { scrollY, scrollDirection } = useScroll();
+
+  useNavBarScrollHelper({
+    allowHide,
+    allowShow,
+    setHidden,
+    timeSinceNav,
+    autoHideNav: context.autoHideNav,
+  });
 
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
@@ -40,22 +44,6 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       setSidebarVisible(false);
     };
   }, [toggleSideNav]);
-  useEffect(() => {
-      const now = new Date().getTime();
-      if (allowHide && now > timeSinceNav + 1000) {
-        if (scrollDirection === "down" || (!scrollY && allowShow)) {
-          setHidden(false);
-        } else if (scrollY && scrollY > 300 && scrollDirection === "up") {
-          setHidden(true);
-        } else if ((!scrollY || scrollY <= 300) && allowShow) {
-          setHidden(false);
-        }
-      } else {
-        if (allowShow) {
-          setHidden(false);
-        }
-      }
-  }, [scrollDirection, allowHide, scrollY]);
 
   useEffect(() => {
     setTimeSinceNav(() => new Date().getTime());
@@ -84,7 +72,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       //setallowHide(true);
     };
   }, [router]);
-  
+
   useEffect(() => {
     if (context.mediaMode) {
       setTimeSinceNav(() => new Date().getTime());
@@ -113,7 +101,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
     };
-  }, [allowShow]);  
+  }, [allowShow]);
 
   const homeClick = () => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);

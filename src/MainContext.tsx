@@ -47,6 +47,7 @@ export const MainProvider = ({ children }) => {
   const [hoverplay, setHoverPlay] = useState<boolean>();
   const [columnOverride, setColumnOverride] = useState<number>();
   const [audioOnHover, setaudioOnHover] = useState<boolean>();
+  const [autoHideNav, setAutoHideNav] = useState<boolean>(); 
   //controls how feed appears, switches to true when in multicolumn mode
   const [wideUI, setWideUI] = useState<boolean>();
   //saves toggle selection. Used to sync UI when switching back to 1 column. Also used to control postModal view
@@ -155,6 +156,9 @@ export const MainProvider = ({ children }) => {
       return !e;
     });
   };
+  const toggleAutoHideNav = () => {
+    setAutoHideNav(p => !p); 
+  }
 
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
@@ -1044,6 +1048,14 @@ export const MainProvider = ({ children }) => {
           setCompactLinkPics(true);
         }
       };
+      const autoHideNav = async () => {
+        let saved = await localForage.getItem("autoHideNav");
+        if (saved === true) {
+          setAutoHideNav(saved);
+        } else {
+          setAutoHideNav(false);
+        }
+      };
 
       //things we dont' really need loaded before posts are loaded
       loadRibbonCollapseOnly();
@@ -1055,6 +1067,7 @@ export const MainProvider = ({ children }) => {
       loadAutoRead();
 
       //things we need loaded before posts are rendered
+      let autohidenav = autoHideNav(); 
       let compactlinkpics = compactLinkPics();
       let autoseen = loadAutoSeen();
       let autorefreshfeed = autoRefreshFeed();
@@ -1136,6 +1149,7 @@ export const MainProvider = ({ children }) => {
         disableembeds,
         preferembeds,
         loadembedseverywhere,
+        autohidenav
       ]);
 
       applyFilters(filters);
@@ -1151,6 +1165,11 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (autoHideNav !== undefined) {
+      localForage.setItem("autoHideNav", autoHideNav);
+    }
+  }, [autoHideNav]);
   useEffect(() => {
     if (uniformHeights !== undefined) {
       localForage.setItem("uniformHeights", uniformHeights);
@@ -1553,6 +1572,8 @@ export const MainProvider = ({ children }) => {
         setUniformHeights,
         highRes,
         setHighRes,
+        autoHideNav, 
+        toggleAutoHideNav
       }}
     >
       {children}
