@@ -74,6 +74,7 @@ const Gallery = ({
         media={imagesRender}
         mediaMode={mediaMode}
         objectFit={postMode || context.columns === 1 ? "contain" : "cover"}
+        layout={"fill"}
         height={
           mediaMode
             ? undefined
