@@ -490,7 +490,8 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
     onChange: onChange,
     onFocus: () => {context.setReplyFocus(true); if(router?.query?.q){setValue(router?.query?.q?.toString()); }},
     onBlur: () => {context.setReplyFocus(false); setShowSearch(false)},
-    type: 'search'
+    type: 'search',
+    autoFocus: true,
   };
 
   return (
