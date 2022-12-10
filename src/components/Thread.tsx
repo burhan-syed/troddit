@@ -160,20 +160,21 @@ const Thread = ({
 
   useLayoutEffect(() => {
     if (
-      windowWidth > 1300 &&
-      windowHeight < windowWidth &&
+      !context.disableSideBySide &&
+      windowWidth > 100 &&
+      windowHeight < (windowWidth * 1.5) &&
       context?.postWideUI &&
-      mediaInfo &&
+      (mediaInfo?.isMedia || post?.selftext_html) &&
       !direct
     ) {
       usePortrait === undefined &&
-        setUsePortrait(mediaInfo?.isPortrait ? true : false);
+        setUsePortrait(mediaInfo?.isPortrait || context.preferSideBySide ? true : false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaInfo]);
+  }, [mediaInfo, context.preferSideBySide, context.disableSideBySide]);
   useEffect(() => {
-    if (windowWidth < 1300 && usePortrait && !direct) setUsePortrait(false);
+    if (windowWidth < 1000 && usePortrait && !direct) setUsePortrait(false);
   }, [windowWidth]);
 
   useEffect(() => {
@@ -533,7 +534,7 @@ const Thread = ({
                         />
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start space-x-1 ">
-                        {windowWidth >= 1300 && (
+                        {windowWidth >= 1000 && (
                           <>
                             <button
                               aria-label="switch comments location"
@@ -552,7 +553,7 @@ const Thread = ({
                         {true && (
                           <button
                             aria-label="full screen media"
-                            autoFocus={windowWidth < 1300}
+                            autoFocus={windowWidth < 1000}
                             onClick={() => {
                               setMediaMode(true);
                             }}
@@ -561,7 +562,7 @@ const Thread = ({
                             <BiExpand className={"flex-none w-5 h-5 "} />
                           </button>
                         )}
-                        {mediaInfo?.isSelf && post?.selftext_html && (
+                        {mediaInfo?.isSelf && post?.selftext_html && !usePortrait &&  (
                           <button
                             onClick={() => setimgFull((p) => !p)}
                             aria-label="expand text"

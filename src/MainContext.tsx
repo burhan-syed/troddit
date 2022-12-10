@@ -47,13 +47,13 @@ export const MainProvider = ({ children }) => {
   const [hoverplay, setHoverPlay] = useState<boolean>();
   const [columnOverride, setColumnOverride] = useState<number>();
   const [audioOnHover, setaudioOnHover] = useState<boolean>();
-  const [autoHideNav, setAutoHideNav] = useState<boolean>(); 
+  const [autoHideNav, setAutoHideNav] = useState<boolean>();
   //controls how feed appears, switches to true when in multicolumn mode
   const [wideUI, setWideUI] = useState<boolean>();
   //saves toggle selection. Used to sync UI when switching back to 1 column. Also used to control postModal view
   const [saveWideUI, setSaveWideUI] = useState<boolean>();
   //if posts should also be wide ui/narrow ui
-  const [syncWideUI, setSyncWideUI] = useState<boolean>();
+  const [syncWideUI, setSyncWideUI] = useState<boolean>(false);
   const [postWideUI, setPostWideUI] = useState<boolean>();
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
@@ -62,6 +62,20 @@ export const MainProvider = ({ children }) => {
   const toggleCompactLinkPics = () => {
     setCompactLinkPics((c) => !c);
   };
+  const [preferSideBySide, setPreferSideBySide] = useState<boolean>();
+  const [disableSideBySide, setDisableSideBySide] = useState<boolean>();
+  const togglePreferSideBySide = () => {
+    setPreferSideBySide((p) => {
+      if(!p) setDisableSideBySide(false); 
+      return !p;
+    });
+  };
+  const toggleDisableSideBySide = () => {
+    setDisableSideBySide((p) => {
+      if(!p) setPreferSideBySide(false); 
+      return !p; 
+    })
+  }
   //new settings..
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
@@ -157,8 +171,8 @@ export const MainProvider = ({ children }) => {
     });
   };
   const toggleAutoHideNav = () => {
-    setAutoHideNav(p => !p); 
-  }
+    setAutoHideNav((p) => !p);
+  };
 
   //toggle for type of posts to show in saved screen
   const [userPostType, setUserPostType] = useState("links");
@@ -630,21 +644,21 @@ export const MainProvider = ({ children }) => {
         }
       };
 
-      const syncWideUI = async () => {
-        let saved_syncWideUI = await localForage.getItem("syncWideUI");
-        if (saved_syncWideUI !== null) {
-          saved_syncWideUI === false
-            ? setSyncWideUI(false)
-            : setSyncWideUI(true);
-          localStorage.removeItem("syncWideUI");
-        } else {
-          fallback = true;
-          let local_syncWideUI = localStorage.getItem("syncWideUI");
-          local_syncWideUI?.includes("false")
-            ? setSyncWideUI(false)
-            : setSyncWideUI(true);
-        }
-      };
+      // const syncWideUI = async () => {
+      //   let saved_syncWideUI = await localForage.getItem("syncWideUI");
+      //   if (saved_syncWideUI !== null) {
+      //     saved_syncWideUI === false
+      //       ? setSyncWideUI(false)
+      //       : setSyncWideUI(true);
+      //     localStorage.removeItem("syncWideUI");
+      //   } else {
+      //     fallback = true;
+      //     let local_syncWideUI = localStorage.getItem("syncWideUI");
+      //     local_syncWideUI?.includes("false")
+      //       ? setSyncWideUI(false)
+      //       : setSyncWideUI(true);
+      //   }
+      // };
 
       const postWideUI = async () => {
         let saved_postWideUI = await localForage.getItem("postWideUI");
@@ -1056,6 +1070,22 @@ export const MainProvider = ({ children }) => {
           setAutoHideNav(false);
         }
       };
+      const preferSideBySide = async() => {
+        let saved = await localForage.getItem("preferSideBySide");
+        if (saved === true) {
+          setPreferSideBySide(saved);
+        } else {
+          setPreferSideBySide(false);
+        }
+      }
+      const disableSideBySide = async() => {
+        let saved = await localForage.getItem("disableSideBySide");
+        if (saved === true) {
+          setDisableSideBySide(saved);
+        } else {
+          setDisableSideBySide(false);
+        }
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadRibbonCollapseOnly();
@@ -1065,9 +1095,11 @@ export const MainProvider = ({ children }) => {
       loadShowUserFlairs();
       loadExpandedSubPane();
       loadAutoRead();
+      preferSideBySide(); 
+      disableSideBySide(); 
 
       //things we need loaded before posts are rendered
-      let autohidenav = autoHideNav(); 
+      let autohidenav = autoHideNav();
       let compactlinkpics = compactLinkPics();
       let autoseen = loadAutoSeen();
       let autorefreshfeed = autoRefreshFeed();
@@ -1087,7 +1119,7 @@ export const MainProvider = ({ children }) => {
       let audiohover = audioOnHover();
       let columnoverride = columnOverride();
       let savewideui = savedWideUI();
-      let syncwideui = syncWideUI();
+      //let syncwideui = syncWideUI();
       let postwideui = postWideUI();
       let wideUI = loadWideUI();
       let cardstyle = loadCardStyle();
@@ -1128,7 +1160,7 @@ export const MainProvider = ({ children }) => {
         audiohover,
         columnoverride,
         savewideui,
-        syncwideui,
+        //syncwideui,
         postwideui,
         wideUI,
         cardstyle,
@@ -1149,7 +1181,7 @@ export const MainProvider = ({ children }) => {
         disableembeds,
         preferembeds,
         loadembedseverywhere,
-        autohidenav
+        autohidenav,
       ]);
 
       applyFilters(filters);
@@ -1165,6 +1197,16 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (preferSideBySide !== undefined) {
+      localForage.setItem("preferSideBySide", preferSideBySide);
+    }
+  }, [preferSideBySide]);
+  useEffect(() => {
+    if (disableSideBySide !== undefined) {
+      localForage.setItem("disableSideBySide", disableSideBySide);
+    }
+  }, [disableSideBySide]);
   useEffect(() => {
     if (autoHideNav !== undefined) {
       localForage.setItem("autoHideNav", autoHideNav);
@@ -1572,8 +1614,12 @@ export const MainProvider = ({ children }) => {
         setUniformHeights,
         highRes,
         setHighRes,
-        autoHideNav, 
-        toggleAutoHideNav
+        autoHideNav,
+        toggleAutoHideNav,
+        disableSideBySide,
+        toggleDisableSideBySide,
+        preferSideBySide,
+        togglePreferSideBySide
       }}
     >
       {children}

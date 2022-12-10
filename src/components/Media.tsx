@@ -427,12 +427,12 @@ const Media = ({
     <a
       aria-label="external link"
       onClick={(e) => e.stopPropagation()}
-      className="flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80 md:bg-black/0 md:group-hover:bg-black/80 bg-opacity-50 "
+      className={"flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80  bg-opacity-50 " + (postMode ? "" : " md:bg-black/0 md:group-hover:bg-black/80")}
       target={"_blank"}
       rel="noreferrer"
       href={post?.url}
     >
-      <span className="ml-2 md:opacity-0 group-hover:opacity-100">
+      <span className={"ml-2 " + (postMode ? "" : " md:opacity-0 group-hover:opacity-100")}>
         {post?.url?.split("?")?.[0]}
       </span>
       <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto mr-2 text-white group-hover:scale-110 " />
