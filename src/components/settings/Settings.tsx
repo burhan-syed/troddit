@@ -147,6 +147,7 @@ const Settings = () => {
         ...[
           "showUserIcons",
           "showUserFlairs",
+          "autoCollapseComments",
           "ribbonCollapseOnly",
           "collapseChildrenOnly",
           "defaultCollapseChildren",

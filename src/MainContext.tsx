@@ -58,6 +58,9 @@ export const MainProvider = ({ children }) => {
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
+  
+  //new settings..
+
   const [compactLinkPics, setCompactLinkPics] = useState<boolean>();
   const toggleCompactLinkPics = () => {
     setCompactLinkPics((c) => !c);
@@ -76,7 +79,11 @@ export const MainProvider = ({ children }) => {
       return !p; 
     })
   }
-  //new settings..
+  const [autoCollapseComments, setAutoCollapseComments] = useState<boolean>();
+  const toggleAutoCollapseComments = () => {
+    setAutoCollapseComments(a => !a);
+  } 
+
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
     useState<boolean>();
@@ -1086,6 +1093,14 @@ export const MainProvider = ({ children }) => {
           setDisableSideBySide(false);
         }
       }
+      const autoCollapseComments = async() => {
+        let saved = await localForage.getItem("autoCollapseComments");
+        if (saved === false) {
+          setAutoCollapseComments(saved);
+        } else {
+          setAutoCollapseComments(true);
+        }
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadRibbonCollapseOnly();
@@ -1097,6 +1112,7 @@ export const MainProvider = ({ children }) => {
       loadAutoRead();
       preferSideBySide(); 
       disableSideBySide(); 
+      autoCollapseComments(); 
 
       //things we need loaded before posts are rendered
       let autohidenav = autoHideNav();
@@ -1197,6 +1213,11 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (autoCollapseComments !== undefined) {
+      localForage.setItem("autoCollapseComments", autoCollapseComments);
+    }
+  }, [autoCollapseComments]);
   useEffect(() => {
     if (preferSideBySide !== undefined) {
       localForage.setItem("preferSideBySide", preferSideBySide);
@@ -1619,7 +1640,9 @@ export const MainProvider = ({ children }) => {
         disableSideBySide,
         toggleDisableSideBySide,
         preferSideBySide,
-        togglePreferSideBySide
+        togglePreferSideBySide,
+        autoCollapseComments,
+        toggleAutoCollapseComments
       }}
     >
       {children}

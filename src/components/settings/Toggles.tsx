@@ -52,7 +52,8 @@ interface ToggleProps {
     | "uniformHeights"
     | "autoHideNav"
     | "preferSideBySide"
-    | "disableSideBySide";
+    | "disableSideBySide"
+    | "autoCollapseComments";
 
   label?: string;
   externalStyles?: string;
@@ -347,7 +348,8 @@ const Toggles = ({
         break;
       case "autoHideNav":
         !label && setSwitchLabel("Hide NavBar");
-        !subtext && setSwitchSubtext("Hide the navbar when scrolling the feed.");
+        !subtext &&
+          setSwitchSubtext("Hide the navbar when scrolling the feed.");
         break;
       case "preferSideBySide":
         !label && setSwitchLabel("Prefer Side-by-Side");
@@ -363,6 +365,10 @@ const Toggles = ({
           setSwitchSubtext(
             "Disable automatic side-by-side. By default, if the post media content is in portrait orientation and the window is large enough comments will by placed beside the post content. "
           );
+        break;
+      case "autoCollapseComments":
+        !label && setSwitchLabel("Auto Collapse Comments");
+        !subtext && setSwitchSubtext("Automatically collapse previously collapsed and downvoted or hidden comments as displayed on Reddit");
         break;
 
       default:
@@ -481,6 +487,9 @@ const Toggles = ({
         break;
       case "disableSideBySide":
         context.toggleDisableSideBySide();
+        break;
+      case "autoCollapseComments":
+        context.toggleAutoCollapseComments();
         break;
       default:
         break;
