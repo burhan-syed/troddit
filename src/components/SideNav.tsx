@@ -15,7 +15,7 @@ const SideNav = ({ visible, toggle }) => {
   const [vis, setVis] = useState(false);
   const [touchStart, setTouchStart] = useState([0]);
   const [touchEnd, setTouchEnd] = useState([0]);
-  const buttonRef = useRef(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
   // const handleTouchStart = (e) => {
   //   touchStart[0] = e.targetTouches[0].clientX;
   // };
@@ -30,20 +30,25 @@ const SideNav = ({ visible, toggle }) => {
   //   }
   // };
   //prevent scrolling on main body when open
+  
   useEffect(() => {
     if (visible) {
-      setVis(true);
       const width = document.body.clientWidth;
-      document.body.style.overflow = "hidden";
+      document.documentElement.style.setProperty("--overflow", "hidden hidden");
       document.body.style.width = `${width}px`;
     } else {
-      setVis(false);
-      document.body.style.overflow = "visible";
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
       document.body.style.width = `auto`;
     }
 
     return () => {
-      document.body.style.overflow = "visible";
+      document.documentElement.style.setProperty(
+        "--overflow",
+        "hidden visible"
+      );
       document.body.style.width = `auto`;
     };
   }, [visible]);
@@ -76,15 +81,16 @@ const SideNav = ({ visible, toggle }) => {
                   className="flex-none w-6 h-6 cursor-pointer "
                 />
               </div>
-              <div
+              {/* <div
                 className="z-10 flex-none px-2 h-14"
                 onBlur={() => buttonRef?.current?.click()}
               >
                 <Search id={"Subreddit search side nav"} />
-              </div>
+              </div> */}
               <Menu
                 as="div"
                 className={`h-full px-2 overflow-x-hidden overflow-y-auto outline-none ${scrollStyle}`}
+
               >
                 {({ open }) => (
                   <>
@@ -98,6 +104,7 @@ const SideNav = ({ visible, toggle }) => {
                       <>
                         <Menu.Items
                           as="div"
+                          static
                           className="pb-10 outline-none"
                           onClick={() => toggle()}
                         >

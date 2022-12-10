@@ -16,13 +16,16 @@ import FilterMenu from "./FilterMenu";
 import LoginProfile from "./LoginProfile";
 import useRefresh from "../hooks/useRefresh";
 import useNavBarScrollHelper from "../hooks/useNavBarScrollHelper";
+import { useWindowWidth } from "@react-hook/window-size";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
   const { invalidateKey, refreshCurrent, fetchingCount } = useRefresh();
   const plausible = usePlausible();
   const router = useRouter();
-
+  const windowWidth = useWindowWidth();
+  const [showSearch, setShowSearch] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
   const [allowShow, setAllowShow] = useState(true);
@@ -119,7 +122,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
         <nav className="flex flex-row items-center flex-grow h-full shadow-lg bg-th-background2 md:justify-between ">
           <CgMenu
-            className="w-10 h-10 cursor-pointer md:hidden"
+            className="flex-none w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
               setSidebarVisible((vis) => !vis);
               // plausible("sidenav");
@@ -147,7 +150,34 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           <div className="hidden w-full h-full py-1.5 max-w-5xl md:block">
             <Search id={"subreddit search main"} />
           </div>
+           <div
+              className={
+                "flex-none  h-10 transition  duration-200 ease-in-out origin-top md:origin-top-right lg:origin-right " +
+                (showSearch
+                  ? " absolute top-[3.2rem] w-[90vw]  left-[5vw] md:left-[25vw] md:w-[50vw] lg:relative lg:top-auto lg:left-0  lg:w-[24rem] scale-x-100 "
+                  : " w-0 absolute lg:scale-x-0 scale-x-0 scale-y-0 lg:scale-y-100 opacity-0 ")
+              }
+            >
+              {showSearch && (
+                <Search
+                  id={"subreddit search main"}
+                  setShowSearch={windowWidth < 1024 ? setShowSearch : (a) => {}}
+                />
+              )}
+            </div>
           <div className="flex flex-row items-center justify-end h-full py-1.5 ml-auto mr-2 space-x-1 md:ml-2">
+          <button
+              disabled={windowWidth > 768}
+              aria-label="show search"
+              className={"flex md:hidden items-center justify-center flex-none w-10 h-full border border-transparent rounded-md outline-none hover:border-th-border "}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowSearch((s) => !s);
+              }}
+            >
+              <AiOutlineSearch className="flex-none w-6 h-6" />
+            </button>
             <div className="w-20 h-full">
               <SortMenu hide={hidden} />
             </div>
