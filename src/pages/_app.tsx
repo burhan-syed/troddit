@@ -5,9 +5,10 @@ import { MainProvider } from "../MainContext";
 import { MySubsProvider } from "../MySubs";
 import { MyCollectionsProvider } from "../components/collections/CollectionContext";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from 'react-query/devtools'
+import { ReactQueryDevtools } from "react-query/devtools";
 import Script from "next/script";
 import Head from "next/head";
+import { Analytics } from "@vercel/analytics/react";
 
 import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
@@ -22,11 +23,8 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const curVersion = VERSION;
     const prevVersion = localStorage.getItem("trodditVersion");
-    if (prevVersion){
-      let compare = checkVersion(
-        curVersion,
-        prevVersion
-      );
+    if (prevVersion) {
+      let compare = checkVersion(curVersion, prevVersion);
       if (compare === 1) {
         const toastId = toast.custom(
           (t) => (
@@ -41,8 +39,6 @@ function MyApp({ Component, pageProps }) {
       }
     }
     localStorage.setItem("trodditVersion", curVersion);
-
-   
   }, []);
   return (
     <>
@@ -65,6 +61,7 @@ function MyApp({ Component, pageProps }) {
                   <div className="mb-14"></div>
                   <Component {...pageProps} />
                   <Toaster position="bottom-center" />
+                  <Analytics />
                   {/* <ReactQueryDevtools initialIsOpen={false} /> */}
                 </QueryClientProvider>
               </MyCollectionsProvider>
