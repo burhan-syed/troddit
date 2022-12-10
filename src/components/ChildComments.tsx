@@ -38,7 +38,7 @@ const ChildComments = ({
   const [moreLoaded, setMoreLoaded] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [hideChildren, setHideChildren] = useState(
-    comment?.data?.collapsed ?? false
+   ((comment?.data?.collapsed ?? false) && context.autoCollapseComments)
   );
 
   const toggleHidden = (override?) => {

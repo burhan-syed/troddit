@@ -92,18 +92,24 @@ const Settings = () => {
           </div>
         </label>,
 
-        ...["uniformHeights","wideUI", "syncWideUI", "postWideUI", "expandedSubPane"].map(
-          (s: any) => (
-            <Toggles
-              key={s}
-              setting={s}
-              withSubtext={true}
-              externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
-            />
-          )
-        ),
+        ...[
+          "expandedSubPane",
+          "autoHideNav",
+          "uniformHeights",
+          "wideUI",
+          // "syncWideUI",
+          "postWideUI",
+          "preferSideBySide",
+          "disableSideBySide",
+        ].map((s: any) => (
+          <Toggles
+            key={s}
+            setting={s}
+            withSubtext={true}
+            externalStyles="rounded-lg group hover:bg-th-highlight p-2 cursor-pointer"
+          />
+        )),
       ],
-      // "auto hide nav bar",
     },
     Media: {
       icon: <BiImages className={icons} />,
@@ -141,6 +147,7 @@ const Settings = () => {
         ...[
           "showUserIcons",
           "showUserFlairs",
+          "autoCollapseComments",
           "ribbonCollapseOnly",
           "collapseChildrenOnly",
           "defaultCollapseChildren",

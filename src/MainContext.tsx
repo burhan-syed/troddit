@@ -47,21 +47,43 @@ export const MainProvider = ({ children }) => {
   const [hoverplay, setHoverPlay] = useState<boolean>();
   const [columnOverride, setColumnOverride] = useState<number>();
   const [audioOnHover, setaudioOnHover] = useState<boolean>();
+  const [autoHideNav, setAutoHideNav] = useState<boolean>();
   //controls how feed appears, switches to true when in multicolumn mode
   const [wideUI, setWideUI] = useState<boolean>();
   //saves toggle selection. Used to sync UI when switching back to 1 column. Also used to control postModal view
   const [saveWideUI, setSaveWideUI] = useState<boolean>();
   //if posts should also be wide ui/narrow ui
-  const [syncWideUI, setSyncWideUI] = useState<boolean>();
+  const [syncWideUI, setSyncWideUI] = useState<boolean>(false);
   const [postWideUI, setPostWideUI] = useState<boolean>();
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
+  
+  //new settings..
+
   const [compactLinkPics, setCompactLinkPics] = useState<boolean>();
   const toggleCompactLinkPics = () => {
     setCompactLinkPics((c) => !c);
   };
-  //new settings..
+  const [preferSideBySide, setPreferSideBySide] = useState<boolean>();
+  const [disableSideBySide, setDisableSideBySide] = useState<boolean>();
+  const togglePreferSideBySide = () => {
+    setPreferSideBySide((p) => {
+      if(!p) setDisableSideBySide(false); 
+      return !p;
+    });
+  };
+  const toggleDisableSideBySide = () => {
+    setDisableSideBySide((p) => {
+      if(!p) setPreferSideBySide(false); 
+      return !p; 
+    })
+  }
+  const [autoCollapseComments, setAutoCollapseComments] = useState<boolean>();
+  const toggleAutoCollapseComments = () => {
+    setAutoCollapseComments(a => !a);
+  } 
+
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
     useState<boolean>();
@@ -154,6 +176,9 @@ export const MainProvider = ({ children }) => {
       }
       return !e;
     });
+  };
+  const toggleAutoHideNav = () => {
+    setAutoHideNav((p) => !p);
   };
 
   //toggle for type of posts to show in saved screen
@@ -626,21 +651,21 @@ export const MainProvider = ({ children }) => {
         }
       };
 
-      const syncWideUI = async () => {
-        let saved_syncWideUI = await localForage.getItem("syncWideUI");
-        if (saved_syncWideUI !== null) {
-          saved_syncWideUI === false
-            ? setSyncWideUI(false)
-            : setSyncWideUI(true);
-          localStorage.removeItem("syncWideUI");
-        } else {
-          fallback = true;
-          let local_syncWideUI = localStorage.getItem("syncWideUI");
-          local_syncWideUI?.includes("false")
-            ? setSyncWideUI(false)
-            : setSyncWideUI(true);
-        }
-      };
+      // const syncWideUI = async () => {
+      //   let saved_syncWideUI = await localForage.getItem("syncWideUI");
+      //   if (saved_syncWideUI !== null) {
+      //     saved_syncWideUI === false
+      //       ? setSyncWideUI(false)
+      //       : setSyncWideUI(true);
+      //     localStorage.removeItem("syncWideUI");
+      //   } else {
+      //     fallback = true;
+      //     let local_syncWideUI = localStorage.getItem("syncWideUI");
+      //     local_syncWideUI?.includes("false")
+      //       ? setSyncWideUI(false)
+      //       : setSyncWideUI(true);
+      //   }
+      // };
 
       const postWideUI = async () => {
         let saved_postWideUI = await localForage.getItem("postWideUI");
@@ -1044,6 +1069,38 @@ export const MainProvider = ({ children }) => {
           setCompactLinkPics(true);
         }
       };
+      const autoHideNav = async () => {
+        let saved = await localForage.getItem("autoHideNav");
+        if (saved === true) {
+          setAutoHideNav(saved);
+        } else {
+          setAutoHideNav(false);
+        }
+      };
+      const preferSideBySide = async() => {
+        let saved = await localForage.getItem("preferSideBySide");
+        if (saved === true) {
+          setPreferSideBySide(saved);
+        } else {
+          setPreferSideBySide(false);
+        }
+      }
+      const disableSideBySide = async() => {
+        let saved = await localForage.getItem("disableSideBySide");
+        if (saved === true) {
+          setDisableSideBySide(saved);
+        } else {
+          setDisableSideBySide(false);
+        }
+      }
+      const autoCollapseComments = async() => {
+        let saved = await localForage.getItem("autoCollapseComments");
+        if (saved === false) {
+          setAutoCollapseComments(saved);
+        } else {
+          setAutoCollapseComments(true);
+        }
+      }
 
       //things we dont' really need loaded before posts are loaded
       loadRibbonCollapseOnly();
@@ -1053,8 +1110,12 @@ export const MainProvider = ({ children }) => {
       loadShowUserFlairs();
       loadExpandedSubPane();
       loadAutoRead();
+      preferSideBySide(); 
+      disableSideBySide(); 
+      autoCollapseComments(); 
 
       //things we need loaded before posts are rendered
+      let autohidenav = autoHideNav();
       let compactlinkpics = compactLinkPics();
       let autoseen = loadAutoSeen();
       let autorefreshfeed = autoRefreshFeed();
@@ -1074,7 +1135,7 @@ export const MainProvider = ({ children }) => {
       let audiohover = audioOnHover();
       let columnoverride = columnOverride();
       let savewideui = savedWideUI();
-      let syncwideui = syncWideUI();
+      //let syncwideui = syncWideUI();
       let postwideui = postWideUI();
       let wideUI = loadWideUI();
       let cardstyle = loadCardStyle();
@@ -1115,7 +1176,7 @@ export const MainProvider = ({ children }) => {
         audiohover,
         columnoverride,
         savewideui,
-        syncwideui,
+        //syncwideui,
         postwideui,
         wideUI,
         cardstyle,
@@ -1136,6 +1197,7 @@ export const MainProvider = ({ children }) => {
         disableembeds,
         preferembeds,
         loadembedseverywhere,
+        autohidenav,
       ]);
 
       applyFilters(filters);
@@ -1151,6 +1213,26 @@ export const MainProvider = ({ children }) => {
 
     getSettings();
   }, []);
+  useEffect(() => {
+    if (autoCollapseComments !== undefined) {
+      localForage.setItem("autoCollapseComments", autoCollapseComments);
+    }
+  }, [autoCollapseComments]);
+  useEffect(() => {
+    if (preferSideBySide !== undefined) {
+      localForage.setItem("preferSideBySide", preferSideBySide);
+    }
+  }, [preferSideBySide]);
+  useEffect(() => {
+    if (disableSideBySide !== undefined) {
+      localForage.setItem("disableSideBySide", disableSideBySide);
+    }
+  }, [disableSideBySide]);
+  useEffect(() => {
+    if (autoHideNav !== undefined) {
+      localForage.setItem("autoHideNav", autoHideNav);
+    }
+  }, [autoHideNav]);
   useEffect(() => {
     if (uniformHeights !== undefined) {
       localForage.setItem("uniformHeights", uniformHeights);
@@ -1553,6 +1635,14 @@ export const MainProvider = ({ children }) => {
         setUniformHeights,
         highRes,
         setHighRes,
+        autoHideNav,
+        toggleAutoHideNav,
+        disableSideBySide,
+        toggleDisableSideBySide,
+        preferSideBySide,
+        togglePreferSideBySide,
+        autoCollapseComments,
+        toggleAutoCollapseComments
       }}
     >
       {children}

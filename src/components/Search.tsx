@@ -19,7 +19,7 @@ import Checkbox from "./ui/Checkbox";
 import ItemsList from "./search/ItemsList";
 
 
-const Search = ({ id }) => {
+const Search = ({ id, setShowSearch = (a) => {} }) => {
   const router = useRouter();
   const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
@@ -443,6 +443,7 @@ const Search = ({ id }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     setValue("");
+    setShowSearch(false)
     // if (loading) {
     //   if (srRestrict && currSub !== "") {
     //     router.push(
@@ -488,7 +489,7 @@ const Search = ({ id }) => {
     value: value,
     onChange: onChange,
     onFocus: () => {context.setReplyFocus(true); if(router?.query?.q){setValue(router?.query?.q?.toString()); }},
-    onBlur: () => context.setReplyFocus(false),
+    onBlur: () => {context.setReplyFocus(false); setShowSearch(false)},
     type: 'search'
   };
 

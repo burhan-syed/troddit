@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.17.4
+
+### New
+- New settings: 
+  - Prefer Side-by-Side and Disable Side-by-Side toggles in the Layout section
+    - To prefer placing comments to to the side or disabling automatic side placement. 
+  - Auto collapse comments in Comments section
+    - Automatically collapse recently collapsed, controversial, or hidden comments as displayed on Reddit. Enabled by default.
+
+### Changes
+- The navigation bar no longer automatically hides on scrolling
+  - This behavior can be re-enabled with the 'Hide NavBar' toggle in the Layout section of the settings page.
+- Search location changed on mobile
+- Minor style changes
+### Fixes
+- Fix miscellaneous issues with video playback
+
+
 ## v0.17.3
 
 ### Changes

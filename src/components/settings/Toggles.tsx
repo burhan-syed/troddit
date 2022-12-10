@@ -49,7 +49,11 @@ interface ToggleProps {
     | "askToUpdateFeed"
     | "refreshOnFocus"
     | "compactLinkPics"
-    | "uniformHeights";
+    | "uniformHeights"
+    | "autoHideNav"
+    | "preferSideBySide"
+    | "disableSideBySide"
+    | "autoCollapseComments";
 
   label?: string;
   externalStyles?: string;
@@ -181,7 +185,7 @@ const Toggles = ({
         !label && setSwitchLabel("Wide UI");
         !subtext &&
           setSwitchSubtext(
-            "Enable or disable wide UI in single column mode. Also sets post width if sync wide UI is enabled"
+            "Enable or disable wide feed UI in single column mode."
           );
         setTitle("toggle wide ui in single column mode");
         setCheckedIcon(<CgArrowsShrinkH />);
@@ -201,7 +205,7 @@ const Toggles = ({
             `${
               context.syncWideUI
                 ? "'Sync Width' must be disabled to toggle this. "
-                : "Sets post width. Narrow or wide."
+                : "Narrow or wide post UI. Comments will not be displayed to the side with narrow width."
             }`
           );
         setCheckedIcon(<CgArrowsShrinkH />);
@@ -339,9 +343,34 @@ const Toggles = ({
         !label && setSwitchLabel("Uniform Heights");
         !subtext &&
           setSwitchSubtext(
-            "When using media card: sets all cards to uniform heights."
+            "When using media card sets all cards to uniform heights."
           );
         break;
+      case "autoHideNav":
+        !label && setSwitchLabel("Hide NavBar");
+        !subtext &&
+          setSwitchSubtext("Hide the navbar when scrolling the feed.");
+        break;
+      case "preferSideBySide":
+        !label && setSwitchLabel("Prefer Side-by-Side");
+        !subtext &&
+          setSwitchSubtext(
+            "Always put comments to the side when a post is opened if the window is large enough, post width set to wide, and the post contains content."
+          );
+        break;
+
+      case "disableSideBySide":
+        !label && setSwitchLabel("Disable Side-by-Side");
+        !subtext &&
+          setSwitchSubtext(
+            "Disable automatic side-by-side. By default, if the post media content is in portrait orientation and the window is large enough comments will by placed beside the post content. "
+          );
+        break;
+      case "autoCollapseComments":
+        !label && setSwitchLabel("Auto Collapse Comments");
+        !subtext && setSwitchSubtext("Automatically collapse previously collapsed and downvoted or hidden comments as displayed on Reddit");
+        break;
+
       default:
         break;
     }
@@ -449,6 +478,18 @@ const Toggles = ({
         break;
       case "uniformHeights":
         context.setUniformHeights((f) => !f);
+        break;
+      case "autoHideNav":
+        context.toggleAutoHideNav();
+        break;
+      case "preferSideBySide":
+        context.togglePreferSideBySide();
+        break;
+      case "disableSideBySide":
+        context.toggleDisableSideBySide();
+        break;
+      case "autoCollapseComments":
+        context.toggleAutoCollapseComments();
         break;
       default:
         break;

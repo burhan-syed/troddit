@@ -46,6 +46,19 @@ const MediaModal = ({
     };
   }, []);
 
+  useEffect(() => {
+    let interval;
+    if(!hideArrows && window.innerWidth <= 640){
+      interval = setTimeout(() => setHideArrows(true), 3500)
+    }
+  
+    return () => {
+      if(interval){
+        clearTimeout(interval)
+      }
+    }
+  }, [hideArrows, setHideArrows])
+
   const context: any = useMainContext();
   const [triggerVote, setTriggerVote] = useState(0);
   const {

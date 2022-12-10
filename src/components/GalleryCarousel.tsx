@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Carousel from "nuka-carousel";
 import Image from "next/dist/client/image";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
@@ -8,15 +8,31 @@ const GalleryCarousel = ({
   media,
   height,
   objectFit,
+  layout = "fill",
   mediaMode = false,
 }: {
   media: any;
   height?: number;
+  layout: "fill" | "intrinsic";
   objectFit?: "cover" | "contain";
   mediaMode?: boolean;
 }) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [animate, setAnimate] = useState(true);
+  const [hideArrows, setHideArrows] = useState(0);
+  useEffect(() => {
+    let interval;
+    if (hideArrows) {
+      interval = setTimeout(() => setHideArrows(0), 2000);
+    }
+
+    return () => {
+      if (interval) {
+        clearTimeout(interval);
+      }
+    };
+  }, [hideArrows]);
+
   const arrowStyle = mediaMode
     ? "absolute text-white z-10 bg-black/40 backdrop-blur-lg h-10 w-10 rounded-full flex items-center justify-center md:h-12 md:w-12 md:border md:border-transparent md:hover:border-th-accent md:rounded-md "
     : `absolute text-white text-xl z-10 bg-black h-10 w-10 rounded-full flex items-center justify-center bg-opacity-50 backdrop-blur-lg`;
@@ -26,6 +42,7 @@ const GalleryCarousel = ({
       <Carousel
         speed={200}
         onDragStart={() => setAnimate(true)}
+        onDragEnd={() => setHideArrows((p) => (p += 1))}
         wrapAround={true}
         //disableAnimation={!animate}
         swiping={mediaMode === true ? false : true}
@@ -54,7 +71,7 @@ const GalleryCarousel = ({
         )}
         renderCenterLeftControls={({ previousDisabled, previousSlide }) => (
           <button
-            disabled={previousDisabled}
+            disabled={previousDisabled || !!hideArrows}
             aria-label="next"
             type="button"
             onClick={(e) => {
@@ -67,7 +84,9 @@ const GalleryCarousel = ({
               mediaMode
                 ? "bottom-[29rem] right-1.5 md:bottom-1/2  md:left-1 md:right-auto"
                 : "left-2 -translate-y-1/2"
-            } ${previousDisabled ? " hidden " : ""} `}
+            } ${
+              previousDisabled || hideArrows ? " opacity-0 " : ""
+            } transition-opacity ease-out duration-400 `}
           >
             <span role="img" aria-label={`Arrow left`}>
               <AiOutlineLeft className={mediaMode ? "md:w-6 md:h-6" : ""} />
@@ -76,7 +95,7 @@ const GalleryCarousel = ({
         )}
         renderCenterRightControls={({ nextDisabled, nextSlide }) => (
           <button
-            disabled={nextDisabled}
+            disabled={nextDisabled || !!hideArrows}
             aria-label="next"
             type="button"
             onClick={(e) => {
@@ -89,7 +108,9 @@ const GalleryCarousel = ({
               mediaMode
                 ? "bottom-[25.5rem] right-1.5 md:bottom-1/2 md:right-1 "
                 : "right-2 -translate-y-1/2"
-            } ${nextDisabled ? " hidden " : ""} `}
+            } ${
+              nextDisabled || hideArrows ? " opacity-0 " : " "
+            } transition-opacity ease-out duration-400`}
           >
             <span role="img" aria-label={`Arrow right`}>
               <AiOutlineRight className={mediaMode ? "md:w-6 md:h-6" : ""} />
@@ -117,7 +138,7 @@ const GalleryCarousel = ({
                   height={image.height}
                   width={image.width}
                   alt=""
-                  layout={"fill"}
+                  layout={layout}
                   objectFit={objectFit}
                   priority={true}
                   unoptimized={true}
@@ -144,7 +165,7 @@ const GalleryCarousel = ({
                           backgroundImage: `url(${image.url})`,
                         }
                   }
-                  className="absolute w-full inset-0 brightness-[0.2] -z-10 bg-center bg-no-repeat bg-cover blur-md scale-110 "
+                  className="absolute w-full inset-0 brightness-[0.2] -z-10 bg-center bg-no-repeat bg-cover blur-md "
                 ></div>
               </>
             ) : (
