@@ -1,13 +1,7 @@
 import Image from "next/image";
 import useBrowser from "../../hooks/useBrowser";
 import { useInView } from "react-intersection-observer";
-import {
-  useState,
-  useEffect,
-  useRef,
-  BaseSyntheticEvent,
-  useMemo,
-} from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useMainContext } from "../../MainContext";
 import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
@@ -31,7 +25,7 @@ const VideoHandler = ({
   imgFull = false,
   postMode = false,
   hide = false,
-  containerDims = undefined,
+  containerDims = [0, 0],
   uniformMediaMode = false,
   quality = "" as "full" | "sd" | "hd" | "min" | undefined,
 }) => {
@@ -52,6 +46,7 @@ const VideoHandler = ({
     setVideoQuality(quality);
   }, [quality]);
 
+  const [vodInfo, setVodInfo] = useState(() => videoInfo);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
@@ -63,7 +58,9 @@ const VideoHandler = ({
   );
 
   const { volume, setVolume } = context;
-  const [hasAudio, setHasAudio] = useState(() => (!videoInfo.hlsUrl && !videoInfo.hasAudio) ? false : true);
+  const [hasAudio, setHasAudio] = useState(() =>
+    !videoInfo.hlsUrl && !videoInfo.hasAudio ? false : true
+  );
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
   const [currentTime, setCurrentTime] = useState(0.0);
@@ -203,7 +200,7 @@ const VideoHandler = ({
   }, [fullMediaMode]);
 
   useEffect(() => {
-    if (context.pauseAll) {
+    if (context.pauseAll && !postMode) {
       playControl({ override: "pause" });
     }
   }, [context.pauseAll]);
@@ -275,7 +272,10 @@ const VideoHandler = ({
     e?.preventDefault();
     e?.stopPropagation();
     manual && setManualAudio(true);
-    setMuted((m) => !m);
+    if (videoRef?.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setMuted(videoRef.current.muted);
+    }
   };
 
   const handleMouseIn = (e) => {
@@ -290,7 +290,14 @@ const VideoHandler = ({
         playControl({ e: e, override: "play" });
       }
     }
-    if (!postMode && !manualAudio && context.audioOnHover && !preventPlay) {
+    if (
+      !postMode &&
+      !manualAudio &&
+      context.audioOnHover &&
+      !preventPlay &&
+      videoRef.current
+    ) {
+      videoRef.current.muted = false;
       setMuted(false);
     }
   };
@@ -309,8 +316,10 @@ const VideoHandler = ({
       !manualAudio &&
       !postMode &&
       context.audioOnHover &&
-      context.columns !== 1
+      context.columns !== 1 &&
+      videoRef.current
     ) {
+      videoRef.current.muted = true;
       setMuted(true);
     }
   };
@@ -340,6 +349,16 @@ const VideoHandler = ({
       setResetInterval((i) => (i += 1));
     }
   };
+  useEffect(() => {
+    let timeout;
+    if (seekTime) {
+      timeout = setTimeout(() => setSeekTime(""), 1000);
+    }
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [seekTime]);
 
   const [volMouseDown, setVolMouseDown] = useState(false);
   const [showVolSlider, setShowVolSlider] = useState(false);
@@ -351,7 +370,14 @@ const VideoHandler = ({
     );
     if (r >= 1) r = 1;
     if (r <= 0.1) r = 0;
-    r > 0 ? setMuted(false) : setMuted(true);
+    if (r > 0 && videoRef.current) {
+      videoRef.current.muted = false;
+      setMuted(false);
+    } else if (videoRef.current) {
+      videoRef.current.muted = true;
+      setMuted(true);
+    }
+    // r > 0 ? setMuted(false) : setMuted(true);
     setManualAudio(true);
     setVolume(r);
   };
@@ -365,27 +391,34 @@ const VideoHandler = ({
   useEffect(() => {
     if (
       (!show || !context?.audioOnHover || left) &&
-      (!postMode || fullMediaMode)
+      (!postMode || fullMediaMode) &&
+      videoRef.current
     ) {
+      videoRef.current.muted = true;
       setMuted(true);
     } else if (
       context?.audioOnHover &&
       (postMode || context?.columns == 1) &&
       !left &&
-      !(browser.includes("Safari") && windowWidth < 640)
+      //!(browser.includes("Safari") && windowWidth < 640) &&
+      videoRef.current
     ) {
+      videoRef.current.muted = false;
       setMuted(false);
     }
   }, [show, context?.audioOnHover, context?.columns, left]);
 
-  useEffect(() => {
-    if (videoRef?.current) {
-      videoRef.current.muted = muted;
-    }
-  }, [muted, videoPlaying]);
+  // useEffect(() => {
+  //   if (videoRef?.current) {
+  //     videoRef.current.muted = muted;
+  //   }
+  // }, [muted, videoPlaying]);
 
   const triggerMute = () => {
-    setMuted(true);
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      setMuted(true);
+    }
   };
   const triggerHasAudio = (audio: boolean) => {
     setHasAudio(audio);
@@ -495,6 +528,7 @@ const VideoHandler = ({
   }, [kPress, mPress, context.replyFocus, focused]);
 
   const timeoutRef = useRef<any>(null);
+
   return (
     <div
       className={
@@ -543,9 +577,7 @@ const VideoHandler = ({
           <ImSpinner2 className="w-8 h-8 animate-spin" />
         </div>
       )}
-      {/* <div className="absolute z-10 text-lg text-white -translate-x-1/2 bg-black/40 top-1/2 left-1/2">
-        {name},{curPostName}
-      </div> */}
+
       {/* Background Span Image */}
       <div
         className="absolute z-0 min-w-full min-h-full overflow-hidden brightness-[0.2]"
@@ -566,9 +598,10 @@ const VideoHandler = ({
       {/* Controls */}
       {true && (
         <>
-          {windowWidth <= 640 &&
+          {/* {windowWidth <= 640 &&
             (context.columns === 1 || postMode) &&
-            !fullMediaMode && (
+            !fullMediaMode &&
+            videoPlaying && (
               <div
                 className={
                   " top-2 left-1 absolute  z-10 text-white text-xs p-0.5 rounded-lg px-2 bg-black/20 "
@@ -576,8 +609,8 @@ const VideoHandler = ({
               >
                 {secondsToHMS(videoDuration - currentTime)}
               </div>
-            )}
-          <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-white">
+            )} */}
+          <div className="absolute bottom-0 z-10 flex flex-row min-w-full p-1 pb-2 text-white h-11">
             <div className={"flex items-center gap-2"}>
               <button
                 aria-label="play/pause"
@@ -591,12 +624,28 @@ const VideoHandler = ({
                   (context?.autoplay
                     ? `${mouseIn ? " flex " : " flex sm:hidden "}`
                     : " flex ") +
-                  "items-center justify-center w-8 h-8  bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
+                  (windowWidth <= 640 &&
+                  !fullMediaMode &&
+                  videoPlaying &&
+                  (context.columns === 1 || postMode)
+                    ? " p-0.5 rounded-lg px-2 "
+                    : " w-8 h-8  ") +
+                  "items-center justify-center bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
                 }
               >
                 <div className="">
                   {videoPlaying ? (
-                    <BiPause className="flex-none w-6 h-6 " />
+                    <>
+                      {windowWidth <= 640 &&
+                      (context.columns === 1 || postMode) &&
+                      !fullMediaMode ? (
+                        <div className={" text-xs "}>
+                          {secondsToHMS(videoDuration - currentTime)}
+                        </div>
+                      ) : (
+                        <BiPause className="flex-none w-6 h-6 " />
+                      )}
+                    </>
                   ) : (
                     <BiPlay className="flex-none w-6 h-6 ml-0.5" />
                   )}
@@ -606,7 +655,7 @@ const VideoHandler = ({
                 <div
                   className={
                     fullMediaMode
-                      ? ` text-xs sm:text-sm pb-1 ml-1 sm:pb-0 sm:ml-0 ${
+                      ? `flex items-center justify-center gap-2 text-xs sm:text-sm pb-1 ml-1 sm:pb-0 sm:ml-0 ${
                           mouseIn ? "block" : "block sm:hidden"
                         } `
                       : `text-sm ${mouseIn ? "block" : "hidden"}`
@@ -697,7 +746,9 @@ const VideoHandler = ({
                   //mute unmute button
                   aria-label="toggle mute"
                   type="button"
-                  onClick={(e) => audioControl(e, true)}
+                  onClick={(e) => {
+                    audioControl(e, true);
+                  }}
                   onMouseEnter={() => setShowVol(true)}
                   onMouseLeave={() => setShowVol(false)}
                   className={
@@ -734,7 +785,9 @@ const VideoHandler = ({
             >
               {seekTime !== "" && (
                 <div
-                  className="absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 border-th-border"
+                  className={
+                    "absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 border-th-border"
+                  }
                   style={{
                     left: `${
                       seekLeftOfset <= 24
@@ -824,8 +877,8 @@ const VideoHandler = ({
           playerRef={videoRef}
           hlsConfig={hlsConfig}
           quality={videoQuality}
-          src={videoInfo?.hlsUrl ?? videoInfo?.url}
-          skipHls={!videoInfo?.hlsUrl}
+          src={vodInfo?.hlsUrl ?? vodInfo?.url}
+          skipHls={!vodInfo?.hlsUrl}
           triggerMute={triggerMute}
           triggerHasAudio={triggerHasAudio}
           className={
@@ -844,7 +897,6 @@ const VideoHandler = ({
             (context.autoplay && context.columns === 1) ||
             postMode ||
             fullMediaMode
-            //false
           }
           disablePictureInPicture
           muted={true}
