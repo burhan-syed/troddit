@@ -4,6 +4,7 @@ import {
   subredditFilters,
   userFilters,
 } from "../src/MainContext";
+import { GalleryInfo, ImageInfo, MediaInfo, VideoInfo } from "../types";
 
 const DOMAIN = "www.troddit.com";
 export const secondsToTime = (
@@ -188,14 +189,19 @@ export const findGreatestsImages = (
 
 export const findOptimalImageIndex = (
   images: any[],
-  params: { imgFull; fullRes; postMode; context; windowWidth; containerDims? }
+  params: {
+    fullRes;
+    postMode;
+    context: { saveWideUI; cardStyle; columns };
+    windowWidth;
+    containerDims?;
+  }
 ) => {
-  const { postMode, imgFull, fullRes, containerDims, windowWidth, context } =
-    params;
+  const { postMode, fullRes, containerDims, windowWidth, context } = params;
   let num = images?.length - 1;
   let done = false;
   let width = windowWidth;
-  if (!imgFull && !fullRes) {
+  if (!fullRes) {
     if (containerDims?.[0]) {
       width = containerDims?.[0];
     } else if (
@@ -221,19 +227,16 @@ export const findOptimalImageIndex = (
   return num;
 };
 
-export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
-  let videoInfo: {
-    hlsUrl?: string;
-    url: string;
-    height: number;
-    width: number;
-    hasAudio?: boolean;
-    duration?: number;
-  }[]; // = { url: "", height: 0, width: 0 };
-  let imageInfo; // = [{ url: "", height: 0, width: 0 }];
-  let thumbnailInfo;
-  let iFrameHTML;
-  let gallery; // = [];
+export const findMediaInfo = async (
+  post,
+  quick = false,
+  domain = DOMAIN
+): Promise<MediaInfo> => {
+  let videoInfo: VideoInfo[];
+  let imageInfo: ImageInfo[];
+  let thumbnailInfo: ImageInfo;
+  let iFrameHTML: Element;
+  let galleryInfo: GalleryInfo[]; // = [];
   let isPortrait = undefined as unknown as boolean;
   let isImage = false;
   let isGallery = false;
@@ -244,7 +247,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
   let isIframe = false;
   let isMedia = false;
 
-  let dimensions = [0, 0]; //x,y pixels
+  let dimensions: [number, number] = [0, 0]; //x,y pixels
 
   const loadInfo = async (post, quick = false) => {
     let a = await findVideo(post);
@@ -256,11 +259,11 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       let b = await findImage(post, quick);
       if (b) {
         //isImage = true;
-        if (gallery?.[0]?.height > 0) {
+        if (galleryInfo?.[0]?.[0]?.height > 0) {
           isImage = true;
           //just setting dimensions to first gallery image for now
-          dimensions[0] = gallery[0].width;
-          dimensions[1] = gallery[0].height;
+          dimensions[0] = galleryInfo?.[0]?.[0]?.width;
+          dimensions[1] = galleryInfo?.[0]?.[0]?.height;
         } else if (imageInfo) {
           //last item would be highest resolution
           if (
@@ -302,12 +305,17 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
     ) {
       isLink = false;
     }
-    let domainEnd = post?.url?.split("?")?.[0]?.split(".")?.[post?.url?.split("?")?.[0]?.split(".")?.length-1]
+    let domainEnd = post?.url?.split("?")?.[0]?.split(".")?.[
+      post?.url?.split("?")?.[0]?.split(".")?.length - 1
+    ];
     //console.log(domainEnd);
-    if ((domainEnd === "jpg" || domainEnd === "png"|| domainEnd === "gif") && dimensions[0] > 0){
+    if (
+      (domainEnd === "jpg" || domainEnd === "png" || domainEnd === "gif") &&
+      dimensions[0] > 0
+    ) {
       isLink = false;
-      isImage = true; 
-    }    
+      isImage = true;
+    }
     //portrait && media check
     if (dimensions[0] > 0) {
       isMedia = true;
@@ -333,7 +341,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       imageInfo,
       thumbnailInfo,
       iFrameHTML,
-      gallery,
+      galleryInfo,
       isPortrait,
       isImage,
       isGallery,
@@ -360,7 +368,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       let data = await req.json();
       videoInfo = [
         {
-          url: data["gfyItem"]["mp4Url"],
+          src: data["gfyItem"]["mp4Url"],
           height: data["gfyItem"]["height"],
           width: data["gfyItem"]["width"],
           hasAudio: data["gfyItem"]["hasAudio"],
@@ -368,7 +376,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       ];
       if (data["gfyItem"]["mobileUrl"]) {
         videoInfo.push({
-          url: data["gfyItem"]["mobileUrl"],
+          src: data["gfyItem"]["mobileUrl"],
           height: data["gfyItem"]["height"],
           width: data["gfyItem"]["width"],
           hasAudio: data["gfyItem"]["hasAudio"],
@@ -398,22 +406,20 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       if (post.preview.reddit_video_preview) {
         videoInfo = [
           {
-            hlsUrl: post.preview?.reddit_video?.hls_url,
-            url: post.preview.reddit_video_preview.fallback_url,
+            hlsSrc: post.preview?.reddit_video?.hls_url,
+            src: post.preview.reddit_video_preview.fallback_url,
             height: post.preview.reddit_video_preview.height,
             width: post.preview.reddit_video_preview.width,
             duration: post.preview.reddit_video_preview?.duration,
           },
         ];
 
-        thumbnailInfo = [
-          {
-            url: checkURL(post?.thumbnail),
-            height: post.preview.reddit_video_preview.height,
-            width: post.preview.reddit_video_preview.width,
-          },
-        ];
-        await findImage(post, true);
+        (thumbnailInfo = {
+          src: checkURL(post?.thumbnail),
+          height: post.preview.reddit_video_preview.height,
+          width: post.preview.reddit_video_preview.width,
+        }),
+          await findImage(post, true);
         isVideo = true;
         return true;
         //setLoaded(true);
@@ -422,7 +428,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       else if (post?.preview?.images?.[0]?.variants?.mp4) {
         videoInfo = [
           {
-            url: checkURL(
+            src: checkURL(
               post?.preview?.images?.[0]?.variants?.mp4?.source?.url
             ),
             height: post?.preview?.images?.[0]?.variants?.mp4?.source?.height,
@@ -430,13 +436,12 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
           },
         ];
 
-        thumbnailInfo = [
-          {
-            url: checkURL(post?.preview?.images?.[0]?.source?.url),
-            height: post?.preview?.images?.[0]?.source?.height,
-            width: post?.preview?.images?.[0]?.source?.width,
-          },
-        ];
+        thumbnailInfo = {
+          src: checkURL(post?.preview?.images?.[0]?.source?.url),
+          height: post?.preview?.images?.[0]?.source?.height,
+          width: post?.preview?.images?.[0]?.source?.width,
+        };
+
         await findImage(post, true);
         isVideo = true;
         return true;
@@ -446,21 +451,19 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       if (post.media.reddit_video) {
         videoInfo = [
           {
-            hlsUrl: post.media?.reddit_video?.hls_url,
-            url: post.media.reddit_video.fallback_url,
+            hlsSrc: post.media?.reddit_video?.hls_url,
+            src: post.media.reddit_video.fallback_url,
             height: post.media.reddit_video.height,
             width: post.media.reddit_video.width,
             duration: post.media?.reddit_video?.duration,
           },
         ];
-        thumbnailInfo = [
-          {
-            url: checkURL(post?.thumbnail),
-            height: post.media.reddit_video.height,
-            width: post.media.reddit_video.width,
-          },
-        ];
-        await findImage(post, true);
+        (thumbnailInfo = {
+          src: checkURL(post?.thumbnail),
+          height: post.media.reddit_video.height,
+          width: post.media.reddit_video.width,
+        }),
+          await findImage(post, true);
         isVideo = true;
         return true;
       }
@@ -475,7 +478,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
       //return true;
     }
     if (post.media_metadata) {
-      gallery = [];
+      galleryInfo = [];
       //gallery_data is array of ordered gallery images but may not exist, media_metadata is object, not necessarily ordered
       for (let i in post?.gallery_data?.items ?? post.media_metadata) {
         let image = post?.media_metadata?.[i];
@@ -488,12 +491,16 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
           if (image.p.length > 0) {
             let num = image.p.length - 1;
             //console.log(num);
-            gallery.push({
-              url: checkURL(
-                image?.s?.gif ?? image.p[num].u.replace("amp;", "")
-              ),
-              height: image.p[num].y,
-              width: image.p[num].x,
+            galleryInfo.push({
+              media: [
+                {
+                  src: checkURL(
+                    image?.s?.gif ?? image.p[num].u.replace("amp;", "")
+                  ),
+                  height: image.p[num].y,
+                  width: image.p[num].x,
+                },
+              ],
               caption: caption,
             });
           }
@@ -509,7 +516,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
           imageInfo = [];
           for (let i in post.preview.images[0].resolutions) {
             imageInfo.push({
-              url: checkURL(
+              src: checkURL(
                 post.preview?.images[0]?.resolutions[i].url.replace("amp;", "")
               ),
               height: post.preview?.images[0]?.resolutions[i].height,
@@ -518,7 +525,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
           }
           if (post.preview.images[0].source) {
             imageInfo.push({
-              url: checkURL(
+              src: checkURL(
                 post.preview.images[0].source.url.replace("amp;", "")
               ),
               height: post.preview.images[0].source?.height,
@@ -552,7 +559,7 @@ export const findMediaInfo = async (post, quick = false, domain = DOMAIN) => {
 
     return [
       {
-        url: checkURL(purl),
+        src: checkURL(purl),
         height: dim?.naturalHeight ?? 1080,
         width: dim?.naturalWidth ?? 1080,
       },
