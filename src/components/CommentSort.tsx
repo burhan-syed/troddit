@@ -7,13 +7,14 @@ import { RiBarChart2Line } from "react-icons/ri";
 import { BsCircle, BsChevronDown } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import React from "react";
+import { useMainContext } from "../MainContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 // Mapping of internal key to friendly display
-const COMMENT_SORTS = {
+export const COMMENT_SORTS = {
   confidence: "Best",
   top: "Top",
   new: "New",
@@ -22,7 +23,10 @@ const COMMENT_SORTS = {
   qa: "Q&A"
 };
 
-const CommentSort = ({ updateSort, sortBy = "top" }) => {
+const CommentSort = ({ updateSort, sortBy }) => {
+  const context: any = useMainContext();
+  sortBy ??= context.defaultSortComments;
+
   const [sort, setSort] = useState(sortBy);
   //confidence (best),top,new,controversial,old,qa (Q&A)
 

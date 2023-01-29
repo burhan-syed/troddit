@@ -47,7 +47,7 @@ import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 
 const Thread = ({
   permalink,
-  sort = "top",
+  sort,
   updateSort,
   initialData,
   setMediaMode,
@@ -59,6 +59,8 @@ const Thread = ({
   setCurPost,
 }) => {
   const context: any = useMainContext();
+  sort ??= context.defaultCommentSort;
+
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [windowWidth, windowHeight] = useWindowSize();
