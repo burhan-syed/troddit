@@ -12,8 +12,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+// Mapping of internal key to friendly display
+const COMMENT_SORTS = {
+  confidence: "Best",
+  top: "Top",
+  new: "New",
+  controversial: "Controversial",
+  old: "Old",
+  qa: "Q&A"
+};
+
 const CommentSort = ({ updateSort, sortBy = "top" }) => {
-  const [sort, setsort] = useState(sortBy);
+  const [sort, setSort] = useState(sortBy);
   //confidence (best),top,new,controversial,old,qa (Q&A)
 
   return (
@@ -32,7 +42,7 @@ const CommentSort = ({ updateSort, sortBy = "top" }) => {
               <div className="flex gap-1 mr-2">
                 <span className="hidden sm:block">{"sort comments by"}</span>
                 <span className="block sm:hidden">{"sort by"}</span>
-                <span>{sort}</span>
+                <span>{COMMENT_SORTS[sort]}</span>
               </div>
               <BsChevronDown
                 className={
@@ -60,124 +70,26 @@ const CommentSort = ({ updateSort, sortBy = "top" }) => {
               }
             >
               <div className="py-1">
-                {/* Best */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => {
-                        updateSort(e, "confidence");
-                        setsort("best");
-                      }}
-                      className={classNames(
-                        active ? "bg-th-highlight" : "",
-                        "block px-4 py-1 text-sm"
+                {Object.entries(COMMENT_SORTS).map(([k, friendlyName]) =>
+                  <Menu.Item>
+                      {({ active }) => (
+                          <div
+                              onClick={(e) => {
+                                  updateSort(e, k);
+                                  setSort(k);
+                              }}
+                              className={classNames(
+                                  active ? "bg-th-highlight" : "",
+                                  "block px-4 py-1 text-sm"
+                              )}
+                          >
+                              <div className="flex flex-row items-center h-6">
+                                  <span>{friendlyName}</span>
+                              </div>
+                          </div>
                       )}
-                    >
-                      <div className="flex flex-row items-center h-6">
-                        <span> best </span>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                {/* Top */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => {
-                        updateSort(e, "top");
-                        setsort("top");
-                      }}
-                      className={classNames(
-                        active ? "bg-th-highlight" : "",
-                        "block px-4 py-1 text-sm"
-                      )}
-                    >
-                      <div className="flex flex-row items-center h-6">
-                        <span> top </span>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                {/* New */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      className="group"
-                      onClick={(e) => {
-                        updateSort(e, "new");
-                        setsort("new");
-                      }}
-                    >
-                      <div
-                        className={classNames(
-                          active ? "bg-th-highlight" : "",
-                          "block px-4 py-1 text-sm"
-                        )}
-                      >
-                        <div className="flex flex-row items-center h-6">
-                          <span> new </span>{" "}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                {/* Controversial */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => {
-                        updateSort(e, "controversial");
-                        setsort("controversial");
-                      }}
-                      className={classNames(
-                        active ? "bg-th-highlight" : "",
-                        "block px-4 py-1 text-sm"
-                      )}
-                    >
-                      <div className="flex flex-row items-center h-6">
-                        <span> controversial </span>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                {/* Old */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => {
-                        updateSort(e, "old");
-                        setsort("old");
-                      }}
-                      className={classNames(
-                        active ? "bg-th-highlight" : "",
-                        "block px-4 py-1 text-sm "
-                      )}
-                    >
-                      <div className="flex flex-row items-center h-6">
-                        <span> old </span>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                {/* Q&A */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={(e) => {
-                        updateSort(e, "qa");
-                        setsort("q & a");
-                      }}
-                      className={classNames(
-                        active ? "bg-th-highlight" : "",
-                        "block px-4 py-1 text-sm "
-                      )}
-                    >
-                      <div className="flex flex-row items-center h-6">
-                        <span> {"q & a"} </span>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                  </Menu.Item>
+                )}
               </div>
             </Menu.Items>
           </Transition>
