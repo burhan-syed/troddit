@@ -43,6 +43,7 @@ const filterPostChildren = (children) => {
       domain: child?.data?.domain, 
       downs: child?.data?.downs,
       edited: child?.data?.edited,
+      gallery_data: child?.data?.gallery_data,
       hidden: child?.data?.hidden, 
       hide_score: child?.data?.hide_score,
       id: child?.data?.id, 
