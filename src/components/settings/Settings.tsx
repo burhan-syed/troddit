@@ -21,7 +21,7 @@ import ColumnCardOptions from "./ColumnCardOptions";
 import FilterEntities from "./FilterEntities";
 import History from "./History";
 import IntInput from "./IntInput";
-import SortSelector from "./SortSelector";
+import DefaultSortSelector from "./DefaultSortSelector";
 import ThemeSelector from "./ThemeSelector";
 import Toggles from "./Toggles";
 
@@ -170,8 +170,8 @@ const Settings = () => {
                 <span>Default Comment Sort</span>
                 <span className="mr-2 text-xs opacity-70">Default sort order for Comments on Posts</span>
             </span>
-            <div className="flex-none w-24">
-                <SortSelector mode="comments" />
+            <div className="flex-none min-w-[6rem]">
+                <DefaultSortSelector mode="comments" />
             </div>
         </label>,
       ],
