@@ -162,6 +162,18 @@ const Settings = () => {
             }
           />
         )),
+        <label
+            key={"defaultSortComments"}
+            className="flex flex-row items-center justify-between w-full p-2 my-2 hover:cursor-pointer"
+        >
+            <span className="flex flex-col gap-0.5">
+                <span>Default Comment Sort</span>
+                <span className="mr-2 text-xs opacity-70">Default sort order for Comments on Posts</span>
+            </span>
+            <div className="flex-none w-24">
+                <SortSelector mode="comments" />
+            </div>
+        </label>,
       ],
     },
     Filters: {
@@ -212,18 +224,6 @@ const Settings = () => {
             />
           )
         ),
-        <label
-            key={"defaultSortComments"}
-            className="flex flex-row items-center justify-between w-full p-2 my-2 hover:cursor-pointer"
-        >
-            <span className="flex flex-col gap-0.5">
-                <span>Default Comment Sort Order</span>
-                <span className="mr-2 text-xs opacity-70">Default Sort Order for Comments on Posts</span>
-            </span>
-            <div className="flex-none w-24">
-                <SortSelector mode="comments" />
-            </div>
-        </label>,
       ],
     },
 
