@@ -75,7 +75,7 @@ const CommentSort = ({ updateSort, sortBy }) => {
             >
               <div className="py-1">
                 {Object.entries(COMMENT_SORTS).map(([k, friendlyName]) =>
-                  <Menu.Item>
+                  <Menu.Item key={k}>
                       {({ active }) => (
                           <div
                               onClick={(e) => {
