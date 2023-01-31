@@ -38,7 +38,7 @@ const PostModal = ({
   const [autoPlay, setAutoPlay] = useState(false);
   const [useMediaMode, setUseMediaMode] = useState(mediaMode);
   const [sort, setSort] = useState<string>(
-    (router?.query?.sort as string) ?? "top"
+    (router?.query?.sort as string) ?? context.defaultSortComments
   );
   const [curPost, setCurPost] = useState<any>(postData);
   const [curPostNum, setCurPostNum] = useState(postNum);

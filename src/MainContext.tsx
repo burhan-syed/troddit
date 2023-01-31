@@ -111,6 +111,7 @@ export const MainProvider = ({ children }) => {
   const [autoPlayInterval, setAutoPlayInterval] = useState<number>();
   const [waitForVidInterval, setWaitForVidInterval] = useState<boolean>();
   const [autoPlayMode, setAutoPlayMode] = useState<boolean>();
+  const [defaultSortComments, setDefaultSortComments] = useState<string>();
   const toggleRibbonCollapseOnly = () => {
     setRibbonCollapseOnly((c) => !c);
   };
@@ -1035,6 +1036,16 @@ export const MainProvider = ({ children }) => {
           setSlowRefreshInterval(30 * 60 * 1000);
         }
       };
+      const defaultSortComments = async () => {
+        let saved = (await localForage.getItem(
+            "defaultSortComments"
+        )) as string;
+        if (typeof saved === "string") {
+            setDefaultSortComments(saved);
+        } else {
+            setDefaultSortComments("top");
+        }
+      };
       const autoPlayInterval = async () => {
         let saved = (await localForage.getItem("autoPlayInterval")) as number;
         if (typeof saved === "number" && saved >= 1) {
@@ -1124,6 +1135,7 @@ export const MainProvider = ({ children }) => {
       let refreshonfocus = refreshOnFocus();
       let fastrefreshinterval = fastRefreshInterval();
       let slowrefreshinterval = slowRefreshInterval();
+      let defaultsortcomments = defaultSortComments();
       let autoplayinterval = autoPlayInterval();
       let waitforvidinterval = waitForVidInterval();
       let uniformheights = loadUniformHeights();
@@ -1169,6 +1181,7 @@ export const MainProvider = ({ children }) => {
         refreshonfocus,
         fastrefreshinterval,
         slowrefreshinterval,
+        defaultsortcomments,
         nsfw,
         autoplay,
         hoverplay,
@@ -1264,6 +1277,11 @@ export const MainProvider = ({ children }) => {
       localForage.setItem("fastRefreshInterval", fastRefreshInterval);
     }
   }, [fastRefreshInterval]);
+  useEffect(() => {
+      if (defaultSortComments !== undefined) {
+          localForage.setItem("defaultSortComments", defaultSortComments);
+      }
+  }, [defaultSortComments]);
   useEffect(() => {
     if (refreshOnFocus !== undefined) {
       localForage.setItem("refreshOnFocus", refreshOnFocus);
@@ -1629,6 +1647,8 @@ export const MainProvider = ({ children }) => {
         setMediaMode,
         autoPlayMode,
         setAutoPlayMode,
+        defaultSortComments,
+        setDefaultSortComments,
         compactLinkPics,
         toggleCompactLinkPics,
         uniformHeights,

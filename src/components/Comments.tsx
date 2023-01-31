@@ -7,7 +7,7 @@ const Comments = ({
   comments,
   readTime,
   containerRef,
-  sort = "top",
+  sort,
   depth = 0,
   op = "",
   portraitMode = false,
@@ -18,6 +18,8 @@ const Comments = ({
 }) => {
   const { data: session, status } = useSession();
   const context: any = useMainContext();
+  sort ??= context.defaultSortComments;
+
   const [commentsData, setCommentsData] = useState<any[]>();
   useEffect(() => {
     comments && setCommentsData(comments);
