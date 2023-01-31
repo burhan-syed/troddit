@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.17.5
+### New
+- Now you can set the global default comment sort for threads
+  - Find the "Default Comment Sort" option in the settings page.
+### Fixes
+- Fix sometimes unordered image galleries
+- Fix some issues when fetching user posts.
+
 ## v0.17.4
 
 ### New
