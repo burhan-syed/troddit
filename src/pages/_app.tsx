@@ -16,10 +16,12 @@ import React, { useEffect } from "react";
 import packageInfo from "../../package.json";
 import { checkVersion } from "../../lib/utils";
 import ToastCustom from "../components/toast/ToastCustom";
+import { usePlausible } from "next-plausible";
 
 const VERSION = packageInfo.version;
 const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }) {
+  const plausible = usePlausible();
   useEffect(() => {
     const curVersion = VERSION;
     const prevVersion = localStorage.getItem("trodditVersion");
@@ -40,7 +42,6 @@ function MyApp({ Component, pageProps }) {
     }
     localStorage.setItem("trodditVersion", curVersion);
     function setNoSurveyFlag() {
-      console.log("set?");
       localStorage.setItem("nosurvey1", JSON.stringify(true));
     }
     if (!JSON.parse(localStorage.getItem("nosurvey1") ?? "false")) {
@@ -48,6 +49,7 @@ function MyApp({ Component, pageProps }) {
         .length()
         .then((length) => {
           if (length > 10000) {
+            plausible("survey");
             const toastId = toast.custom(
               (t) => (
                 <ToastCustom
