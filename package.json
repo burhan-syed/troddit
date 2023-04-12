@@ -23,7 +23,7 @@
     "markdown-draft-js": "^2.4.0",
     "masonic": "^3.6.4",
     "next": "^12.3.1",
-    "next-auth": "^4.10.3",
+    "next-auth": "^4.22.0",
     "next-cookies": "^2.0.3",
     "next-plausible": "^3.1.4",
     "next-pwa": "^5.6.0",
