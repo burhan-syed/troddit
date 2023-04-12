@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }) {
       localSeen
         .length()
         .then((length) => {
-          if (length > 10) {
+          if (length > 10000) {
             const toastId = toast.custom(
               (t) => (
                 <ToastCustom
