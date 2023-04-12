@@ -12,11 +12,12 @@ import { Toast } from "react-hot-toast/dist/core/types";
 interface ToastCustomParams {
   t: Toast;
   message: string;
-  mode?: "loading" | "error" | "version" | "alert" | "success" | "new_posts";
+  mode?: "loading" | "error" | "version" | "alert" | "success" | "new_posts" | "link";
   action?: Function;
   action2?: Function;
   actionLabel?: string;
   showAll?:boolean
+  link?:string;
 }
 
 const ToastCustom: React.FC<ToastCustomParams> = ({
@@ -26,7 +27,8 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
   action,
   action2,
   actionLabel = "",
-  showAll=false
+  showAll=false,
+  link
 }) => {
   const toastdiv = (
     <div
@@ -134,9 +136,9 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
       )}
     </div>
   );
-  if (mode === "version") {
+  if (mode === "version" || (mode === "link" && link)) {
     return (
-      <Link href="/changelog">
+      <Link href={link ? link : "/changelog"}>
         <a>{toastdiv}</a>
       </Link>
     );
