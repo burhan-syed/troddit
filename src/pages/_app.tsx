@@ -44,7 +44,8 @@ function MyApp({ Component, pageProps }) {
     function setNoSurveyFlag() {
       localStorage.setItem("nosurvey1", JSON.stringify(true));
     }
-    if (!JSON.parse(localStorage.getItem("nosurvey1") ?? "false")) {
+    // !JSON.parse(localStorage.getItem("nosurvey1") ?? "false")
+    if (false) {
       localSeen
         .length()
         .then((length) => {
