@@ -1,6 +1,6 @@
 {
   "name": "troddit",
-  "version": "0.17.5",
+  "version": "0.18.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,10 @@
     "@headlessui/react": "1.5",
     "@react-hook/resize-observer": "^1.2.5",
     "@react-hook/window-size": "^3.0.7",
+    "@tanstack/query-sync-storage-persister": "^4.27.1",
+    "@tanstack/react-query": "^4.28.0",
+    "@tanstack/react-query-devtools": "^4.28.0",
+    "@tanstack/react-query-persist-client": "^4.28.0",
     "@vercel/analytics": "^0.1.6",
     "axios": "^0.26.1",
     "draft-js": "^0.11.7",
@@ -38,7 +42,6 @@
     "react-icons": "^4.3.1",
     "react-intersection-observer": "^9.1.0",
     "react-markdown": "^8.0.3",
-    "react-query": "^3.39.1",
     "react-switch": "^6.0.0",
     "react-twitter-embed": "^4.0.4",
     "rehype-raw": "^6.1.1"

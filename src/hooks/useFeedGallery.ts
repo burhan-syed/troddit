@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { useQueryClient } from 'react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 const useFeedGallery = () => {
   const queryClient = useQueryClient();

@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useMainContext } from "../MainContext";
-import PostModal from "./PostModal";
 import { useRouter } from "next/dist/client/router";
 import { useSession } from "next-auth/react";
 import Card1 from "./cards/Card1";
@@ -8,73 +6,71 @@ import Card2 from "./cards/Card2";
 import Row1 from "./cards/Row1";
 import CommentCard from "./cards/CommentCard";
 import { useRead } from "../hooks/useRead";
-import useResizeObserver from "@react-hook/resize-observer";
-import ResizeObserverComponent from "./ResizeObserverComponent";
+import useCardHeightTrigger from "../hooks/useCardHeightTrigger";
 
 const Post = ({
   post,
+  columns,
+  postClick,
   postNum = 0,
   openPost,
-  handleSizeChange,
-  forceSizeChange,
   uniformMediaMode = false,
+  mediaDimensions = [0, 0] as [number, number],
+  showNSFW,
+  cardStyle,
+  inView = true,
+  handleSizeChange,
+  initHeight = 0,
 }) => {
-  const postRef = useRef<HTMLDivElement>(null);
-  const recomputeSize = () => {
-    forceSizeChange(
-      post?.data?.name,
-      postRef?.current?.getBoundingClientRect()?.height
-    );
-  };
-  const context: any = useMainContext();
-  const [hideNSFW, setHideNSFW] = useState(false);
-  const [select, setSelect] = useState(false);
-  const [forceMute, setforceMute] = useState(0);
-  const router = useRouter();
   const { data: session, status } = useSession();
+  const router = useRouter();
+  const postCardRef = useRef<HTMLDivElement>(null);
   const { read } = useRead(post?.data?.name);
-  const [commentsDirect, setCommentsDirect] = useState(false);
+  const checkCardHeight = useCardHeightTrigger({
+    handleSizeChange,
+    postCardRef,
+    postName: post?.data?.name,
+  });
+  const [hideNSFW, setHideNSFW] = useState(false);
+  const [forceMute, setforceMute] = useState(0);
   const [origCommentCount, setOrigCommentCount] = useState<number>();
+
   useEffect(() => {
-    context.nsfw === false && post?.data?.over_18
+    showNSFW === false && post?.data?.over_18
       ? setHideNSFW(true)
       : setHideNSFW(false);
     post?.data.spoiler && setHideNSFW(true);
     return () => {
       setHideNSFW(false);
     };
-  }, [context, post]);
+  }, [showNSFW, post]);
 
   const handleClick = (e, nav: { toComments?: boolean; toMedia?: boolean }) => {
     e.stopPropagation();
-    const multi = router.query?.m ?? "";
     if (!e.ctrlKey && !e.metaKey) {
-      context.setPauseAll(true);
-      openPost(post, postNum, nav);
+      openPost(post, postNum, nav, router.asPath);
+      const multi = router.query?.m ?? "";
+      const queryParams = `${multi ? `?m=${multi}` : ``}`;
       if (router.query?.frontsort) {
-        router.push("", post?.data.id, { shallow: true });
+        router.push("", `${post?.data.id}`, { shallow: true });
       } else if (
-        router.pathname.includes("/u/") &&
+        router.pathname?.includes("/u/") &&
         session?.user?.name?.toUpperCase() ===
           router?.query?.slug?.[0]?.toUpperCase()
       ) {
         router.push(
           "",
-          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}${
-            multi ? `?m=${multi}` : ""
-          }`,
+          `/u/${router?.query?.slug?.[0]}/${post.data.permalink}${queryParams}`,
           { shallow: true }
         );
-      } else if (router.pathname.includes("/u/")) {
+      } else if (router.pathname?.includes("/u/")) {
         if (
           router.query?.slug?.[1]?.toUpperCase() === "M" &&
           router?.query?.slug?.[2]
         ) {
           router.push(
             "",
-            `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${
-              post.data.permalink
-            }${multi ? `?m=${multi}` : ""}`,
+            `/u/${router.query?.slug?.[0]}/m/${router.query.slug[2]}${post.data.permalink}${queryParams}`,
             {
               shallow: true,
             }
@@ -82,20 +78,16 @@ const Post = ({
         } else {
           router.push(
             "",
-            `/u/${post?.data.author}/${post.data.permalink}${
-              multi ? `?m=${multi}` : ""
-            }`,
+            `/u/${post?.data.author}/${post.data.permalink}${queryParams}`,
             {
               shallow: true,
             }
           );
         }
       } else {
-        router.push(
-          "",
-          `${post?.data.permalink}${multi ? `?m=${multi}` : ""}`,
-          { shallow: true }
-        );
+        router.push("", `${post?.data.permalink}${queryParams}`, {
+          shallow: true,
+        });
       }
     } else {
       window.open(`${post?.data.permalink}`, "_blank");
@@ -111,44 +103,60 @@ const Post = ({
   }, [read]);
 
   return (
-    <div ref={postRef} className={""}>
-      {!uniformMediaMode && <ResizeObserverComponent post={post} postRef={postRef} handleSizeChange={handleSizeChange}/>}
+    <div ref={postCardRef} className={""}>
 
-      {/* Click wrappter */}
-      <div className="select-none">
+      {/* Click wrapper */}
+      <div
+        className={"select-none"}
+        onClickCapture={() => {
+          postClick(post?.data?.name, postNum);
+        }}
+      >
         {post?.kind === "t1" ? (
           <CommentCard
             data={post?.data}
             postNum={postNum}
             handleClick={handleClick}
           />
-        ) : context?.cardStyle === "row1" ? (
+        ) : cardStyle === "row1" ? (
           <Row1
             post={post?.data}
-            hasMedia={post?.data?.mediaInfo?.isMedia}
+            columns={columns}
+            hasMedia={post?.data?.mediaInfo?.hasMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
             read={read}
             handleClick={handleClick}
             origCommentCount={origCommentCount}
-            recomputeSize={recomputeSize}
+            mediaDimensions={mediaDimensions}
+            checkCardHeight={checkCardHeight}
+            initHeight={initHeight}
+            // newPost={post?.newPost}
           />
-        ) : context?.cardStyle === "card2" ? (
+        ) : cardStyle === "card2" ? (
           <Card2
+            inView={inView}
+            columns={columns}
             post={post?.data}
-            hasMedia={post?.data?.mediaInfo?.isMedia}
+            hasMedia={post?.data?.mediaInfo?.hasMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
             read={read}
             handleClick={handleClick}
             origCommentCount={origCommentCount}
+            mediaDimensions={mediaDimensions}
+            checkCardHeight={checkCardHeight}
+            // newPost={post?.newPost}
+
           />
         ) : (
           <Card1
+            inView={inView}
+            columns={columns}
             post={post?.data}
-            hasMedia={post?.data?.mediaInfo?.isMedia}
+            hasMedia={post?.data?.mediaInfo?.hasMedia}
             hideNSFW={hideNSFW}
             forceMute={forceMute}
             postNum={postNum}
@@ -156,6 +164,10 @@ const Post = ({
             handleClick={handleClick}
             origCommentCount={origCommentCount}
             uniformMediaMode={uniformMediaMode}
+            mediaDimensions={mediaDimensions}
+            checkCardHeight={checkCardHeight}
+            // newPost={post?.newPost}
+
           />
         )}
       </div>

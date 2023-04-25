@@ -272,6 +272,11 @@ body {
   max-width: 100%;
   overflow: var(--overflow);
 }
+.sticky-box {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  align-self: flex-start;
+}
 /*input box*/
 .react-autosuggest__input {
   @apply bg-transparent;

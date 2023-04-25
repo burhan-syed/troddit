@@ -3,7 +3,7 @@ import { FiFilter } from "react-icons/fi";
 import { useMainContext } from "../MainContext";
 import FilterModal from "./FilterModal";
 import useLocation from "../hooks/useLocation";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { numToString } from "../../lib/utils";
 
 const FilterMenu = ({ hide = false }) => {

@@ -1,26 +1,28 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/dist/client/image";
 import Gallery from "./Gallery";
-import VideoHandler from "./video/VideoHandler";
+import VideoHandler from "./media/video/VideoHandler";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
-import { useWindowSize } from "@react-hook/window-size";
+import { useWindowSize, useWindowWidth } from "@react-hook/window-size";
 import { findMediaInfo, findOptimalImageIndex } from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
-import ParseBodyHTML from "./ParseBodyHTML";
-import { ImEmbed, ImSpinner2 } from "react-icons/im";
+import { ImEmbed } from "react-icons/im";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
 import { BiExpand } from "react-icons/bi";
-import toast from "react-hot-toast";
-import ToastCustom from "./toast/ToastCustom";
 import ExternalLink from "./ui/ExternalLink";
+import { GalleryInfo } from "../../types";
+import LoaderPuff from "./ui/LoaderPuff";
 
 const scrollStyle =
   " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
 
 const Media = ({
   post,
+  columns,
+  cardStyle = undefined as undefined | "card1" | "card2" | "row1" | "default",
   curPostName = undefined,
   handleClick = (a: any, b: any) => {},
   imgFull = false,
@@ -32,31 +34,45 @@ const Media = ({
   card = false,
   hide = false,
   fullRes = false,
-  containerDims = undefined,
+  xPostMode = false,
+  containerDims = undefined as undefined | [number, number],
+  mediaDimensions = [0, 0] as undefined | [number, number],
   uniformMediaMode = false,
+  inView = true,
   fill = false,
+  checkCardHeight,
 }) => {
   const context: any = useMainContext();
-  const [windowWidth, windowHeight] = useWindowSize();
+  const windowWidth = useWindowWidth();
+  const [windowHeight, setWindowHeight] = useState(0);
+  useEffect(() => {
+    setWindowHeight(window.outerHeight);
+    //don't monitor resize
+    // const onResize = () => {
+    //   setWindowHeight(window.outerHeight);
+    // };
+    // window.addEventListener("resize", onResize);
+    // return () => {
+    //   window.removeEventListener("resize", onResize);
+    // };
+  }, []);
   const mediaRef = useRef<HTMLDivElement>(null);
-  const [isPortrait, setIsPortrait] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isGallery, setIsGallery] = useState(false);
-  const [galleryInfo, setGalleryInfo] = useState([]);
+  const [galleryInfo, setGalleryInfo] = useState<GalleryInfo[]>();
   const [isImage, setIsImage] = useState(false);
   const [isMP4, setIsMP4] = useState(false);
   const [isTweet, setIsTweet] = useState(false);
-  const [showMP4, setShowMP4] = useState(true);
-  const [imageInfo, setImageInfo] = useState({ url: "", height: 0, width: 0 });
+  const [imageInfo, setImageInfo] = useState({ src: "", height: 0, width: 0 });
   const [videoInfo, setVideoInfo] = useState({
-    hlsUrl: "",
-    url: "",
+    hlsSrc: "",
+    src: "",
     height: 0,
     width: 0,
     hasAudio: false,
   });
   const [placeholderInfo, setPlaceholderInfo] = useState({
-    url: "",
+    src: "",
     height: 0,
     width: 0,
   });
@@ -66,9 +82,10 @@ const Media = ({
 
   const onLoaded = () => {
     setMediaLoaded(true);
+    checkCardHeight && checkCardHeight();
   };
 
-  const [allowIFrame, setAllowIFrame] = useState<boolean>(postMode);
+  const [allowIFrame, setAllowIFrame] = useState<boolean>(() => !!postMode);
   const [isIFrame, setIsIFrame] = useState(false);
   const [iFrame, setIFrame] = useState<Element>();
   const [isYTVid, setisYTVid] = useState(false);
@@ -83,8 +100,9 @@ const Media = ({
 
   useEffect(() => {
     if (
-      (postMode || context.columns === 1 || context.embedsEverywhere) &&
-      !context.disableEmbeds
+      (postMode || columns === 1 || context.embedsEverywhere) &&
+      !context.disableEmbeds &&
+      !uniformMediaMode
     ) {
       setAllowIFrame(true);
     } else {
@@ -95,9 +113,10 @@ const Media = ({
     // }
   }, [
     postMode,
-    context.columns,
+    columns,
     context.disableEmbeds,
     context.embedsEverywhere,
+    uniformMediaMode,
   ]);
 
   useEffect(() => {
@@ -118,8 +137,7 @@ const Media = ({
       let a, b, c;
       if (
         post["mediaInfo"].isVideo &&
-        !post?.selftext_html &&
-        !(uniformMediaMode && windowWidth < 640)
+        !(uniformMediaMode && columns > 1 && windowWidth < 640) //dont load videos on small devices with multiple columns
       ) {
         b = await findVideo();
         if (b && !context.preferEmbeds) {
@@ -129,13 +147,13 @@ const Media = ({
       if (post["mediaInfo"].isIframe && !uniformMediaMode) {
         c = await findIframe();
       }
-      if (!b && (!post?.selftext_html || fullMediaMode)) {
+      if (!b) {
         a = await findImage();
         if (
           a &&
           !context.preferEmbeds &&
-          fullMediaMode &&
-          context.autoPlayMode
+          context.autoPlayMode &&
+          fullMediaMode
         ) {
           setAllowIFrame(false);
         }
@@ -153,7 +171,7 @@ const Media = ({
 
     const findVideo = async () => {
       let optimize = "720";
-      let url = "";
+      let src = "";
       if (!imgFull) {
         if (fullMediaMode) {
           if (!context.highRes && windowWidth < 640) {
@@ -161,15 +179,15 @@ const Media = ({
           }
         } else if (postMode) {
           optimize = "720";
-        } else if (context?.columns > 1 && windowWidth < 640) {
+        } else if (columns > 1 && windowWidth < 640) {
           optimize = "360";
-        } else if (context?.columns >= 3 && context?.columns < 5) {
+        } else if (columns >= 3 && columns < 5) {
           optimize = "480";
-        } else if (context?.columns === 2) {
+        } else if (columns === 2) {
           optimize = "480"; //"1080";
-        } else if (context?.columns === 5) {
+        } else if (columns === 5) {
           optimize = "360";
-        } else if (context?.columns > 5) {
+        } else if (columns > 5) {
           optimize = "360";
         } else if (windowWidth < 640) {
           optimize = "480";
@@ -177,25 +195,25 @@ const Media = ({
       }
 
       if (post?.mediaInfo?.videoInfo) {
-        url = post.mediaInfo.videoInfo?.[0]?.url;
-        if (url?.includes("DASH_1080") && !imgFull) {
-          url = url.replace("DASH_1080", `DASH_${optimize}`);
+        src = post.mediaInfo.videoInfo?.[0]?.src;
+        if (src?.includes("DASH_1080") && !imgFull) {
+          src = src.replace("DASH_1080", `DASH_${optimize}`);
         }
-        if (url?.includes("DASH_720") && !imgFull) {
-          url = url.replace("DASH_720", `DASH_${optimize}`);
+        if (src?.includes("DASH_720") && !imgFull) {
+          src = src.replace("DASH_720", `DASH_${optimize}`);
         }
-        if (post?.mediaInfo?.videoInfo?.[1]?.url && optimize !== "720") {
-          url = post.mediaInfo.videoInfo?.[1]?.url;
+        if (post?.mediaInfo?.videoInfo?.[1]?.src && optimize !== "720") {
+          src = post.mediaInfo.videoInfo?.[1]?.src;
         }
         setVideoInfo({
-          url: url,
-          hlsUrl: post.mediaInfo.videoInfo[0]?.hlsUrl,
+          src: src,
+          hlsSrc: post.mediaInfo.videoInfo[0]?.hlsSrc,
           height: post.mediaInfo.videoInfo[0].height,
           width: post.mediaInfo.videoInfo[0].width,
           hasAudio: post.mediaInfo.videoInfo[0]?.hasAudio,
         });
         setPlaceholderInfo({
-          url: checkURL(post?.thumbnail),
+          src: checkURL(post?.thumbnail),
           height: post.mediaInfo.videoInfo[0].height,
           width: post.mediaInfo.videoInfo[0].width,
         });
@@ -227,34 +245,44 @@ const Media = ({
     };
 
     const findImage = async () => {
-      if (post.url?.includes("twitter.com")) {
+      if (post?.mediaInfo?.isTweet) {
         setIsTweet(true);
         setIsIFrame(true);
+        //return true;
       }
 
-      if (post?.mediaInfo?.gallery) {
-        setGalleryInfo(post.mediaInfo.gallery);
+      if (post?.mediaInfo?.isGallery) {
+        setGalleryInfo(post.mediaInfo.galleryInfo);
         setIsGallery(true);
         return true;
-      } else if (post?.mediaInfo?.imageInfo) {
+      } else if (
+        (post?.mediaInfo?.isVideo ||
+          post?.mediaInfo?.isImage ||
+          post?.mediaInfo?.isTweet ||
+          post?.mediaInfo?.isLink) &&
+        post?.mediaInfo?.imageInfo
+      ) {
         let num = findOptimalImageIndex(post.mediaInfo.imageInfo, {
           windowWidth,
-          imgFull,
           fullRes: fullRes || context.highRes,
           containerDims,
-          context,
+          context: {
+            cardStyle: cardStyle,
+            columns: columns,
+            saveWideUI: context.saveWideUI,
+          },
           postMode,
         });
 
         let imgheight = post.mediaInfo.imageInfo[num].height;
         let imgwidth = post.mediaInfo.imageInfo[num].width;
         setImageInfo({
-          url: checkURL(post.mediaInfo.imageInfo[num].url.replace("amp;", "")),
+          src: checkURL(post.mediaInfo.imageInfo[num].src.replace("amp;", "")),
           height: imgheight,
           width: imgwidth,
         });
         setPlaceholderInfo({
-          url: checkURL(post.thumbnail),
+          src: checkURL(post.thumbnail),
           height: post.thumbnail_height,
           width: post.thumbnail_width,
         });
@@ -277,123 +305,55 @@ const Media = ({
       setIsMP4(false);
       setisYTVid(false);
       setIsTweet(false);
-      setShowMP4(true);
-      setImageInfo({ url: "", height: 0, width: 0 });
+      setImageInfo({ src: "", height: 0, width: 0 });
       setVideoInfo({
-        url: "",
-        hlsUrl: "",
+        src: "",
+        hlsSrc: "",
         height: 0,
         width: 0,
         hasAudio: false,
       });
-      setPlaceholderInfo({ url: "", height: 0, width: 0 });
+      setPlaceholderInfo({ src: "", height: 0, width: 0 });
       setMediaLoaded(false);
       setLoaded(false);
     };
-  }, [post, context?.columns, imgFull, fullRes, context.highRes]);
+  }, [post, columns, imgFull, fullRes, context.highRes]);
 
-  //scale media
-  const [imgheight, setimgheight] = useState({}); //sets style height for image
-  const [maxheight, setmaxheight] = useState({}); //sets maxheight style
-  const [maxheightnum, setmaxheightnum] = useState<number>(() => {
-    let cropamount = 0.95;
+  const [maxheightnum, setMaxheightnum] = useState<number>(() => {
+    let yScale = 1;
     if (postMode) {
-      cropamount = 0.5;
-    } else if (context?.columns === 1 && !imgFull) {
-      cropamount = 0.75;
+      yScale = 0.5;
+    } else if (columns === 1) {
+      yScale = 0.75;
     }
     return containerDims?.[1]
       ? containerDims?.[1]
-      : Math.floor(windowHeight * cropamount);
-  }); //maxheight set in style
+      : mediaDimensions?.[1]
+      ? mediaDimensions?.[1] //media dimensions as prescaled from parent feed
+      : windowHeight * yScale;
+  });
   useEffect(() => {
-    //console.log(postMode, context.columns, imgFull)
-    let cropamount = 0.95;
-    if (postMode) {
-      cropamount = 0.75;
-    } else if (context?.columns == 1 && !imgFull) {
-      cropamount = 0.75;
-    }
-    let imgheight = imageInfo.height;
-    containerDims?.[1]
-      ? setimgheight({
-          height: `${imgheight}px`,
-          maxHeight: `${Math.floor(containerDims?.[1])}px`,
-        })
-      : context.columns === 1 && !postMode
-      ? setimgheight({ maxHeight: Math.floor(windowHeight * 0.75) })
-      : "";
-    setmaxheight({
-      maxHeight: `${Math.floor(windowHeight * cropamount)}px`,
+    setMaxheightnum(() => {
+      let yScale = 1;
+      if (postMode && !fullMediaMode) {
+        yScale = 0.5;
+      } else if (columns === 1) {
+        yScale = 0.75;
+      }
+      return containerDims?.[1]
+        ? containerDims?.[1]
+        : mediaDimensions?.[1]
+        ? mediaDimensions?.[1] //media dimensions as precalced from mymasonic
+        : windowHeight * yScale;
     });
-    containerDims?.[1]
-      ? setmaxheightnum(containerDims?.[1])
-      : setmaxheightnum(Math.floor(windowHeight * cropamount));
-    return () => {
-      setimgheight({});
-      setmaxheight({});
-      setmaxheightnum(0);
-    };
   }, [
-    imageInfo,
-    context?.columns,
-    imgFull,
-    portraitMode,
+    columns,
+    postMode,
+    fullMediaMode,
     windowHeight,
     containerDims,
+    mediaDimensions,
   ]);
-  const [tweetLoaded, setTweetLoaded] = useState(false);
-  useEffect(() => {
-    let toastId = "autoPlayWarning";
-    if (
-      isIFrame &&
-      allowIFrame &&
-      context?.autoPlayMode &&
-      fullMediaMode &&
-      post.name === curPostName
-    ) {
-      toast.remove(toastId);
-      toast.custom(
-        (t) => (
-          <ToastCustom
-            t={t}
-            message={`Auto play may not work for external sources`}
-            mode={"alert"}
-          />
-        ),
-        { position: "top-center", id: toastId, duration: 10000 }
-      );
-    } else {
-      //toast.remove(toastId)
-    }
-    () => {
-      toast.remove(toastId);
-    };
-  }, [
-    isIFrame,
-    allowIFrame,
-    context?.autoPlayMode,
-    fullMediaMode,
-    curPostName,
-  ]);
-  //scale images
-  const [imgWidthHeight, setImageWidthHeight] = useState([
-    imageInfo?.width, //post?.mediaInfo?.dimensions[0],
-    imageInfo?.height, //post?.mediaInfo?.dimensions[1]
-  ]);
-  useEffect(() => {
-    if (
-      mediaRef.current &&
-      mediaRef.current.clientWidth &&
-      imageInfo?.height &&
-      imageInfo?.width
-      //post?.mediaInfo?.dimensions[0] > 0
-    ) {
-      let r = mediaRef.current.clientWidth / imageInfo?.width; //post?.mediaInfo?.dimensions[0];
-      let height = r * imageInfo?.height; //post?.mediaInfo?.dimensions[1];
-      setImageWidthHeight([mediaRef.current.clientWidth, height]);
-    }
-  }, [mediaRef?.current?.clientWidth, imageInfo]);
 
   const videoQuality = useMemo(
     () =>
@@ -407,32 +367,43 @@ const Media = ({
         ? windowWidth <= 640
           ? "sd"
           : "full"
-        : context.columns === 1
+        : columns === 1
         ? windowWidth <= 640
           ? "sd"
           : "full"
-        : context.columns > 1 && windowWidth <= 640
+        : columns > 1 && windowWidth <= 640
         ? "min"
-        : context.columns <= 3
+        : columns <= 3
         ? "hd"
-        : windowWidth <= 1440 || context.columns >= 5
+        : windowWidth <= 1440 || columns >= 5
         ? "sd"
-        : "hd"
-        
-        ,
-    [context.columns, context.highRes, windowWidth, fullMediaMode, postMode,fullRes]
+        : "hd",
+
+    [columns, context.highRes, windowWidth, fullMediaMode, postMode, fullRes]
   );
 
-  const externalLink = (
+  const mediaExternalLink = (
     <a
       aria-label="external link"
       onClick={(e) => e.stopPropagation()}
-      className={"flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-black/80  bg-opacity-50 " + (postMode ? "" : " md:bg-black/0 md:group-hover:bg-black/80")}
+      className={
+        "flex flex-grow items-center gap-1 px-0.5 py-2 mt-auto text-xs text-th-link hover:text-th-linkHover bg-th-base  bg-opacity-50 " +
+        (postMode || columns === 1
+          ? " "
+          : " md:bg-black/0 md:group-hover:bg-black/80 ")
+      }
       target={"_blank"}
       rel="noreferrer"
       href={post?.url}
     >
-      <span className={"ml-2 " + (postMode ? "" : " md:opacity-0 group-hover:opacity-100")}>
+      <span
+        className={
+          "ml-2 " +
+          (postMode || columns === 1
+            ? ""
+            : "md:opacity-0 group-hover:opacity-100")
+        }
+      >
         {post?.url?.split("?")?.[0]}
       </span>
       <BsBoxArrowInUpRight className="flex-none w-6 h-6 ml-auto mr-2 text-white group-hover:scale-110 " />
@@ -444,7 +415,7 @@ const Media = ({
       className={
         uniformMediaMode
           ? "aspect-[9/16] overflow-hidden object-cover object-center"
-          : "block select-none group"
+          : " select-none group"
       }
       ref={mediaRef}
     >
@@ -472,13 +443,19 @@ const Media = ({
 
           {isTweet && allowIFrame && !hide && (
             <div
-              className={
-                !postMode || (!imgFull && !containerDims?.[1])
-                  ? " h-96 max-h-96 overflow-auto w-full  "
-                  : ""
+              className={scrollStyle + " overflow-hidden"}
+              style={
+                mediaDimensions?.[1] || postMode
+                  ? {
+                      height: `${maxheightnum}px`,
+                      maxHeight: `${maxheightnum}px`,
+                    }
+                  : {
+                      height: `24rem`,
+                    }
               }
             >
-              <div className={" bg-transparent w-full  " + scrollStyle}>
+              <div className="">
                 <TwitterTweetEmbed
                   placeholder={
                     <div className="relative mx-auto border rounded-lg border-th-border w-60 h-80 animate-pulse bg-th-base">
@@ -487,6 +464,9 @@ const Media = ({
                       </div>
                     </div>
                   }
+                  onLoad={() => {
+                    checkCardHeight && checkCardHeight();
+                  }}
                   options={{
                     theme: theme === "light" ? "light" : "dark",
                     align: "center",
@@ -500,23 +480,18 @@ const Media = ({
               </div>
             </div>
           )}
-          {isIFrame && iFrame && allowIFrame && !isTweet && !hide ? (
-            <div
-              className={"relative w-full h-full"}
-              //filling IFrames in postmode portrait pane or a 16:9 ratio elsewhere
-            >
+          {isIFrame && iFrame && allowIFrame && !isTweet && !hide && (
+            <>
               <div
                 className={
-                  "w-full h-full " +
-                  (containerDims?.[1]
-                    ? ""
-                    : postMode || context.columns == 1
-                    ? " max-h-[75vh]"
-                    : "")
+                  "w-full  " +
+                  (containerDims?.[1] ? "" : postMode ? " max-h-[50vh]" : "")
                 }
                 style={
                   containerDims?.[1]
-                    ? { height: `${Math.floor(containerDims[1])}px` }
+                    ? { height: `${containerDims[1]}px` }
+                    : mediaDimensions?.[1]
+                    ? { height: `${mediaDimensions[1]}px` }
                     : {
                         aspectRatio: `${
                           post.mediaInfo?.dimensions[1] > 0 && !isYTVid
@@ -525,8 +500,146 @@ const Media = ({
                         }`,
                       }
                 }
-                dangerouslySetInnerHTML={{ __html: iFrame.outerHTML }}
+                dangerouslySetInnerHTML={{
+                  __html: iFrame.outerHTML,
+                }}
               ></div>
+              {!postMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleClick(e, { toMedia: true });
+                  }}
+                  className={
+                    (uniformMediaMode ? "hidden md:flex" : "flex") +
+                    " absolute items-center justify-center w-8 h-8 text-white bg-black rounded-md md:hidden md:group-hover:flex top-2 right-2 bg-opacity-20 hover:bg-opacity-40 "
+                  }
+                >
+                  <BiExpand className="flex-none w-4 h-4" />
+                </button>
+              )}
+            </>
+          )}
+
+          {isGallery && (
+            <Gallery
+              images={galleryInfo}
+              columns={columns}
+              maxheight={maxheightnum}
+              postMode={postMode}
+              mediaMode={fullMediaMode}
+              mediaRef={mediaRef}
+              isXPost={xPostMode}
+              fillHeight={
+                uniformMediaMode || (postMode && containerDims?.[1])
+                  ? true
+                  : false
+              }
+              containerDims={containerDims}
+              checkCardHeight={checkCardHeight}
+            />
+          )}
+
+          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
+            <div
+              className={
+                "block relative " +
+                (post?.mediaInfo?.isTweet
+                  ? " flex items-center justify-center overflow-hidden rounded-lg relative ring-1 ring-[#E7E5E4] "
+                  : "") +
+                (uniformMediaMode ? " h-full w-full" : " ")
+              }
+              style={
+                fill
+                  ? {}
+                  : containerDims?.[1]
+                  ? { height: `${containerDims?.[1]}px` }
+                  : mediaDimensions?.[1]
+                  ? { height: `${mediaDimensions?.[1]}px` }
+                  : postMode
+                  ? { height: `${Math.min(maxheightnum, imageInfo.height)}px` }
+                  : {}
+              }
+            >
+              {!mediaLoaded && (
+                <div className="absolute z-10 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                  <LoaderPuff />
+                </div>
+              )}
+              {post?.mediaInfo?.isTweet && (
+                <div className="absolute flex w-full h-full bg-[#1A8CD8] rounded-lg  ">
+                  <AiOutlineTwitter className="absolute z-20 right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
+                </div>
+              )}
+              {post?.mediaInfo?.isLink && !fill && (
+                <div
+                  className={
+                    "absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all " +
+                    (post?.mediaInfo?.isTweet ? " rounded-b-lg " : "")
+                  }
+                >
+                  {mediaExternalLink}
+                </div>
+              )}
+              <Image
+                src={imageInfo.src}
+                height={imageInfo.height}
+                width={imageInfo.width}
+                alt={post?.title}
+                layout={
+                  fill
+                    ? "responsive"
+                    : post?.mediaInfo?.isTweet
+                    ? "intrinsic"
+                    : "fill"
+                }
+                onLoadingComplete={onLoaded}
+                lazyBoundary={imgFull ? "0px" : "2000px"}
+                objectFit={
+                  uniformMediaMode || fill || post?.mediaInfo?.isYTVid
+                    ? "cover"
+                    : cardStyle === "card2"
+                    ? "fill"
+                    : "contain"
+                }
+                priority={postMode}
+                placeholder={
+                  post?.mediaInfo?.imageInfo?.[0]?.url && !fullMediaMode
+                    ? "blur"
+                    : undefined
+                }
+                blurDataURL={post?.mediaInfo?.imageInfo?.[0]?.url}
+                unoptimized={true}
+                className={
+                  " transition-opacity ease-in duration-300 " +
+                  (mediaLoaded || fullMediaMode ? "opacity-100" : "opacity-50")
+                }
+              />
+            </div>
+          )}
+          {isMP4 && (!allowIFrame || !isIFrame) ? (
+            <div className="relative flex flex-col items-center flex-none">
+              <VideoHandler
+                name={post?.name}
+                columns={columns}
+                curPostName={curPostName}
+                thumbnail={placeholderInfo}
+                placeholder={imageInfo} //{placeholderInfo}
+                videoInfo={videoInfo}
+                maxHeightNum={maxheightnum}
+                imgFull={imgFull}
+                postMode={postMode}
+                containerDims={
+                  containerDims?.[1] ? containerDims : mediaDimensions
+                }
+                fullMediaMode={fullMediaMode}
+                hide={hide}
+                uniformMediaMode={uniformMediaMode}
+                quality={videoQuality}
+                setAllowIframe={setAllowIFrame}
+                checkCardHeight={checkCardHeight}
+              />
               {!postMode && (
                 <button
                   onClick={(e) => {
@@ -544,243 +657,11 @@ const Media = ({
               )}
             </div>
           ) : (
-            ""
-          )}
-
-          {isGallery && (
-            <Gallery
-              images={galleryInfo}
-              maxheight={imgFull ? 0 : maxheightnum}
-              postMode={postMode}
-              mediaMode={fullMediaMode}
-              mediaRef={mediaRef}
-              uniformHeight={containerDims ? false : true}
-              fillHeight={uniformMediaMode ? true : false}
-            />
-          )}
-
-          {isImage && (!allowIFrame || !isIFrame) && !isMP4 && (
-            <div
-              className={
-                "relative  " +
-                (uniformMediaMode ? " min-h-full " : "") +
-                ((imgFull || (!postMode && context.columns !== 1) || fill) &&
-                !post?.mediaInfo?.isTweet
-                  ? " block "
-                  : post?.mediaInfo?.isTweet
-                  ? "flex items-center justify-center  relative overflow-hidden rounded-lg " +
-                    (containerDims?.[1]
-                      ? ""
-                      : " h-96  border border-[#E7E5E4] ")
-                  : " flex items-center justify-center relative ")
-              } //flex items-center justify-center "}
-              style={
-                fill
-                  ? {}
-                  : containerDims?.[1] && post.mediaInfo?.isTweet
-                  ? { height: `${containerDims?.[1]}px` }
-                  : (containerDims?.[1] && !imgFull) || //to match image height to portrait postmodal container
-                    (context.columns === 1 && !postMode) || //to prevent images from being greater than 75% of window height in single column mode
-                    (postMode && !imgFull) //to prevent images from being greater than 75% of window height in post mode w/oimgfull
-                  ? imgheight
-                  : !post?.mediaInfo?.isTweet
-                  ? { height: `${imgWidthHeight?.[1]}px` }
-                  : {}
-              }
-            >
-              {!mediaLoaded && (
-                <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                  <ImSpinner2 className="w-8 h-8 animate-spin" />
-                </div>
-              )}
-              {post?.mediaInfo?.isTweet && (
-                <div className="absolute flex w-full h-full bg-[#1A8CD8] rounded-lg  ">
-                  <AiOutlineTwitter className="absolute z-20 right-2 top-2 w-10 h-10 fill-[#E7E5E4] group-hover:scale-125 transition-all " />
-                </div>
-              )}
-              {post?.mediaInfo?.isLink && !fill && (
-                <div
-                  className={
-                    "absolute bottom-0 z-20 flex items-end w-full overflow-hidden break-all " +
-                    (post?.mediaInfo?.isTweet ? " rounded-b-lg " : "")
-                  }
-                >
-                  {externalLink}
-                </div>
-              )}
-              <Image
-                src={imageInfo.url}
-                height={
-                  uniformMediaMode
-                    ? post?.mediaInfo?.dimensions[1]
-                    : fill
-                    ? imageInfo?.height
-                    : !postMode &&
-                      context.columns > 1 &&
-                      !post?.mediaInfo?.isTweet
-                    ? //layout in fill mode, no height needed
-                      post?.mediaInfo?.dimensions[1] *
-                      (mediaRef?.current?.clientWidth /
-                        post?.mediaInfo?.dimensions[0]) //undefined
-                    : post?.mediaInfo?.isTweet
-                    ? imageInfo.height
-                    : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                      imageInfo.height *
-                        (mediaRef?.current?.clientWidth / imageInfo.width) >
-                        maxheightnum && //scale down image to fit in window
-                      !imgFull
-                    ? maxheightnum
-                    : imgWidthHeight[1] //scaled height to eliminate letterboxing
-                }
-                width={
-                  uniformMediaMode
-                    ? post?.mediaInfo?.dimensions[0]
-                    : fill
-                    ? imageInfo?.width
-                    : !postMode &&
-                      context.columns > 1 &&
-                      !post?.mediaInfo?.isTweet
-                    ? mediaRef?.current?.clientWidth
-                    : post?.mediaInfo?.isTweet
-                    ? imageInfo.width
-                    : (context?.columns === 1 || (postMode && !imgFull)) && //single column or post mode..
-                      imageInfo.height *
-                        (mediaRef?.current?.clientWidth / imageInfo.width) >
-                        maxheightnum && //scale down image to fit in window
-                      !imgFull
-                    ? Math.floor(
-                        imageInfo.width * (maxheightnum / imageInfo.height)
-                      )
-                    : imgWidthHeight[0]
-                }
-                alt={post?.title}
-                layout={
-                  fill
-                    ? "responsive"
-                    : !postMode &&
-                      context.columns > 1 &&
-                      !post?.mediaInfo?.isTweet
-                    ? "fill"
-                    : imgFull && !post?.mediaInfo?.isTweet
-                    ? "responsive"
-                    : "intrinsic"
-                }
-                onLoadingComplete={onLoaded}
-                lazyBoundary={imgFull ? "0px" : "2000px"}
-                objectFit={
-                  uniformMediaMode || fill
-                    ? "cover"
-                    : imgFull ||
-                      (context?.columns == 1 && !post.mediaInfo?.isTweet)
-                    ? "contain"
-                    : "fill"
-                }
-                priority={postMode}
-                unoptimized={true}
-                className={
-                  fill
-                    ? " "
-                    : post?.mediaInfo?.isTweet
-                    ? "object-contain  "
-                    : ""
-                }
-              />
-            </div>
-          )}
-
-          {isMP4 && (!allowIFrame || !isIFrame) ? (
-            showMP4 ? (
-              <div className="relative flex flex-col items-center flex-none">
-                <VideoHandler
-                  name={post?.name}
-                  curPostName={curPostName}
-                  thumbnail={placeholderInfo}
-                  placeholder={imageInfo} //{placeholderInfo}
-                  videoInfo={videoInfo}
-                  maxHeightNum={maxheightnum}
-                  imgFull={imgFull}
-                  postMode={postMode}
-                  containerDims={containerDims}
-                  fullMediaMode={fullMediaMode}
-                  hide={hide}
-                  uniformMediaMode={uniformMediaMode}
-                  quality={videoQuality}
-                />
-                {!postMode && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handleClick(e, { toMedia: true });
-                    }}
-                    className={
-                      (uniformMediaMode ? "hidden md:flex" : "flex") +
-                      " absolute items-center justify-center w-8 h-8 text-white bg-black rounded-md md:hidden md:group-hover:flex top-2 right-2 bg-opacity-20 hover:bg-opacity-40 "
-                    }
-                  >
-                    <BiExpand className="flex-none w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ) : (
-              ""
-            )
-          ) : (
-            ""
-          )}
-
-          {post?.selftext_html &&
-          ((!context.mediaOnly && context.cardStyle !== "card2") ||
-            postMode) ? (
-            <div
-              className={
-                "p-1 overflow-y-auto select-text  overscroll-auto " +
-                scrollStyle +
-                (!imgFull ? " max-h-96 border-b border-th-border" : " ") +
-                (containerDims?.[1] ? " mx-4 my-2 " : "") +
-                (read && context.dimRead ? " opacity-50 " : "")
-              }
-            >
-              <ParseBodyHTML
-                rows={context.cardStyle == "row1"}
-                post={postMode}
-                card={card}
-                html={post?.selftext_html}
-                small={postMode ? false : true}
-                limitWidth={postMode && !context.postWideUI}
-              />
-            </div>
-          ) : !context.mediaOnly ? (
-            ""
-          ) : (
-            ""
+            <></>
           )}
         </>
       ) : (
-        !fill &&
-        !post?.mediaInfo?.isGallery &&
-        post?.mediaInfo?.dimensions?.[1] > 0 &&
-        mediaRef?.current &&
-        mediaRef?.current?.clientWidth > 0 &&
-        maxheightnum && (
-          <div
-            className=""
-            style={{
-              height: `${
-                videoInfo?.height > 0 && videoInfo?.height < maxheightnum
-                  ? videoInfo?.height
-                  : (mediaRef.current.clientWidth /
-                      post.mediaInfo.dimensions[0]) *
-                      post.mediaInfo.dimensions[1] >
-                    maxheightnum
-                  ? maxheightnum
-                  : (mediaRef.current.clientWidth /
-                      post.mediaInfo.dimensions[0]) *
-                    post.mediaInfo.dimensions[1]
-              }px`,
-            }}
-          ></div>
-        )
+        <></>
       )}
       {post?.mediaInfo?.isLink &&
         !isImage &&

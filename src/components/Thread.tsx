@@ -10,7 +10,10 @@ import Link from "next/dist/client/link";
 import { useWindowSize } from "@react-hook/window-size";
 import { useSession } from "next-auth/react";
 import { BiDownvote, BiUpvote, BiExpand, BiCollapse } from "react-icons/bi";
-import { HiOutlineSwitchHorizontal } from "react-icons/hi";
+import {
+  HiOutlineDocumentDuplicate,
+  HiOutlineSwitchHorizontal,
+} from "react-icons/hi";
 import { BiComment, BiExit } from "react-icons/bi";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";
@@ -23,7 +26,7 @@ import { useKeyPress } from "../hooks/KeyPress";
 import { secondsToTime } from "../../lib/utils";
 import { findMediaInfo } from "../../lib/utils";
 
-import { useMainContext } from "../MainContext";
+import { localSeen, useMainContext } from "../MainContext";
 
 import TitleFlair from "./TitleFlair";
 import CommentSort from "./CommentSort";
@@ -38,12 +41,19 @@ import PostOptButton from "./PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 import SubIcon from "./SubIcon";
 import useThread from "../hooks/useThread";
-import { QueryClient, useQueryClient } from "react-query";
 import useSubreddit from "../hooks/useSubreddit";
 import ErrMessage from "./ErrMessage";
 import { useRead } from "../hooks/useRead";
+
 import toast from "react-hot-toast";
+import ToastCustom from "./toast/ToastCustom";
+import useDuplicates from "../hooks/useDuplicates";
+import MiniCard from "./cards/MiniCard";
+import { CgSpinnerTwo } from "react-icons/cg";
 import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
+import PostBody from "./PostBody";
+
+const SIDEBYSIDE_THRESHOLD = 1000; 
 
 const Thread = ({
   permalink,
@@ -55,7 +65,9 @@ const Thread = ({
   commentMode = false,
   commentsDirect = false,
   direct = false,
-  goBack = () => {},
+  duplicates = false,
+  handleBackToThread = () => {},
+  goBack = (a, b) => {},
   setCurPost,
 }) => {
   const context: any = useMainContext();
@@ -63,6 +75,15 @@ const Thread = ({
 
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
+  const [showDuplicates, setShowDuplicates] = useState(() => duplicates);
+  useEffect(() => {
+    setShowDuplicates(duplicates);
+  }, [duplicates]);
+
+  const { duplicateQuery, flatPosts, totalDuplicates } = useDuplicates({
+    enabled: showDuplicates,
+    permalink,
+  });
   const [windowWidth, windowHeight] = useWindowSize();
   const containerRef = useRef<HTMLDivElement>(null);
   //initPost so later refetches will keep media (ie videos) stable
@@ -87,9 +108,11 @@ const Thread = ({
     undefined
   );
   const [imgFull, setimgFull] = useState(false);
+  const [expandText, setExpandText] = useState(false);
 
   const portraitDivRef = useRef<any>(null);
-  const [pHeight, setpHeight] = useState();
+
+  const [pHeight, setpHeight] = useState<number>();
   const [pWidth, setpWidth] = useState();
 
   useEffect(() => {
@@ -106,8 +129,8 @@ const Thread = ({
 
       setNewReadTime(new Date().getTime());
       setPost(thread?.data?.pages?.[0].post);
+      if (!initialData?.name) setCurPost(thread?.data?.pages?.[0].post);
     }
-    if (!initialData?.name) setCurPost(thread?.data?.pages?.[0].post);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread.data?.pages]);
@@ -157,34 +180,49 @@ const Thread = ({
           postId: post?.name,
           numComments: post?.num_comments,
         });
+
+      context?.autoSeen && localSeen.setItem(post?.name, { time: new Date() });
     };
   }, []);
 
   useLayoutEffect(() => {
     if (
       !context.disableSideBySide &&
-      windowWidth > 100 &&
-      windowHeight < (windowWidth * 1.5) &&
+      windowWidth >= SIDEBYSIDE_THRESHOLD &&
+      windowHeight < windowWidth * 1.5 &&
       context?.postWideUI &&
-      (mediaInfo?.isMedia || post?.selftext_html) &&
+      (mediaInfo?.hasMedia || post?.selftext_html) &&
       !direct
     ) {
       usePortrait === undefined &&
-        setUsePortrait(mediaInfo?.isPortrait || context.preferSideBySide ? true : false);
+        setUsePortrait(
+          mediaInfo?.isPortrait || context.preferSideBySide ? true : false
+        );
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaInfo, context.preferSideBySide, context.disableSideBySide]);
   useEffect(() => {
-    if (windowWidth < 1000 && usePortrait && !direct) setUsePortrait(false);
+    if (windowWidth < SIDEBYSIDE_THRESHOLD && usePortrait && !direct) setUsePortrait(false);
   }, [windowWidth]);
 
   useEffect(() => {
     if (usePortrait) {
-      setpHeight(portraitDivRef?.current?.clientHeight);
+      //setpHeight(portraitDivRef?.current?.clientHeight);
       setpWidth(portraitDivRef?.current?.clientWidth);
     }
   }, [usePortrait]);
+  useEffect(() => {
+    const doSetPHeight = () => {
+      setpHeight(window.innerHeight - 50); //50=3.125rem
+    };
+    doSetPHeight();
+
+    window.addEventListener("resize", doSetPHeight);
+    return () => {
+      window.removeEventListener("resize", doSetPHeight);
+    };
+  }, []);
 
   const commentsRef = useRef<HTMLDivElement>(null);
   const [jumped, setJumped] = useState(false);
@@ -315,54 +353,96 @@ const Thread = ({
       { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
   }
-
   return (
     <>
-      <div className={"flex flex-row justify-center h-full"}>
+      <div
+        onClick={() => goBack(false, true)}
+        className={"flex flex-row flex-grow justify-center pt-[3.125rem]"}
+      >
         {/* Portrait Media */}
         {usePortrait && (
-          <div className="z-10 mr-3 mt-14 md:w-6/12">
-            <div
-              ref={portraitDivRef}
-              className="flex items-center justify-center max-h-full min-h-full overflow-y-auto border rounded-lg bg-th-background2 border-th-border2 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
-            >
-              {pHeight && pWidth && (
-                <div
-                  className={
-                    "min-h-full min-w-full relative" +
-                    (mediaInfo?.isSelf ? " mb-auto" : "")
-                  }
-                >
-                  <MediaWrapper
-                    hideNSFW={hideNSFW}
-                    post={initPost}
-                    forceMute={false}
-                    imgFull={mediaInfo?.isSelf ? true : imgFull}
-                    postMode={true}
-                    containerDims={[pWidth, pHeight]}
-                    showCrossPost={false}
-                  />
-                </div>
-              )}
+          <>
+            <div className="z-10 mr-3 sticky-box top-[3.125rem] md:w-6/12">
+              <div
+                ref={portraitDivRef}
+                className={
+                  " border rounded-lg border-th-border2 backdrop-blur-md bg-th-background2 " +
+                  ((post?.selftext_html ||
+                    post.crosspost_parent_list?.[0]?.selftext_html) &&
+                  !(
+                    mediaInfo?.isVideo ||
+                    mediaInfo?.isIframe ||
+                    mediaInfo?.isGallery ||
+                    mediaInfo?.isTweet ||
+                    mediaInfo?.isDual
+                  )
+                    ? "flex scrollbar-thin flex-col overflow-y-auto scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track "
+                    : "flex items-center justify-center overflow-hidden")
+                }
+                style={{
+                  height: `${Math.ceil(pHeight ?? 0)}px`,
+                }}
+              >
+                {pHeight && pWidth && (
+                  <>
+                    {(post?.selftext_html ||
+                      post.crosspost_parent_list?.[0]?.selftext_html) &&
+                    !(
+                      mediaInfo?.isVideo ||
+                      mediaInfo?.isIframe ||
+                      mediaInfo?.isGallery ||
+                      mediaInfo?.isTweet ||
+                      mediaInfo?.isDual
+                    ) ? (
+                      <div
+                        className={"flex flex-col flex-grow items-center m-3 "}
+                      >
+                        <PostBody
+                          rawHTML={
+                            post.crosspost_parent_list?.[0]?.selftext_html ??
+                            post.selftext_html
+                          }
+                          mode="post"
+                          //isPostOpen={true}
+                        />
+                      </div>
+                    ) : (
+                      <div className={"min-h-full min-w-full relative"}>
+                        <MediaWrapper
+                          hideNSFW={hideNSFW}
+                          post={initPost}
+                          forceMute={false}
+                          imgFull={mediaInfo?.isSelf ? true : imgFull}
+                          postMode={true}
+                          containerDims={[pWidth, pHeight]}
+                          showCrossPost={false}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* Main Card */}
         <div
           className={
-            (!context?.postWideUI && !usePortrait && windowWidth > 768
+            (direct
+              ? `${usePortrait ? "md:w-4/12" : " w-full md:w-10/12 lg:w-3/4 "}`
+              : !context?.postWideUI && !usePortrait && windowWidth > 768
               ? " max-w-3xl w-[768px]"
               : !usePortrait
               ? " w-full md:w-10/12 lg:w-3/4 "
               : " md:w-4/12 ") +
-            " z-10 pt-0  md:flex md:flex-col md:items-center md:justify-start  "
+            " z-10  md:flex md:flex-col md:items-center md:justify-start "
           }
         >
           {/* Content container */}
           <div
             ref={containerRef}
-            className="flex flex-col w-full h-screen overflow-x-hidden overflow-y-auto break-words border-t rounded-lg border-th-border2 mt-14 md:pt-0 scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+            className="flex flex-col w-full rounded-lg md:pt-0 "
             onClick={(e) => e.stopPropagation()}
           >
             {/* LOADING POST CARD */}
@@ -370,7 +450,7 @@ const Thread = ({
               <>{postPlaceHolder}</>
             ) : (
               // Loaded Media Card
-              <div className="w-full mb-3 border rounded-lg bg-th-background2 border-th-border2">
+              <div className="z-10 w-full mb-3 border rounded-lg border-th-border2 backdrop-blur-md bg-th-background2">
                 {/* Flex container */}
                 <div className="flex flex-row items-center p-3 md:pl-0 md:pt-4 md:pr-4 md:pb-4">
                   {/* Upvote column */}
@@ -479,7 +559,7 @@ const Thread = ({
                       </div>
                     </div>
 
-                    <h1 className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
+                    <span className="flex flex-row flex-wrap items-center justify-start py-2 md:pl-3">
                       <a
                         className={" text-xl font-semibold mr-2"}
                         href={
@@ -494,7 +574,7 @@ const Thread = ({
                       <span className="text-sm font-medium ">
                         <TitleFlair post={post} />
                       </span>
-                    </h1>
+                    </span>
 
                     {/* Image/Video/Text Body */}
                     {!usePortrait && (
@@ -522,11 +602,59 @@ const Thread = ({
                         />
                       </div>
                     )}
+                    {post?.selftext_html &&
+                    (mediaInfo?.isVideo ||
+                      mediaInfo?.isIframe ||
+                      mediaInfo?.isGallery ||
+                      mediaInfo?.isTweet ||
+                      mediaInfo?.isDual) ? (
+                      <div
+                        className={
+                          (usePortrait ? " " : " mt-3 ") +
+                          "flex items-center md:ml-3"
+                        }
+                      >
+                        <PostBody
+                          rawHTML={post.selftext_html}
+                          mode="post"
+                          // isPostOpen={true}
+                        />
+                      </div>
+                    ) : (
+                      (post?.selftext_html ||
+                        post.crosspost_parent_list?.[0]?.selftext_html) &&
+                      !usePortrait && (
+                        <div
+                          className={
+                            (usePortrait ? " " : " mt-3 ") +
+                            "flex items-center md:ml-3"
+                          }
+                        >
+                          <PostBody
+                            rawHTML={
+                              post.crosspost_parent_list?.[0]?.selftext_html ??
+                              post?.selftext_html
+                            }
+                            mode="post"
+                            limitHeight={
+                              expandText
+                                ? 0
+                                : post.crosspost_parent_list?.[0]?.selftext_html
+                                ? windowHeight * 0.5
+                                : windowHeight *
+                                  (windowWidth < 768 ? 0.5 : 0.75)
+                            }
+                            // isPostOpen={true}
+                          />
+                        </div>
+                      )
+                    )}
+
                     {/* Bottom Buttons */}
 
-                    <div className="flex flex-row flex-wrap items-center justify-end mt-2 space-x-1 select-none md:justify-between">
+                    <div className="flex flex-row flex-wrap items-center justify-end gap-1 mt-2 select-none md:ml-2 md:justify-between">
                       {/* Vote buttons for mobiles */}
-                      <div className="flex flex-row items-center self-center justify-start h-full py-1 mr-auto space-x-2 md:hidden">
+                      <div className="flex flex-row items-center self-center justify-start h-full py-1 mr-auto gap-x-2 md:hidden">
                         <Vote
                           likes={post?.likes}
                           name={post?.name}
@@ -535,8 +663,8 @@ const Thread = ({
                           archived={post?.archived === true}
                         />
                       </div>
-                      <div className="flex flex-row flex-wrap items-center justify-start space-x-1 ">
-                        {windowWidth >= 1000 && (
+                      <div className="flex flex-row flex-wrap items-center justify-start gap-1 ">
+                        {windowWidth >= SIDEBYSIDE_THRESHOLD && (
                           <>
                             <button
                               aria-label="switch comments location"
@@ -554,37 +682,40 @@ const Thread = ({
                         )}
                         {true && (
                           <button
-                            aria-label="full screen media"
-                            autoFocus={windowWidth < 1000}
-                            onClick={() => {
-                              setMediaMode(true);
-                            }}
+                            title="full window mode (f)"
+                            aria-label="expand media"
+                            autoFocus={windowWidth < SIDEBYSIDE_THRESHOLD}
+                            onClick={() => setMediaMode(true)}
+                            //onClick={(e) => setimgFull((p) => !p)}
                             className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
                           >
                             <BiExpand className={"flex-none w-5 h-5 "} />
                           </button>
                         )}
-                        {mediaInfo?.isSelf && post?.selftext_html && !usePortrait &&  (
-                          <button
-                            onClick={() => setimgFull((p) => !p)}
-                            aria-label="expand text"
-                            className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
-                          >
-                            {imgFull ? (
-                              <>
-                                <MdOutlineCompress
-                                  className={"flex-none w-5 h-5 "}
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <MdOutlineExpand
-                                  className={"flex-none w-5 h-5 "}
-                                />
-                              </>
-                            )}
-                          </button>
-                        )}
+                        {mediaInfo?.isSelf &&
+                          (post?.selftext_html ||
+                            post.crosspost_parent_list?.[0]?.selftext_html) &&
+                          !usePortrait && (
+                            <button
+                              onClick={() => setExpandText((p) => !p)}
+                              aria-label="expand text"
+                              className="flex flex-row items-center p-2 border rounded-md border-th-border hover:border-th-borderHighlight"
+                            >
+                              {expandText ? (
+                                <>
+                                  <MdOutlineCompress
+                                    className={"flex-none w-5 h-5 "}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <MdOutlineExpand
+                                    className={"flex-none w-5 h-5 "}
+                                  />
+                                </>
+                              )}
+                            </button>
+                          )}
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-end gap-1 text-sm ">
                         <div>
@@ -608,19 +739,75 @@ const Thread = ({
                                 : " hover:border-th-borderHighlight ")
                             }
                           >
-                            <BsReply
+                            {/* <BsReply
                               className={
                                 "flex-none w-5 h-5 scale-x-[-1] " +
                                 (!usePortrait && " md:mr-1")
                               }
-                            />
-                            <h1
+                            /> */}
+                            <BiComment className="flex-none w-5 h-5 " />
+
+                            <span
                               className={
                                 "hidden " + (!usePortrait && " md:block pl-0.5")
                               }
                             >
                               Reply
-                            </h1>
+                            </span>
+                          </button>
+                        </div>
+                        <div>
+                          <button
+                            aria-label="share"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              const shareLink = `https://www.troddit.com/${
+                                post?.permalink?.split("/")?.[4]
+                              }`;
+                              const shareData = {
+                                title: `${post.title}`,
+                                text: `${post.title}`,
+                                url: `/${post?.permalink?.split("/")?.[4]}`,
+                              };
+                              try {
+                                await navigator.share(shareData);
+                              } catch (err) {
+                                navigator.clipboard.writeText(shareLink);
+                                toast.custom(
+                                  (t) => (
+                                    <ToastCustom
+                                      t={t}
+                                      message={`Link Copied`}
+                                      mode={"success"}
+                                    />
+                                  ),
+                                  {
+                                    position: "bottom-center",
+                                    duration: 1000,
+                                    id: "thread_share",
+                                  }
+                                );
+                              }
+                            }}
+                            className={
+                              "flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border  " +
+                              " hover:border-th-borderHighlight "
+                            }
+                          >
+                            <BsReply
+                              className={
+                                "flex-none w-5 h-5 scale-x-[-1] pb-0.5 " +
+                                (!usePortrait && " md:mr-1")
+                              }
+                            />
+
+                            <span
+                              className={
+                                "hidden " + (!usePortrait && " md:block pl-0.5")
+                              }
+                            >
+                              Share
+                            </span>
                           </button>
                         </div>
                         <div
@@ -633,6 +820,7 @@ const Thread = ({
                             saved={post?.saved}
                             post={true}
                             isPortrait={usePortrait}
+                            useKeys={true}
                           ></SaveButton>
                         </div>
                         <a
@@ -643,20 +831,20 @@ const Thread = ({
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
+                          <div className="flex-row items-center hidden p-2 space-x-1 border rounded-md md:flex border-th-border hover:border-th-borderHighlight ">
                             <BiExit
                               className={
                                 "flex-none w-5 h-5 " +
                                 (!usePortrait && " md:mr-2")
                               }
                             />
-                            <h1
+                            <span
                               className={
                                 "hidden " + (!usePortrait && " md:block ")
                               }
                             >
                               Source
-                            </h1>
+                            </span>
                           </div>
                         </a>
                         <a
@@ -666,23 +854,23 @@ const Thread = ({
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <div className="flex-row items-center hidden p-2 space-x-1 border rounded-md sm:flex border-th-border hover:border-th-borderHighlight ">
+                          <div className="flex flex-row items-center p-2 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight ">
                             <ImReddit
                               className={
                                 "flex-none w-5 h-5 " +
                                 (!usePortrait && " md:mr-2")
                               }
                             />
-                            <h1
+                            <span
                               className={
                                 "hidden " + (!usePortrait && " md:block ")
                               }
                             >
                               Original
-                            </h1>
+                            </span>
                           </div>
                         </a>
-                        <div className="ml-0.5">
+                        <div className="relative z-50 mx-1">
                           <PostOptButton post={post} mode="post" />
                         </div>
                       </div>
@@ -697,7 +885,7 @@ const Thread = ({
               <div
                 className={
                   (openReply ? "block " : "hidden ") +
-                  "bg-th-background2  border rounded-lg border-th-border2 p-2 mb-3"
+                  "backdrop-blur-md  border rounded-lg border-th-border2 p-2 mb-3 bg-th-background2"
                 }
               >
                 <CommentReply
@@ -715,10 +903,13 @@ const Thread = ({
               post?.removed_by_category === "moderator" ||
               post?.locked === true) && (
               <div className="w-full ">
-                <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 bg-th-background2 ">
-                  {post?.archived && <BsArchive />}
-                  {post?.removed_by_category === "moderator" && <BsShieldX />}
-                  {post?.locked && <BsLock />}
+                <div className="flex items-center gap-4 p-2 px-4 mb-3 border rounded-lg border-th-border2 backdrop-blur-md bg-th-background2">
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    {post?.archived && <BsArchive />}
+                    {post?.removed_by_category === "moderator" && <BsShieldX />}
+                    {post?.locked && <BsLock />}
+                  </div>
+
                   <p className="flex flex-col text-sm font-normal ">
                     {post?.archived === true && (
                       <>
@@ -755,7 +946,7 @@ const Thread = ({
             {/* comments */}
             <div
               className={
-                "border rounded-lg bg-th-background2 border-th-border2 "
+                "border rounded-lg backdrop-blur-md border-th-border2 bg-th-background2 "
               }
             >
               <div
@@ -767,122 +958,228 @@ const Thread = ({
                   left: 0,
                 }}
               ></div>
-              <div className="flex flex-row flex-wrap justify-between px-2 mt-2 ">
-                <div
-                  ref={commentsRef}
-                  className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2"
-                >
-                  <BiComment className="flex-none w-6 h-6 " />
-                  <div className="flex flex-row items-baseline mb-1 space-x-1">
-                    <h1 className="">{`${post?.num_comments ?? "??"}`}</h1>
-                    <h1 className="hidden md:block">
-                      {`comment${post?.num_comments == 1 ? "" : "s"}`}
-                    </h1>
-                    {typeof origCommentCount === "number" &&
-                      post?.num_comments > origCommentCount && (
-                        <h2 className="text-xs italic font-medium">{`(${
-                          post?.num_comments - origCommentCount
-                        } new)`}</h2>
-                      )}
-                  </div>
-                </div>
-                <div className="flex items-center h-full gap-2">
-                  <button
-                    aria-label="refresh comments"
-                    disabled={thread.isFetching}
-                    onClick={() => {
-                      setOrigCommentCount(post?.num_comments ?? undefined);
-                      setOrigReadTime(newReadTime);
-                      thread.refetch();
-                    }}
-                  >
-                    <IoMdRefresh
-                      className={
-                        (thread.isFetching ? "animate-spin" : " ") +
-                        " w-5 h-5 flex-none"
-                      }
-                    />
-                  </button>
-                  {!commentMode && (
-                    <div className="z-10 flex-none mb-1 h-9">
-                      <CommentSort updateSort={updateSort} sortBy={sort} />
+              {showDuplicates ? (
+                <div className="p-4">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex flex-row items-center gap-2">
+                      <HiOutlineDocumentDuplicate className="flex-none w-6 h-6 " />
+                      <h2 className="flex items-center gap-1">
+                        {duplicateQuery.isLoading && !flatPosts && (
+                          <>
+                            <CgSpinnerTwo className="w-4 h-4 animate-spin" />
+                          </>
+                        )}
+                        {`${
+                          totalDuplicates === 0
+                            ? 0
+                            : totalDuplicates
+                            ? totalDuplicates
+                            : !duplicateQuery.isLoading &&
+                              !(flatPosts?.length ?? 0 > 0)
+                            ? 0
+                            : !duplicateQuery.isLoading
+                            ? "??"
+                            : ""
+                        } Other Discussion${totalDuplicates == 1 ? "" : "s"}`}
+                      </h2>
                     </div>
+                    {post.permalink && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleBackToThread();
+                        }}
+                      >
+                        <a
+                          onClick={() => setShowDuplicates(false)}
+                          className="text-sm font-semibold text-th-link hover:text-th-linkHover"
+                        >
+                          back to thread
+                        </a>
+                      </button>
+                    )}
+                  </div>
+
+                  {flatPosts?.map(({ data, i }) => (
+                    <div
+                      key={data?.name ?? i}
+                      className={"bg-th-post rounded-lg my-2"}
+                    >
+                      <MiniCard post={data} />
+                    </div>
+                  ))}
+                  {!flatPosts && duplicateQuery.isLoading && (
+                    <>
+                      {[...new Array(5)].map((i) => (
+                        <div
+                          key={i}
+                          className="w-full h-20 my-2 rounded-lg bg-th-post animate-pulse"
+                        ></div>
+                      ))}
+                    </>
                   )}
+                  {duplicateQuery.hasNextPage && (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          duplicateQuery.fetchNextPage();
+                        }}
+                        disabled={duplicateQuery.isFetchingNextPage}
+                        className={
+                          "flex flex-row items-center justify-center w-full gap-1 p-4 text-sm border rounded-md border-th-border  bg-th-post  " +
+                          (duplicateQuery.isFetchingNextPage
+                            ? ""
+                            : " hover:border-th-borderHighlight hover:bg-th-postHover ")
+                        }
+                      >
+                        Load More
+                        {duplicateQuery.isFetchingNextPage && (
+                          <>
+                            <CgSpinnerTwo className="w-4 h-4 animate-spin" />
+                          </>
+                        )}
+                      </button>
+                    </>
+                  )}
+                  <div className="py-10"></div>
                 </div>
-              </div>
-              {/* Loading Comments */}
-              {!commentsReady && (
-                // Comment Loader
+              ) : (
                 <>
-                  {[
-                    ...Array(
-                      parseInt(post?.num_comments) < 5
-                        ? parseInt(post?.num_comments)
-                        : 5
-                    ),
-                  ].map((u, i) => (
-                    <div key={i}>{commentPlaceHolder}</div>
-                  ))}{" "}
+                  <div className="flex flex-row flex-wrap justify-between px-2 mt-2 ">
+                    <div
+                      ref={commentsRef}
+                      className="flex flex-row items-center space-x-1 md:pl-2 md:space-x-2"
+                    >
+                      <BiComment className="flex-none w-6 h-6 " />
+                      <div className="flex flex-row items-baseline mb-1 space-x-1">
+                        <span className="">{`${
+                          post?.num_comments ?? "??"
+                        }`}</span>
+                        <span className="hidden md:block">
+                          {`comment${post?.num_comments == 1 ? "" : "s"}`}
+                        </span>
+                        {typeof origCommentCount === "number" &&
+                          post?.num_comments > origCommentCount && (
+                            <h2 className="text-xs italic font-medium">{`(${
+                              post?.num_comments - origCommentCount
+                            } new)`}</h2>
+                          )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center h-full gap-2">
+                      <button
+                        aria-label="refresh comments"
+                        disabled={thread.isFetching}
+                        onClick={() => {
+                          setOrigCommentCount(post?.num_comments ?? undefined);
+                          setOrigReadTime(newReadTime);
+                          thread.refetch();
+                        }}
+                      >
+                        <IoMdRefresh
+                          className={
+                            (thread.isFetching ? "animate-spin" : " ") +
+                            " w-5 h-5 flex-none"
+                          }
+                        />
+                      </button>
+                      {!commentMode && (
+                        <div className="z-10 flex-none mb-1 h-9">
+                          <CommentSort updateSort={updateSort} sortBy={sort} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Loading Comments */}
+                  {!commentsReady && (
+                    // Comment Loader
+                    <>
+                      {[
+                        ...Array(
+                          parseInt(post?.num_comments) < 5
+                            ? parseInt(post?.num_comments)
+                            : 5
+                        ),
+                      ].map((u, i) => (
+                        <div key={i}>{commentPlaceHolder}</div>
+                      ))}{" "}
+                    </>
+                  )}
+
+                  <div className="w-full mb-5 ">
+                    <span className="flex justify-center w-full mt-4 text-xs text-center text-th-textLight">
+                      {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
+                      thread.isFetched &&
+                      !thread.isError
+                        ? "no comments :("
+                        : ""}
+                    </span>
+                    {/* Open All Comments */}
+
+                    {commentMode && (
+                      <div className="flex-grow w-full px-2 mt-1 text-sm">
+                        <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border2">
+                          <p className="flex flex-col mx-3 text-sm font-normal ">
+                            <span>
+                              You are viewing a single comment's thread
+                            </span>
+                            <span className="text-xs">
+                              <Link href={`/${post?.permalink}`} passHref>
+                                <a className="font-semibold text-th-link hover:text-th-linkHover">
+                                  Click to view all comments
+                                </a>
+                              </Link>
+                              {!withContext && (
+                                <Link
+                                  href={`${postComments?.[0]?.data?.permalink}?context=10000`}
+                                  passHref
+                                >
+                                  <a className="ml-2 font-semibold text-th-link hover:text-th-linkHover">
+                                    view context
+                                  </a>
+                                </Link>
+                              )}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className={"w-full px-2  "}>
+                      {postComments?.length > 0 && (
+                        <Comments
+                          comments={postComments}
+                          containerRef={containerRef}
+                          depth={0}
+                          op={post?.author}
+                          portraitMode={usePortrait}
+                          sort={sort}
+                          thread={thread}
+                          locked={post?.locked}
+                          scoreHideMins={
+                            sub?.data?.data?.comment_score_hide_mins
+                          }
+                          setCommentsReady={setCommentsReady}
+                          readTime={origReadTime}
+                        />
+                      )}
+                    </div>
+                    <div className="py-5"></div>
+                  </div>
                 </>
               )}
-
-              <div className="w-full mb-5 ">
-                <h1 className="text-center">
-                  {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
-                  thread.isFetched
-                    ? "no comments :("
-                    : ""}
-                </h1>
-                {/* Open All Comments */}
-
-                {commentMode && (
-                  <div className="flex-grow w-full px-2 mt-1 text-sm">
-                    <div className="p-2 mb-3 border rounded-lg bg-th-background2 border-th-border2">
-                      <p className="flex flex-col mx-3 text-sm font-normal ">
-                        <span>You are viewing a single comment's thread</span>
-                        <span className="text-xs">
-                          <Link href={`/${post?.permalink}`} passHref>
-                            <a className="font-semibold text-th-link hover:text-th-linkHover">
-                              Click to view all comments
-                            </a>
-                          </Link>
-                          {!withContext && (
-                            <Link
-                              href={`${postComments?.[0]?.data?.permalink}?context=10000`}
-                              passHref
-                            >
-                              <a className="ml-2 font-semibold text-th-link hover:text-th-linkHover">
-                                view context
-                              </a>
-                            </Link>
-                          )}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div className={"w-full px-2  "}>
-                  {postComments?.length > 0 && (
-                    <Comments
-                      comments={postComments}
-                      containerRef={containerRef}
-                      depth={0}
-                      op={post?.author}
-                      portraitMode={usePortrait}
-                      sort={sort}
-                      thread={thread}
-                      locked={post?.locked}
-                      scoreHideMins={sub?.data?.data?.comment_score_hide_mins}
-                      setCommentsReady={setCommentsReady}
-                      readTime={origReadTime}
-                    />
-                  )}
-                </div>
-                <div className="py-5"></div>
-              </div>
             </div>
-            <div onClick={goBack} className="flex-grow"></div>
+            <div
+              onClick={() => goBack(false, true)}
+              className="my-10 sm:my-0"
+            ></div>
+            <div
+              onClick={() => goBack(false, true)}
+              className="flex-grow"
+            ></div>
           </div>
         </div>
       </div>

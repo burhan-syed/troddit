@@ -72,7 +72,7 @@ export const MySubsProvider = ({ children }) => {
         ],
       },
     },
-  ];  
+  ];
   const [myLocalMultis, setMyLocalMultis] = useState<any[]>([]);
   const [myLocalMultiRender, setMyLocalMultiRender] = useState(0);
 
@@ -84,16 +84,17 @@ export const MySubsProvider = ({ children }) => {
   }, [myLocalMultis, myLocalMultiRender]);
   useEffect(() => {
     const loadMultis = async () => {
-      let local_localMultis: [] = await localForage.getItem("localMultis");
+      let local_localMultis: [] = await localForage.getItem("myLocalMultis");
       if (local_localMultis == undefined) {
         local_localMultis = JSON.parse(localStorage.getItem("localMultis"));
       } else {
         localStorage.removeItem("localMultis");
       }
       local_localMultis?.length > 0
-      ? setMyLocalMultis(local_localMultis)
-      : setMyLocalMultis(defaultMultis);   
-     };
+        ? setMyLocalMultis(local_localMultis)
+        : (local_localMultis === undefined || local_localMultis === null) &&
+          setMyLocalMultis(defaultMultis);
+    };
     loadMultis();
   }, []);
   const createLocalMulti = (multi: string, subreddits?: string[]) => {
@@ -847,7 +848,7 @@ export const MySubsProvider = ({ children }) => {
       let subs = d?.[username]?.subs;
       let follows = d?.[username]?.follows;
       let multis = d?.[username]?.multis;
-      let lastUpdate = d?.[username]?.lastUpdate
+      let lastUpdate = d?.[username]?.lastUpdate;
       //console.log("subs?", subs);
       //console.log("follows", follows);
       //console.log("multis?", multis);
@@ -855,7 +856,11 @@ export const MySubsProvider = ({ children }) => {
       follows?.length > 0 && setMyFollowing(follows);
       multis?.length > 0 && setMyMultis(multis);
       //console.log("lU?",(lastUpdate?.getTime() + (24 * 60 * 60 * 1000)))
-      if (!(subs?.length > 0) || !(follows?.length > 0) || (new Date().getTime() > (lastUpdate?.getTime() + (24 * 60 * 60 * 1000)))) {
+      if (
+        !(subs?.length > 0) ||
+        !(follows?.length > 0) ||
+        new Date().getTime() > lastUpdate?.getTime() + 24 * 60 * 60 * 1000
+      ) {
         loadAllFromReddit();
       } else {
         setLoadingSubs(false);
@@ -927,7 +932,7 @@ export const MySubsProvider = ({ children }) => {
       const pState = isUser ? myFollowing : mySubs;
       if (isUser) {
         setMyFollowing((users) => {
-          let newFollows =  users.map((user) => {
+          let newFollows = users.map((user) => {
             if (user?.data?.subreddit?.display_name === subname) {
               return {
                 ...user,
@@ -942,14 +947,13 @@ export const MySubsProvider = ({ children }) => {
             }
             return user;
           });
-          updateLocalStore('follows', [
+          updateLocalStore("follows", [
             ...newFollows.map((f) => ({
               ...f,
               data: { ...trimUserInfo(f.data).data },
             })),
           ]);
           return newFollows;
-
         });
       } else {
         setMySubs((subs) => {
@@ -961,16 +965,15 @@ export const MySubsProvider = ({ children }) => {
               };
             }
             return sub;
-          })
-          updateLocalStore('subs', [
+          });
+          updateLocalStore("subs", [
             ...newSubs.map((f) => ({
               ...f,
               data: { ...trimSubInfo(f.data).data },
             })),
-          ])
-          return newSubs; 
-        }
-        );
+          ]);
+          return newSubs;
+        });
       }
 
       const res = await favoriteSub(makeFavorite, subname);
@@ -982,7 +985,7 @@ export const MySubsProvider = ({ children }) => {
     }
   };
 
-  const updateLocalStore = async (key, data, update=false) => {
+  const updateLocalStore = async (key, data, update = false) => {
     let username = session?.user?.name;
     if (username) {
       let pData = (await localForage.getItem("subSync"))?.[username];

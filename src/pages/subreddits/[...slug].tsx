@@ -1,6 +1,7 @@
 import Head from "next/head";
 import NavBar from "../../components/NavBar";
 import SubredditsPage from "../../components/SubredditsPage";
+import React from "react";
 
 const Subs = ({ query }) => {
   return (

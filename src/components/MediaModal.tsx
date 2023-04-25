@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from "react";
 import { localSeen, useMainContext } from "../MainContext";
@@ -17,7 +18,8 @@ import { secondsToTime } from "../../lib/utils";
 import TitleFlair from "./TitleFlair";
 import { IoMdExpand } from "react-icons/io";
 import useBrowser from "../hooks/useBrowser";
-
+import PostBody from "./PostBody";
+import { GoRepoForked } from "react-icons/go";
 const MediaModal = ({
   hide,
   changePost,
@@ -27,10 +29,9 @@ const MediaModal = ({
   hideArrows,
   showUI,
   setUseMediaMode,
-  firstNum,
-  isXTranslating,
-  setIsYTranslating,
   setReadPosts,
+  handleBack,
+  updateTranslateX,
 }) => {
   const windowWidth = useWindowWidth();
   const browser = useBrowser();
@@ -48,17 +49,16 @@ const MediaModal = ({
 
   useEffect(() => {
     let interval;
-    if(!hideArrows && window.innerWidth <= 640){
-      interval = setTimeout(() => setHideArrows(true), 3500)
+    if (!hideArrows && window.innerWidth <= 640) {
+      interval = setTimeout(() => setHideArrows(true), 3500);
     }
-  
-    return () => {
-      if(interval){
-        clearTimeout(interval)
-      }
-    }
-  }, [hideArrows, setHideArrows])
 
+    return () => {
+      if (interval) {
+        clearTimeout(interval);
+      }
+    };
+  }, [hideArrows]);
   const context: any = useMainContext();
   const [triggerVote, setTriggerVote] = useState(0);
   const {
@@ -72,98 +72,177 @@ const MediaModal = ({
   } = usePanAndZoom();
   const [animate, setAnimate] = useState(true);
   const [curPostName, setCurPostName] = useState(
-    () => flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ?? flattenedPosts?.[curPostNum]?.data?.name
+    () =>
+      flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ??
+      flattenedPosts?.[curPostNum]?.data?.name
   );
   const [touched, setTouched] = useState(false);
+  const [multiTouch, setMultiTouch] = useState(false);
   const [touchStartY, setTouchStartY] = useState<any[]>([0]);
+  const [touchStartX, setTouchStartX] = useState<any[]>([0]);
   const [touchEndY, setTouchEndY] = useState<any[]>([0]);
+  const [touchEndX, setTouchEndX] = useState<any[]>([0]);
+  const [translateMode, setTranslateMode] = useState<("vert" | "hor" | "")[]>([
+    "",
+  ]);
   const [touchStartTime, setTouchStartTime] = useState([Infinity]);
+  const translateDiv = useRef<HTMLDivElement>(null);
+  const scrollingRef = useRef<HTMLDivElement>(null);
   const [translateAmount, setTranslateAmount] = useState(
     -1 * curPostNum * windowHeight
   );
-  const [animateY, setAnimateY] = useState(false);
+  const [bgColor, setBGColor] = useState<string>();
+  useEffect(() => {
+    let baseColor = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--base")
+      .trim();
+    if (baseColor === "#000") {
+      baseColor = "#000000";
+    }
+    setBGColor(baseColor);
+  }, []);
+  const updateTranslate = (x: number | string, smooth = windowWidth <= 768) => {
+    if (translateDiv.current) {
+      if (smooth) {
+        translateDiv.current.style.transitionProperty = "transform";
+        translateDiv.current.style.transitionDuration = "200ms";
+        translateDiv.current.style.transitionTimingFunction =
+          "cubic-bezier(0.4, 0, 0.2, 1)";
+      } else {
+        translateDiv.current.style.transitionProperty = "";
+        translateDiv.current.style.transitionDuration = "";
+        translateDiv.current.style.transitionTimingFunction = "";
+      }
+      translateDiv.current.style.setProperty(
+        "transform",
+        `translate3d(0px, ${x}px,${0}px)`
+      );
+    }
+  };
+  // const [animateY, setAnimateY] = useState(false);
   const handleTouchStart = (e) => {
-    if (!isXTranslating) {
-      setTouched(true);
-      setAnimateY(false);
+    setTouched(true);
+    //console.log(e.targetTouches.length)
+    if (e.targetTouches.length < 2) {
       touchStartY[0] = e.targetTouches[0].clientY;
+      touchStartX[0] = e.targetTouches[0].clientX;
       touchStartTime[0] = new Date().getTime();
     }
   };
 
-  useEffect(() => {
-    return () => {
-      touchEndY[0] = undefined;
-      touchStartTime[0] = Infinity;
-      touchStartY[0] = undefined;
-    };
-  }, [isXTranslating]);
-
   const handleTouchEnd = (e) => {
-    setAnimateY(true);
-    if (!isXTranslating) {
-      const now = new Date().getTime();
-
+    const now = new Date().getTime();
+    if (translateMode[0] == "hor") {
       if (
         now > touchStartTime[0] + 100 &&
-        typeof touchStartY[0] == "number" &&
-        typeof touchEndY[0] == "number" &&
-        touchEndY[0] !== 0
+        typeof touchStartX[0] == "number" &&
+        typeof touchEndX[0] == "number" &&
+        touchEndX[0] !== 0 &&
+        touchStartX[0] - touchEndX[0] < -100
       ) {
-        if (
-          touchStartY[0] - touchEndY[0] > 15 &&
-          flattenedPosts[curPostNum + 1]?.data?.name
-        ) {
-          changePost(1);
-          setHideArrows(true);
-          setTranslateAmount(-1 * (curPostNum + 1) * windowHeight);
-        } else if (
-          touchStartY[0] - touchEndY[0] < -15 &&
-          flattenedPosts[curPostNum - 1]?.data?.name
-        ) {
-          changePost(-1);
-          setHideArrows(true);
-          setTranslateAmount(-1 * (curPostNum - 1) * windowHeight);
-        } else {
-          setHideArrows(false);
-          setTranslateAmount(-1 * curPostNum * windowHeight);
-        }
+        handleBack(true, true);
+      } else {
+        updateTranslateX(0);
+      }
+    } else if (
+      now > touchStartTime[0] + 100 &&
+      //now < touchStartTime[0] + 1500 &&
+      typeof touchStartY[0] == "number" &&
+      typeof touchEndY[0] == "number" &&
+      touchEndY[0] !== 0
+    ) {
+      //console.log(touchStartY[0] - touchEndY[0], touchStartY[0], touchEndY[0],)
+      if (
+        touchStartY[0] - touchEndY[0] > 15 &&
+        flattenedPosts[curPostNum + 1]?.data?.name
+      ) {
+        changePost(1);
+        setHideArrows(true);
+        updateTranslate(-1 * (curPostNum + 1) * windowHeight, true);
+      } else if (
+        touchStartY[0] - touchEndY[0] < -15 &&
+        flattenedPosts[curPostNum - 1]?.data?.name
+      ) {
+        changePost(-1);
+        setHideArrows(true);
+        updateTranslate(-1 * (curPostNum - 1) * windowHeight, true);
       } else {
         setHideArrows(false);
-        setTranslateAmount(-1 * curPostNum * windowHeight);
+        updateTranslate(-1 * curPostNum * windowHeight);
+        updateTranslateX(0);
       }
+    } else {
+      setHideArrows(false);
+      updateTranslate(-1 * curPostNum * windowHeight);
+      updateTranslateX(0);
+    }
+    touchEndY[0] = undefined;
+    touchStartTime[0] = Infinity;
+    touchStartY[0] = undefined;
+    touchStartX[0] = undefined;
+    touchEndY[0] = undefined;
+    translateMode[0] = "";
+  };
+  const handleTouchMove = (e) => {
+    if (e.targetTouches.length < 2) {
+      touchEndY[0] = e.targetTouches[0].clientY;
+      touchEndX[0] = e.targetTouches[0].clientX;
+      if (
+        translateMode[0] !== "hor" &&
+        Math.abs(touchEndY[0] - touchStartY[0]) >=
+          Math.abs(touchEndX[0] - touchStartX[0])
+      ) {
+        updateTranslateX(0, false);
+        if (Math.abs(touchEndY[0] - touchStartY[0]) > 20) {
+          translateMode[0] = "vert";
+        }
+
+        if (
+          (e.targetTouches[0].clientY > touchStartY &&
+            flattenedPosts[curPostNum - 1]?.data?.name) ||
+          (e.targetTouches[0].clientY < touchStartY &&
+            flattenedPosts[curPostNum + 1]?.data?.name)
+        ) {
+          updateTranslate(
+            `${
+              -1 * curPostNum * windowHeight +
+              -1 * (touchStartY[0] - e.targetTouches[0].clientY)
+            }`,
+            false
+          );
+          // }
+        }
+      } else if (translateMode[0] !== "vert") {
+        if (Math.abs(touchEndX[0] - touchStartX[0]) > 20) {
+          translateMode[0] = "hor";
+        }
+        updateTranslate(-1 * curPostNum * windowHeight, false);
+        updateTranslateX(
+          Math.max(0, -1 * (touchStartX[0] - touchEndX[0])),
+          false
+        );
+      }
+    } else {
+      translateMode[0] = "";
       touchEndY[0] = undefined;
       touchStartTime[0] = Infinity;
       touchStartY[0] = undefined;
-    }
-  };
-  const handleTouchMove = (e) => {
-    if (!isXTranslating) {
-      touchEndY[0] = e.targetTouches[0].clientY;
-      if (
-        (e.targetTouches[0].clientY > touchStartY &&
-          flattenedPosts[curPostNum - 1]?.data?.name) ||
-        (e.targetTouches[0].clientY < touchStartY &&
-          flattenedPosts[curPostNum + 1]?.data?.name)
-      ) {
-        if (new Date().getTime() > touchStartTime[0] + 100) {
-          setTranslateAmount(
-            -1 * curPostNum * windowHeight +
-              -1 * (touchStartY[0] - e.targetTouches[0].clientY)
-          );
-        }
-      }
+      touchStartX[0] = undefined;
+      touchEndY[0] = undefined;
     }
   };
   //add to read on unmount
   useEffect(() => {
-    if (firstNum !== curPostNum && touched) {
-      setAnimateY(true);
-    }
-    setCurPostName(flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ?? flattenedPosts?.[curPostNum]?.data?.name);
+    setCurPostName(
+      flattenedPosts?.[curPostNum]?.data?.crosspost_parent_list?.[0]?.name ??
+        flattenedPosts?.[curPostNum]?.data?.name
+    );
     touchEndY[0] = undefined;
     touchStartTime[0] = Infinity;
     touchStartY[0] = undefined;
+    touchStartX[0] = undefined;
+    touchEndY[0] = undefined;
     if (
       flattenedPosts?.[curPostNum]?.data?.mediaInfo?.iFrameHTML &&
       context?.preferEmbeds
@@ -172,10 +251,11 @@ const MediaModal = ({
     }
 
     return () => {
-      setAnimateY(false);
       touchEndY[0] = undefined;
       touchStartTime[0] = Infinity;
       touchStartY[0] = undefined;
+      touchStartX[0] = undefined;
+      touchEndY[0] = undefined;
       setAnimate(true);
       onReset();
       scale > 1 && context.setHighRes(false);
@@ -205,19 +285,11 @@ const MediaModal = ({
   }, [triggerVote]);
 
   useLayoutEffect(() => {
-    setTranslateAmount(-1 * curPostNum * windowHeight);
+    updateTranslate(-1 * curPostNum * windowHeight);
   }, [windowHeight, curPostNum]);
 
-  useEffect(() => {
-    if (translateAmount !== -1 * curPostNum * windowHeight) {
-      setIsYTranslating(true);
-    } else {
-      setIsYTranslating(false);
-    }
-  }, [translateAmount, curPostNum, windowHeight]);
-
   const Media = useCallback(
-    (post, hidden) => (
+    (post, hidden, showCrossPost = false) => (
       <>
         <MediaWrapper
           post={post}
@@ -226,32 +298,15 @@ const MediaModal = ({
           containerDims={[windowWidth, windowHeight]}
           imgFull={post?.mediaInfo?.isSelf}
           postMode={true}
+          showCrossPost={showCrossPost}
           hide={hidden}
           fullMediaMode={true}
-          showCrossPost={false}
           curPostName={curPostName}
         />
       </>
     ),
-    [curPostName, windowHeight, windowWidth, context.nsfw, curPostNum]
+    [curPostName, windowHeight, windowWidth, context.nsfw]
   );
-
-  const [showAd, setShowAd] = useState(true);
-  useEffect(() => {
-    setShowAd(true);
-  }, [curPostNum]);
-
-  const [bgColor, setBGColor] = useState<string>();
-  useEffect(() => {
-    let baseColor = window
-      .getComputedStyle(document.documentElement)
-      .getPropertyValue("--base")
-      .trim();
-    if (baseColor === "#000") {
-      baseColor = "#000000";
-    }
-    setBGColor(baseColor);
-  }, []);
 
   if (!windowHeight) {
     return <></>;
@@ -259,7 +314,11 @@ const MediaModal = ({
 
   return (
     <>
-      {!flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf && (
+      {!(
+        (context.preferEmbeds &&
+          flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isIFrame) ||
+        flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+      ) && (
         <button
           aria-label={"toggle full resolution"}
           title={context?.highRes ? "" : "load full res"}
@@ -291,17 +350,11 @@ const MediaModal = ({
         </button>
       )}
       <div
-        className={
-          "absolute top-0 left-0 " +
-          (animateY ? " transition-transform duration-200" : " ")
-        }
+        ref={translateDiv}
+        className={"absolute top-0 left-0 "}
         onTouchStart={(e) => handleTouchStart(e)}
         onTouchMove={(e) => handleTouchMove(e)}
         onTouchEnd={(e) => handleTouchEnd(e)}
-        style={{
-          transform: `translate3d(0px, ${translateAmount}px,${0}px)`,
-          touchAction: `none`,
-        }}
         onDoubleClick={(e) => {
           e.preventDefault();
           if (
@@ -322,41 +375,60 @@ const MediaModal = ({
               {Math.abs(curPostNum - i) < 2 && (
                 <div
                   className={
-                    "absolute left-0 z-[97] w-screen backdrop-blur-3xl " +
+                    "absolute left-0 z-[97] w-screen backdrop-blur-sm " +
                     (i === curPostNum
                       ? ""
                       : "overflow-hidden pointer-events-none")
                   }
                   style={{
-                    backgroundColor: `${bgColor}95`,
                     //transform: `translate3d(0px,${translateAmount + (i * windowHeight)}px,0px)`,
+                    backgroundColor: `${
+                      post?.data?.mediaInfo?.isSelf ? `${bgColor}` : "#000000"
+                    }`,
                     top: `${i * windowHeight}px`,
                     height: `${windowHeight}px`,
                   }}
                   ref={i === curPostNum ? containerRef : null}
                   onMouseDown={(e) => {
-                    if (scale > 1) {
+                    if (scale > 1 && !post?.data?.mediaInfo?.isSelf) {
                       e.preventDefault();
                       e.stopPropagation();
                     }
-
                     setAnimate(false);
                     i === curPostNum && scale > 1 && onMouseDown(e);
                   }}
                   onWheel={(e) => {
                     setAnimate(false);
-                    i === curPostNum && onWheel(e);
+                    i === curPostNum &&
+                      !post?.data?.mediaInfo?.isSelf &&
+                      onWheel(e);
                   }}
                 >
-                  {post?.data?.mediaInfo?.isSelf &&
-                  !post?.data?.mediaInfo?.isMedia ? (
+                  {post?.data?.mediaInfo?.isSelf ? (
                     <div
-                      className="flex justify-center w-screen overflow-y-auto bg-th-base "
+                      ref={scrollingRef}
+                      className={
+                        " w-full overflow-y-auto overflow-x-hidden " +
+                        (post?.data?.mediaInfo?.isDual ||
+                        post?.data?.crosspost_parent_list?.[0]
+                          ? ` ${
+                              post?.data?.mediaInfo?.isDual
+                                ? ""
+                                : " flex flex-col items-center "
+                            } `
+                          : "flex item-center justify-center")
+                      }
                       style={{ height: `${windowHeight}px` }}
                     >
                       <div
-                        className="max-w-[100vw] md:max-w-3xl"
+                        className="max-w-2xl px-1 my-auto "
                         onTouchMove={(e) => {
+                          // console.log(
+                          //   scrollingRef?.current?.scrollHeight,
+                          //   scrollingRef?.current?.scrollTop,
+                          //   containerRef?.current?.scrollHeight,
+                          //   containerRef?.current?.scrollTop
+                          // );
                           e.preventDefault();
                           e.stopPropagation();
                           setHideArrows(false);
@@ -366,7 +438,7 @@ const MediaModal = ({
                           e.stopPropagation();
                         }}
                       >
-                        <div className="p-1 mx-2 my-12 md:my-4 md:mx-4">
+                        <div className="min-w-full p-1 mx-2 my-12 md:my-4 md:mx-4">
                           <div
                             className={
                               " flex flex-col flex-wrap group-hover:text-opacity-100 "
@@ -418,6 +490,13 @@ const MediaModal = ({
                                 </a>
                               </Link>
 
+                              {post.data?.crosspost_parent_list?.[0] && (
+                                <span className="flex items-center ml-1 gap-x-0.5">
+                                  cross post{" "}
+                                  <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
+                                </span>
+                              )}
+
                               <span
                                 className={"ml-1"}
                                 title={new Date(
@@ -435,12 +514,12 @@ const MediaModal = ({
                               </span>
                             </div>
                           </div>
-                          <h1 className="flex flex-wrap items-center gap-2 py-2 text-xl font-semibold">
+                          <h2 className="flex flex-wrap items-center gap-2 py-2 text-xl font-semibold">
                             {post?.data?.title}{" "}
                             <span className="text-xs font-medium ">
                               <TitleFlair post={post.data} />
                             </span>
-                          </h1>
+                          </h2>
 
                           <div
                             className={
@@ -470,7 +549,7 @@ const MediaModal = ({
                                 triggerVote={triggerVote}
                               />
                             </div>
-                            <div className="">
+                            <div className="md:block">
                               <SaveButton
                                 id={post?.data?.name}
                                 saved={post?.data?.saved}
@@ -493,7 +572,43 @@ const MediaModal = ({
                             </button>
                           </div>
                         </div>
-                        {Media(post?.data, i !== curPostNum)}
+                        <div className={""}>
+                          <PostBody
+                            withBG={
+                              post.data?.crosspost_parent_list?.[0]
+                                ? true
+                                : false
+                            }
+                            rawHTML={
+                              post.data?.crosspost_parent_list?.[0]
+                                ?.selftext_html ?? post?.data?.selftext_html
+                            }
+                            mode="post"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        className={
+                          "relative " +
+                          (post.data?.crosspost_parent_list?.[0]
+                            ? ""
+                            : "max-w-screen")
+                        }
+                        onTouchMove={(e) => {
+                          // console.log(
+                          //   scrollingRef?.current?.scrollHeight,
+                          //   scrollingRef?.current?.scrollTop
+                          // );
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setHideArrows(false);
+                        }}
+                        // onTouchEnd={(e) => {
+                        //   e.preventDefault();
+                        //   e.stopPropagation();
+                        // }}
+                      >
+                        {Media(post?.data, i !== curPostNum, true)}
                       </div>
                     </div>
                   ) : (
@@ -521,32 +636,13 @@ const MediaModal = ({
                           : {}
                       }
                     >
-                      <div className="relative min-w-full min-h-full ">
+                      <div className={"relative min-w-full min-h-full "}>
                         {Media(post?.data, i !== curPostNum)}
                       </div>
                     </div>
                   )}
                   {i === curPostNum && (
                     <>
-                      {post?.data?.mediaInfo?.isVideo &&
-                        !post?.data?.mediaInfo?.isSelf &&
-                        (!post?.data?.mediaInfo?.iFrameHTML ||
-                          !context?.preferEmbeds) &&
-                        !(browser.includes("Safari") && windowWidth < 640) && (
-                          <button
-                            onClick={() => context.toggleAudioOnHover()}
-                            className={
-                              "text-white outline-none select-none md:hidden flex items-center justify-center absolute right-1.5 z-[98] bottom-[9.5rem] backdrop-blur-lg bg-black/40 w-10 h-10 rounded-full " +
-                              (showUI ? "" : "hidden")
-                            }
-                          >
-                            {context.audioOnHover ? (
-                              <BiVolumeFull className="flex-none w-4 h-4 " />
-                            ) : (
-                              <BiVolumeMute className="flex-none w-4 h-4 " />
-                            )}
-                          </button>
-                        )}
                       <div
                         className={
                           "absolute right-1.5 z-[98] bottom-24 md:hidden " +
