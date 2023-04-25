@@ -70,7 +70,9 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
       : cols === 1
       ? 8
       : cols && cols > 1 && windowWidth < 640 //sm
-      ? 0
+      ? cols === 2
+        ? 8
+        : 0
       : cols && cols > 3 && windowWidth < 1280 //xl
       ? 4
       : cols && cols > 3 && windowWidth > 1280 //xl
@@ -187,7 +189,6 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
     }
   }, [curKey]);
 
-
   const { setHeight, getHeights } = useHeightMap({
     columnWidth:
       context.cardStyle === "row1"
@@ -203,7 +204,6 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
     (postName, height) => {
       //console.log("setheight?", height);
       height && setHeight(postName, { height: height });
-
     },
     [setHeight]
   );
@@ -412,7 +412,7 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
           flattenedPosts={flatPosts}
         />
       )}
-      <div className={"min-h-screen w-full"}>
+      <div className={"min-h-screen w-[98%] mx-auto "}>
         <MasonryScroller
           itemKey={(data, index) => {
             return data?.data?.name ?? index;

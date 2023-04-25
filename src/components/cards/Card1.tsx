@@ -290,7 +290,7 @@ const Card1 = ({
                     </>
                   )}
                 </div>
-                {!(windowWidth / columns < 400) && (
+                {!(columns > 1 && windowWidth/columns < 200) && (
                   <div
                     className={
                       "flex flex-row flex-none  mt-1 mb-auto ml-auto hover:underline " +
