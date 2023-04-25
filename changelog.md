@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.18.0
+### New
+- Troddit will now remember and resume your position in recent feeds
+- View duplicate discussions from thread overflow menu
+- Hold to preview media on small devices in media card mode
+  
+### Fixes
+- Dual posts now display both media and selftext body everywhere except media and compact cards
+- Local custom feeds will no longer be reset
+
+### Changes
+- The whole post body now scrolls when a thread is open
+- Appearance and behavior of selftexts changed
+- General scrolling performance was improved
+
 ## v0.17.5
 ### New
 - Now you can set the global default comment sort for threads

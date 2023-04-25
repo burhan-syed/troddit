@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }) {
           (t) => (
             <ToastCustom
               t={t}
-              message={`Troddit has updated! Click to see changelog`}
+              message={`Troddit updated! Click to see changelog`}
               mode={"version"}
             />
           ),
@@ -41,54 +41,7 @@ function MyApp({ Component, pageProps }) {
       }
     }
     localStorage.setItem("trodditVersion", curVersion);
-    function setNoSurveyFlag() {
-      localStorage.setItem("nosurvey1", JSON.stringify(true));
-    }
-    // !JSON.parse(localStorage.getItem("nosurvey1") ?? "false")
-    if (false) {
-      localSeen
-        .length()
-        .then((length) => {
-          if (length > 10000) {
-            plausible("survey");
-            const toastId = toast.custom(
-              (t) => (
-                <ToastCustom
-                  t={t}
-                  message={`Thanks for using Troddit. Can you take a survey?`}
-                  mode={"link"}
-                  link="https://forms.gle/8rqwa1rR1Yc6HLxZ6"
-                  actionLabel=""
-                  action={() => {
-                    window.location.href =
-                      "https://forms.gle/8rqwa1rR1Yc6HLxZ6";
-                  }}
-                  action2={() => {
-                    toast.custom(
-                      (t2) => (
-                        <ToastCustom
-                          t={t2}
-                          message="Don't show survey again?"
-                          mode="alert"
-                          action={setNoSurveyFlag}
-                        />
-                      ),
-                      {
-                        position: "bottom-center",
-                        duration: 3000,
-                        id: "survey-close",
-                      }
-                    );
-                  }}
-                  showAll={true}
-                />
-              ),
-              { position: "bottom-center", duration: 10000, id: "survey" }
-            );
-          }
-        })
-        .catch((err) => {});
-    }
+    
   }, []);
   return (
     <>
