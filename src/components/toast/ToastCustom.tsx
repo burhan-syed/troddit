@@ -7,8 +7,7 @@ import {
 import { Transition } from "@headlessui/react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Toast } from "react-hot-toast/dist/core/types";
-
+import type { Toast } from "react-hot-toast";
 interface ToastCustomParams {
   t: Toast;
   message: string;
