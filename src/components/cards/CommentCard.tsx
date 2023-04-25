@@ -20,7 +20,7 @@ const CommentCard = ({ data, postNum, handleClick }) => {
             }`
           : `${
               (context.cardStyle === "row1" ? "  " : " rounded-lg ") +
-              " text-sm shadow-md bg-th-post hover:bg-th-postHover border-th-border2 hover:border-th-border2  hover:shadow-2xl transition-colors border  group hover:cursor-pointer  p-3"
+              " text-sm shadow-md bg-th-post hover:bg-th-postHover ring-th-border2 hover:ring-th-border2  hover:shadow-2xl transition-colors ring-1  group hover:cursor-pointer p-3"
             }`
       }
     >
