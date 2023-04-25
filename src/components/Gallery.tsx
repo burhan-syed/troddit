@@ -8,40 +8,58 @@ import { isContext } from "vm";
 import { findGreatestsImages } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import GalleryCarousel from "./GalleryCarousel";
+import { GalleryInfo } from "../../types";
 
 const Gallery = ({
   images,
+  columns,
   maxheight = 0,
   postMode,
   mediaMode,
   mediaRef,
-  uniformHeight = false,
+  isXPost = false,
   fillHeight = false,
+  checkCardHeight,
+  containerDims = [0, 0],
+}: {
+  images?: GalleryInfo[];
+  columns?: number;
+  maxheight?: number;
+  postMode?: boolean;
+  mediaMode?: boolean;
+  isXPost?: boolean;
+  fillHeight?: boolean;
+  mediaRef?: React.RefObject<HTMLDivElement>;
+  checkCardHeight?: () => void;
+  containerDims?: [number, number];
 }) => {
   const context: any = useMainContext();
   // const [loaded, setLoaded] = useState(false);
   // const [index, setIndex] = useState(0);
   const [imgRatio, setImgRatio] = useState<{
-    url: string;
+    src: string;
     height: number;
     width: number;
   }>();
   const [imgtall, setimgtall] = useState<{
-    url: string;
+    src: string;
     height: number;
     width: number;
   }>();
   const [imgwide, setimgwide] = useState<{
-    url: string;
+    src: string;
     height: number;
     width: number;
   }>();
-  const [imagesRender, setImagesRender] = useState(images);
+  const [imagesRender, setImagesRender] =
+    useState<
+      { src: string; height: number; width: number; caption?: string }[]
+    >();
 
   useEffect(() => {
     let ratio = 1;
 
-    if (images.length > 0) {
+    if (images && images?.length > 0) {
       if (maxheight > 0) {
         const { tallest, widest, ratio, fImages } = findGreatestsImages(
           images,
@@ -53,7 +71,14 @@ const Gallery = ({
         setimgwide(widest);
         setImgRatio(ratio);
       } else {
-        setImagesRender(images);
+        setImagesRender(
+          images.map((i) => ({
+            src: i.media?.[0]?.src,
+            height: i.media?.[0]?.height,
+            width: i.media?.[0]?.width,
+            caption: i.caption,
+          }))
+        );
       }
     }
     //setLoaded(true);
@@ -62,35 +87,46 @@ const Gallery = ({
       //setLoaded(false);
     };
   }, [images, maxheight]);
-
+  if (!imagesRender) {
+    return <></>;
+  }
   return (
     <div
       className={
-        (fillHeight ? "min-h-full" : "") +
-        (mediaMode && postMode ? " h-screen min-h-full " : " ")
+        containerDims
+          ? "relative"
+          : (fillHeight ? "min-h-full " : "") +
+            (mediaMode && postMode ? " h-screen min-h-full " : " ")
+      }
+      style={
+        containerDims?.[1]
+          ? {
+              width: `${containerDims?.[0]}px`,
+              height: `${containerDims?.[1]}px`,
+            }
+          : {}
       }
     >
       <GalleryCarousel
         media={imagesRender}
         mediaMode={mediaMode}
-        objectFit={postMode || context.columns === 1 ? "contain" : "cover"}
-        layout={"fill"}
+        objectFit={postMode || columns === 1 ? "contain" : "cover"}
+        layout={isXPost ? "intrinsic" : "fill"}
+        checkCardHeight={checkCardHeight}
         height={
-          mediaMode
+          (containerDims?.[1]
+            ? containerDims[1]
+            : mediaMode
             ? undefined
             : fillHeight && mediaRef?.current?.clientWidth
             ? (mediaRef?.current?.clientWidth / 9) * 16
-            : imgRatio?.height && (postMode || context.columns === 1)
+            : imgRatio?.height && mediaRef?.current
             ? Math.min(
                 maxheight,
                 imgRatio?.height *
-                  (mediaRef.current.clientWidth / imgRatio.width)
+                  (mediaRef?.current?.clientWidth / imgRatio.width)
               )
-            : mediaRef?.current?.clientWidth &&
-              imgwide?.width &&
-              imgtall?.height
-            ? imgtall.height * (mediaRef.current.clientWidth / imgwide.width)
-            : undefined
+            : imgRatio?.height) ?? 0
         }
       />
     </div>

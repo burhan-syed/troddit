@@ -1,4 +1,4 @@
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 const useGlobalState = (globalKey: string[], cacheTime=Infinity) => {
   const queryClient = useQueryClient();

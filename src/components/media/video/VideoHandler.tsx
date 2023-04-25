@@ -1,21 +1,22 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
-import useBrowser from "../../hooks/useBrowser";
+import useBrowser from "../../../hooks/useBrowser";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useMainContext } from "../../MainContext";
-import { BsPlay, BsPause, BsVolumeMute, BsVolumeUp } from "react-icons/bs";
+import { useMainContext } from "../../../MainContext";
 import { BiVolumeMute, BiVolumeFull, BiPlay, BiPause } from "react-icons/bi";
-import { secondsToHMS } from "../../../lib/utils";
-import { useKeyPress } from "../../hooks/KeyPress";
-import { ImSpinner2 } from "react-icons/im";
+import { secondsToHMS } from "../../../../lib/utils";
+import { useKeyPress } from "../../../hooks/KeyPress";
 import React from "react";
-import useGlobalState from "../../hooks/useGlobalState";
+import useGlobalState from "../../../hooks/useGlobalState";
 import { useWindowWidth } from "@react-hook/window-size";
 import HlsPlayer from "./HLSPlayer";
 import type { HlsConfig } from "hls.js";
+import LoaderPuff from "../../ui/LoaderPuff";
 
 const VideoHandler = ({
   name,
+  columns,
   curPostName = undefined,
   thumbnail,
   placeholder,
@@ -28,6 +29,8 @@ const VideoHandler = ({
   containerDims = [0, 0],
   uniformMediaMode = false,
   quality = "" as "full" | "sd" | "hd" | "min" | undefined,
+  setAllowIframe,
+  checkCardHeight,
 }) => {
   const context: any = useMainContext();
   const browser = useBrowser();
@@ -59,7 +62,7 @@ const VideoHandler = ({
 
   const { volume, setVolume } = context;
   const [hasAudio, setHasAudio] = useState(() =>
-    !videoInfo.hlsUrl && !videoInfo.hasAudio ? false : true
+    !videoInfo.hlsSrc && !videoInfo.hasAudio ? false : true
   );
   const [prevMuted, setPrevMuted] = useState(true);
   const [manualAudio, setManualAudio] = useState(false);
@@ -79,40 +82,39 @@ const VideoHandler = ({
   useEffect(() => {
     const maximizeWidth = () => {
       let r = fullWidthRef?.current?.clientWidth / videoInfo.width;
-      setVidWidth(Math.floor(r * videoInfo.width));
-      setVidHeight(Math.floor(r * videoInfo.height));
+      setVidWidth(r * videoInfo.width);
+      setVidHeight(r * videoInfo.height);
     };
     //if imgFull maximize the video to take full width
     if (imgFull && !containerDims?.[1]) {
       maximizeWidth();
     }
-    //if postMode with portrait container (containerDims) fill it
-    else if (postMode && containerDims?.[1]) {
+    //if container (containerDims) fill it
+    else if (containerDims?.[1]) {
       let ry = containerDims?.[1] / videoInfo?.height;
       let rx = containerDims?.[0] / videoInfo?.width;
       if (Math.abs(ry - rx) < 0.05) {
         //if minimal cropping just fill the area
-        setVidHeight(Math.floor(containerDims?.[1]));
-        setVidWidth(Math.floor(containerDims?.[0]));
+        setVidHeight(containerDims?.[1]);
+        setVidWidth(containerDims?.[0]);
       } else if (ry <= rx) {
         setVidHeight(containerDims?.[1]);
-        setVidWidth(
-          Math.floor(videoInfo.width * (containerDims?.[1] / videoInfo?.height))
-        );
+        setVidWidth(videoInfo.width * (containerDims?.[1] / videoInfo?.height));
       } else {
         setVidWidth(containerDims?.[0]);
         setVidHeight(
-          Math.floor(videoInfo.height * (containerDims?.[0] / videoInfo?.width))
+          videoInfo.height * (containerDims?.[0] / videoInfo?.width)
         );
       }
     }
     //
     //in single column or in a post we will scale video so height is within window. By default maxHeightNum is x * windowHeight (set in Media component)
-    else if ((context.columns == 1 || postMode) && maxHeightNum > 0) {
+    else if ((columns == 1 || postMode) && maxHeightNum > 0) {
       if (videoInfo.height > maxHeightNum) {
         let r2 = maxHeightNum / videoInfo.height;
-        setVidHeight(Math.floor(maxHeightNum));
-        setVidWidth(Math.floor(videoInfo.width * r2));
+        // console.log("set",videoInfo.width * r2,maxHeightNum )
+        setVidHeight(maxHeightNum);
+        setVidWidth(videoInfo.width * r2);
       }
     }
     //otherwise fill the available width to minimize letterboxing
@@ -130,9 +132,9 @@ const VideoHandler = ({
     maxHeightNum,
     fullWidthRef?.current?.clientWidth,
     videoInfo,
-    context.columnOverride,
     postMode,
     containerDims,
+    columns,
   ]);
 
   //unify overall heights to avoid weird sizing issues
@@ -141,11 +143,11 @@ const VideoHandler = ({
       let h = (videoRef?.current?.clientWidth / vidWidth) * vidHeight;
       if (h > 0) {
         setHeightStyle({
-          height: `${h}px`,
+          height: `${Math.min(h, vidHeight)}px`,
         });
       }
     }
-  }, [videoRef?.current?.clientWidth, vidHeight, vidWidth]);
+  }, [videoRef?.current?.clientWidth, vidHeight, vidWidth, postMode]);
 
   const onLoadedData = () => {
     setVideoDuration(videoRef?.current?.duration as number);
@@ -183,7 +185,7 @@ const VideoHandler = ({
       !manualPause
     ) {
       playControl({ override: "play" });
-    } else if ((!context?.autoplay && !fullMediaMode) || !show || preventPlay) {
+    } else if ((!context?.autoplay && !postMode) || !show || preventPlay) {
       playControl({ override: "pause" });
     }
   }, [
@@ -316,7 +318,7 @@ const VideoHandler = ({
       !manualAudio &&
       !postMode &&
       context.audioOnHover &&
-      context.columns !== 1 &&
+      columns !== 1 &&
       videoRef.current
     ) {
       videoRef.current.muted = true;
@@ -349,16 +351,6 @@ const VideoHandler = ({
       setResetInterval((i) => (i += 1));
     }
   };
-  useEffect(() => {
-    let timeout;
-    if (seekTime) {
-      timeout = setTimeout(() => setSeekTime(""), 1000);
-    }
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [seekTime]);
 
   const [volMouseDown, setVolMouseDown] = useState(false);
   const [showVolSlider, setShowVolSlider] = useState(false);
@@ -398,7 +390,7 @@ const VideoHandler = ({
       setMuted(true);
     } else if (
       context?.audioOnHover &&
-      (postMode || context?.columns == 1) &&
+      (postMode || columns == 1) &&
       !left &&
       //!(browser.includes("Safari") && windowWidth < 640) &&
       videoRef.current
@@ -406,7 +398,7 @@ const VideoHandler = ({
       videoRef.current.muted = false;
       setMuted(false);
     }
-  }, [show, context?.audioOnHover, context?.columns, left]);
+  }, [show, context?.audioOnHover, columns, left]);
 
   // useEffect(() => {
   //   if (videoRef?.current) {
@@ -428,6 +420,7 @@ const VideoHandler = ({
     if (videoRef?.current && typeof volume === "number") {
       videoRef.current.volume = volume;
     }
+
     return () => {
       //
     };
@@ -441,7 +434,7 @@ const VideoHandler = ({
     if (
       videoPlaying &&
       videoRef?.current &&
-      (mouseIn || postMode || context.columns === 1) &&
+      (mouseIn || postMode || columns === 1) &&
       !preventPlay
     ) {
       let initial = Date.now();
@@ -478,14 +471,7 @@ const VideoHandler = ({
       clearInterval(intervalID);
     }
     return () => {};
-  }, [
-    videoPlaying,
-    mouseIn,
-    postMode,
-    preventPlay,
-    resetInterval,
-    context.columns,
-  ]);
+  }, [videoPlaying, mouseIn, postMode, preventPlay, resetInterval, columns]);
 
   const setData = useRef<any>();
   useEffect(() => {
@@ -574,10 +560,12 @@ const VideoHandler = ({
     >
       {buffering && (
         <div className="absolute z-10 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-          <ImSpinner2 className="w-8 h-8 animate-spin" />
+          <LoaderPuff />
         </div>
       )}
-
+      {/* <div className="absolute z-10 text-lg text-white -translate-x-1/2 bg-black/40 top-1/2 left-1/2">
+        {vidWidth},{vidHeight}
+      </div> */}
       {/* Background Span Image */}
       <div
         className="absolute z-0 min-w-full min-h-full overflow-hidden brightness-[0.2]"
@@ -585,7 +573,7 @@ const VideoHandler = ({
       >
         <Image
           className={"scale-110 blur-md "}
-          src={thumbnail.url}
+          src={thumbnail.src}
           alt=""
           layout="fill"
           unoptimized={true}
@@ -599,7 +587,7 @@ const VideoHandler = ({
       {true && (
         <>
           {/* {windowWidth <= 640 &&
-            (context.columns === 1 || postMode) &&
+            (columns === 1 || postMode) &&
             !fullMediaMode &&
             videoPlaying && (
               <div
@@ -627,7 +615,7 @@ const VideoHandler = ({
                   (windowWidth <= 640 &&
                   !fullMediaMode &&
                   videoPlaying &&
-                  (context.columns === 1 || postMode)
+                  (columns === 1 || postMode)
                     ? " p-0.5 rounded-lg px-2 "
                     : " w-8 h-8  ") +
                   "items-center justify-center bg-black rounded-md bg-opacity-20 hover:bg-opacity-40  "
@@ -637,7 +625,7 @@ const VideoHandler = ({
                   {videoPlaying ? (
                     <>
                       {windowWidth <= 640 &&
-                      (context.columns === 1 || postMode) &&
+                      (columns === 1 || postMode) &&
                       !fullMediaMode ? (
                         <div className={" text-xs "}>
                           {secondsToHMS(videoDuration - currentTime)}
@@ -661,6 +649,11 @@ const VideoHandler = ({
                       : `text-sm ${mouseIn ? "block" : "hidden"}`
                   }
                 >
+                  {/* {videoPlaying ? (
+                    <BiPause className="flex-none w-3 h-3 sm:hidden " />
+                  ) : (
+                    <BiPlay className="flex-none w-3 h-3 sm:hidden" />
+                  )} */}
                   {secondsToHMS(currentTime) +
                     "/" +
                     secondsToHMS(videoDuration)}
@@ -679,84 +672,92 @@ const VideoHandler = ({
                   e.stopPropagation();
                 }}
               >
-                <div
-                  //vol container
-                  className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
+                {true && (
                   <div
-                    //slider container
+                    //vol container
+                    className="absolute bottom-0 left-0 w-full h-[170px] bg-transparent"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                     }}
-                    onMouseDown={(e) => setVolMouseDown(true)}
-                    onMouseUp={(e) => setVolMouseDown(false)}
-                    onMouseLeave={() => setVolMouseDown(false)}
-                    className={
-                      "relative bottom-0 left-0  justify-center w-full h-32 bg-black bg-opacity-40 rounded-md " +
-                      (showVolSlider ? " hidden md:flex " : " hidden ")
-                    }
                   >
                     <div
-                      //slide range
-                      className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28"
+                      //slider container
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
+                      onMouseDown={(e) => setVolMouseDown(true)}
+                      onMouseUp={(e) => setVolMouseDown(false)}
+                      onMouseLeave={() => setVolMouseDown(false)}
+                      className={
+                        "relative bottom-0 left-0  justify-center w-full h-32 bg-black bg-opacity-40 rounded-md " +
+                        (showVolSlider ? " hidden md:flex " : " hidden ")
+                      }
                     >
                       <div
-                        //range controls
-                        className="absolute z-30 w-full h-full"
-                        ref={volControls}
-                        onClick={(e) => updateVolume(e)}
-                        onMouseMove={(e) => {
-                          updateVolumeDrag(e);
+                        //slide range
+                        className="absolute bottom-0 flex justify-center w-full mb-2 rounded-full h-28"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                         }}
-                      ></div>
-                      <div className="absolute bottom-0 w-2 h-full">
+                      >
                         <div
-                          //control circle
-                          className="absolute z-20 w-4 h-4 bg-white border rounded-full -left-1 "
-                          style={
-                            muted || volume === 0
-                              ? { bottom: 0 }
-                              : {
-                                  bottom: `${volume * 100 - 10}%`,
-                                }
-                          }
-                          onMouseDown={() => setVolMouseDown(true)}
-                          onMouseUp={() => setVolMouseDown(false)}
+                          //range controls
+                          className="absolute z-30 w-full h-full"
+                          ref={volControls}
+                          onClick={(e) => updateVolume(e)}
+                          onMouseMove={(e) => {
+                            updateVolumeDrag(e);
+                          }}
                         ></div>
-                        <div
-                          //vol container
-                          className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-th-scrollbar"
-                          style={{ height: `${muted ? 0 : volume * 100}%` }}
-                        ></div>
-                        <div className="absolute bottom-0 z-0 w-full h-full rounded-full bg-white/10"></div>
+                        <div className="absolute bottom-0 w-2 h-full">
+                          <div
+                            //control circle
+                            className="absolute z-20 w-4 h-4 bg-white border rounded-full -left-1 "
+                            style={
+                              muted || volume === 0
+                                ? { bottom: 0 }
+                                : {
+                                    bottom: `${volume * 100 - 10}%`,
+                                  }
+                            }
+                            onMouseDown={() => setVolMouseDown(true)}
+                            onMouseUp={() => setVolMouseDown(false)}
+                          ></div>
+                          <div
+                            //vol container
+                            className="absolute bottom-0 z-10 w-full origin-bottom rounded-full bg-th-scrollbar"
+                            style={{ height: `${muted ? 0 : volume * 100}%` }}
+                          ></div>
+                          <div className="absolute bottom-0 z-0 w-full h-full rounded-full bg-white/10"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
                 <button
                   //mute unmute button
                   aria-label="toggle mute"
                   type="button"
-                  onClick={(e) => {
-                    audioControl(e, true);
-                  }}
+                  onClick={
+                    (e) => {
+                      if (!browser.includes("Safari") && videoRef.current) {
+                        context.setaudioOnHover(videoRef.current.muted);
+                      }
+                      audioControl(e, true);
+                    }
+                    // if(videoRef.current){
+                    //   videoRef.current.muted = !videoRef.current.muted;
+                    //   setMuted(videoRef.current.muted);
+                    // }
+                  }
                   onMouseEnter={() => setShowVol(true)}
                   onMouseLeave={() => setShowVol(false)}
                   className={
-                    browser.includes("Safari") &&
-                    windowWidth < 640 &&
-                    fullMediaMode &&
-                    window
-                      ? " absolute flex-none outline-none select-none md:hidden flex items-center justify-center  right-1 z-[98] bottom-[9rem] backdrop-blur-lg text-white bg-black/40 w-10 h-10 rounded-full "
+                    windowWidth < 640 && fullMediaMode
+                      ? " absolute flex-none outline-none select-none md:hidden flex items-center justify-center  right-0.5 z-[98] bottom-[9rem] backdrop-blur-lg text-white bg-black/40 w-10 h-10 rounded-full "
                       : (fullMediaMode || uniformMediaMode
                           ? " hidden md:flex"
                           : "  flex ") +
@@ -778,16 +779,12 @@ const VideoHandler = ({
               ref={seekRef}
               className={
                 "absolute bottom-0 left-0 z-10  w-full h-5  " +
-                (mouseIn || postMode || context.columns === 1
-                  ? " block "
-                  : " hidden ")
+                (mouseIn || postMode || columns === 1 ? " block " : " hidden ")
               }
             >
               {seekTime !== "" && (
                 <div
-                  className={
-                    "absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 border-th-border"
-                  }
+                  className="absolute flex items-center justify-center w-12 py-1 text-sm transition-transform bg-black rounded-lg bg-opacity-40 bottom-4 border-th-border"
                   style={{
                     left: `${
                       seekLeftOfset <= 24
@@ -823,6 +820,8 @@ const VideoHandler = ({
         className={
           uniformMediaMode
             ? "min-h-full min-w-full object-cover object-center "
+            : postMode && !fullMediaMode && !containerDims?.[1]
+            ? "min-w-full"
             : "relative overflow-hidden flex  object-fill"
         }
         style={
@@ -833,7 +832,7 @@ const VideoHandler = ({
             : heightStyle
         }
       >
-        <div
+        {/* <div
           //high res placeholder image
           className={
             ` ` +
@@ -859,8 +858,8 @@ const VideoHandler = ({
                 ? placeholder.url
                 : thumbnail.url
             }
-            height={vidHeight}
-            width={vidWidth}
+            height={placeholder.height}
+            width={placeholder.width}
             layout={uniformMediaMode ? "fill" : "intrinsic"}
             objectFit={uniformMediaMode ? "cover" : undefined}
             alt=""
@@ -871,20 +870,26 @@ const VideoHandler = ({
             }}
             draggable={false}
           />
-        </div>
-
+        </div> */}
         <HlsPlayer
           playerRef={videoRef}
           hlsConfig={hlsConfig}
           quality={videoQuality}
-          src={vodInfo?.hlsUrl ?? vodInfo?.url}
-          skipHls={!vodInfo?.hlsUrl}
+          src={vodInfo?.hlsSrc ?? vodInfo?.src}
+          skipHls={!vodInfo?.hlsSrc}
           triggerMute={triggerMute}
           triggerHasAudio={triggerHasAudio}
+          poster={
+            !placeholder?.src?.includes("publicdomainpictures")
+              ? placeholder?.src?.includes("https")
+                ? placeholder.src
+                : thumbnail.src
+              : ""
+          }
           className={
-            (videoLoaded ? "opacity-100 " : " opacity-0") +
+            (videoLoaded ? "opacity-100 " : " opacity-100") +
             (!containerDims?.[1]
-              ? " absolute top-0 left-1/2 -translate-x-1/2 "
+              ? " min-w-full min-h-full max-w-full max-h-full m-auto block absolute inset-0 w-0 h-0  " //absolute top-0 left-1/2 -translate-x-1/2
               : "  ") +
             (uniformMediaMode
               ? " min-w-full min-h-full max-w-full max-h-full m-auto block absolute inset-0 w-0 h-0 "
@@ -894,9 +899,7 @@ const VideoHandler = ({
           width={`${vidWidth}`}
           height={`${vidHeight}`}
           autoPlay={
-            (context.autoplay && context.columns === 1) ||
-            postMode ||
-            fullMediaMode
+            (context.autoplay && columns === 1) || postMode || fullMediaMode
           }
           disablePictureInPicture
           muted={true}
@@ -920,6 +923,9 @@ const VideoHandler = ({
           }}
           onEnded={() => {
             //
+          }}
+          onLoadedMetadata={() => {
+            checkCardHeight && checkCardHeight();
           }}
           onLoadedData={onLoadedData}
           playsInline

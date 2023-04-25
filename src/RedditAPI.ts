@@ -649,7 +649,6 @@ export const loadUserPosts = async (
           `https://oauth.reddit.com/user/${username}/${
             type ? type.toLowerCase() : ""
           }?sort=${sort}`,
-
           {
             headers: {
               authorization: `bearer ${accessToken}`,
@@ -1413,3 +1412,61 @@ export const deleteLink = async (id: string) => {
   throw new Error("Unable to delete");
 };
 
+export const findDuplicates = async (
+  token,
+  loggedIn,
+  permalink: string,
+  after = "",
+  count = 0
+) => {
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
+  if (loggedIn && accessToken) {
+    try {
+      let res = await (
+        await axios.get(
+          `https://oauth.reddit.com${permalink?.replace(
+            "/comments/",
+            "/duplicates/"
+          )}`,
+
+          {
+            headers: {
+              authorization: `bearer ${accessToken}`,
+            },
+            params: {
+              raw_json: 1,
+              after,
+              count,
+            },
+          }
+        )
+      ).data;
+      //console.log("Dup:", res);
+      return { res, returnToken };
+    } catch (err) {
+      console.log("err", err);
+    }
+  } else {
+    try {
+      let res = await (
+        await axios.get(
+          `https://www.reddit.com${permalink?.replace(
+            "/comments/",
+            "/duplicates/"
+          )}.json`,
+          {
+            params: {
+              raw_json: 1,
+              after,
+              count,
+            },
+          }
+        )
+      ).data;
+      //console.log("duplo",res);
+      return { res };
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+};

@@ -6,28 +6,31 @@ import Awardings from "./Awardings";
 import { secondsToTime } from "../../lib/utils";
 import PostTitle from "./PostTitle";
 import TitleFlair from "./TitleFlair";
-import { useMainContext } from "../MainContext";
-
 const MediaWrapper = ({
   hideNSFW,
   post,
-  curPostName=undefined,
+  columns = undefined,
+  curPostName = undefined,
   forceMute,
   imgFull,
   postMode,
   handleClick = () => {},
-  fullMediaMode=false,
+  fullMediaMode = false,
   showCrossPost = true,
   showCrossPostMedia = true,
   containerDims = undefined as any,
   read = false,
   card = false,
   fill = false,
+  checkCardHeight = (h?: number) => {},
   hide = false,
   fullRes = false,
   uniformMediaMode = false,
+  mediaDimensions = [0, 0] as [number, number],
+  inView = true,
+  cardStyle = "",
+  mediaOnly = false,
 }) => {
-  const context: any = useMainContext();
   const [hidden, setHidden] = useState(true);
   const [hideText, setHideText] = useState("");
   const [postData, setPostData] = useState<any>();
@@ -70,7 +73,15 @@ const MediaWrapper = ({
       onClick={toggleHide}
     >
       <div
-        className={"relative  " + (hideNSFW && hidden ? " blur-3xl" : "")}
+        className={" " + (hideNSFW && hidden ? " blur-3xl" : "")}
+        style={
+          mediaDimensions?.[1] > 0
+            ? {
+                height: `${mediaDimensions[1]}px`,
+                backgroundColor: "transparent",
+              }
+            : {}
+        }
       >
         <Media
           post={postData}
@@ -78,6 +89,8 @@ const MediaWrapper = ({
           imgFull={imgFull}
           postMode={postMode}
           containerDims={containerDims}
+          columns={columns}
+          mediaDimensions={mediaDimensions}
           read={read}
           card={card}
           fill={fill}
@@ -87,6 +100,9 @@ const MediaWrapper = ({
           fullRes={fullRes}
           uniformMediaMode={uniformMediaMode}
           curPostName={curPostName}
+          xPostMode={isXPost && showCrossPost}
+          inView={inView}
+          checkCardHeight={checkCardHeight}
         />
       </div>
       {hideNSFW && hidden && (
@@ -94,10 +110,10 @@ const MediaWrapper = ({
           <div className="flex flex-col items-center justify-center p-4 bg-opacity-50 rounded-lg bg-black/30 backdrop-blur-xl">
             <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
             <VscEye className="hidden w-10 h-10 group-hover:block" />
-            <h1 className="hidden text-sm group-hover:block">
+            <span className="hidden text-sm group-hover:block">
               Click to Unhide
-            </h1>
-            <h1 className="group-hover:hidden">{hideText}</h1>
+            </span>
+            <span className="group-hover:hidden">{hideText}</span>
           </div>
         </div>
       )}
@@ -107,7 +123,7 @@ const MediaWrapper = ({
   const XPostData = (
     <div className="p-2">
       <div className="py-0">
-        <h1
+        <h2
           className={
             " items-center   leading-none cursor-pointer pb-2 flex flex-row flex-wrap gap-2"
           }
@@ -123,7 +139,7 @@ const MediaWrapper = ({
           <span className="text-xs ">
             <TitleFlair post={postData} />
           </span>
-        </h1>
+        </h2>
 
         {/* <div className="pb-1 text-xs">
               
@@ -188,7 +204,8 @@ const MediaWrapper = ({
             />
           )}
         </div>
-        <div className="flex flex-row flex-none ml-auto hover:underline">
+        {/* <div className="flex flex-row flex-none ml-auto hover:underline">
+        //nested a tags
           <a
             title="open source"
             href={`${postData?.url}`}
@@ -198,7 +215,7 @@ const MediaWrapper = ({
           >
             <p className="">{`(${postData?.domain})`}</p>
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -208,18 +225,24 @@ const MediaWrapper = ({
     return (
       <div
         className={
-          (!context?.mediaOnly || postMode
-            ? "transition-colors border rounded bg-th-post hover:bg-th-postHover border-th-border2 hover:border-th-borderHighlight2 "
-            : "") + (context?.cardStyle == "card2" && !postMode ? " m-2" : "")
+          (!mediaOnly || postMode
+            ? "flex flex-col overflow-hidden transition-colors  bg-th-post  "
+            : "") +
+          (cardStyle == "card2" && !postMode ? " " : "") +
+          ((cardStyle !== "card2" && !mediaOnly) || postMode
+            ? " border hover:bg-th-postHover border-th-border2 hover:border-th-borderHighlight2 rounded"
+            : "")
         }
       >
-        {(context?.cardStyle == "card1" ||
-          context?.cardStyle == "default" ||
-          context?.cardStyle == "row1" ||
+        {(cardStyle == "card1" ||
+          cardStyle == "default" ||
+          cardStyle == "row1" ||
           postMode) &&
-          (!context.mediaOnly || postMode) && <>{XPostData}</>}
-        {showCrossPostMedia && <>{NSFWWrapper}</>}
-        {context?.cardStyle == "card2" && !postMode && <>{XPostData}</>}
+          (!mediaOnly || postMode) && <>{XPostData}</>}
+        {showCrossPostMedia && (
+          <div className="relative w-full">{NSFWWrapper}</div>
+        )}
+        {cardStyle == "card2" && !postMode && <>{XPostData}</>}
       </div>
     );
 

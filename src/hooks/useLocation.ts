@@ -168,7 +168,7 @@ const useLocation = (params?) => {
   }, [router, sessloading]);
 
   //monitor keys to control query
-  const [key, setKey] = useState<string | any[]>([""]);
+  const [key, setKey] = useState<any[]>([""]);
   useEffect(() => {
     if (
       !sessloading &&

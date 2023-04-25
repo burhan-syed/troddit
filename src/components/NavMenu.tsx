@@ -266,7 +266,7 @@ const NavMenu = ({ hide = false }) => {
                       <li>
                         <div
                           className={
-                            (context.cardStyle === "card1" && !context.mediaOnly
+                            ((context.cardStyle === "card1" || context.cardStyle === "default") && !context.mediaOnly
                               ? " font-bold "
                               : "") + ` ${subOptionStyle} mt-1`
                           }

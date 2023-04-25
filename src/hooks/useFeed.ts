@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
-import { QueryFunctionContext, useInfiniteQuery } from "react-query";
+import { QueryFunctionContext, useInfiniteQuery } from "@tanstack/react-query";
 import { filterPosts } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import {
