@@ -57,6 +57,7 @@ const useParseBodyHTML = ({ rawHTML, newTabLinks = false }) => {
   const [component, setComponent] = useState<any>();
 
   useEffect(() => {
+    const PROTOCOL = window.location.protocol;
     const DOMAIN = window?.location?.host ?? "troddit.com";
 
     const blankTargets = (str) => {
@@ -88,8 +89,12 @@ const useParseBodyHTML = ({ rawHTML, newTabLinks = false }) => {
         str.match(matchRegex2) ||
         str.match(matchRegex3)
       ) {
-        str = str.replace(redditRegex, DOMAIN);
+        str = str.replace(redditRegex, DOMAIN); //.replace(/(https:\/\/|http:\/\/)/g,PROTOCOL);
+        if (str.includes("https:") && PROTOCOL !== "https:") {
+          str = str.replace("https:", PROTOCOL);
+        }
       }
+
       return str;
     };
 
@@ -111,8 +116,7 @@ const useParseBodyHTML = ({ rawHTML, newTabLinks = false }) => {
     setComponent(reactElement);
   }, [rawHTML]);
 
-  return component; 
-
+  return component;
 };
 
 export default useParseBodyHTML;
