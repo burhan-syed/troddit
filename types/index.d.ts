@@ -30,7 +30,9 @@ export interface MediaInfo {
   isLink: boolean;
   isSelf: boolean;
   isTweet: boolean;
+  isYTVid: boolean;
   isIframe: boolean;
-  isMedia: boolean;
+  isDual: boolean;
+  hasMedia: boolean;
   dimensions: [number, number];
 }

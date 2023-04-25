@@ -140,28 +140,26 @@ export const fixCommentFormat = async (comments) => {
   return comments;
 };
 
-export const findGreatestsImages = (
-  images: { height: number; width: number; url: string }[],
-  maxheight = 0
-) => {
+export const findGreatestsImages = (images: GalleryInfo[], maxheight = 0) => {
   let fImages = [] as any[];
 
   if (maxheight > 0) {
     images.forEach((img, i) => {
-      if (img.height > maxheight) {
-        let ratio = maxheight / img.height;
+      if (img?.media?.[0]?.height > maxheight) {
+        let ratio = maxheight / img?.media?.[0]?.height;
         fImages.push({
           ...img,
-          url: img.url,
-          height: Math.floor(img.height * ratio),
-          width: Math.floor(img.width * ratio),
+          caption: img?.caption,
+          src: img?.media?.[0]?.src,
+          height: Math.floor(img?.media?.[0]?.height * ratio),
+          width: Math.floor(img?.media?.[0]?.width * ratio),
         });
       } else {
         fImages.push({
           ...img,
-          url: img.url,
-          height: img.height,
-          width: img.width,
+          src: img?.media?.[0]?.src,
+          height: img?.media?.[0]?.height,
+          width: img?.media?.[0]?.width,
         });
       }
     });
@@ -244,8 +242,10 @@ export const findMediaInfo = async (
   let isLink = true;
   let isSelf = false; //self text post
   let isTweet = false;
+  let isYTVid = false;
   let isIframe = false;
-  let isMedia = false;
+  let hasMedia = false;
+  let isDual = false;
 
   let dimensions: [number, number] = [0, 0]; //x,y pixels
 
@@ -259,11 +259,11 @@ export const findMediaInfo = async (
       let b = await findImage(post, quick);
       if (b) {
         //isImage = true;
-        if (galleryInfo?.[0]?.[0]?.height > 0) {
+        if (galleryInfo?.[0]?.media?.[0]?.height > 0) {
           isImage = true;
           //just setting dimensions to first gallery image for now
-          dimensions[0] = galleryInfo?.[0]?.[0]?.width;
-          dimensions[1] = galleryInfo?.[0]?.[0]?.height;
+          dimensions[0] = galleryInfo?.[0]?.media?.[0]?.width;
+          dimensions[1] = galleryInfo?.[0]?.media?.[0]?.height;
         } else if (imageInfo) {
           //last item would be highest resolution
           if (
@@ -282,7 +282,7 @@ export const findMediaInfo = async (
       let i = await findIframe(post);
       if (i) {
         isIframe = true;
-        isMedia = true;
+        hasMedia = true;
       }
     }
 
@@ -318,7 +318,7 @@ export const findMediaInfo = async (
     }
     //portrait && media check
     if (dimensions[0] > 0) {
-      isMedia = true;
+      hasMedia = true;
       if (dimensions[1] >= dimensions[0]) {
         isPortrait = true;
       } else if (dimensions[1] < dimensions[0]) {
@@ -326,15 +326,18 @@ export const findMediaInfo = async (
       }
     }
 
-    //treat these as self posts, not images/videos/links or anything else
-    if (isSelf) {
-      isImage = false;
-      isVideo = false;
-      isGallery = false;
-      isLink = false;
-      isPortrait = false;
-      isMedia = false;
+    if (
+      isSelf &&
+      hasMedia &&
+      (post?.preview?.enabled || isVideo || isGallery || isTweet)
+    ) {
+      isDual = true;
     }
+
+    if (post?.url?.includes("youtube.com") || post?.url?.includes("youtu.be")) {
+      isYTVid = true;
+    }
+
 
     return {
       videoInfo,
@@ -351,7 +354,9 @@ export const findMediaInfo = async (
       isLink,
       isSelf,
       dimensions,
-      isMedia,
+      hasMedia,
+      isDual,
+      isYTVid,
     };
   };
 
@@ -473,7 +478,7 @@ export const findMediaInfo = async (
   };
 
   const findImage = async (post, quick = false) => {
-    if (post?.url?.includes("twitter.com")) {
+    if (post?.url_overridden_by_dest?.includes("twitter.com") || (post?.url?.includes("twitter.com") && post?.domain?.includes("twitter"))) {
       isTweet = true;
       //return true;
     }
@@ -506,7 +511,9 @@ export const findMediaInfo = async (
           }
         }
       }
-      isGallery = true;
+      if (post?.gallery_data?.items?.length ?? 0 > 0) {
+        isGallery = true;
+      }
       //isImage = true;
       return true;
     } else if (post.preview) {
