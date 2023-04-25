@@ -31,53 +31,54 @@ const getToken = async () => {
 
 //trim child data esp for initial SSG
 const filterPostChildren = (children) => {
-  const c =  children.map(child => ({
-    kind: child?.kind, 
+  const c = children.map((child) => ({
+    kind: child?.kind,
     data: {
       all_awardings: child?.data?.all_awardings,
       archived: child?.data?.archived,
       author: child?.data?.author,
-      created_utc: child?.data?.created_utc, 
+      created_utc: child?.data?.created_utc,
       crosspost_parent_list: child?.data?.crosspost_parent_list,
       distinguished: child?.data?.distinguished,
-      domain: child?.data?.domain, 
+      domain: child?.data?.domain,
       downs: child?.data?.downs,
       edited: child?.data?.edited,
-      hidden: child?.data?.hidden, 
+      gallery_data: child?.data?.gallery_data,
+      hidden: child?.data?.hidden,
       hide_score: child?.data?.hide_score,
-      id: child?.data?.id, 
+      id: child?.data?.id,
       is_self: child?.data?.is_self,
       is_video: child?.data?.is_video,
-      likes: child?.data?.likes, 
+      likes: child?.data?.likes,
       link_flair_richtext: child?.data?.link_flair_richtext,
       link_flair_text: child?.data?.link_flair_text,
       link_flair_text_color: child?.data?.link_flair_text_color,
       link_flair_background_color: child?.data?.link_flair_background_color,
       locked: child?.data?.locked,
       media: child?.data?.media,
-      media_embed: child?.data?.media_embed, 
-      media_only: child?.data?.media_only, 
+      media_embed: child?.data?.media_embed,
+      media_only: child?.data?.media_only,
       media_metadata: child?.data?.media_metadata,
-      name: child?.data?.name, 
+      name: child?.data?.name,
       no_follow: child?.data?.no_follow,
       num_comments: child?.data?.num_comments,
       num_crossposts: child?.data?.num_crossposts,
       over_18: child?.data?.over_18,
-      permalink: child?.data?.permalink, 
-      pinned: child?.data?.pinned, 
-      post_hint: child?.data?.post_hint, 
-      preview: child?.data?.preview, 
-      saved: child?.data?.saved, 
-      score: child?.data?.score, 
-      secure_media: child?.data?.secure_media, 
+      permalink: child?.data?.permalink,
+      pinned: child?.data?.pinned,
+      post_hint: child?.data?.post_hint,
+      preview: child?.data?.preview,
+      saved: child?.data?.saved,
+      score: child?.data?.score,
+      secure_media: child?.data?.secure_media,
       secure_media_embed: child?.data?.secure_media_embed,
       selftext: child?.data?.selftext,
       selftext_html: child?.data?.selftext_html,
       spoiler: child?.data?.spoiler,
-      sr_detail : {
+      sr_detail: {
         accept_followers: child?.data?.sr_detail?.accept_followers,
         banner_img: child?.data?.sr_detail?.banner_img,
-        community_icon: child?.data?.sr_detail?.community_icon, 
+        community_icon: child?.data?.sr_detail?.community_icon,
         created_utc: child?.data?.sr_detail?.created_utc,
         display_name: child?.data?.sr_detail?.display_name,
         header_img: child?.data?.sr_detail?.header_img,
@@ -102,23 +103,23 @@ const filterPostChildren = (children) => {
       subreddit_name_prefixed: child?.data?.subreddit_name_prefixed,
       subreddit_type: child?.data?.subreddit_type,
       suggested_sort: child?.data?.suggested_sort,
-      thumbnail: child?.data?.thumbnail, 
+      thumbnail: child?.data?.thumbnail,
       thumbnail_height: child?.data?.thumbnail_height,
       thumbnail_width: child?.data?.thumbnail_width,
       title: child?.data?.title,
       total_awards_received: child?.data?.total_awards_received,
       ups: child?.data?.ups,
-      upvote_ratio: child?.data?.upvote_ratio, 
+      upvote_ratio: child?.data?.upvote_ratio,
       url: child?.data?.url,
-      url_overridden_by_dest: child?.data?.url_url_overridden_by_dest, 
-    }
+      url_overridden_by_dest: child?.data?.url_url_overridden_by_dest,
+    },
   }));
   //~35k byte reduction
   //console.log(new Blob([JSON.stringify(children)]).size,new Blob([JSON.stringify(c)]).size); // 38
   //console.log(JSON.stringify(children).replace(/[\[\]\,\"]/g,'').length, JSON.stringify(c).replace(/[\[\]\,\"]/g,'').length)
-  
-  return c; 
-}
+
+  return c;
+};
 
 //to reduce serverless calls to refresh token
 const checkToken = async (
@@ -579,26 +580,25 @@ export const getWikiContent = async (wikiquery) => {
 
 export const favoriteSub = async (favorite, name) => {
   const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1){
-    try{
+  if (token && ratelimit_remaining > 1) {
+    try {
       const res = await fetch("https://oauth.reddit.com/api/favorite", {
-        method: "POST", 
+        method: "POST",
         headers: {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: `make_favorite=${favorite}&sr_name=${name}&api_type=json`,
-      }); 
+      });
       if (res.ok) {
-        return true; 
+        return true;
       }
-      return false; 
-    }
-    catch (err) {
-      return false; 
+      return false;
+    } catch (err) {
+      return false;
     }
   }
-}
+};
 
 export const subToSub = async (action, name) => {
   const token = await (await getToken())?.accessToken;
@@ -631,7 +631,7 @@ export const subToSub = async (action, name) => {
 };
 
 export const loadUserPosts = async (
-  token, 
+  token,
   loggedIn,
   username: string,
   sort: string = "hot",
@@ -699,7 +699,7 @@ export const loadUserPosts = async (
           after: res.data?.after,
           before: res.data?.before,
           children: filtered_children,
-          token: returnToken
+          token: returnToken,
         };
       }
       nextafter = res?.data?.after;
@@ -712,7 +712,7 @@ export const loadUserPosts = async (
     return {
       after: undefined,
       children: filtered_children,
-      token: returnToken
+      token: returnToken,
     };
   }
   return { after: undefined };
@@ -1287,7 +1287,7 @@ export const saveLink = async (category, id, isSaved) => {
         }
       );
       if (res?.ok) {
-        return {saved: isSaved ? false : true, id: id};
+        return { saved: isSaved ? false : true, id: id };
       } else {
         throw new Error("Unable to save");
       }
@@ -1297,7 +1297,6 @@ export const saveLink = async (category, id, isSaved) => {
     }
   }
   throw new Error("Unable to save");
-
 };
 
 export const hideLink = async (id, isHidden) => {
@@ -1316,7 +1315,7 @@ export const hideLink = async (id, isHidden) => {
         }
       );
       if (res?.ok) {
-        return {hidden: isHidden ? false : true, id: id};
+        return { hidden: isHidden ? false : true, id: id };
       } else {
         throw new Error("Unable to hide");
       }
@@ -1326,30 +1325,28 @@ export const hideLink = async (id, isHidden) => {
     }
   }
   throw new Error("Unable to hide");
-
 };
 
 export const postVote = async (dir: number, id) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     //try {
-      const res = await fetch("https://oauth.reddit.com/api/vote", {
-        method: "POST",
-        headers: {
-          Authorization: `bearer ${token}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `id=${id}&dir=${dir}&rank=3`,
-      });
-      if (res.ok) {
-        return {vote: dir, id: id};
-      } 
+    const res = await fetch("https://oauth.reddit.com/api/vote", {
+      method: "POST",
+      headers: {
+        Authorization: `bearer ${token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `id=${id}&dir=${dir}&rank=3`,
+    });
+    if (res.ok) {
+      return { vote: dir, id: id };
+    }
     // } catch (err) {
     //   return err;
     // }
-  } 
-  throw new Error("Unable to vote")
-
+  }
+  throw new Error("Unable to vote");
 };
 
 export const postComment = async (parent, text) => {
@@ -1363,25 +1360,27 @@ export const postComment = async (parent, text) => {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(text)}&thing_id=${parent}`,
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(
+          text
+        )}&thing_id=${parent}`,
       });
       const data = await res.json();
       if (res.ok) {
-        if(data?.json?.errors){
-          throw new Error("Comment error")
+        if (data?.json?.errors) {
+          throw new Error("Comment error");
         }
         return data;
       } else {
-        throw new Error("Unable to comment")
+        throw new Error("Unable to comment");
       }
     } catch (err) {
-      throw new Error("Unable to comment")
+      throw new Error("Unable to comment");
     }
   }
-  throw new Error("Unable to comment")
+  throw new Error("Unable to comment");
 };
 
-export const editUserText = async(id:string, text:string) => {
+export const editUserText = async (id: string, text: string) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
@@ -1392,25 +1391,27 @@ export const editUserText = async(id:string, text:string) => {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(text)}&thing_id=${id}`,
+        body: `api_type=${"json"}&return_rtjson=${true}&text=${encodeURIComponent(
+          text
+        )}&thing_id=${id}`,
       });
       const data = await res.json();
       if (res.ok) {
-        if(data?.json?.errors){
-          throw new Error("Edit text error")
+        if (data?.json?.errors) {
+          throw new Error("Edit text error");
         }
         return data;
       } else {
-        throw new Error("Unable to edit text")
+        throw new Error("Unable to edit text");
       }
     } catch (err) {
-      throw new Error("Unable to edit text")
+      throw new Error("Unable to edit text");
     }
   }
-  throw new Error("Unable to edit text")
-}
+  throw new Error("Unable to edit text");
+};
 
-export const deleteLink = async(id:string) => {
+export const deleteLink = async (id: string) => {
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
@@ -1426,14 +1427,14 @@ export const deleteLink = async(id:string) => {
       if (res.ok) {
         return data;
       } else {
-        throw new Error("Unable to delete")
+        throw new Error("Unable to delete");
       }
     } catch (err) {
-      throw new Error("Unable to delete")
+      throw new Error("Unable to delete");
     }
   }
-  throw new Error("Unable to delete")
-}
+  throw new Error("Unable to delete");
+};
 
 export const getUserVotes = async () => {
   const data = await getToken();
@@ -1460,34 +1461,61 @@ export const getUserVotes = async () => {
   }
 };
 
-export const getMyVotes = async () => {
-  const token = await (await getToken())?.accessToken;
-  if (token && ratelimit_remaining > 1) {
+export const findDuplicates = async (
+  token,
+  loggedIn,
+  permalink: string,
+  after = "",
+  count = 0
+) => {
+  let { returnToken, accessToken } = await checkToken(loggedIn, token);
+  if (loggedIn && accessToken) {
     try {
-      let res = await axios.get(
-        "https://oauth.reddit.com/user/talezus/upvoted",
-        {
-          headers: {
-            authorization: `bearer ${token}`,
-          },
-          params: {
-            context: 2,
-            sort: "new",
-            type: "links",
-            username: "talezus",
-            limit: 10,
-          },
-        }
-      );
-      let data = await res.data;
-      //console.log(data);
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      if (data?.data?.children ?? false) {
-        return { after: data.data.after, children: data.data.children };
-      }
+      let res = await (
+        await axios.get(
+          `https://oauth.reddit.com${permalink?.replace(
+            "/comments/",
+            "/duplicates/"
+          )}`,
+
+          {
+            headers: {
+              authorization: `bearer ${accessToken}`,
+            },
+            params: {
+              raw_json: 1,
+              after,
+              count,
+            },
+          }
+        )
+      ).data;
+      //console.log("Dup:", res);
+      return { res, returnToken };
     } catch (err) {
-      console.log("err:", err);
+      console.log("err", err);
+    }
+  } else {
+    try {
+      let res = await (
+        await axios.get(
+          `https://www.reddit.com${permalink?.replace(
+            "/comments/",
+            "/duplicates/"
+          )}.json`,
+          {
+            params: {
+              raw_json: 1,
+              after,
+              count,
+            },
+          }
+        )
+      ).data;
+      //console.log("duplo",res);
+      return { res };
+    } catch (err) {
+      console.log("err", err);
     }
   }
-  return null;
 };

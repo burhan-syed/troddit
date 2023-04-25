@@ -15,6 +15,8 @@ import useFilterSubs from "../hooks/useFilterSubs";
 import { useRead } from "../hooks/useRead";
 import Checkbox from "./ui/Checkbox";
 import SubButton from "./SubButton";
+import { HiOutlineDocumentDuplicate } from "react-icons/hi";
+import { useRouter } from "next/router";
 
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
@@ -40,6 +42,7 @@ const PostOptButton = ({
   setShowUI,
   buttonStyles = "",
 }: Props) => {
+  const router = useRouter();
   const context: any = useMainContext();
   const { addSubFilter, addUserFilter } = useFilterSubs();
   const filterMenuRef = useRef<HTMLButtonElement>(null);
@@ -303,7 +306,7 @@ const PostOptButton = ({
                     </div>
                   )}
                 </Menu.Item>
-                {mode !== "row" && mode !== "post" && mode !== "fullmedia" && (
+                {mode !== "post" && mode !== "fullmedia" && (
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -323,7 +326,7 @@ const PostOptButton = ({
                     )}
                   </Menu.Item>
                 )}
-                {mode !== "row" && (
+                {true && (
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -364,6 +367,34 @@ const PostOptButton = ({
                         <h1>{read ? "Mark Unread" : "Mark Read"}</h1>
                       </button>
                     </div>
+                  )}
+                </Menu.Item>
+                <Menu.Item disabled={mode !== "post"}>
+                  {({ active, disabled }) => (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (router.asPath.includes("duplicates=1")) {
+                          return;
+                        }
+                        router.push(
+                          "",
+                          router.asPath.includes("?")
+                            ? `${router.asPath}&duplicates=1`
+                            : `${router.asPath}?duplicates=1`,
+                          { shallow: true }
+                        );
+                      }}
+                      className={
+                        (disabled ? "hidden " : "") +
+                        (active ? "bg-th-highlight " : "") +
+                        " px-2 py-2.5  md:py-1 text-sm flex flex-row items-center w-full"
+                      }
+                    >
+                      <HiOutlineDocumentDuplicate className="flex-none w-4 h-4 mr-2 mt-0.5 " />
+                      <span>{"Show Other Discussions"}</span>
+                    </button>
                   )}
                 </Menu.Item>
               </Menu.Items>
