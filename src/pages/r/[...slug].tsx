@@ -5,7 +5,12 @@ import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
 import { useEffect, useState } from "react";
 import SubredditBanner from "../../components/SubredditBanner";
-import { getWikiContent, loadPost, loadSubredditInfo, loadSubreddits } from "../../RedditAPI";
+import {
+  getWikiContent,
+  loadPost,
+  loadSubredditInfo,
+  loadSubreddits,
+} from "../../RedditAPI";
 import ParseBodyHTML from "../../components/ParseBodyHTML";
 import Collection from "../../components/collections/Collection";
 import PostModal from "../../components/PostModal";
@@ -16,7 +21,7 @@ import { findMediaInfo } from "../../../lib/utils";
 import { getToken } from "next-auth/jwt";
 import { getSession } from "next-auth/react";
 const SubredditPage = ({ query, metaTags, post, postData }) => {
-  const [subsArray, setSubsArray] = useState([]);
+  const [subsArray, setSubsArray] = useState<string[]>([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
   const [commentThread, setCommentThread] = useState(false);
@@ -145,18 +150,17 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
   );
 };
 
-// export async function getServerSideProps(context) {
-//   return {
-//     props: {
-//       query: context?.query,
-//     },
-//   };
-// }
 SubredditPage.getInitialProps = async (d) => {
-  const { query, req } = d;
-  if (query?.slug?.length < 3 && req) {
-    let subreddits = query?.slug?.[0]; 
-    subreddits = query?.slug?.[0]?.split(" ")?.join("+")?.split("%2b")?.join("+"); 
+  const { query, req, res } = d;
+  let subreddits = query?.slug?.[0];
+  subreddits = query?.slug?.[0]?.split(" ")?.join("+")?.split("%2b")?.join("+");
+  if (
+    query?.slug?.length < 3 &&
+    req &&
+    !res?.["req"]?.["rawHeaders"]?.includes(
+      `https://${res?.["req"]?.["rawHeaders"]?.[1]}/r/${subreddits}`
+    )
+  ) {
     const session = await getSession({ req });
     let tokenData;
     if (session?.user?.name) {
@@ -194,16 +198,23 @@ SubredditPage.getInitialProps = async (d) => {
       ogSiteName: "troddit",
       ogDescription: `r/${subInfo?.display_name}: ${subInfo?.public_description}`,
       ogImage: subInfo?.icon_img ?? subInfo?.header_img,
-      ogTitle: `${subInfo?.display_name} on troddit`,
+      ogTitle: `${subInfo?.display_name ?? subreddits} on troddit`,
       ogHeight: subInfo?.icon_size?.[0],
       ogWidth: subInfo?.icon_size?.[1],
     };
+    if (!session?.user?.name) {
+      res.setHeader(
+        "Cache-Control",
+        "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+      );
+    }
+
     return {
       query,
       postData: { children: posts?.slice(0, 6) },
       metaTags,
     };
-  } else {
+  } else if (req) {
     let url = req?.url;
     url = url?.split("?")?.[0];
     if (url?.includes("/comments/")) {
@@ -214,7 +225,9 @@ SubredditPage.getInitialProps = async (d) => {
         const media = await findMediaInfo(
           post,
           true,
-          d?.req?.headers.host?.split(":")?.[0]
+          d?.req?.headers?.host && d?.req?.headers?.host?.includes(":")
+            ? d?.req?.headers?.host?.split(":")?.[0]
+            : d?.req?.headers?.host
         );
         let metaTags = {
           ogSiteName: "troddit",
@@ -224,11 +237,15 @@ SubredditPage.getInitialProps = async (d) => {
             "en-US"
           )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
           ogTitle: post.title,
-          ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
+          ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
           ogHeight: media?.dimensions?.[1],
           ogWidth: media?.dimensions?.[0],
           ogType: `image`,
         };
+        res.setHeader(
+          "Cache-Control",
+          "max-age=0, s-maxage=3600, stale-while-revalidate=30"
+        );
         return { query, metaTags, post: post?.preview ? post : undefined };
       } catch (err) {
         return { query };

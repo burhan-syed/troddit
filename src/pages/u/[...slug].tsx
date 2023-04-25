@@ -8,6 +8,7 @@ import SubredditBanner from "../../components/SubredditBanner";
 import { getUserMultiSubs } from "../../RedditAPI";
 import { getSession } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import React from "react";
 const Sort = ({ query }) => {
   const router = useRouter(); 
   const { data: session, status } = useSession();

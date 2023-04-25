@@ -24,8 +24,6 @@ const index = ({ postData, user }) => {
   const data = useSession();
   const isloading = data.status === "loading";
 
- 
-
   useEffect(() => {
     if (!isloading) {
       //can't use initial ssr props if login mismatch or local subs changed
@@ -49,20 +47,20 @@ const index = ({ postData, user }) => {
           content="Browse Reddit better with Troddit. Grid views, single column mode, galleries, and a number of post styles. Login with Reddit to see your own subs, vote, and comment. Open source."
         ></meta>
       </Head>
-      <main>
-        {ready && (
-          <Feed  initialData={initialData} />
-        )}
-      </main>
+      <main>{ready && <Feed initialData={initialData} />}</main>
     </div>
   );
 };
 //can't use getServerSide Props because inner app navigation break...
-index.getInitialProps = async ({ req, query }) => {
+index.getInitialProps = async ({ req, query, res }) => {
   if (req) {
     const session = await getSession({ req });
     let data: any = {};
-    if (!session && req.cookies?.localSubs !== "true") {
+    if (!session && req.cookies?.localSubs !== "true" && res) {
+      res.setHeader(
+        "Cache-Control",
+        "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+      );
       let localSubs = new Array() as [string];
       if (
         req.cookies.localSubs !== "false" &&
@@ -89,7 +87,16 @@ index.getInitialProps = async ({ req, query }) => {
         refreshToken: token.reddit.refreshToken,
         expires: token.expires,
       };
-      data = await loadFront(true, tokenData, undefined, undefined, undefined, undefined, undefined, true);
+      data = await loadFront(
+        true,
+        tokenData,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
     }
     if (data?.children && data?.after) {
       return {

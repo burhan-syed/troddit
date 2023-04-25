@@ -8,7 +8,7 @@ import LoginModal from "../../components/LoginModal";
 import { loadPost } from "../../RedditAPI";
 import { findMediaInfo } from "../../../lib/utils";
 
-const Subs = ({ query, metaTags, post }) => {
+const FrontSortPage = ({ query, metaTags, post }) => {
   return (
     <div>
       <Head>
@@ -77,10 +77,15 @@ const Subs = ({ query, metaTags, post }) => {
   );
 };
 
-Subs.getInitialProps = async (d) => {
-  const { query, req } = d;
-  let url = req?.url;
-  url = url?.split("?")?.[0];
+FrontSortPage.getInitialProps = async (d) => {
+  const { query, req, res } = d;
+  if (req) {
+    res.setHeader(
+      "Cache-Control",
+      "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+    );
+  }
+  let url = query.frontsort;
   if (
     !(
       query.frontsort === "best" ||
@@ -91,14 +96,13 @@ Subs.getInitialProps = async (d) => {
     )
   ) {
     try {
-      const { post } = await loadPost(url);
-      //const data = await fetch(`https://www.reddit.com${url}.json`)
-      //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
+      let { post } = await loadPost(`/${url}`);
       const media = await findMediaInfo(
         post,
         true,
         d?.req?.headers.host?.split(":")?.[0]
       );
+      post["mediaInfo"] = media;
       let metaTags = {
         ogSiteName: "troddit",
         ogDescription: `Post on r/${post.subreddit} by u/${
@@ -107,12 +111,17 @@ Subs.getInitialProps = async (d) => {
           "en-US"
         )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
         ogTitle: post.title,
-        ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.url,
+        ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
         ogHeight: media?.dimensions?.[1],
         ogWidth: media?.dimensions?.[0],
         ogType: `image`,
       };
-      return { query, metaTags, post: post?.preview ? post : undefined };
+      return {
+        query,
+        metaTags,
+        post: post?.preview ? post : undefined,
+        user: undefined,
+      };
     } catch (err) {
       return { query };
     }
@@ -120,4 +129,4 @@ Subs.getInitialProps = async (d) => {
   return { query };
 };
 
-export default Subs;
+export default FrontSortPage;

@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
+import type { JWTOptions } from "next-auth/jwt";
 function b2a(a) {
   var c,
     d,
@@ -13,7 +15,7 @@ function b2a(a) {
     k = 0,
     l = 0,
     m = "",
-    n = [];
+    n = [] as string[];
   if (!a) return a;
   do
     (c = a.charCodeAt(k++)),
@@ -92,7 +94,7 @@ async function refreshAccessToken(token) {
 const redditScope =
   "identity mysubreddits read edit vote submit report save subscribe history"; //Check Reddit API Documentation for more. The identity scope is required.
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     {
@@ -104,8 +106,7 @@ export default NextAuth({
       version: "2.0",
       token: " https://www.reddit.com/api/v1/access_token",
       accessTokenUrl: " https://www.reddit.com/api/v1/access_token",
-      authorization:
-        `https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=${redditScope}`,
+      authorization: `https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=${redditScope}`,
       userinfo: "https://oauth.reddit.com/api/v1/me",
       profile: (profile) => {
         return {
@@ -121,7 +122,7 @@ export default NextAuth({
     signingKey: process.env.JWT_SIGNING_PRIVATE_KEY,
     // You can also specify a public key for verification if using public/private key (but private only is fine)  // verificationKey: process.env.JWT_SIGNING_PUBLIC_KEY,
     // If you want to use some key format other than HS512 you can specify custom options to use  // when verifying (note: verificationOptions should include a value for maxTokenAge as well).  // verificationOptions = {  //   maxTokenAge: `${maxAge}s`, // e.g. `${30 * 24 * 60 * 60}s` = 30 days  //   algorithms: ['HS512']  // }
-  },
+  } as Partial<JWTOptions>,
 
   callbacks: {
     async jwt({ token, user, account, profile, isNewUser }) {
@@ -135,17 +136,20 @@ export default NextAuth({
       }
 
       if (account?.access_token) {
-        token[account.provider].accessToken = account.access_token;
+        (token[account.provider] as any).accessToken = account.access_token;
       }
 
       if (account?.refresh_token) {
-        token[account.provider].refreshToken = account.refresh_token;
+        (token[account.provider] as any).refreshToken = account.refresh_token;
       }
       if (account?.expires_at) {
-        token[account.provider].expires = account.expires_at;
+        (token[account.provider] as any).expires = account.expires_at;
       }
 
-      if (!token.expires || Math.floor(Date.now() / 1000) > token.expires) {
+      if (
+        !token.expires ||
+        Math.floor(Date.now() / 1000) > (token.expires as number)
+      ) {
         token = await refreshAccessToken(token);
         //console.log(token);
       }
@@ -156,4 +160,5 @@ export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   // A database is optional, but required to persist accounts in a database
   //database: process.env.DATABASE_URL,
-});
+};
+export default NextAuth(authOptions);
