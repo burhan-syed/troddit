@@ -1515,6 +1515,7 @@ export const MainProvider = ({ children }) => {
         pauseAll,
         setPauseAll,
         audioOnHover,
+        setaudioOnHover,
         toggleAudioOnHover,
         cardStyle,
         setCardStyle,
