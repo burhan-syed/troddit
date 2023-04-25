@@ -11,8 +11,8 @@ import { BiPlay, BiPause } from "react-icons/bi";
 
 import PostOptButton from "./PostOptButton";
 import useGlobalState from "../hooks/useGlobalState";
-
 import { useWindowWidth } from "@react-hook/window-size";
+import { CgSpinnerTwo } from "react-icons/cg";
 
 const PostModal = ({
   setSelect,
@@ -28,13 +28,16 @@ const PostModal = ({
   mediaMode = false,
   commentMode = false,
   withcontext = false,
+  feedLoading = false,
+  duplicates = false,
+  flattenedPosts = [] as any[],
 }) => {
   const router = useRouter();
   const context: any = useMainContext();
   const { getFeedData, setFeedData } = useFeedGallery();
-  const [flattenedPosts, setFlattenedPosts] = useState(
-    () => getFeedData() as any[]
-  );
+  // const [flattenedPosts, setFlattenedPosts] = useState(
+  //   () => getFeedData() as any[]
+  // );
   const [autoPlay, setAutoPlay] = useState(false);
   const [useMediaMode, setUseMediaMode] = useState(mediaMode);
   const [sort, setSort] = useState<string>(
@@ -44,6 +47,32 @@ const PostModal = ({
   const [curPostNum, setCurPostNum] = useState(postNum);
   const [showUI, setShowUI] = useState(true);
   const [hideArrows, setHideArrows] = useState(false);
+  const [showDuplicates, setShowDuplicates] = useState(() => duplicates);
+  useEffect(() => {
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop as string),
+    });
+    if (router?.query?.slug?.[1] === "duplicates" || params?.["duplicates"]) {
+      setShowDuplicates(true);
+    } else {
+      setShowDuplicates(false);
+    }
+  }, [router.query]);
+  const handleBackToThread = () => {
+    //go back
+    if (!duplicates && showDuplicates) {
+      router.back();
+    } else {
+      router.replace(
+        "",
+        router.asPath.includes("/duplicates/")
+          ? router.asPath.replace("/duplicates/", "/comments/")
+          : "",
+        { shallow: true }
+      );
+    }
+  };
+
   useEffect(() => {
     if (showUI) {
       setHideArrows(false);
@@ -67,32 +96,12 @@ const PostModal = ({
   }, [readPosts]);
 
   useEffect(() => {
-    setTranslateAmount(0);
-    setOAmount(0);
     if (useMediaMode) {
       context.setMediaMode(true);
     } else {
+      setAutoPlay(false);
       setHideArrows(false);
       context.setMediaMode(false);
-    }
-    //reset this since we're not updating route when in media mode
-    if (curPost.permalink) {
-      const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop as string),
-      });
-      const multi = params?.["m"] ?? "";
-      const queryParams = `${multi ? `?m=${multi}` : ``}`;
-      router.replace(
-        "",
-        router.query?.frontsort
-          ? `${curPost?.id}${mediaMode ? "?mode=media" : ""}`
-          : router.route === "/u/[...slug]"
-          ? `/u/${router?.query?.slug?.[0]}${curPost?.permalink}${queryParams}`
-          : `${curPost.permalink}${queryParams}`,
-        {
-          shallow: true,
-        }
-      );
     }
 
     return () => {};
@@ -129,11 +138,13 @@ const PostModal = ({
 
   const handleBack = (animation: boolean = false, forceBack = false) => {
     if (mediaMode === false && useMediaMode) {
+      updateTranslateX(0);
       setUseMediaMode(false);
     } else if (mediaMode === true && !useMediaMode && !forceBack) {
+      updateTranslateX(0);
       setUseMediaMode(true);
     } else {
-      setTranslateAmount(windowWidth);
+      updateTranslateX(windowWidth, animation);
       setTimeout(
         () => {
           setSelect(false);
@@ -141,7 +152,17 @@ const PostModal = ({
             //do nothing
           } else if (returnRoute) {
             //console.log("last route", returnRoute);
-            router.replace(returnRoute);
+            if (
+              router.asPath.includes("?duplicates") ||
+              router.asPath.includes("&duplicates")
+            ) {
+              router.replace(returnRoute, returnRoute, { shallow: true });
+            } else {
+              router.replace(returnRoute, returnRoute, {
+                shallow: direct ? false : true,
+              });
+              //router.back();
+            }
           } else {
             router.back();
           }
@@ -152,41 +173,36 @@ const PostModal = ({
   };
 
   useEffect(() => {
-    let feedData = getFeedData() as any[];
+    // let feedData = getFeedData() as any[];
+
     if (curPostNum + 5 > flattenedPosts?.length) fetchMore();
-    if (feedData?.length !== flattenedPosts?.length)
-      setFlattenedPosts(feedData);
-  }, [curPostNum]);
+    // if (feedData?.length !== flattenedPosts?.length)
+    //   setFlattenedPosts(feedData);
+  }, [curPostNum, feedLoading, flattenedPosts.length, fetchMore]);
 
   const changePost = (move: 1 | -1) => {
+    // setAutoPlay(false);
     const params = new Proxy(new URLSearchParams(window.location.search), {
       get: (searchParams, prop) => searchParams.get(prop as string),
     });
     const multi = params?.["m"] ?? "";
     const queryParams = `${multi ? `?m=${multi}` : ``}`;
+
     if (flattenedPosts?.[curPostNum + move]?.data) {
       const nextPost = flattenedPosts?.[curPostNum + move]?.data;
       setCurPost(nextPost);
-      //whole app is rendered when route changes, don't change route in full media mode
-      if (
-        !useMediaMode &&
-        !(
-          router.route === "/u/[...slug]" &&
-          router.query?.slug?.[1]?.toUpperCase() === "M"
-        )
-      ) {
-        router.replace(
-          "",
-          router.query?.frontsort
-            ? `${nextPost?.id}${mediaMode ? "?mode=media" : ""}`
-            : router.route === "/u/[...slug]"
-            ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}${queryParams}`
-            : `${nextPost.permalink}${queryParams}`,
-          {
-            shallow: true,
-          }
-        );
-      }
+
+      router.replace(
+        "",
+        router.query?.frontsort
+          ? `${nextPost?.id}${mediaMode ? "?mode=media" : ""}`
+          : router.route === "/u/[...slug]"
+          ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}${queryParams}`
+          : `${nextPost.permalink}${queryParams}`,
+        {
+          shallow: true,
+        }
+      );
       setCurPostNum((p) => p + move);
     }
   };
@@ -194,6 +210,9 @@ const PostModal = ({
   const { getGlobalData, setGlobalData, clearGlobalState } = useGlobalState([
     "videoLoadData",
   ]);
+
+  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data;
+  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data;
   const innerInt = useRef<NodeJS.Timer | number | undefined>();
   useEffect(() => {
     let currNum = curPostNum;
@@ -206,31 +225,21 @@ const PostModal = ({
       if (intervalFlatPosts?.[curPostNum + move]?.data) {
         const nextPost = intervalFlatPosts?.[curPostNum + move]?.data;
         setCurPost(nextPost);
-        //causes whole app to render when route changes
-        // if (
-        //   !(
-        //     router.route === "/u/[...slug]" &&
-        //     router.query?.slug?.[1]?.toUpperCase() === "M"
-        //   )
-        // ) {
-        //   router.replace(
-        //     "",
-        //     router.query?.frontsort
-        //       ? `${nextPost?.id}${mediaMode ? "?mode=media" : ""}`
-        //       : router.route === "/u/[...slug]"
-        //       ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}${queryParams}`
-        //       : `${nextPost.permalink}${queryParams}`,
-        //     {
-        //       shallow: true,
-        //     }
-        //   );
-        // }
-        // if (move === 1) {
-        //   preload(intervalFlatPosts?.[currNum + 2]?.data);
-        // }
-        currNum = currNum + move;
-        setCurPostNum((p) => p + move);
+
+        router.replace(
+          "",
+          router.query?.frontsort
+            ? `${nextPost?.id}${mediaMode ? "?mode=media" : ""}`
+            : router.route === "/u/[...slug]"
+            ? `/u/${router?.query?.slug?.[0]}${nextPost?.permalink}${queryParams}`
+            : `${nextPost.permalink}${queryParams}`,
+          {
+            shallow: true,
+          }
+        );
       }
+      currNum = currNum + move;
+      setCurPostNum((p) => p + move);
     };
 
     let interval;
@@ -247,7 +256,14 @@ const PostModal = ({
           const feedData = getFeedData() as any[];
           //console.log('feed?', currNum, feedData);
           let isVideo = feedData?.[currNum]?.data?.mediaInfo?.isVideo;
-          if (isVideo && context.waitForVidInterval) {
+          if (
+            isVideo &&
+            context.waitForVidInterval &&
+            !(
+              context.preferEmbeds &&
+              feedData?.[currNum]?.data?.mediaInfo?.isIframe
+            )
+          ) {
             pause = true;
             const checkForVidComplete = async () => {
               return await new Promise((resolve) => {
@@ -273,6 +289,18 @@ const PostModal = ({
             //   hasNextPost && changePostInterval(1, currNum, feedData);
             //   pause = false;
             // }, duration * 1000);
+          } else if (
+            context.waitForVidInterval &&
+            context.preferEmbeds &&
+            feedData?.[currNum]?.data?.mediaInfo?.isIframe &&
+            feedData?.[currNum]?.data?.mediaInfo?.videoInfo?.[0]?.duration
+          ) {
+            pause = true;
+            setTimeout(() => {
+              hasNextPost && changePostInterval(1, currNum, feedData);
+              pause = false;
+              // pause = false;
+            }, feedData?.[currNum]?.data?.mediaInfo?.videoInfo?.[0]?.duration * 1000 + 500);
           } else {
             setTimeout(
               () => {
@@ -301,7 +329,9 @@ const PostModal = ({
     autoPlay,
     context.waitForVidInterval,
     context.autoPlayInterval,
+    context.preferEmbeds,
     curPostNum,
+    hasNextPost,
   ]);
 
   const nextPress = useKeyPress("ArrowRight");
@@ -342,109 +372,116 @@ const PostModal = ({
     escapePress,
     context.replyFocus,
   ]);
-  const [animate, setAnimate] = useState(false);
-  const [isYTranslating, setIsYTranslating] = useState(false);
-  const [touchStart, setTouchStart] = useState([0]);
-  const [touchEnd, setTouchEnd] = useState([0]);
-  const [touchStartY, setTouchStartY] = useState([0]);
-  const [touchEndY, setTouchEndY] = useState([0]);
-  const [translateAmount, setTranslateAmount] = useState(0);
-  const [oAmount, setOAmount] = useState(0);
-  const [touchStartTime, setTouchStartTime] = useState([new Date().getTime()]);
-  const handleTouchStart = (e) => {
-    setAnimate(false);
-    touchStart[0] = e.targetTouches[0].clientX as number;
-    touchStartY[0] = e.targetTouches[0].clientY as number;
-    touchStartTime[0] = new Date().getTime();
-  };
-  const handleTouchMove = (e) => {
-    e.preventDefault();
-    setAnimate(false);
-    touchEnd[0] = e.targetTouches[0].clientX as number;
-    touchEndY[0] = e.targetTouches[0].clientY as number;
-    if (
-      new Date().getTime() > touchStartTime[0] + 50 &&
-      Math.abs(touchStart[0] - touchEnd[0]) > 2 &&
-      !isYTranslating &&
-      useMediaMode
-      //&& Math.abs(touchStartY[0] - touchEndY[0]) < 20
-    ) {
-      !(
-        (mediaMode === false && useMediaMode) ||
-        (mediaMode === true && !useMediaMode)
-      )
-        ? setTranslateAmount(Math.max(0, -1 * (touchStart[0] - touchEnd[0])))
-        : setOAmount(Math.max(0, -1 * (touchStart[0] - touchEnd[0])));
-    } else {
-      //setAnimate(true);
-      setTranslateAmount(0);
-      setOAmount(0);
-      touchStart[0] = e.targetTouches[0].clientX as number;
-      touchStartTime[0] = new Date().getTime();
-    }
-  };
-  const handleTouchEnd = (e) => {
-    //console.log(touchStartTime[0], new Date().getTime() > touchStartTime[0] + 250 )
-    const now = new Date().getTime();
-    if (now > touchStartTime[0] + 250 && now < touchStartTime[0] + 1500) {
-      setAnimate(true);
-      if (touchStart[0] - touchEnd[0] > 100) {
-      } else if (touchStart[0] - touchEnd[0] < -100) {
-        handleBack(true);
-      } else {
-        setTranslateAmount(0);
-        setOAmount(0);
-      }
-    } else {
-      setTranslateAmount(0);
-      setOAmount(0);
-    }
-  };
 
-  const hasPrevPost = flattenedPosts?.[curPostNum - 1]?.data;
-  const hasNextPost = flattenedPosts?.[curPostNum + 1]?.data;
+  const translateDiv = useRef<HTMLDivElement>(null);
+  const updateTranslateX = (x: number, smooth = windowWidth < 768) => {
+    if (translateDiv.current) {
+      if (smooth) {
+        translateDiv.current.style.transitionProperty = "transform";
+        translateDiv.current.style.transitionDuration = "200ms";
+        translateDiv.current.style.transitionTimingFunction =
+          "cubic-bezier(0.4, 0, 0.2, 1)";
+      } else {
+        translateDiv.current.style.transitionProperty = "";
+        translateDiv.current.style.transitionDuration = "";
+        translateDiv.current.style.transitionTimingFunction = "";
+      }
+      // console.log(translateDiv.current.style.transform.split(",")?.[0]?.split("px")?.[0]?.split("translate3d(")?.[1] ?? "0")
+      translateDiv.current.style.setProperty(
+        "transform",
+        `translate3d(${x}px, 0px, 0px)`
+      );
+    }
+  };
 
   return (
     <>
       <div
+        ref={translateDiv}
         className={
-          "fixed inset-0 z-30 w-screen min-w-full min-h-screen max-h-screen overscroll-y-contain " +
-          (animate ? " transition-transform duration-200 ease-out " : "")
-        }
-        onTouchStart={(e) => handleTouchStart(e)}
-        onTouchMove={(e) => handleTouchMove(e)}
-        onTouchEnd={(e) => handleTouchEnd(e)}
-        style={
-          (mediaMode === false && useMediaMode) ||
-          (mediaMode === true && !useMediaMode)
-            ? {
-                opacity: `${100 - (oAmount / 500) * 100}%`,
-              }
-            : {
-                transform: `translate3d(${translateAmount}px, ${0}px,${0}px)`,
-                touchAction: `none`,
-                //opacity: `${100 - (translateAmount / 1000) * 100}%`,
-              }
+          "fixed inset-0 z-30 w-screen min-w-full min-h-screen overscroll-y-contain bg-black/75 backdrop-filter " +
+          (!useMediaMode ? " overflow-y-auto " : " ") // scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full
         }
       >
-        <div
-          onClick={() => handleBack(undefined, true)}
-          className="fixed top-0 left-0 w-screen h-full bg-black/75 opacity-80 backdrop-filter overscroll-none"
-        ></div>
+        {useMediaMode ? (
+          <>
+            <MediaModal
+              flattenedPosts={
+                flattenedPosts?.length > 0
+                  ? flattenedPosts
+                  : [{ data: { ...curPost } }]
+              }
+              hide={false}
+              setHideArrows={setHideArrows}
+              hideArrows={hideArrows}
+              changePost={changePost}
+              curPostNum={curPostNum}
+              showUI={showUI}
+              setUseMediaMode={setUseMediaMode}
+              setReadPosts={setReadPosts}
+              handleBack={handleBack}
+              updateTranslateX={updateTranslateX}
+            />
+
+            <div
+              className={
+                "fixed top-1 md:top-4 right-1.5 md:right-16 z-[98] " +
+                " transition ease-in-out duration-200 "
+              }
+            >
+              <PostOptButton
+                post={curPost}
+                mode="fullmedia"
+                showUI={showUI}
+                setShowUI={setShowUI}
+                buttonStyles={
+                  "md:text-opacity-50 md:hover:text-opacity-100 " +
+                  (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                    ? " text-white md:text-th-text "
+                    : " text-white ")
+                }
+              />
+            </div>
+          </>
+        ) : (
+          <div className="relative flex min-h-screen">
+            <Thread
+              key={curPost?.name ?? curPostNum}
+              permalink={direct ? permalink : curPost?.permalink}
+              commentMode={commentMode}
+              initialData={curPost}
+              updateSort={updateSort}
+              sort={sort}
+              commentsDirect={commentsDirect}
+              setMediaMode={setUseMediaMode}
+              goBack={handleBack}
+              withContext={withcontext}
+              setCurPost={setCurPost}
+              direct={direct}
+              duplicates={showDuplicates}
+              handleBackToThread={handleBackToThread}
+            />
+          </div>
+        )}
+      </div>
+      <>
+        {/* <div className="fixed top-0 left-0 w-screen h-full -z-10 bg-black/75 opacity-80 backdrop-filter overscroll-none"></div> */}
         <button
           aria-label="go back"
           title="back (esc)"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleBack(undefined, windowWidth >= 768);
+            handleBack(windowWidth < 650 && useMediaMode, windowWidth >= 768);
           }}
           className={
             "fixed z-[99]  md:bottom-auto  " +
-            " outline-none select-none md:rounded-lg flex items-center justify-center  md:bg-transparent bg-black/40 rounded-full backdrop-blur-lg md:backdrop-blur-none md:hover:bg-black/20 w-10 h-10 md:w-12 md:h-12 flex-none  md:text-opacity-50 hover:text-opacity-100 cursor-pointer border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-sm " +
-            (context?.mediaMode
-              ? " md:top-4 md:right-2 md:left-auto left-1 top-1 " +
-              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
+            " outline-none select-none md:rounded-lg flex items-center justify-center  md:bg-transparent bg-black/40 rounded-full backdrop-blur-lg md:backdrop-blur-none md:hover:bg-black/20 w-10 h-10 md:w-12 md:h-12 flex-none text-white md:text-opacity-50 hover:text-opacity-100 cursor-pointer border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-sm " +
+            (useMediaMode
+              ? " md:top-4 md:right-2 md:left-auto left-1 top-1  " +
+                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                  ? " text-white md:text-th-text "
+                  : " text-white ") +
                 " transition ease-in-out duration-200 " +
                 (showUI && !hideArrows
                   ? " opacity-100 "
@@ -467,10 +504,12 @@ const PostModal = ({
               changePost(-1);
             }}
             className={
-              "fixed z-[98] rotate-90  outline-none cursor-pointer select-none md:p-2 rounded-full md:text-opacity-50 hover:text-opacity-100  bg-black/40 backdrop-blur-lg md:backdrop-blur-none md:bg-transparent md:hover:bg-black/20 md:rounded-md flex items-center justify-center  border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12  " +
+              "fixed z-[98] rotate-90  outline-none cursor-pointer select-none    md:p-2 rounded-full text-white md:text-opacity-50 hover:text-opacity-100  bg-black/40 backdrop-blur-lg md:backdrop-blur-none md:bg-transparent md:hover:bg-black/20 md:rounded-md flex items-center justify-center  border border-transparent hover:border-th-borderHighlight hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12  " +
               (useMediaMode
-                ? " md:top-[7.6rem] md:right-2 right-1.5 md:left-auto bottom-[20.5rem] " +
-                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
+                ? " md:top-[7.6rem] md:right-2 right-1.5 md:left-auto bottom-[22.5rem]" +
+                  (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                    ? " text-white md:text-th-text "
+                    : " text-white ") +
                   " transition ease-in-out duration-200 " +
                   (showUI && !hideArrows
                     ? " opacity-100 "
@@ -481,85 +520,42 @@ const PostModal = ({
             <AiOutlineLeft className="w-4 h-4 md:w-10 md:h-10" />
           </button>
         )}
-        {useMediaMode ? (
-          <>
-            <MediaModal
-              flattenedPosts={
-                flattenedPosts?.length > 0
-                  ? flattenedPosts
-                  : [{ data: { ...curPost } }]
-              }
-              hide={false}
-              setHideArrows={setHideArrows}
-              hideArrows={hideArrows}
-              changePost={changePost}
-              curPostNum={curPostNum}
-              showUI={showUI}
-              setUseMediaMode={setUseMediaMode}
-              firstNum={postNum}
-              isXTranslating={translateAmount > 0}
-              setIsYTranslating={setIsYTranslating}
-              setReadPosts={setReadPosts}
-            />
-
-            <div
-              className={
-                "fixed top-1 md:top-4 right-1.5 md:right-16 z-[98] " +
-                " transition ease-in-out duration-200 "
-              }
-            >
-              <PostOptButton
-                post={curPost}
-                mode="fullmedia"
-                showUI={showUI}
-                setShowUI={setShowUI}
-                buttonStyles={"md:text-opacity-50 md:hover:text-opacity-100 "
-                + (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " )}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <Thread
-              key={curPost?.name ?? curPostNum}
-              permalink={direct ? permalink : curPost?.permalink}
-              commentMode={commentMode}
-              initialData={curPost}
-              updateSort={updateSort}
-              sort={sort}
-              commentsDirect={commentsDirect}
-              setMediaMode={setUseMediaMode}
-              goBack={handleBack}
-              withContext={withcontext}
-              setCurPost={setCurPost}
-              direct={direct}
-            />
-          </>
-        )}
-
-        {/* context.posts?.length > 0 */}
-        {hasNextPost && (
+        {(hasNextPost || feedLoading) && (
           <button
+            disabled={feedLoading && !hasNextPost}
             aria-label="next post"
-            title={`next post (right arrow)`}
+            title={
+              feedLoading && !hasNextPost
+                ? "loading"
+                : `next post (right arrow)`
+            }
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               changePost(1);
             }}
             className={
-              "fixed z-[98]  rotate-90 outline-none cursor-pointer select-none md:text-opacity-50 hover:text-opacity-100   md:p-2 flex items-center justify-center md:bg-transparent md:backdrop-blur-none bg-black/40 rounded-full md:hover:bg-black/20 md:rounded-md  border border-transparent  backdrop-blur-lg hover:border-th-borderHighlight hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12  " +
+              "fixed z-[98]  rotate-90 outline-none select-none text-white md:text-opacity-50 hover:text-opacity-100   md:p-2 flex items-center justify-center md:bg-transparent md:backdrop-blur-none bg-black/40 rounded-full md:hover:bg-black/20 md:rounded-md  border border-transparent  backdrop-blur-lg  w-10 h-10 md:w-12 md:h-12  " +
+              (feedLoading && !hasNextPost
+                ? ""
+                : " hover:border-th-borderHighlight hover:backdrop-blur-lg ") +
               (useMediaMode
-                ? "  md:top-[10.5rem] md:right-2 right-1.5 md:left-auto bottom-[17rem] " +
-                (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
+                ? " md:top-[10.5rem] md:right-2 right-1.5 md:left-auto bottom-[19rem] " +
+                  (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                    ? " text-white md:text-th-text "
+                    : " text-white ") +
                   " transition ease-in-out duration-200 " +
-                  (showUI && !hideArrows
+                  (showUI && (!hideArrows || (feedLoading && !hasNextPost))
                     ? " opacity-100 "
                     : " opacity-0 hover:opacity-100")
-                : " text-white md:rotate-0 md:right-4 md:top-1/2 md:-translate-y-1/2 md:bottom-auto right-1 bottom-[10rem] hidden md:flex ")
+                : " md:rotate-0 md:right-4 md:top-1/2 md:-translate-y-1/2 md:bottom-auto right-1 bottom-[10rem] hidden md:flex ")
             }
           >
-            <AiOutlineRight className="w-4 h-4 md:w-10 md:h-10" />
+            {feedLoading && !hasNextPost ? (
+              <CgSpinnerTwo className="w-4 h-4 md:w-10 md:h-10 animate-spin text-th-accent" />
+            ) : (
+              <AiOutlineRight className="w-4 h-4 md:w-10 md:h-10" />
+            )}
           </button>
         )}
         {hasNextPost && useMediaMode && (
@@ -567,9 +563,11 @@ const PostModal = ({
             aria-label="autoplay"
             title="auto play (p)"
             className={
-              "fixed z-[99] right-1.5 top-14 md:right-2 md:top-[4.5rem] md:text-opacity-50 hover:text-opacity-100 md:bg-transparent bg-black/40  md:hover:bg-black/20 rounded-full md:rounded-md  flex items-center justify-center border border-transparent hover:border-th-borderHighlight outline-none hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12 " +
+              "fixed z-[99] right-1.5 top-14 md:right-2 md:top-[4.5rem] text-white md:text-opacity-50 hover:text-opacity-100 md:bg-transparent bg-black/40  md:hover:bg-black/20 rounded-full md:rounded-md  flex items-center justify-center border border-transparent hover:border-th-borderHighlight outline-none hover:backdrop-blur-lg w-10 h-10 md:w-12 md:h-12 " +
               " transition ease-in-out duration-200 select-none " +
-              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf ? " text-white md:text-th-text " : " text-white " ) + 
+              (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                ? " text-white md:text-th-text "
+                : " text-white ") +
               (showUI && (!hideArrows || autoPlay)
                 ? " opacity-100 backdrop-blur-lg md:backdrop-blur-none "
                 : " opacity-0 hover:opacity-100")
@@ -585,11 +583,13 @@ const PostModal = ({
             {autoPlay ? (
               <BiPause className="w-6 h-6 md:w-12 md:h-12 md:-m-2" />
             ) : (
-              <BiPlay className="w-6 h-6 md:w-12 md:h-12 md:-m-2" />
+              <>
+                <BiPlay className="w-6 h-6 md:w-12 md:h-12 md:-m-2" />
+              </>
             )}
           </button>
         )}
-      </div>
+      </>
     </>
   );
 };
