@@ -1,5 +1,5 @@
 import React from "react";
-import { useQueryClient, useIsFetching } from "react-query";
+import { useQueryClient, useIsFetching } from "@tanstack/react-query";
 import { useMainContext } from "../MainContext";
 import useLocation from "./useLocation";
 

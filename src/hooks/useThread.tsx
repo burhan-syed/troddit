@@ -4,7 +4,7 @@ import {
   QueryFunctionContext,
   useInfiniteQuery,
   useQueryClient,
-} from "react-query";
+} from "@tanstack/react-query";
 import { fixCommentFormat } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
