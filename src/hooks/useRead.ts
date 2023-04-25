@@ -21,7 +21,7 @@ export const useRead = (postID) => {
       }
     };
     checkRead();
-  }, []);
+  }, [postID]);
   useEffect(() => {
     const readData = context?.readPosts?.[postID];
     if (readData) {

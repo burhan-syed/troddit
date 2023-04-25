@@ -3,8 +3,6 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import LoginModal from "./LoginModal";
-
-import MyMasonic from "./MyMasonic";
 import { ErrorBoundary } from "react-error-boundary";
 import useFeed from "../hooks/useFeed";
 import useRefresh from "../hooks/useRefresh";
@@ -13,6 +11,7 @@ import ErrMessage from "./ErrMessage";
 import useLocation from "../hooks/useLocation";
 import toast from "react-hot-toast";
 import ToastCustom from "./toast/ToastCustom";
+import FeedMasonry from "./FeedMasonry";
 
 const Feed = ({ initialData = {} as any }) => {
   const { mode, subreddits } = useLocation();
@@ -83,10 +82,10 @@ const Feed = ({ initialData = {} as any }) => {
   return (
     <main>
       <LoginModal />
-      <div className="flex flex-col items-center flex-none w-screen">
+      <div className="flex flex-col items-center flex-none w-screen pt-1">
         <div
           className={
-            "w-full overflow-hidden " +
+            "w-full  " +
             (context.columnOverride === 1 &&
             context.cardStyle !== "row1" &&
             !context.wideUI
@@ -101,13 +100,12 @@ const Feed = ({ initialData = {} as any }) => {
             FallbackComponent={ErrorFallback}
             onReset={invalidateAll} //context.setForceRefresh((i) => i + 1)}
           >
-            <MyMasonic
+            <FeedMasonry
               initItems={[]}
               feed={feed}
               curKey={key}
               key={`${key}_${context.fastRefresh}_${context.progressKey}`}
             />
-            <div className="relative w-full"></div>
           </ErrorBoundary>
         </div>
       </div>

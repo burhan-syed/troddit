@@ -26,9 +26,9 @@ const VoteFilledUp = (
   </svg>
 );
 
-//og card
-const Card1 = ({
+const Card2 = ({
   post,
+  columns,
   hasMedia,
   hideNSFW,
   forceMute,
@@ -36,6 +36,10 @@ const Card1 = ({
   read,
   handleClick,
   origCommentCount,
+  mediaDimensions = [0, 0] as [number, number],
+  checkCardHeight = () => {},
+  inView = true,
+  newPost = false,
 }) => {
   const context: any = useMainContext();
   const windowWidth = useWindowWidth();
@@ -53,17 +57,16 @@ const Card1 = ({
     context?.compactLinkPics &&
     post?.mediaInfo?.isLink &&
     !post?.mediaInfo?.isTweet &&
-    post?.mediaInfo?.imageInfo?.[0]?.url &&
+    // post?.mediaInfo?.imageInfo?.[0]?.url &&
     !(
       post?.mediaInfo?.isIframe &&
-      (context.embedsEverywhere ||
-        (context.columns === 1 && !context.disableEmbeds))
+      (context.embedsEverywhere || (columns === 1 && !context.disableEmbeds))
     );
   return (
     <div onClick={(e) => handleClick(e)}>
       <div
         className={
-          " text-sm bg-th-post hover:bg-th-postHover group  hover:shadow-2xl transition-colors border hover:cursor-pointer border-th-border2 hover:border-th-borderHighlight2  shadow-md " +
+          " text-sm bg-th-post hover:bg-th-postHover group  hover:shadow-2xl transition-colors ring-1 hover:cursor-pointer ring-th-border2 hover:ring-th-borderHighlight2  shadow-md " +
           " rounded-lg overflow-hidden"
         }
       >
@@ -88,6 +91,12 @@ const Card1 = ({
                 read={read}
                 card={true}
                 handleClick={handleClick}
+                inView={inView}
+                columns={columns}
+                mediaDimensions={mediaDimensions}
+                cardStyle={"card2"}
+                mediaOnly={false}
+                checkCardHeight={checkCardHeight}
               />
             </a>
           )}
@@ -125,16 +134,19 @@ const Card1 = ({
                     </a>
                     {(post?.link_flair_text?.length > 0 ||
                       post?.link_flair_richtext?.length > 0) && (
-                      <span className="text-xs font-medium">
+                      <span className="mr-2 text-xs font-medium">
                         <TitleFlair
                           post={post}
                           padding={
-                            context?.columns > 1 && windowWidth < 640
+                            columns > 1 && windowWidth < 640
                               ? " px-1 "
                               : "p-0.5 px-1 "
                           }
                         />
                       </span>
+                    )}
+                    {newPost && (
+                      <span className="text-xs italic font-light text-th-textLight">{`(new)`}</span>
                     )}
                   </h1>
                 </div>
@@ -155,6 +167,9 @@ const Card1 = ({
                         read={read}
                         card={true}
                         fill={true}
+                        columns={columns}
+                        cardStyle={"card2"}
+                        mediaOnly={false}
                       />
                     </div>
                   </a>
@@ -181,7 +196,7 @@ const Card1 = ({
                       <GoRepoForked className="flex-none w-4 h-4 mr-1 rotate-90" />
                       <span
                         className={
-                          (context.columns > 1 ? " hidden sm:block " : " ") +
+                          (columns > 1 ? " hidden sm:block " : " ") +
                           " italic font-semibold"
                         }
                       >
@@ -202,11 +217,7 @@ const Card1 = ({
                       <h2 className={"mr-1 ml-1 sm:hover:underline"}>
                         u/{post?.author ?? ""}
                       </h2>
-                      <p
-                        className={
-                          context?.columns > 1 ? " hidden sm:block " : "  "
-                        }
-                      >
+                      <p className={columns > 1 ? " hidden sm:block " : "  "}>
                         •
                       </p>
                     </a>
@@ -214,8 +225,7 @@ const Card1 = ({
 
                   <p
                     className={
-                      (context?.columns > 1 ? " hidden sm:block " : " ") +
-                      " ml-1"
+                      (columns > 1 ? " hidden sm:block " : " ") + " ml-1"
                     }
                     title={new Date(post?.created_utc * 1000)?.toString()}
                   >
@@ -241,7 +251,7 @@ const Card1 = ({
                   {post?.over_18 && (
                     <div
                       className={
-                        (context?.columns > 1 ? " hidden sm:flex " : "flex ") +
+                        (columns > 1 ? " hidden sm:flex " : "flex ") +
                         " pl-1 space-x-1"
                       }
                     >
@@ -252,7 +262,7 @@ const Card1 = ({
                   {post?.spoiler && (
                     <div
                       className={
-                        (context?.columns > 1 ? " hidden sm:flex " : "flex ") +
+                        (columns > 1 ? " hidden sm:flex " : "flex ") +
                         " pl-1 space-x-1"
                       }
                     >
@@ -262,13 +272,13 @@ const Card1 = ({
                   )}
                   <div className="mx-0.5"></div>
                   {post?.all_awardings?.length > 0 &&
-                    !(context?.columns > 1 && windowWidth < 640) && (
+                    !(columns > 1 && windowWidth < 640) && (
                       <Awardings all_awardings={post?.all_awardings} />
                     )}
                 </div>
                 <div
                   className={
-                    (context?.columns > 1
+                    (columns > 1
                       ? " hidden sm:flex sm:ml-auto "
                       : "flex ml-auto ") + " "
                   }
@@ -296,7 +306,7 @@ const Card1 = ({
                 <div
                   className={
                     " items-center space-x-1 font-semibold " +
-                    (context.columns > 1 ? " hidden sm:flex " : " flex")
+                    (columns > 1 ? " hidden sm:flex " : " flex")
                   }
                 >
                   <Vote
@@ -310,7 +320,7 @@ const Card1 = ({
                 </div>
                 <span
                   className={
-                    (context.columns > 1 ? " sm:hidden " : " hidden ") +
+                    (columns > 1 ? " sm:hidden " : " hidden ") +
                     " text-th-textLight text-xs flex items-center gap-0.5 " +
                     (post?.likes === true || post?.likes === 1
                       ? " text-th-upvote "
@@ -324,7 +334,7 @@ const Card1 = ({
                 </span>
                 <div
                   className={
-                    (context.columns > 1 ? " ml-2 sm:ml-auto " : " ml-auto ") +
+                    (columns > 1 ? " ml-2 sm:ml-auto " : " ml-auto ") +
                     "flex  flex-row items-center gap-2  mr-6"
                   }
                 >
@@ -343,7 +353,7 @@ const Card1 = ({
                   >
                     <h1
                       className={
-                        (context.columns > 1 ? " hidden sm:block " : " ") +
+                        (columns > 1 ? " hidden sm:block " : " ") +
                         "cursor-pointer hover:underline font-semibold  " +
                         " text-th-textLight group-hover:text-th-text   "
                       }
@@ -360,9 +370,7 @@ const Card1 = ({
                     </h1>
                     <span
                       className={
-                        (context.columns > 1
-                          ? " flex sm:hidden "
-                          : " hidden ") +
+                        (columns > 1 ? " flex sm:hidden " : " hidden ") +
                         " items-center text-xs text-th-textLight gap-0.5 mr-1"
                       }
                     >
@@ -383,4 +391,4 @@ const Card1 = ({
   );
 };
 
-export default Card1;
+export default Card2;
