@@ -395,7 +395,7 @@ const Row1 = ({
                       )}
                   </button>
                 </a>
-                <div className="flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] border border-transparent rounded-md  hover:border-th-borderHighlight opacity-60  hover:cursor-pointer ">
+                <div>
                   <SaveButton
                     id={post?.name}
                     saved={post?.saved}
@@ -403,6 +403,7 @@ const Row1 = ({
                     isPortrait={false}
                   />
                 </div>
+
                 <div className="hidden sm:flex flex-row items-center px-3 sm:px-2 py-1 h-8 sm:h-[26px] border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 hover:cursor-pointer ">
                   <HideButton
                     id={post?.name}

@@ -811,9 +811,6 @@ const Thread = ({
                           </button>
                         </div>
                         <div
-                          className={
-                            "flex flex-row flex-wrap items-center cursor-pointer p-2  border rounded-md border-th-border hover:border-th-borderHighlight"
-                          }
                         >
                           <SaveButton
                             id={post?.name}
@@ -821,7 +818,7 @@ const Thread = ({
                             post={true}
                             isPortrait={usePortrait}
                             useKeys={true}
-                          ></SaveButton>
+                          />
                         </div>
                         <a
                           href={

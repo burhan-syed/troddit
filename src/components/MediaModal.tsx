@@ -655,7 +655,6 @@ const MediaModal = ({
                         <SaveButton
                           id={post?.data?.name}
                           saved={post?.data?.saved}
-                          row={true}
                           fullmedia={true}
                           useKeys={true}
                         />
