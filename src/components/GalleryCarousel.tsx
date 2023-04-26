@@ -72,7 +72,7 @@ const GalleryCarousel = ({
               (media.length < 2 ? "hidden " : "") + 
               " z-10  md:p-2 text-white text-[10px] md:text-xs bg-black bg-opacity-50 rounded-lg backdrop-blur-lg " +
               (mediaMode
-                ? "fixed bottom-[32.5rem] right-1.5 p-2 md:top-5 md:bottom-auto md:right-24  "
+                ? "fixed bottom-[32.5rem] right-1.5 p-2 md:top-6 md:bottom-auto md:right-24  "
                 : " absolute top-2 right-2 p-1 ")
             }
           >

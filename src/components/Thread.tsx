@@ -382,6 +382,7 @@ const Thread = ({
                 style={{
                   height: `${Math.ceil(pHeight ?? 0)}px`,
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
                 {pHeight && pWidth && (
                   <>

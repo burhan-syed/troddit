@@ -31,7 +31,6 @@ const MediaWrapper = ({
   cardStyle = "",
   mediaOnly = false,
 }) => {
-  const [hidden, setHidden] = useState(true);
   const [hideText, setHideText] = useState("");
   const [postData, setPostData] = useState<any>();
   const [isXPost, setIsXPost] = useState(false);
@@ -60,20 +59,20 @@ const MediaWrapper = ({
   }, [post]);
 
   const toggleHide = (e) => {
-    if (hidden) {
+    if (hideText) {
       e.preventDefault();
       e.stopPropagation();
-      setHidden(false);
+      setHideText("");
     }
   };
 
   const NSFWWrapper = (
     <div
-      className={hideNSFW && hidden ? "relative overflow-hidden " : " "}
+      className={hideNSFW && hideText ? "relative overflow-hidden " : " "}
       onClick={toggleHide}
     >
       <div
-        className={" " + (hideNSFW && hidden ? " blur-3xl" : "")}
+        className={" " + (hideNSFW && hideText ? " blur-3xl" : "")}
         style={
           mediaDimensions?.[1] > 0
             ? {
@@ -105,7 +104,7 @@ const MediaWrapper = ({
           checkCardHeight={checkCardHeight}
         />
       </div>
-      {hideNSFW && hidden && (
+      {hideNSFW && hideText && (
         <div className="absolute flex flex-col items-center justify-center w-full opacity-50 translate-x-[-1px] group -translate-y-11 top-1/2 text-white hover:cursor-pointer">
           <div className="flex flex-col items-center justify-center p-4 bg-opacity-50 rounded-lg bg-black/30 backdrop-blur-xl">
             <VscEyeClosed className="w-10 h-10 group-hover:hidden " />
