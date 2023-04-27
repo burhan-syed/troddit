@@ -1,22 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import axios from "axios";
 import Head from "next/head";
-import { GetServerSideProps, NextPage } from "next";
 import Feed from "../components/Feed";
 import { useEffect, useState } from "react";
 import { getSession, useSession } from "next-auth/react";
 import { loadFront } from "../RedditAPI";
-import { useMainContext } from "../MainContext";
 import { getToken } from "next-auth/jwt";
-import { useRouter } from "next/router";
 import React from "react";
-
-interface Props {
-  session;
-  query;
-  postData;
-  user;
-}
 
 const index = ({ postData, user }) => {
   const [initialData, setInitialData] = useState({});
@@ -26,8 +15,22 @@ const index = ({ postData, user }) => {
 
   useEffect(() => {
     if (!isloading) {
+      const parseCookie = (str) =>
+        str
+          .split(";")
+          .map((v) => v.split("="))
+          .reduce((acc, v) => {
+            acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(
+              v[1].trim()
+            );
+            return acc;
+          }, {});
+      const cookies = parseCookie(document.cookie);
       //can't use initial ssr props if login mismatch or local subs changed
-      if (user !== (data?.data?.user?.name ?? "")) {
+      if (
+        user !== (data?.data?.user?.name ?? "") ||
+        (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false")
+      ) {
         setInitialData({});
       } else {
         setInitialData(postData);
@@ -57,16 +60,17 @@ index.getInitialProps = async ({ req, query, res }) => {
     const session = await getSession({ req });
     let data: any = {};
     if (!session && req.cookies?.localSubs !== "true" && res) {
-      res.setHeader(
-        "Cache-Control",
-        "max-age=0, s-maxage=1200, stale-while-revalidate=30"
-      );
       let localSubs = new Array() as [string];
       if (
         req.cookies.localSubs !== "false" &&
-        req.cookies.localSubs?.length > 1
+        req.cookies.localSubs?.length > 0
       ) {
         localSubs = req.cookies.localSubs?.split(",") as [string];
+      } else {
+        res.setHeader(
+          "Cache-Control",
+          "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+        );
       }
       data = await loadFront(
         false,
