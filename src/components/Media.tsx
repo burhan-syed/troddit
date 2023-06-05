@@ -15,7 +15,7 @@ import { BiExpand } from "react-icons/bi";
 import ExternalLink from "./ui/ExternalLink";
 import { GalleryInfo } from "../../types";
 import LoaderPuff from "./ui/LoaderPuff";
-
+import {logApiRequest} from "../RedditAPI"
 const scrollStyle =
   " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
 
@@ -594,6 +594,11 @@ const Media = ({
                     ? "intrinsic"
                     : "fill"
                 }
+                onLoad={() => {
+                  if(imageInfo.src?.includes("redd")){
+                    logApiRequest("media");
+                  }
+                }}
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={

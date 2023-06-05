@@ -13,6 +13,7 @@ import { useWindowWidth } from "@react-hook/window-size";
 import HlsPlayer from "./HLSPlayer";
 import type { HlsConfig } from "hls.js";
 import LoaderPuff from "../../ui/LoaderPuff";
+import { logApiRequest } from "../../../RedditAPI";
 
 const VideoHandler = ({
   name,
@@ -923,6 +924,11 @@ const VideoHandler = ({
           }}
           onEnded={() => {
             //
+          }}
+          onLoadStart={() => {
+            if((vodInfo?.hlsSrc ?? vodInfo?.src)?.includes("redd")){
+              logApiRequest("media");
+            }
           }}
           onLoadedMetadata={() => {
             checkCardHeight && checkCardHeight();

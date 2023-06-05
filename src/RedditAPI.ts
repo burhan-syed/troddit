@@ -11,7 +11,7 @@ let ratelimit_remaining = 600;
 
 const REDDIT = "https://www.reddit.com";
 
-const logApiRequest = async (type: Route_Types, isOauth?: boolean) => {
+export const logApiRequest = async (type: Route_Types, isOauth?: boolean) => {
   try {
     await fetch(`/api/log/increment`, {
       method: "POST",
