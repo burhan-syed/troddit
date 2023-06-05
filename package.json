@@ -12,6 +12,7 @@
     "@headlessui/react": "1.5",
     "@react-hook/resize-observer": "^1.2.5",
     "@react-hook/window-size": "^3.0.7",
+    "@supabase/supabase-js": "^2.24.0",
     "@tanstack/query-sync-storage-persister": "^4.27.1",
     "@tanstack/react-query": "^4.28.0",
     "@tanstack/react-query-devtools": "^4.28.0",
