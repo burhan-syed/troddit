@@ -7,7 +7,11 @@ import { useMainContext } from "../MainContext";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 import { useTheme } from "next-themes";
 import { useWindowSize, useWindowWidth } from "@react-hook/window-size";
-import { findMediaInfo, findOptimalImageIndex } from "../../lib/utils";
+import {
+  checkImageInCache,
+  findMediaInfo,
+  findOptimalImageIndex,
+} from "../../lib/utils";
 import { AiOutlineTwitter } from "react-icons/ai";
 import { ImEmbed } from "react-icons/im";
 import { BsBoxArrowInUpRight } from "react-icons/bs";
@@ -15,7 +19,7 @@ import { BiExpand } from "react-icons/bi";
 import ExternalLink from "./ui/ExternalLink";
 import { GalleryInfo } from "../../types";
 import LoaderPuff from "./ui/LoaderPuff";
-import {logApiRequest} from "../RedditAPI"
+import { logApiRequest } from "../RedditAPI";
 const scrollStyle =
   " scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full ";
 
@@ -253,6 +257,14 @@ const Media = ({
 
       if (post?.mediaInfo?.isGallery) {
         setGalleryInfo(post.mediaInfo.galleryInfo);
+        post.mediaInfo.galleryInfo.forEach((img) => {
+          img.media?.[0]?.src &&
+            checkImageInCache(img.media?.[0]?.src, (isCached) => {
+              if (!isCached) {
+                logApiRequest("media");
+              }
+            });
+        });
         setIsGallery(true);
         return true;
       } else if (
@@ -276,8 +288,11 @@ const Media = ({
 
         let imgheight = post.mediaInfo.imageInfo[num].height;
         let imgwidth = post.mediaInfo.imageInfo[num].width;
+        const imgSrc = checkURL(
+          post.mediaInfo.imageInfo[num].src.replace("amp;", "")
+        );
         setImageInfo({
-          src: checkURL(post.mediaInfo.imageInfo[num].src.replace("amp;", "")),
+          src: imgSrc,
           height: imgheight,
           width: imgwidth,
         });
@@ -287,6 +302,17 @@ const Media = ({
           width: post.thumbnail_width,
         });
         setIsImage(true);
+        if (imgSrc?.includes("redd") && document) {
+          checkImageInCache(imgSrc, (isCached) => {
+            if (!isCached) {
+              logApiRequest("media");
+              if (post.mediaInfo?.isVideo) {
+                //account for video here as proxy for cache
+                logApiRequest("media");
+              }
+            }
+          });
+        }
         return true;
         // }
       }
@@ -594,11 +620,6 @@ const Media = ({
                     ? "intrinsic"
                     : "fill"
                 }
-                onLoad={() => {
-                  if(imageInfo.src?.includes("redd")){
-                    logApiRequest("media");
-                  }
-                }}
                 onLoadingComplete={onLoaded}
                 lazyBoundary={imgFull ? "0px" : "2000px"}
                 objectFit={

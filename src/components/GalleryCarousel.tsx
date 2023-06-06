@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Carousel from "nuka-carousel";
 import Image from "next/dist/client/image";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
-import { logApiRequest } from "../RedditAPI";
 
 const GalleryCarousel = ({
   media,
@@ -166,11 +165,6 @@ const GalleryCarousel = ({
                   priority={true}
                   unoptimized={true}
                   className={""}
-                  onLoad={() => {
-                    if (image.src?.includes("redd")) {
-                      logApiRequest("media");
-                    }
-                  }}
                 ></Image>
                 {i === slideIndex && image.caption && (
                   <div className="absolute bottom-0 left-0 z-20 flex text-sm p-0.5 py-1 bg-black/50 bg-opacity-80 w-full text-white text-left">

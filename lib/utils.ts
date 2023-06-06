@@ -338,7 +338,6 @@ export const findMediaInfo = async (
       isYTVid = true;
     }
 
-
     return {
       videoInfo,
       imageInfo,
@@ -478,7 +477,10 @@ export const findMediaInfo = async (
   };
 
   const findImage = async (post, quick = false) => {
-    if (post?.url_overridden_by_dest?.includes("twitter.com") || (post?.url?.includes("twitter.com") && post?.domain?.includes("twitter"))) {
+    if (
+      post?.url_overridden_by_dest?.includes("twitter.com") ||
+      (post?.url?.includes("twitter.com") && post?.domain?.includes("twitter"))
+    ) {
       isTweet = true;
       //return true;
     }
@@ -613,6 +615,14 @@ export const findMediaInfo = async (
   };
 
   return loadInfo(post?.crosspost_parent_list?.[0] ?? post, quick);
+};
+
+export const checkImageInCache = (imageUrl, callback) => {
+  const img = document.createElement("img");
+  img.src = imageUrl;
+  let status = img.complete && img.naturalWidth > 0;
+  img.src = "";
+  callback(status);
 };
 
 export const filterPosts = async (
