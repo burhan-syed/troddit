@@ -18,16 +18,16 @@ export default function LoginProfile() {
 
   if (session && !loading)
     return (
-      <Link href={`/u/${session?.user?.name}/saved`}>
-        <a>
-          <button
-            aria-label="profile"
-            className="w-full h-full text-center capitalize"
-          >
-            Profile
-          </button>
-        </a>
-      </Link>
+      (<Link legacyBehavior href={`/u/${session?.user?.name}/saved`}>
+
+        <button
+          aria-label="profile"
+          className="w-full h-full text-center capitalize"
+        >
+          Profile
+        </button>
+
+      </Link>)
     );
   return <div className="w-full h-full"></div>;
 }

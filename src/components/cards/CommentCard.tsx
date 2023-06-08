@@ -37,41 +37,41 @@ const CommentCard = ({ data, postNum, handleClick }) => {
 
           <div className="flex flex-col">
             <div className="flex flex-row flex-wrap space-x-1">
-              <Link href={`/u/${data?.author}`}>
-                <a
-                  title={`see u/${data?.author}'s posts`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <h2 className="pl-1 hover:underline">
-                    u/{data?.author ?? ""}
-                  </h2>
-                </a>
+              <Link
+                href={`/u/${data?.author}`}
+                title={`see u/${data?.author}'s posts`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}>
+
+                <h2 className="pl-1 hover:underline">
+                  u/{data?.author ?? ""}
+                </h2>
+
               </Link>
               <span className="text-th-textLight">
                 commented on
               </span>
-              <Link href={data?.permalink}>
-                <a onClick={(e) => e.stopPropagation()}>
-                  <h2 className="font-semibold hover:underline">
-                    {data?.link_title}
-                  </h2>
-                </a>
+              <Link href={data?.permalink} onClick={(e) => e.stopPropagation()}>
+
+                <h2 className="font-semibold hover:underline">
+                  {data?.link_title}
+                </h2>
+
               </Link>
               <span className="text-th-textLight">in</span>
-              <Link href={`/${data?.subreddit_name_prefixed}`}>
-                <a
-                  title={`go to ${data?.subreddit_name_prefixed}`}
-                  className=""
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <h2 className=" hover:underline">
-                    {data?.subreddit_name_prefixed ?? ""}
-                  </h2>
-                </a>
+              <Link
+                href={`/${data?.subreddit_name_prefixed}`}
+                title={`go to ${data?.subreddit_name_prefixed}`}
+                className=""
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}>
+
+                <h2 className=" hover:underline">
+                  {data?.subreddit_name_prefixed ?? ""}
+                </h2>
+
               </Link>
               <p className="text-th-textLight" title={new Date(data?.created_utc * 1000)?.toString()}>
                 {secondsToTime(data?.created_utc, [

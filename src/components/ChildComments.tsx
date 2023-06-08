@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import Vote from "./Vote";
 import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
@@ -280,7 +280,7 @@ const ChildComments = ({
           <div className="flex flex-row items-start justify-between ml-3 space-x-1 text-sm md:ml-0 text-th-textLight">
             {/* Author */}
             <div className="flex flex-row flex-wrap items-center gap-1 ">
-              <Link href={`/u/${comment?.data?.author}`}>
+              <Link legacyBehavior href={`/u/${comment?.data?.author}`}>
                 <a
                   onClick={(e) => {
                     e.stopPropagation();

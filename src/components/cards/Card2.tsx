@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import Media from "../Media";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
@@ -178,7 +178,7 @@ const Card2 = ({
 
               <div className="flex flex-row items-start py-1 pb-1 text-xs font-light truncate sm:font-normal text-th-textLight text-gray ">
                 <div className="flex flex-row flex-wrap items-start">
-                  <Link href={`/r/${post?.subreddit}`}>
+                  <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                     <a
                       className={"mr-1 "}
                       onClick={(e) => {
@@ -206,7 +206,7 @@ const Card2 = ({
                   ) : (
                     <p className="mr-1">•</p>
                   )}
-                  <Link href={`/u/${post?.author}`}>
+                  <Link legacyBehavior href={`/u/${post?.author}`}>
                     <a
                       onClick={(e) => {
                         e.stopPropagation();

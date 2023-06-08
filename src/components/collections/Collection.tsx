@@ -190,10 +190,13 @@ const Collection = ({
           {!bannerMode && (
             <>
               <div className="mr-1 "></div>
-              <Link href={`/r/${subreddits.join("+")}?m=${name}`} passHref>
-                <a className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
-                  <BsArrowRight />
-                </a>
+              <Link
+                href={`/r/${subreddits.join("+")}?m=${name}`}
+                passHref
+                className="flex items-center justify-center w-10 h-8 border rounded-md border-th-border hover:border-th-borderHighlight hover:bg-th-highlight ">
+
+                <BsArrowRight />
+
               </Link>
             </>
           )}
@@ -220,18 +223,16 @@ const Collection = ({
                   <Link
                     href={`/r/${sub}${bannerMode ? `?m=${name}` : ""}`}
                     passHref
-                  >
-                    <a
-                      onClick={(e) => {
-                        if (bannerMode) {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          goToMultiSub(e, sub);
-                        }
-                      }}
-                    >
-                      <BsBoxArrowInUpRight className="ml-0.5 w-3 h-3 transition-transform hover:scale-125" />
-                    </a>
+                    onClick={(e) => {
+                      if (bannerMode) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        goToMultiSub(e, sub);
+                      }
+                    }}>
+
+                    <BsBoxArrowInUpRight className="ml-0.5 w-3 h-3 transition-transform hover:scale-125" />
+
                   </Link>
 
                   <div className="flex-none w-5 h-5 mx-2">

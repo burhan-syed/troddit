@@ -1,6 +1,6 @@
 import { useMainContext } from "../../MainContext";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import { GoRepoForked } from "react-icons/go";
 import TitleFlair from "../TitleFlair";
@@ -200,7 +200,7 @@ const Card1 = ({
                     (linkMode ? " w-2/3 pr-2" : " ")
                   }
                 >
-                  <Link href={`/r/${post?.subreddit}`}>
+                  <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
                       className={
@@ -230,7 +230,7 @@ const Card1 = ({
                     <></>
                   )}
 
-                  <Link href={`/u/${post?.author}`}>
+                  <Link legacyBehavior href={`/u/${post?.author}`}>
                     <a
                       title={`see u/${post?.author}'s posts`}
                       onClick={(e) => {
@@ -672,7 +672,7 @@ const Card1 = ({
 
                 <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight">
                   <div className="flex flex-row flex-wrap items-start ">
-                    <Link href={`/r/${post?.subreddit}`}>
+                    <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                       <a
                         className={"mr-1 "}
                         onClick={(e) => {
@@ -694,7 +694,7 @@ const Card1 = ({
                     ) : (
                       <p>•</p>
                     )}
-                    <Link href={`/u/${post?.author}`}>
+                    <Link legacyBehavior href={`/u/${post?.author}`}>
                       <a
                         onClick={(e) => {
                           e.stopPropagation();

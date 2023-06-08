@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import Image from "next/legacy/image";
@@ -213,7 +213,7 @@ const Row1 = ({
             </div>
             {/* Info */}
             <div className="flex flex-row flex-wrap items-center pt-1 text-xs truncate text-th-textLight ">
-              <Link href={`/r/${post?.subreddit}`}>
+              <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                 <a
                   className={"mr-1 "}
                   onClick={(e) => {
@@ -234,7 +234,7 @@ const Row1 = ({
               ) : (
                 <p>•</p>
               )}
-              <Link href={`/u/${post?.author}`}>
+              <Link legacyBehavior href={`/u/${post?.author}`}>
                 <a
                   onClick={(e) => {
                     e.stopPropagation();

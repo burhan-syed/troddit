@@ -1,6 +1,5 @@
 import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Head from "next/head";
 import NavBar from "../../components/NavBar";
 import Feed from "../../components/Feed";
@@ -10,7 +9,7 @@ import { getSession } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import React from "react";
 const Sort = ({ query }) => {
-  const router = useRouter(); 
+  const router = useRouter();
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const [loaded, setLoaded] = useState(false);
@@ -21,7 +20,7 @@ const Sort = ({ query }) => {
   const [username, setUserName] = useState("");
   const [isMulti, setIsMulti] = useState(false);
   const [feedQuery, setFeedQuery] = useState("");
-  
+
   const getSubsArray = async () => {
     let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
     // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
@@ -33,14 +32,14 @@ const Sort = ({ query }) => {
 
   //to handle direct routes (ie from going back)
   useEffect(() => {
-    if (query.slug?.[1] === "r" && query.slug?.[3] === "comments"){
-      router.replace(`/${query.slug?.slice(1)?.join('/')}`)
+    if (query.slug?.[1] === "r" && query.slug?.[3] === "comments") {
+      router.replace(`/${query.slug?.slice(1)?.join("/")}`);
     }
     //multi case
-    else if (query.slug?.[3] === "r" && query.slug?.[5] === "comments"){
-      router.replace(`/${query.slug?.slice(3)?.join('/')}`)
+    else if (query.slug?.[3] === "r" && query.slug?.[5] === "comments") {
+      router.replace(`/${query.slug?.slice(3)?.join("/")}`);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const sessionLoad = async (user, mode) => {
@@ -64,29 +63,28 @@ const Sort = ({ query }) => {
         setMode(mode.toUpperCase());
       }
     };
-   
+
     if (
-        query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
-        query?.slug?.[1]?.toUpperCase() === "SAVED" ||
-        query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
-        query?.slug?.[1]?.toUpperCase() === "OVERVIEW" ||
-        query?.slug?.[1]?.toUpperCase() === "SUBMITTED" ||
-        query?.slug?.[1]?.toUpperCase() === "COMMENTS" ||
-        query?.slug?.[1]?.toUpperCase() === "HIDDEN"
-      ) {
-        sessionLoad(query?.slug?.[0], query?.slug?.[1]?.toUpperCase());
+      query?.slug?.[1]?.toUpperCase() === "UPVOTED" ||
+      query?.slug?.[1]?.toUpperCase() === "SAVED" ||
+      query?.slug?.[1]?.toUpperCase() === "DOWNVOTED" ||
+      query?.slug?.[1]?.toUpperCase() === "OVERVIEW" ||
+      query?.slug?.[1]?.toUpperCase() === "SUBMITTED" ||
+      query?.slug?.[1]?.toUpperCase() === "COMMENTS" ||
+      query?.slug?.[1]?.toUpperCase() === "HIDDEN"
+    ) {
+      sessionLoad(query?.slug?.[0], query?.slug?.[1]?.toUpperCase());
+    } else {
+      setIsUser(true);
+      setFeedQuery(query);
+      if (query?.slug?.[1] === "m" && query?.slug?.[2]?.length > 0) {
+        setIsMulti(true);
+        setLoaded(true);
       } else {
-        setIsUser(true);
-        setFeedQuery(query);
-        if (query?.slug?.[1] === "m" && query?.slug?.[2]?.length > 0) {
-          setIsMulti(true);
-          setLoaded(true);
-        } else {
-          setUserName(query?.slug?.[0]);
-          setLoaded(true);
-        }
+        setUserName(query?.slug?.[0]);
+        setLoaded(true);
       }
-    
+    }
 
     return () => {
       setLoaded(false);
@@ -144,7 +142,7 @@ const Sort = ({ query }) => {
               ) : (
                 <div></div>
               )}
-              <Feed/>
+              <Feed />
             </div>
           )
         )}
@@ -153,10 +151,8 @@ const Sort = ({ query }) => {
   );
 };
 
-
 //can't use getServerSideProps because in app navigation causes page jump
-Sort.getInitialProps =  ({ query,req }) => {
-
+Sort.getInitialProps = ({ query, req }) => {
   return { query };
 };
 

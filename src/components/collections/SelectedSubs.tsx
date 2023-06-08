@@ -30,11 +30,13 @@ const SelectedSubs = () => {
         </button>
         <CollectionOptions subArray={selected} />
 
-        <Link href={`/r/${selected.join("+")}`}>
-          <a className="flex items-center justify-center w-16 p-2 border rounded-md h-9 hover:bg-th-highlight border-th-border hover:border-th-borderHighlight ">
-            {/* <span className="mr-1">Go</span> */}
-            <BsArrowRight className="flex-none w-6 h-5 " />
-          </a>
+        <Link
+          href={`/r/${selected.join("+")}`}
+          className="flex items-center justify-center w-16 p-2 border rounded-md h-9 hover:bg-th-highlight border-th-border hover:border-th-borderHighlight ">
+
+          {/* <span className="mr-1">Go</span> */}
+          <BsArrowRight className="flex-none w-6 h-5 " />
+
         </Link>
       </div>
       <div className="my-2"></div>
