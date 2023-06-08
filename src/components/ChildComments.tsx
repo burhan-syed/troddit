@@ -715,7 +715,7 @@ const ChildComments = ({
                                     {`Load ${childcomment.data?.count} More... `}
                                   </button>
                                 ) : (
-                                  <Link href={comment?.data?.permalink}>
+                                  <Link legacyBehavior href={comment?.data?.permalink}>
                                     <a
                                       className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
                                       onMouseEnter={() => setHovered(true)}
