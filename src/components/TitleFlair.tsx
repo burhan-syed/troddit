@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import Link from "next/dist/client/link";
 import { useMainContext } from "../MainContext";
 import React from "react";

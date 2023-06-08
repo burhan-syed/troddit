@@ -2,7 +2,7 @@ import { useMainContext } from "../../MainContext";
 import Link from "next/dist/client/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { BiExit } from "react-icons/bi";

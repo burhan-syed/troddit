@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Transition } from "@headlessui/react";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import React from "react";
 import { useState, useEffect, createRef } from "react";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai";

@@ -1,6 +1,6 @@
 import React from "react";
 import Vote from "../Vote";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { BsBoxArrowInUpRight, BsCardText } from "react-icons/bs";
 import { AiOutlineLink } from "react-icons/ai";
 import TitleFlair from "../TitleFlair";

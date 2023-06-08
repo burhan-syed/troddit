@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from "next/image";
+import Image from "next/legacy/image";
 import useBrowser from "../../../hooks/useBrowser";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect, useRef, useMemo } from "react";

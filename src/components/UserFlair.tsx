@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 

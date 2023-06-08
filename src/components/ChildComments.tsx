@@ -9,7 +9,7 @@ import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { BsArrowRightShort } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
 import { useWindowSize } from "@react-hook/window-size";

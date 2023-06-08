@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/react";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 // import { usePlausible } from "next-plausible";
 
 import {
