@@ -83,6 +83,7 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
       ? width
       : (width - (cols ?? 0 > 1 ? gutter * (cols ? cols : 1) : 0)) /
         (cols ? cols : 1);
+  console.log("Width?", width, "Cols?", cols, "CW?", colWidth, "WW?", windowWidth);
   const positioner = usePositioner({
     width,
     columnGutter: gutter,

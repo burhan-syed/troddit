@@ -290,7 +290,7 @@ const Card1 = ({
                     </>
                   )}
                 </div>
-                {!(columns > 1 && windowWidth/columns < 200) && (
+                {!(columns > 1 && windowWidth / columns < 200) && (
                   <div
                     className={
                       "flex flex-row flex-none  mt-1 mb-auto ml-auto hover:underline " +
@@ -334,36 +334,57 @@ const Card1 = ({
                 </span>
                 {linkMode && post?.mediaInfo?.imageInfo?.[0]?.src && (
                   <>
-                    <a
-                      aria-label={post?.title}
-                      href={post?.permalink}
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      className={
-                        "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
-                      }
-                    >
-                      <div className="w-full">
-                        <MediaWrapper
-                          hideNSFW={hideNSFW}
-                          post={post}
-                          forceMute={forceMute}
-                          postMode={false}
-                          imgFull={false}
-                          read={read}
-                          card={true}
-                          fill={true}
-                          columns={columns}
-                          cardStyle={"card1"}
-                          mediaOnly={false}
-                          checkCardHeight={checkCardHeight}
-                        />
+                    {post?.crosspost_parent_list?.[0] ? (
+                      <div className="relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video">
+                        <div className="w-full">
+                          <MediaWrapper
+                            hideNSFW={hideNSFW}
+                            post={post}
+                            forceMute={forceMute}
+                            postMode={false}
+                            imgFull={false}
+                            read={read}
+                            card={true}
+                            fill={true}
+                            columns={columns}
+                            cardStyle={"card1"}
+                            mediaOnly={false}
+                            checkCardHeight={checkCardHeight}
+                          />
+                        </div>
                       </div>
-                    </a>
+                    ) : (
+                      <a
+                        aria-label={post?.title}
+                        href={post?.permalink}
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                        }}
+                        className={
+                          "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
+                        }
+                      >
+                        <div className="w-full">
+                          <MediaWrapper
+                            hideNSFW={hideNSFW}
+                            post={post}
+                            forceMute={forceMute}
+                            postMode={false}
+                            imgFull={false}
+                            read={read}
+                            card={true}
+                            fill={true}
+                            columns={columns}
+                            cardStyle={"card1"}
+                            mediaOnly={false}
+                            checkCardHeight={checkCardHeight}
+                          />
+                        </div>
+                      </a>
+                    )}
                   </>
                 )}
               </div>
@@ -543,37 +564,60 @@ const Card1 = ({
           ) : (
             !linkMode &&
             hasMedia && (
-              <a
-                aria-label={post?.title}
-                href={post?.permalink}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowCardMediaOverlay(false);
-                  handleClick(e, { toMedia: true });
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                }}
-                className={"relative block pt-1 pb-1.5 "}
-              >
-                <MediaWrapper
-                  hideNSFW={hideNSFW}
-                  post={post}
-                  forceMute={forceMute}
-                  postMode={false}
-                  imgFull={false}
-                  read={read}
-                  card={true}
-                  handleClick={handleClick}
-                  columns={columns}
-                  mediaDimensions={mediaDimensions}
-                  inView={inView}
-                  cardStyle={"card1"}
-                  mediaOnly={false}
-                  checkCardHeight={checkCardHeight}
-                />
-              </a>
+              <>
+                {post?.crosspost_parent_list?.[0] ? (
+                  <div className="relative block pt-1 pb-1.5 ">
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={post}
+                      forceMute={forceMute}
+                      postMode={false}
+                      imgFull={false}
+                      read={read}
+                      card={true}
+                      handleClick={handleClick}
+                      columns={columns}
+                      mediaDimensions={mediaDimensions}
+                      inView={inView}
+                      cardStyle={"card1"}
+                      mediaOnly={false}
+                      checkCardHeight={checkCardHeight}
+                    />
+                  </div>
+                ) : (
+                  <a
+                    aria-label={post?.title}
+                    href={post?.permalink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowCardMediaOverlay(false);
+                      handleClick(e, { toMedia: true });
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                    }}
+                    className={"relative block pt-1 pb-1.5 "}
+                  >
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={post}
+                      forceMute={forceMute}
+                      postMode={false}
+                      imgFull={false}
+                      read={read}
+                      card={true}
+                      handleClick={handleClick}
+                      columns={columns}
+                      mediaDimensions={mediaDimensions}
+                      inView={inView}
+                      cardStyle={"card1"}
+                      mediaOnly={false}
+                      checkCardHeight={checkCardHeight}
+                    />
+                  </a>
+                )}
+              </>
             )
           )}
 

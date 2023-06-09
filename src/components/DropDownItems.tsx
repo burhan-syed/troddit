@@ -15,7 +15,7 @@ import DropdownSubCard from "./DropdownSubCard";
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
   return (
-    <Link legacyBehavior href={href} {...rest}>
+    <Link href={href} {...rest}>
       {children}
     </Link>
   );

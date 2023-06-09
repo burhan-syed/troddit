@@ -365,7 +365,7 @@ const SubCard = ({
             : data?.data?.subreddit?.url?.replace("/user/", "/u/") ?? "/"
         }
       >
-        <a>{main}</a>
+        {main}
       </Link>
     );
 

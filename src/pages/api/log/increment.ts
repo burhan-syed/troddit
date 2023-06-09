@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ROUTES_TYPES } from "../../../../types/logs";
 import { createClient } from "@supabase/supabase-js";
-const ENABLE_API_LOG = JSON.parse(process?.env?.ENABLE_API_LOG ?? "false");
+const LOG_REQUESTS = JSON.parse(
+  process.env.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
+);
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 export const config = {
@@ -21,7 +23,7 @@ const handler = async (request: NextRequest) => {
       statusText: "invalid body",
     });
   }
-  if (ENABLE_API_LOG) {
+  if (LOG_REQUESTS) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Missing Supabase Credentials");
     }
@@ -43,7 +45,7 @@ const handler = async (request: NextRequest) => {
 
   return new NextResponse(undefined, {
     status: 200,
-    statusText: ENABLE_API_LOG ? `logged ${route_type}` : "logging disabled",
+    statusText: LOG_REQUESTS ? `logged ${route_type}` : "logging disabled",
   });
 };
 

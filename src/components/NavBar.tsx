@@ -25,6 +25,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const plausible = usePlausible();
   const router = useRouter();
   const windowWidth = useWindowWidth();
+  const [mounted, setMounted] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [allowHide, setallowHide] = useState(true);
@@ -40,6 +41,10 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     timeSinceNav,
     autoHideNav: context.autoHideNav,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     toggleSideNav && setSidebarVisible(true);
@@ -110,46 +115,45 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
   };
 
-  return <>
-    <header
-      className={
-        `${hidden ? "-translate-y-full" : " translate-y-0 "}` +
-        " z-50 fixed top-0 transition ease-in-out transform h-12 w-screen  " +
-        (hidden ? " duration-500" : " duration-0")
-      }
-    >
-      <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-      <nav className="flex flex-row items-center flex-grow h-full shadow-lg bg-th-background2 md:justify-between ">
-        <CgMenu
-          className="flex-none w-10 h-10 cursor-pointer md:hidden"
-          onClick={() => {
-            setSidebarVisible((vis) => !vis);
-            // plausible("sidenav");
-          }}
-        />
-        <div className="flex flex-row items-center justify-start h-full mr-2 space-x-2">
-          <Link href="/" passHref>
+  return (
+    <>
+      <header
+        className={
+          `${hidden ? "-translate-y-full" : " translate-y-0 "}` +
+          " z-50 fixed top-0 transition ease-in-out transform h-12 w-screen  " +
+          (hidden ? " duration-500" : " duration-0")
+        }
+      >
+        <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
+        <nav className="flex flex-row items-center flex-grow h-full shadow-lg bg-th-background2 md:justify-between ">
+          <CgMenu
+            className="flex-none w-10 h-10 cursor-pointer md:hidden"
+            onClick={() => {
+              setSidebarVisible((vis) => !vis);
+              // plausible("sidenav");
+            }}
+          />
+          <div className="flex flex-row items-center justify-start h-full mr-2 space-x-2">
+            <Link href="/" passHref>
+              <h1
+                className="ml-2 text-2xl align-middle cursor-pointer select-none"
+                onClick={homeClick}
+              >
+                {"troddit"}
+              </h1>
+            </Link>
 
-            <h1
-              className="ml-2 text-2xl align-middle cursor-pointer select-none"
-              onClick={homeClick}
+            <div
+              className="flex-none hidden h-full py-1.5 md:block w-60"
+              onClick={() => plausible("dropdownPane")}
             >
-              {"troddit"}
-            </h1>
-
-          </Link>
-
-          <div
-            className="flex-none hidden h-full py-1.5 md:block w-60"
-            onClick={() => plausible("dropdownPane")}
-          >
-            <DropdownPane hide={hidden} />
+              <DropdownPane hide={hidden} />
+            </div>
           </div>
-        </div>
-        <div className="hidden w-full h-full py-1.5 max-w-5xl md:block">
-          <Search id={"subreddit search main"} />
-        </div>
-         <div
+          <div className="hidden w-full h-full py-1.5 max-w-5xl md:block">
+            <Search id={"subreddit search main"} />
+          </div>
+          <div
             className={
               "flex-none  h-10 transition  duration-200 ease-in-out origin-top md:origin-top-right lg:origin-right " +
               (showSearch
@@ -164,53 +168,56 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               />
             )}
           </div>
-        <div className="flex flex-row items-center justify-end h-full py-1.5 ml-auto mr-2 space-x-1 md:ml-2">
-        <button
-            disabled={windowWidth > 768}
-            aria-label="show search"
-            className={"flex md:hidden items-center justify-center flex-none w-10 h-full border border-transparent rounded-md outline-none hover:border-th-border "}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowSearch((s) => !s);
-            }}
-          >
-            <AiOutlineSearch className="flex-none w-6 h-6" />
-          </button>
-          <div className="w-20 h-full">
-            <SortMenu hide={hidden} />
-          </div>
-          <div
-            className="flex flex-row items-center w-10 h-full mr-2 "
-            onClick={() => plausible("filters")}
-          >
-            <FilterMenu hide={hidden} />
-          </div>
-          <div
-            className={
-              "hidden w-20 h-full border  hover:border-th-border border-transparent rounded-md md:block"
-            }
-            //onClick={() => plausible("login")}
-          >
-            <LoginProfile />
-          </div>
+          <div className="flex flex-row items-center justify-end h-full py-1.5 ml-auto mr-2 space-x-1 md:ml-2">
+            <button
+              disabled={mounted && windowWidth > 768}
+              aria-label="show search"
+              className={
+                "flex md:hidden items-center justify-center flex-none w-10 h-full border border-transparent rounded-md outline-none hover:border-th-border "
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowSearch((s) => !s);
+              }}
+            >
+              <AiOutlineSearch className="flex-none w-6 h-6" />
+            </button>
+            <div className="w-20 h-full">
+              <SortMenu hide={hidden} />
+            </div>
+            <div
+              className="flex flex-row items-center w-10 h-full mr-2 "
+              onClick={() => plausible("filters")}
+            >
+              <FilterMenu hide={hidden} />
+            </div>
+            <div
+              className={
+                "hidden w-20 h-full border  hover:border-th-border border-transparent rounded-md md:block"
+              }
+              //onClick={() => plausible("login")}
+            >
+              <LoginProfile />
+            </div>
 
-          <div
-            className="flex flex-row items-center w-10 h-full mr-2 "
-            onClick={() => plausible("options")}
-          >
-            <NavMenu hide={hidden} />
+            <div
+              className="flex flex-row items-center w-10 h-full mr-2 "
+              onClick={() => plausible("options")}
+            >
+              <NavMenu hide={hidden} />
+            </div>
           </div>
-        </div>
-      </nav>
-      {fetchingCount > 0 && (
-        <div className="relative">
-          <div className="absolute top-0 z-40 w-screen h-1 bg-th-accent animate-pulse"></div>
-          <div className="absolute top-0 z-30 w-screen h-1 bg-th-base"></div>
-        </div>
-      )}
-    </header>
-  </>;
+        </nav>
+        {fetchingCount > 0 && (
+          <div className="relative">
+            <div className="absolute top-0 z-40 w-screen h-1 bg-th-accent animate-pulse"></div>
+            <div className="absolute top-0 z-30 w-screen h-1 bg-th-base"></div>
+          </div>
+        )}
+      </header>
+    </>
+  );
 };
 
 export default NavBar;

@@ -215,7 +215,7 @@ const Thread = ({
   }, [usePortrait]);
   useEffect(() => {
     const doSetPHeight = () => {
-      setpHeight(window.innerHeight - 50); //50=3.125rem
+      setpHeight(window.innerHeight - 48 - 2); //50=3.125rem
     };
     doSetPHeight();
 
@@ -358,12 +358,12 @@ const Thread = ({
     <>
       <div
         onClick={() => goBack(false, true)}
-        className={"flex flex-row flex-grow justify-center pt-[3.125rem]"}
+        className={`flex flex-row flex-grow ${usePortrait ? "pt-0.5" : "pt-3"} justify-center `}
       >
         {/* Portrait Media */}
         {usePortrait && (
           <>
-            <div className="z-10 mr-3 sticky-box top-[3.125rem] md:w-6/12">
+            <div className="top-0.5 z-10 mr-3 sticky-box md:w-6/12">
               <div
                 ref={portraitDivRef}
                 className={
