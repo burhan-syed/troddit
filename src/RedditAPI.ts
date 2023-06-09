@@ -8,18 +8,22 @@ import type { Route_Types } from "../types/logs";
 // let url = "https://www.reddit.com" + subUrl + "/" + sortType + "/.json?" + sortUrl + "&" + limitUrl + afterUrl + countUrl;
 
 let ratelimit_remaining = 600;
-
+const LOG_REQUESTS = JSON.parse(
+  process?.env?.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
+);
 const REDDIT = "https://www.reddit.com";
 
 export const logApiRequest = async (type: Route_Types, isOauth?: boolean) => {
-  try {
-    await fetch(`/api/log/increment`, {
-      method: "POST",
-      body: JSON.stringify({ route_type: type, is_oauth: isOauth ?? false }),
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    console.error("log error?", err);
+  if (LOG_REQUESTS) {
+    try {
+      await fetch(`/api/log/increment`, {
+        method: "POST",
+        body: JSON.stringify({ route_type: type, is_oauth: isOauth ?? false }),
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("log error?", err);
+    }
   }
 };
 
