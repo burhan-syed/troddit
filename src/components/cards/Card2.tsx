@@ -10,7 +10,7 @@ import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 import { BiComment } from "react-icons/bi";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useWindowWidth } from "@react-hook/window-size";
 import ExternalLink from "../ui/ExternalLink";
 
@@ -43,6 +43,7 @@ const Card2 = ({
 }) => {
   const context: any = useMainContext();
   const windowWidth = useWindowWidth();
+  const [mounted, setMounted] = useState(false);
   const voteScore = useMemo(() => {
     let x = post?.score ?? 0;
     if (x < 1000) {
@@ -62,6 +63,10 @@ const Card2 = ({
       post?.mediaInfo?.isIframe &&
       (context.embedsEverywhere || (columns === 1 && !context.disableEmbeds))
     );
+  useEffect(() => {
+    setMounted(true); 
+  }, [])
+  
   return (
     <div onClick={(e) => handleClick(e)}>
       <div
@@ -295,7 +300,7 @@ const Card2 = ({
                   )}
                   <div className="mx-0.5"></div>
                   {post?.all_awardings?.length > 0 &&
-                    !(columns > 1 && windowWidth < 640) && (
+                    !(columns > 1 && windowWidth < 640 && mounted) && (
                       <Awardings all_awardings={post?.all_awardings} />
                     )}
                 </div>

@@ -53,7 +53,7 @@ const Card1 = ({
   const mediaBox = useRef(null);
   const infoBox = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
-
+  const [mounted, setMounted] = useState(false);
   const voteScore = useMemo(() => {
     let x = post?.score ?? 0;
     if (x < 1000) {
@@ -64,6 +64,9 @@ const Card1 = ({
       return z.toString() + "k";
     }
   }, [post?.score]);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -290,7 +293,7 @@ const Card1 = ({
                     </>
                   )}
                 </div>
-                {!(columns > 1 && windowWidth / columns < 200) && (
+                {!(columns > 1 && windowWidth / columns < 200) && mounted && (
                   <div
                     className={
                       "flex flex-row flex-none  mt-1 mb-auto ml-auto hover:underline " +
@@ -321,7 +324,10 @@ const Card1 = ({
                       : " items-center ")
                   }
                 >
-                  <Link href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <Link
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <PostTitle
                       post={post}
                       read={read && context.dimRead}
@@ -455,7 +461,7 @@ const Card1 = ({
                       mediaOnly={true}
                       checkCardHeight={checkCardHeight}
                     />
-                    {uniformMediaMode && windowWidth < 640 && (
+                    {uniformMediaMode && windowWidth < 640 && mounted &&  (
                       <div
                         onMouseEnter={() => setHovered(true)}
                         onTouchStart={() => setHovered(true)}
@@ -467,7 +473,7 @@ const Card1 = ({
                             : "bg-gradient-to-t from-black/40")
                         }
                       >
-                        {post?.mediaInfo?.isVideo &&
+                        {post?.mediaInfo?.isVideo && mounted &&
                           (!hovered || windowWidth > 640) && (
                             <div className="absolute top-0 left-0 text-th-accent">
                               <BiPlay
@@ -479,7 +485,7 @@ const Card1 = ({
                               />
                             </div>
                           )}
-                        {hovered && windowWidth < 640 && (
+                        {hovered && windowWidth < 640 && mounted && (
                           <div className="p-0.5 flex flex-col gap-1">
                             <h2 className="inline-flex flex-wrap items-center gap-1 text-sm font-light ">
                               {post.title}
@@ -519,7 +525,7 @@ const Card1 = ({
                       </div>
                     )}
                   </div>
-                  {!hovered && windowWidth > 640 && (
+                  {!hovered && windowWidth > 640 && mounted && (
                     <>
                       {post?.mediaInfo?.isVideo &&
                         !hovered &&
@@ -679,7 +685,7 @@ const Card1 = ({
         {/* </div> */}
         {context.mediaOnly &&
           hasMedia &&
-          (!uniformMediaMode || windowWidth >= 640) && (
+          (!uniformMediaMode || windowWidth >= 640) && mounted && (
             <div
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={(e) => {

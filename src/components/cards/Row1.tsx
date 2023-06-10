@@ -87,6 +87,7 @@ const Row1 = ({
     }
   }, [post?.score]);
 
+
   return (
     <>
       <div
@@ -108,7 +109,7 @@ const Row1 = ({
           {/* Votes */}
           <div
             className={
-              (post?.link_flair_richtext?.length > 0 && "mt-2") +
+              (post?.link_flair_richtext?.length > 0 ? "mt-2" : "") +
               " flex flex-row items-center justify-center "
             }
           >
@@ -155,7 +156,7 @@ const Row1 = ({
                 post?.thumbnail &&
                 post?.thumbnail !== "nsfw" &&
                 post?.thumbnail !== "spoiler" ? (
-                  <div className={hideNSFW && ""}>
+                  <div>
                     <Image
                       src={post?.thumbnail}
                       alt=""
@@ -164,7 +165,7 @@ const Row1 = ({
                       height={post?.thumbnail_height}
                       width={post?.thumbnail_width}
                       unoptimized={true}
-                      className={"rounded-md " + (hideNSFW && " blur")}
+                      className={"rounded-md " + (hideNSFW ? " blur" : "")}
                     ></Image>
                   </div>
                 ) : post?.thumbnail == "self" ? (
@@ -338,9 +339,9 @@ const Row1 = ({
                   aria-label="expand"
                   className={
                     "hidden sm:flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
-                    (!hasMedia &&
-                      !post?.selftext_html &&
-                      "opacity-0 cursor-default")
+                    (!hasMedia && !post?.selftext_html
+                      ? "opacity-0 cursor-default"
+                      : "")
                   }
                   onClick={(e) => {
                     e.preventDefault();
@@ -449,7 +450,7 @@ const Row1 = ({
           <div
             className={
               "block p-1 origin-top pb-2 " +
-              (hideNSFW && " overflow-hidden relative")
+              (hideNSFW ? " overflow-hidden relative" : "")
             }
           >
             {post?.crosspost_parent_list?.[0] ? (
