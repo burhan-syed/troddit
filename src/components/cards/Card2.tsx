@@ -72,33 +72,56 @@ const Card2 = ({
       >
         <div className="">
           {!linkMode && (
-            <a
-              href={post?.permalink}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleClick(e, { toMedia: true });
-              }}
-              onMouseDown={(e) => e.preventDefault()}
-              className={"relative block"}
-            >
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                forceMute={forceMute}
-                postMode={false}
-                imgFull={false}
-                read={read}
-                card={true}
-                handleClick={handleClick}
-                inView={inView}
-                columns={columns}
-                mediaDimensions={mediaDimensions}
-                cardStyle={"card2"}
-                mediaOnly={false}
-                checkCardHeight={checkCardHeight}
-              />
-            </a>
+            <>
+              {post?.crosspost_parent_list?.[0] ? (
+                <div className={"relative block"}>
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    postMode={false}
+                    imgFull={false}
+                    read={read}
+                    card={true}
+                    handleClick={handleClick}
+                    inView={inView}
+                    columns={columns}
+                    mediaDimensions={mediaDimensions}
+                    cardStyle={"card2"}
+                    mediaOnly={false}
+                    checkCardHeight={checkCardHeight}
+                  />
+                </div>
+              ) : (
+                <a
+                  href={post?.permalink}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleClick(e, { toMedia: true });
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className={"relative block"}
+                >
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    postMode={false}
+                    imgFull={false}
+                    read={read}
+                    card={true}
+                    handleClick={handleClick}
+                    inView={inView}
+                    columns={columns}
+                    mediaDimensions={mediaDimensions}
+                    cardStyle={"card2"}
+                    mediaOnly={false}
+                    checkCardHeight={checkCardHeight}
+                  />
+                </a>
+              )}
+            </>
           )}
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
@@ -114,7 +137,7 @@ const Card2 = ({
                     </div>
                   )}
                   <h1 className="my-auto">
-                    <a
+                    <Link
                       className=""
                       href={post?.permalink}
                       onClick={(e) => e.preventDefault()}
@@ -131,7 +154,7 @@ const Card2 = ({
                           wordBreak: "break-word",
                         }}
                       >{`${post?.title ?? ""}`}</span>
-                    </a>
+                    </Link>
                     {(post?.link_flair_text?.length > 0 ||
                       post?.link_flair_richtext?.length > 0) && (
                       <span className="mr-2 text-xs font-medium">
@@ -351,7 +374,7 @@ const Card2 = ({
                       handleClick(e, { toComments: true });
                     }}
                   >
-                    <h1
+                    <h2
                       className={
                         (columns > 1 ? " hidden sm:block " : " ") +
                         "cursor-pointer hover:underline font-semibold  " +
@@ -367,7 +390,7 @@ const Card2 = ({
                             post?.num_comments - origCommentCount
                           } new)`}</span>
                         )}
-                    </h1>
+                    </h2>
                     <span
                       className={
                         (columns > 1 ? " flex sm:hidden " : " hidden ") +

@@ -190,7 +190,10 @@ const Row1 = ({
                       <TitleFlair post={post} />
                     </span>
                   )}
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <Link
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <span
                       className={
                         " group-hover:underline font-normal text-base " +
@@ -204,7 +207,7 @@ const Row1 = ({
                         wordBreak: "break-word",
                       }}
                     >{`${post?.title ?? ""}`}</span>
-                  </a>
+                  </Link>
                   {newPost && (
                     <span className="text-xs italic font-light text-th-textLight">{`(new)`}</span>
                   )}
@@ -449,39 +452,52 @@ const Row1 = ({
               (hideNSFW && " overflow-hidden relative")
             }
           >
-            <a
-              href={post?.permalink}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleClick(e, { toMedia: true });
-              }}
-              onMouseDown={(e) => e.preventDefault()}
-              className="relative block"
-            >
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                columns={columns}
-                forceMute={forceMute}
-                postMode={false}
-                imgFull={false}
-                handleClick={handleClick}
-                mediaDimensions={mediaDimensions}
-                checkCardHeight={checkCardHeight}
-                cardStyle={"row1"}
-                mediaOnly={false}
-              />
-            </a>
+            {post?.crosspost_parent_list?.[0] ? (
+              <div className="relative block">
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  columns={columns}
+                  forceMute={forceMute}
+                  postMode={false}
+                  imgFull={false}
+                  handleClick={handleClick}
+                  mediaDimensions={mediaDimensions}
+                  checkCardHeight={checkCardHeight}
+                  cardStyle={"row1"}
+                  mediaOnly={false}
+                />
+              </div>
+            ) : (
+              <a
+                href={post?.permalink}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClick(e, { toMedia: true });
+                }}
+                onMouseDown={(e) => e.preventDefault()}
+                className="relative block"
+              >
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  columns={columns}
+                  forceMute={forceMute}
+                  postMode={false}
+                  imgFull={false}
+                  handleClick={handleClick}
+                  mediaDimensions={mediaDimensions}
+                  checkCardHeight={checkCardHeight}
+                  cardStyle={"row1"}
+                  mediaOnly={false}
+                />
+              </a>
+            )}
+
             {(post.crosspost_parent_list?.[0]?.selftext_html ||
               post?.selftext_html) && (
               <div
-                //href={post?.permalink}
-                // onClick={(e) => {
-                //   e.preventDefault();
-                //   e.stopPropagation();
-                // }}
-                //onMouseDown={(e) => e.preventDefault()}
                 className={
                   "relative block mx-0" +
                   (post?.mediaInfo?.hasMedia ? " mt-2" : "")

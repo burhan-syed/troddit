@@ -99,6 +99,7 @@ const CardMediaOverlay = ({ post, voteScore, setShowCardMediaOverlay }) => {
           <Media
             post={post}
             postMode={true}
+            columns={1}
             containerDims={[windowWidth * 0.9, mediaHeight]}
           />
         </div>

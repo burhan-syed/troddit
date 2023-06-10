@@ -321,13 +321,13 @@ const Card1 = ({
                       : " items-center ")
                   }
                 >
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <Link href={post?.permalink} onClick={(e) => e.preventDefault()}>
                     <PostTitle
                       post={post}
                       read={read && context.dimRead}
                       newPost={newPost}
                     />
-                  </a>
+                  </Link>
                   <span className="text-sm ">
                     <TitleFlair post={post} />
                   </span>

@@ -44,7 +44,7 @@ const Media = ({
   uniformMediaMode = false,
   inView = true,
   fill = false,
-  checkCardHeight,
+  checkCardHeight = () => {},
 }) => {
   const context: any = useMainContext();
   const windowWidth = useWindowWidth();
