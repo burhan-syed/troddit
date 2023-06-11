@@ -6,7 +6,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import Comments from "./Comments";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import { useWindowSize } from "@react-hook/window-size";
 import { useSession } from "next-auth/react";
 import { BiDownvote, BiUpvote, BiExpand, BiCollapse } from "react-icons/bi";
@@ -53,7 +53,7 @@ import { CgSpinnerTwo } from "react-icons/cg";
 import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 import PostBody from "./PostBody";
 
-const SIDEBYSIDE_THRESHOLD = 1000; 
+const SIDEBYSIDE_THRESHOLD = 1000;
 
 const Thread = ({
   permalink,
@@ -203,7 +203,8 @@ const Thread = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaInfo, context.preferSideBySide, context.disableSideBySide]);
   useEffect(() => {
-    if (windowWidth < SIDEBYSIDE_THRESHOLD && usePortrait && !direct) setUsePortrait(false);
+    if (windowWidth < SIDEBYSIDE_THRESHOLD && usePortrait && !direct)
+      setUsePortrait(false);
   }, [windowWidth]);
 
   useEffect(() => {
@@ -214,7 +215,7 @@ const Thread = ({
   }, [usePortrait]);
   useEffect(() => {
     const doSetPHeight = () => {
-      setpHeight(window.innerHeight - 50); //50=3.125rem
+      setpHeight(window.innerHeight - 48 - 2); //50=3.125rem
     };
     doSetPHeight();
 
@@ -357,12 +358,12 @@ const Thread = ({
     <>
       <div
         onClick={() => goBack(false, true)}
-        className={"flex flex-row flex-grow justify-center pt-[3.125rem]"}
+        className={`flex flex-row flex-grow ${usePortrait ? "pt-0.5" : "pt-3"} justify-center `}
       >
         {/* Portrait Media */}
         {usePortrait && (
           <>
-            <div className="z-10 mr-3 sticky-box top-[3.125rem] md:w-6/12">
+            <div className="top-0.5 z-10 mr-3 sticky-box md:w-6/12">
               <div
                 ref={portraitDivRef}
                 className={
@@ -480,7 +481,7 @@ const Thread = ({
                             </span>
                           </div>
                         )}
-                        <Link href={`/u/${post?.author}`}>
+                        <Link legacyBehavior href={`/u/${post?.author}`}>
                           <a
                             title={`see u/${post?.author}'s posts`}
                             onClick={(e) => {
@@ -500,7 +501,7 @@ const Thread = ({
                           </a>
                         </Link>
 
-                        <Link href={`/r/${post?.subreddit}`}>
+                        <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                           <a
                             title={`go to r/${post?.subreddit}`}
                             className="mr-1 -translate-y-0.5"
@@ -811,8 +812,7 @@ const Thread = ({
                             </span>
                           </button>
                         </div>
-                        <div
-                        >
+                        <div>
                           <SaveButton
                             id={post?.name}
                             saved={post?.saved}
@@ -1125,13 +1125,18 @@ const Thread = ({
                               You are viewing a single comment's thread
                             </span>
                             <span className="text-xs">
-                              <Link href={`/${post?.permalink}`} passHref>
+                              <Link
+                                legacyBehavior
+                                href={`/${post?.permalink}`}
+                                passHref
+                              >
                                 <a className="font-semibold text-th-link hover:text-th-linkHover">
                                   Click to view all comments
                                 </a>
                               </Link>
                               {!withContext && (
                                 <Link
+                                  legacyBehavior
                                   href={`${postComments?.[0]?.data?.permalink}?context=10000`}
                                   passHref
                                 >

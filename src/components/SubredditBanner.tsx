@@ -234,104 +234,104 @@ const SubredditBanner = ({
         <div className="flex flex-row w-full mt-2 mb-2 md:justify-center ">
           <div className="flex flex-row flex-wrap gap-4 mx-2 text-xl md:w-11/12">
             <Link href={`/u/${name}/overview`}>
-              <a>
-                <div
-                  className={
-                    " cursor-pointer font-bold" +
-                    (userPostMode === "" || userPostMode === "OVERVIEW"
-                      ? " font-bold  "
-                      : " opacity-50 hover:opacity-70")
-                  }
-                >
-                  Overview
-                </div>
-              </a>
+
+              <div
+                className={
+                  " cursor-pointer font-bold" +
+                  (userPostMode === "" || userPostMode === "OVERVIEW"
+                    ? " font-bold  "
+                    : " opacity-50 hover:opacity-70")
+                }
+              >
+                Overview
+              </div>
+
             </Link>
             <Link href={`/u/${name}/submitted`}>
-              <a>
-                <div
-                  className={
-                    " cursor-pointer font-bold" +
-                    (userPostMode === "SUBMITTED"
-                      ? " font-bold  "
-                      : " opacity-50 hover:opacity-70")
-                  }
-                >
-                  Posts
-                </div>
-              </a>
+
+              <div
+                className={
+                  " cursor-pointer font-bold" +
+                  (userPostMode === "SUBMITTED"
+                    ? " font-bold  "
+                    : " opacity-50 hover:opacity-70")
+                }
+              >
+                Posts
+              </div>
+
             </Link>
             <Link href={`/u/${name}/comments`}>
-              <a>
-                <div
-                  className={
-                    " cursor-pointer font-bold" +
-                    (userPostMode === "COMMENTS"
-                      ? " font-bold  "
-                      : " opacity-50 hover:opacity-70")
-                  }
-                >
-                  Comments
-                </div>
-              </a>
+
+              <div
+                className={
+                  " cursor-pointer font-bold" +
+                  (userPostMode === "COMMENTS"
+                    ? " font-bold  "
+                    : " opacity-50 hover:opacity-70")
+                }
+              >
+                Comments
+              </div>
+
             </Link>
             {isSelf && (
               <>
                 <Link href={`/u/${name}/upvoted`}>
-                  <a>
-                    <div
-                      className={
-                        " cursor-pointer font-bold" +
-                        (userPostMode === "UPVOTED"
-                          ? " font-bold  "
-                          : " opacity-50 hover:opacity-70")
-                      }
-                    >
-                      Upvoted
-                    </div>
-                  </a>
+
+                  <div
+                    className={
+                      " cursor-pointer font-bold" +
+                      (userPostMode === "UPVOTED"
+                        ? " font-bold  "
+                        : " opacity-50 hover:opacity-70")
+                    }
+                  >
+                    Upvoted
+                  </div>
+
                 </Link>
                 <Link href={`/u/${name}/downvoted`}>
-                  <a>
-                    <div
-                      className={
-                        " cursor-pointer font-bold" +
-                        (userPostMode === "DOWNVOTED"
-                          ? " font-bold  "
-                          : " opacity-50 hover:opacity-70")
-                      }
-                    >
-                      Downvoted
-                    </div>
-                  </a>
+
+                  <div
+                    className={
+                      " cursor-pointer font-bold" +
+                      (userPostMode === "DOWNVOTED"
+                        ? " font-bold  "
+                        : " opacity-50 hover:opacity-70")
+                    }
+                  >
+                    Downvoted
+                  </div>
+
                 </Link>
                 <Link href={`/u/${name}/hidden`}>
-                  <a>
-                    <div
-                      className={
-                        " cursor-pointer font-bold" +
-                        (userPostMode === "HIDDEN"
-                          ? " font-bold  "
-                          : " opacity-50 hover:opacity-70")
-                      }
-                    >
-                      Hidden
-                    </div>
-                  </a>
+
+                  <div
+                    className={
+                      " cursor-pointer font-bold" +
+                      (userPostMode === "HIDDEN"
+                        ? " font-bold  "
+                        : " opacity-50 hover:opacity-70")
+                    }
+                  >
+                    Hidden
+                  </div>
+
                 </Link>
                 <Link href={`/u/${name}/saved`}>
-                  <a>
-                    <div
-                      className={
-                        " cursor-pointer font-bold" +
-                        (userPostMode === "SAVED"
-                          ? " font-bold  "
-                          : " opacity-50 hover:opacity-70")
-                      }
-                    >
-                      Saved
-                    </div>
-                  </a>
+
+                  <div
+                    className={
+                      " cursor-pointer font-bold" +
+                      (userPostMode === "SAVED"
+                        ? " font-bold  "
+                        : " opacity-50 hover:opacity-70")
+                    }
+                  >
+                    Saved
+                  </div>
+
                 </Link>
               </>
             )}

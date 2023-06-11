@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import Gallery from "./Gallery";
 import VideoHandler from "./media/video/VideoHandler";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -44,7 +44,7 @@ const Media = ({
   uniformMediaMode = false,
   inView = true,
   fill = false,
-  checkCardHeight,
+  checkCardHeight = () => {},
 }) => {
   const context: any = useMainContext();
   const windowWidth = useWindowWidth();

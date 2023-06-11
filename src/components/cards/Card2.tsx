@@ -1,5 +1,5 @@
 import { useMainContext } from "../../MainContext";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import Media from "../Media";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import TitleFlair from "../TitleFlair";
@@ -10,7 +10,7 @@ import PostTitle from "../PostTitle";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";
 import { BiComment } from "react-icons/bi";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useWindowWidth } from "@react-hook/window-size";
 import ExternalLink from "../ui/ExternalLink";
 
@@ -43,6 +43,7 @@ const Card2 = ({
 }) => {
   const context: any = useMainContext();
   const windowWidth = useWindowWidth();
+  const [mounted, setMounted] = useState(false);
   const voteScore = useMemo(() => {
     let x = post?.score ?? 0;
     if (x < 1000) {
@@ -62,6 +63,10 @@ const Card2 = ({
       post?.mediaInfo?.isIframe &&
       (context.embedsEverywhere || (columns === 1 && !context.disableEmbeds))
     );
+  useEffect(() => {
+    setMounted(true); 
+  }, [])
+  
   return (
     <div onClick={(e) => handleClick(e)}>
       <div
@@ -72,33 +77,56 @@ const Card2 = ({
       >
         <div className="">
           {!linkMode && (
-            <a
-              href={post?.permalink}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleClick(e, { toMedia: true });
-              }}
-              onMouseDown={(e) => e.preventDefault()}
-              className={"relative block"}
-            >
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                forceMute={forceMute}
-                postMode={false}
-                imgFull={false}
-                read={read}
-                card={true}
-                handleClick={handleClick}
-                inView={inView}
-                columns={columns}
-                mediaDimensions={mediaDimensions}
-                cardStyle={"card2"}
-                mediaOnly={false}
-                checkCardHeight={checkCardHeight}
-              />
-            </a>
+            <>
+              {post?.crosspost_parent_list?.[0] ? (
+                <div className={"relative block"}>
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    postMode={false}
+                    imgFull={false}
+                    read={read}
+                    card={true}
+                    handleClick={handleClick}
+                    inView={inView}
+                    columns={columns}
+                    mediaDimensions={mediaDimensions}
+                    cardStyle={"card2"}
+                    mediaOnly={false}
+                    checkCardHeight={checkCardHeight}
+                  />
+                </div>
+              ) : (
+                <a
+                  href={post?.permalink}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleClick(e, { toMedia: true });
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className={"relative block"}
+                >
+                  <MediaWrapper
+                    hideNSFW={hideNSFW}
+                    post={post}
+                    forceMute={forceMute}
+                    postMode={false}
+                    imgFull={false}
+                    read={read}
+                    card={true}
+                    handleClick={handleClick}
+                    inView={inView}
+                    columns={columns}
+                    mediaDimensions={mediaDimensions}
+                    cardStyle={"card2"}
+                    mediaOnly={false}
+                    checkCardHeight={checkCardHeight}
+                  />
+                </a>
+              )}
+            </>
           )}
           {true && (
             <div className="p-1 px-2 pt-1.5 select-auto">
@@ -114,7 +142,7 @@ const Card2 = ({
                     </div>
                   )}
                   <h1 className="my-auto">
-                    <a
+                    <Link
                       className=""
                       href={post?.permalink}
                       onClick={(e) => e.preventDefault()}
@@ -131,7 +159,7 @@ const Card2 = ({
                           wordBreak: "break-word",
                         }}
                       >{`${post?.title ?? ""}`}</span>
-                    </a>
+                    </Link>
                     {(post?.link_flair_text?.length > 0 ||
                       post?.link_flair_richtext?.length > 0) && (
                       <span className="mr-2 text-xs font-medium">
@@ -178,7 +206,7 @@ const Card2 = ({
 
               <div className="flex flex-row items-start py-1 pb-1 text-xs font-light truncate sm:font-normal text-th-textLight text-gray ">
                 <div className="flex flex-row flex-wrap items-start">
-                  <Link href={`/r/${post?.subreddit}`}>
+                  <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                     <a
                       className={"mr-1 "}
                       onClick={(e) => {
@@ -206,7 +234,7 @@ const Card2 = ({
                   ) : (
                     <p className="mr-1">•</p>
                   )}
-                  <Link href={`/u/${post?.author}`}>
+                  <Link legacyBehavior href={`/u/${post?.author}`}>
                     <a
                       onClick={(e) => {
                         e.stopPropagation();
@@ -272,7 +300,7 @@ const Card2 = ({
                   )}
                   <div className="mx-0.5"></div>
                   {post?.all_awardings?.length > 0 &&
-                    !(columns > 1 && windowWidth < 640) && (
+                    !(columns > 1 && windowWidth < 640 && mounted) && (
                       <Awardings all_awardings={post?.all_awardings} />
                     )}
                 </div>
@@ -351,7 +379,7 @@ const Card2 = ({
                       handleClick(e, { toComments: true });
                     }}
                   >
-                    <h1
+                    <h2
                       className={
                         (columns > 1 ? " hidden sm:block " : " ") +
                         "cursor-pointer hover:underline font-semibold  " +
@@ -367,7 +395,7 @@ const Card2 = ({
                             post?.num_comments - origCommentCount
                           } new)`}</span>
                         )}
-                    </h1>
+                    </h2>
                     <span
                       className={
                         (columns > 1 ? " flex sm:hidden " : " hidden ") +

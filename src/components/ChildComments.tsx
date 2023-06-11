@@ -3,13 +3,13 @@ import { useSession } from "next-auth/react";
 import { useMainContext } from "../MainContext";
 import CommentReply from "./CommentReply";
 import { secondsToTime } from "../../lib/utils";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import Vote from "./Vote";
 import Awardings from "./Awardings";
 import SaveButton from "./SaveButton";
 import ParseBodyHTML from "./ParseBodyHTML";
 import UserFlair from "./UserFlair";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { BsArrowRightShort } from "react-icons/bs";
 import useMutate from "../hooks/useMutate";
 import { useWindowSize } from "@react-hook/window-size";
@@ -280,7 +280,7 @@ const ChildComments = ({
           <div className="flex flex-row items-start justify-between ml-3 space-x-1 text-sm md:ml-0 text-th-textLight">
             {/* Author */}
             <div className="flex flex-row flex-wrap items-center gap-1 ">
-              <Link href={`/u/${comment?.data?.author}`}>
+              <Link legacyBehavior href={`/u/${comment?.data?.author}`}>
                 <a
                   onClick={(e) => {
                     e.stopPropagation();
@@ -715,7 +715,7 @@ const ChildComments = ({
                                     {`Load ${childcomment.data?.count} More... `}
                                   </button>
                                 ) : (
-                                  <Link href={comment?.data?.permalink}>
+                                  <Link legacyBehavior href={comment?.data?.permalink}>
                                     <a
                                       className="flex items-center w-full ml-3 text-sm select-none hover:font-semibold md:pl-0"
                                       onMouseEnter={() => setHovered(true)}

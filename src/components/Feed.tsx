@@ -80,7 +80,7 @@ const Feed = ({ initialData = {} as any }) => {
     toast.remove("not_found");
   }
   return (
-    <main>
+    <>
       <LoginModal />
       <div className="flex flex-col items-center flex-none w-screen pt-1">
         <div
@@ -125,7 +125,7 @@ const Feed = ({ initialData = {} as any }) => {
           }
         />
       </button>
-    </main>
+    </>
   );
 };
 

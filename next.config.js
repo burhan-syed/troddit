@@ -14,6 +14,9 @@ module.exports = withPlausibleProxy()(
     images: {
       domains: [],
     },
+    experimental: {
+      scrollRestoration: true,
+    },
     async redirects() {
       return [
         {

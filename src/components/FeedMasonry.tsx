@@ -377,14 +377,14 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
       {!feed.isFetching &&
         !feed.hasNextPage &&
         feed.isFetched &&
-        !feed.error && (
+        !feed.error && flatPosts?.length > 0 && (
           <div className="flex flex-row items-center justify-center my-6 text-sm font-light">
-            <h1>
+            <p>
               Loaded {flatPosts?.length} post
               {flatPosts?.length === 1 ? "" : "s"} on {feed.data?.pages?.length}{" "}
               page
               {feed.data?.pages?.length === 1 ? "" : "s"}.{" "}
-            </h1>
+            </p>
           </div>
         )}
     </>

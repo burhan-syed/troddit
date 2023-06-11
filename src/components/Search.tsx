@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/react";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 // import { usePlausible } from "next-plausible";
 
 import {
@@ -271,119 +271,119 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
     }
     if (suggestion?.kind === "search") {
       return (
-        <Link
+        (<Link
           href={
             srRestrict && currSub
               ? `/r/${currSub}/search?sort=relevance&t=all&q=${suggestion?.data?.q}`
               : `/search?q=${suggestion?.data?.q}&sort=relevance&t=all`
           }
-        >
-          <a aria-label={`Search for "${suggestion?.data?.q}"`}>
-            <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-th-highlight">
-              <AiOutlineSearch className="w-6 h-6" />
-              <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
-              {currSub !== "" && (
-                <Checkbox toggled={srRestrict} clickEvent={() => setSrRestrict(r => !r)} labelText={`Limit to r/${currSub}`}/>
-              )}
-            </div>
-          </a>
-        </Link>
+          aria-label={`Search for "${suggestion?.data?.q}"`}>
+
+          <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-th-highlight">
+            <AiOutlineSearch className="w-6 h-6" />
+            <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
+            {currSub !== "" && (
+              <Checkbox toggled={srRestrict} clickEvent={() => setSrRestrict(r => !r)} labelText={`Limit to r/${currSub}`}/>
+            )}
+          </div>
+
+        </Link>)
       );
     }
     return (
       <div className="select-none " aria-label={`go to ${suggestion?.data?.display_name_prefixed}`}>
         {/* <Link href={`r/${suggestion?.data?.display_name.replace('/r','')}`}>
           <a> */}
-        <Link href={`/r/${suggestion?.data?.display_name}`}>
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-            }}
+        <Link
+          href={`/r/${suggestion?.data?.display_name}`}
+          onClick={(e) => {
+            e.preventDefault();
+          }}>
+
+          <div
+            // onClick={(e) =>}
+            className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-th-highlight "
           >
-            <div
-              // onClick={(e) =>}
-              className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-th-highlight "
-            >
-              <div className="ml-2">
-                {suggestion?.data?.icon_image?.length > 1 ||
-                suggestion?.data?.icon_img?.length > 1 ||
-                suggestion?.data?.community_icon?.length > 1 ? (
-                  <div className="relative w-6 h-6 rounded-full">
-                    <Image
-                      src={
-                        suggestion?.data?.community_icon?.length > 1
-                          ? suggestion?.data?.community_icon.replaceAll(
-                              "amp;",
-                              ""
-                            )
-                          : suggestion?.data?.icon_img?.length > 1
-                          ? suggestion?.data?.icon_img.replaceAll("amp;", "")
-                          : suggestion?.data?.icon_image?.length > 1
-                          ? suggestion?.data?.icon_image.replaceAll("amp;", "")
-                          : "https://styles.redditmedia.com/t5_38jf0/styles/communityIcon_9o27r8mvttb51.png?width=256&s=58e6c9e7f7b36126893dbecb474d234de0ab7f5c"
-                      }
-                      alt="r"
-                      layout="fill"
-                      className="rounded-full"
-                      unoptimized={true}
-                    ></Image>
-                  </div>
-                ) : (
-                  <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent">
-                    r/
-                  </div>
+            <div className="ml-2">
+              {suggestion?.data?.icon_image?.length > 1 ||
+              suggestion?.data?.icon_img?.length > 1 ||
+              suggestion?.data?.community_icon?.length > 1 ? (
+                <div className="relative w-6 h-6 rounded-full">
+                  <Image
+                    src={
+                      suggestion?.data?.community_icon?.length > 1
+                        ? suggestion?.data?.community_icon.replaceAll(
+                            "amp;",
+                            ""
+                          )
+                        : suggestion?.data?.icon_img?.length > 1
+                        ? suggestion?.data?.icon_img.replaceAll("amp;", "")
+                        : suggestion?.data?.icon_image?.length > 1
+                        ? suggestion?.data?.icon_image.replaceAll("amp;", "")
+                        : "https://styles.redditmedia.com/t5_38jf0/styles/communityIcon_9o27r8mvttb51.png?width=256&s=58e6c9e7f7b36126893dbecb474d234de0ab7f5c"
+                    }
+                    alt="r"
+                    layout="fill"
+                    className="rounded-full"
+                    unoptimized={true}
+                  ></Image>
+                </div>
+              ) : (
+                <div className="w-6 h-6 text-center text-white rounded-full bg-th-accent">
+                  r/
+                </div>
+              )}
+              {/* <p>1:{suggestion?.data?.icon_image?.length}</p>
+              <p>2:{suggestion?.data?.icon_img?.length}</p>
+              <p>3:{suggestion?.data?.community_icon?.length}</p> */}
+            </div>
+            <div className="flex flex-col ml-4">
+              <div>{suggestion?.data?.display_name_prefixed}</div>
+              <div className="text-xs text-th-textLight opacity-70">
+                {suggestion?.data?.subscribers
+                  ? suggestion.data.subscribers.toLocaleString("en-US") +
+                    " followers "
+                  : "?? followers "}
+                {suggestion?.data?.over18 && (
+                  <span className="pl-2 text-xs font-semibold text-th-red ">
+                    nsfw
+                  </span>
                 )}
-                {/* <p>1:{suggestion?.data?.icon_image?.length}</p>
-                <p>2:{suggestion?.data?.icon_img?.length}</p>
-                <p>3:{suggestion?.data?.community_icon?.length}</p> */}
               </div>
-              <div className="flex flex-col ml-4">
-                <div>{suggestion?.data?.display_name_prefixed}</div>
-                <div className="text-xs text-th-textLight opacity-70">
-                  {suggestion?.data?.subscribers
-                    ? suggestion.data.subscribers.toLocaleString("en-US") +
-                      " followers "
-                    : "?? followers "}
-                  {suggestion?.data?.over18 && (
-                    <span className="pl-2 text-xs font-semibold text-th-red ">
-                      nsfw
-                    </span>
+            </div>
+            {addMode && (
+              <div
+                title={`add r/${suggestion?.data?.display_name} to current feed`}
+                className="flex flex-row items-center ml-auto space-x-2 group"
+                onClick={(e) => addSub(e, suggestion?.data?.display_name)}
+              >
+                <span className="hidden text-xs lg:block">
+                  {addMode == "subs"
+                    ? "Multi Browse"
+                    : selected.find(
+                        (s) =>
+                          s?.toUpperCase() ===
+                          suggestion?.data?.display_name?.toUpperCase()
+                      )
+                    ? "Remove Selected"
+                    : "Add to Selected"}
+                </span>
+                <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 hover:ring-2 ring-th-accent hover:bg-th-highlight border-th-border ">
+                  {addMode == "feeds" &&
+                  selected.find(
+                    (s) =>
+                      s?.toUpperCase() ===
+                      suggestion?.data?.display_name?.toUpperCase()
+                  ) ? (
+                    <AiOutlineMinus />
+                  ) : (
+                    <AiOutlinePlus className="" />
                   )}
                 </div>
               </div>
-              {addMode && (
-                <div
-                  title={`add r/${suggestion?.data?.display_name} to current feed`}
-                  className="flex flex-row items-center ml-auto space-x-2 group"
-                  onClick={(e) => addSub(e, suggestion?.data?.display_name)}
-                >
-                  <span className="hidden text-xs lg:block">
-                    {addMode == "subs"
-                      ? "Multi Browse"
-                      : selected.find(
-                          (s) =>
-                            s?.toUpperCase() ===
-                            suggestion?.data?.display_name?.toUpperCase()
-                        )
-                      ? "Remove Selected"
-                      : "Add to Selected"}
-                  </span>
-                  <div className="flex items-center justify-center flex-none border rounded-md w-7 h-7 group-hover:border-0 hover:ring-2 ring-th-accent hover:bg-th-highlight border-th-border ">
-                    {addMode == "feeds" &&
-                    selected.find(
-                      (s) =>
-                        s?.toUpperCase() ===
-                        suggestion?.data?.display_name?.toUpperCase()
-                    ) ? (
-                      <AiOutlineMinus />
-                    ) : (
-                      <AiOutlinePlus className="" />
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </a>
+            )}
+          </div>
+
         </Link>
         {/* </a>
         </Link> */}

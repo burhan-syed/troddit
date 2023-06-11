@@ -1,6 +1,6 @@
 import { useMainContext } from "../../MainContext";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import { numToString, secondsToTime } from "../../../lib/utils";
 import { GoRepoForked } from "react-icons/go";
 import TitleFlair from "../TitleFlair";
@@ -53,7 +53,7 @@ const Card1 = ({
   const mediaBox = useRef(null);
   const infoBox = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
-
+  const [mounted, setMounted] = useState(false);
   const voteScore = useMemo(() => {
     let x = post?.score ?? 0;
     if (x < 1000) {
@@ -64,6 +64,9 @@ const Card1 = ({
       return z.toString() + "k";
     }
   }, [post?.score]);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (context.mediaOnly && hasMedia && infoBox.current) {
@@ -200,7 +203,7 @@ const Card1 = ({
                     (linkMode ? " w-2/3 pr-2" : " ")
                   }
                 >
-                  <Link href={`/r/${post?.subreddit}`}>
+                  <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                     <a
                       title={`go to r/${post?.subreddit}`}
                       className={
@@ -230,7 +233,7 @@ const Card1 = ({
                     <></>
                   )}
 
-                  <Link href={`/u/${post?.author}`}>
+                  <Link legacyBehavior href={`/u/${post?.author}`}>
                     <a
                       title={`see u/${post?.author}'s posts`}
                       onClick={(e) => {
@@ -290,7 +293,7 @@ const Card1 = ({
                     </>
                   )}
                 </div>
-                {!(columns > 1 && windowWidth/columns < 200) && (
+                {!(columns > 1 && windowWidth / columns < 200) && mounted && (
                   <div
                     className={
                       "flex flex-row flex-none  mt-1 mb-auto ml-auto hover:underline " +
@@ -321,49 +324,73 @@ const Card1 = ({
                       : " items-center ")
                   }
                 >
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <Link
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <PostTitle
                       post={post}
                       read={read && context.dimRead}
                       newPost={newPost}
                     />
-                  </a>
+                  </Link>
                   <span className="text-sm ">
                     <TitleFlair post={post} />
                   </span>
                 </span>
                 {linkMode && post?.mediaInfo?.imageInfo?.[0]?.src && (
                   <>
-                    <a
-                      aria-label={post?.title}
-                      href={post?.permalink}
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      className={
-                        "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
-                      }
-                    >
-                      <div className="w-full">
-                        <MediaWrapper
-                          hideNSFW={hideNSFW}
-                          post={post}
-                          forceMute={forceMute}
-                          postMode={false}
-                          imgFull={false}
-                          read={read}
-                          card={true}
-                          fill={true}
-                          columns={columns}
-                          cardStyle={"card1"}
-                          mediaOnly={false}
-                          checkCardHeight={checkCardHeight}
-                        />
+                    {post?.crosspost_parent_list?.[0] ? (
+                      <div className="relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video">
+                        <div className="w-full">
+                          <MediaWrapper
+                            hideNSFW={hideNSFW}
+                            post={post}
+                            forceMute={forceMute}
+                            postMode={false}
+                            imgFull={false}
+                            read={read}
+                            card={true}
+                            fill={true}
+                            columns={columns}
+                            cardStyle={"card1"}
+                            mediaOnly={false}
+                            checkCardHeight={checkCardHeight}
+                          />
+                        </div>
                       </div>
-                    </a>
+                    ) : (
+                      <a
+                        aria-label={post?.title}
+                        href={post?.permalink}
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                        }}
+                        className={
+                          "relative flex items-center justify-center w-1/3 -mt-10 overflow-hidden rounded-md bg-th-base aspect-video "
+                        }
+                      >
+                        <div className="w-full">
+                          <MediaWrapper
+                            hideNSFW={hideNSFW}
+                            post={post}
+                            forceMute={forceMute}
+                            postMode={false}
+                            imgFull={false}
+                            read={read}
+                            card={true}
+                            fill={true}
+                            columns={columns}
+                            cardStyle={"card1"}
+                            mediaOnly={false}
+                            checkCardHeight={checkCardHeight}
+                          />
+                        </div>
+                      </a>
+                    )}
                   </>
                 )}
               </div>
@@ -434,7 +461,7 @@ const Card1 = ({
                       mediaOnly={true}
                       checkCardHeight={checkCardHeight}
                     />
-                    {uniformMediaMode && windowWidth < 640 && (
+                    {uniformMediaMode && windowWidth < 640 && mounted &&  (
                       <div
                         onMouseEnter={() => setHovered(true)}
                         onTouchStart={() => setHovered(true)}
@@ -446,7 +473,7 @@ const Card1 = ({
                             : "bg-gradient-to-t from-black/40")
                         }
                       >
-                        {post?.mediaInfo?.isVideo &&
+                        {post?.mediaInfo?.isVideo && mounted &&
                           (!hovered || windowWidth > 640) && (
                             <div className="absolute top-0 left-0 text-th-accent">
                               <BiPlay
@@ -458,7 +485,7 @@ const Card1 = ({
                               />
                             </div>
                           )}
-                        {hovered && windowWidth < 640 && (
+                        {hovered && windowWidth < 640 && mounted && (
                           <div className="p-0.5 flex flex-col gap-1">
                             <h2 className="inline-flex flex-wrap items-center gap-1 text-sm font-light ">
                               {post.title}
@@ -498,7 +525,7 @@ const Card1 = ({
                       </div>
                     )}
                   </div>
-                  {!hovered && windowWidth > 640 && (
+                  {!hovered && windowWidth > 640 && mounted && (
                     <>
                       {post?.mediaInfo?.isVideo &&
                         !hovered &&
@@ -543,37 +570,60 @@ const Card1 = ({
           ) : (
             !linkMode &&
             hasMedia && (
-              <a
-                aria-label={post?.title}
-                href={post?.permalink}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowCardMediaOverlay(false);
-                  handleClick(e, { toMedia: true });
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                }}
-                className={"relative block pt-1 pb-1.5 "}
-              >
-                <MediaWrapper
-                  hideNSFW={hideNSFW}
-                  post={post}
-                  forceMute={forceMute}
-                  postMode={false}
-                  imgFull={false}
-                  read={read}
-                  card={true}
-                  handleClick={handleClick}
-                  columns={columns}
-                  mediaDimensions={mediaDimensions}
-                  inView={inView}
-                  cardStyle={"card1"}
-                  mediaOnly={false}
-                  checkCardHeight={checkCardHeight}
-                />
-              </a>
+              <>
+                {post?.crosspost_parent_list?.[0] ? (
+                  <div className="relative block pt-1 pb-1.5 ">
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={post}
+                      forceMute={forceMute}
+                      postMode={false}
+                      imgFull={false}
+                      read={read}
+                      card={true}
+                      handleClick={handleClick}
+                      columns={columns}
+                      mediaDimensions={mediaDimensions}
+                      inView={inView}
+                      cardStyle={"card1"}
+                      mediaOnly={false}
+                      checkCardHeight={checkCardHeight}
+                    />
+                  </div>
+                ) : (
+                  <a
+                    aria-label={post?.title}
+                    href={post?.permalink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowCardMediaOverlay(false);
+                      handleClick(e, { toMedia: true });
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                    }}
+                    className={"relative block pt-1 pb-1.5 "}
+                  >
+                    <MediaWrapper
+                      hideNSFW={hideNSFW}
+                      post={post}
+                      forceMute={forceMute}
+                      postMode={false}
+                      imgFull={false}
+                      read={read}
+                      card={true}
+                      handleClick={handleClick}
+                      columns={columns}
+                      mediaDimensions={mediaDimensions}
+                      inView={inView}
+                      cardStyle={"card1"}
+                      mediaOnly={false}
+                      checkCardHeight={checkCardHeight}
+                    />
+                  </a>
+                )}
+              </>
             )
           )}
 
@@ -635,7 +685,7 @@ const Card1 = ({
         {/* </div> */}
         {context.mediaOnly &&
           hasMedia &&
-          (!uniformMediaMode || windowWidth >= 640) && (
+          (!uniformMediaMode || windowWidth >= 640) && mounted && (
             <div
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={(e) => {
@@ -672,7 +722,7 @@ const Card1 = ({
 
                 <div className="flex flex-row items-start py-1 pb-1 text-xs truncate text-th-textLight">
                   <div className="flex flex-row flex-wrap items-start ">
-                    <Link href={`/r/${post?.subreddit}`}>
+                    <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                       <a
                         className={"mr-1 "}
                         onClick={(e) => {
@@ -694,7 +744,7 @@ const Card1 = ({
                     ) : (
                       <p>•</p>
                     )}
-                    <Link href={`/u/${post?.author}`}>
+                    <Link legacyBehavior href={`/u/${post?.author}`}>
                       <a
                         onClick={(e) => {
                           e.stopPropagation();

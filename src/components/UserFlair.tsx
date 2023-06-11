@@ -1,6 +1,6 @@
+import React from "react";
 import { useTheme } from "next-themes";
-import Image from "next/dist/client/image";
-import Link from "next/dist/client/link";
+import Image from "next/legacy/image";
 import { useEffect, useState } from "react";
 
 const UserFlair = ({ post }) => {
@@ -18,7 +18,7 @@ const UserFlair = ({ post }) => {
             ? " text-white "
             : post?.author_flair_text_color == "dark"
             ? "text-black"
-            : (resolvedTheme === "light")
+            : resolvedTheme === "light"
             ? "text-black"
             : "text-white"
         }`}
@@ -26,7 +26,7 @@ const UserFlair = ({ post }) => {
           backgroundColor: `${
             post?.author_flair_background_color
               ? post?.author_flair_background_color
-              : (resolvedTheme === "light")
+              : resolvedTheme === "light"
               ? ""
               : " #bbbb "
           }`,

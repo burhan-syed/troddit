@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from "react";
 import Carousel from "nuka-carousel";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
 const GalleryCarousel = ({

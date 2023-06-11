@@ -146,31 +146,31 @@ const MediaWrapper = ({
       </div>
       <div className="flex flex-row items-start py-0 text-xs truncate select-auto text-th-textLight">
         <div className="flex flex-row flex-wrap items-start text-xs truncate select-auto text-th-textLight">
-          <Link href={`/r/${postData?.subreddit}`}>
-            <a
-              title={`go to r/${postData?.subreddit}`}
-              className="mr-1"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <h2 className="font-semibold hover:underline text-th-text ">
-                r/{postData?.subreddit ?? ""}
-              </h2>
-            </a>
+          <Link
+            href={`/r/${postData?.subreddit}`}
+            title={`go to r/${postData?.subreddit}`}
+            className="mr-1"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}>
+
+            <h2 className="font-semibold hover:underline text-th-text ">
+              r/{postData?.subreddit ?? ""}
+            </h2>
+
           </Link>
           <p>•</p>
-          <Link href={`/u/${postData?.author}`}>
-            <a
-              title={`see u/${postData?.author}'s posts`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <h2 className="ml-1 mr-1 hover:underline">
-                u/{postData?.author ?? ""}
-              </h2>
-            </a>
+          <Link
+            href={`/u/${postData?.author}`}
+            title={`see u/${postData?.author}'s posts`}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}>
+
+            <h2 className="ml-1 mr-1 hover:underline">
+              u/{postData?.author ?? ""}
+            </h2>
+
           </Link>
           <p>•</p>
           <p className="ml-1 ">

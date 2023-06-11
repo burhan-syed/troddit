@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useState, Fragment, useEffect, useMemo } from "react";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 
 import { BsChevronDown } from "react-icons/bs";
 import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";

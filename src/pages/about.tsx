@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
+import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { AiOutlineGithub } from "react-icons/ai";
@@ -27,7 +28,7 @@ const AboutPage = ({ changelog }) => {
 
           <p className="">
             For any feature requests, bug reports, or general conversation head
-            over to <Link href={"/r/TrodditForReddit"}><a className={link}>r/TrodditForReddit</a></Link>.
+            over to <Link href={"/r/TrodditForReddit"} className={link}>r/TrodditForReddit</Link>.
             You can also create an issue on{" "}
             <a
               href="https://www.github.com/burhan-syed/troddit"
@@ -46,11 +47,13 @@ const AboutPage = ({ changelog }) => {
             </a> for anything else.
           </p>
           <p className="">
-            <Link href={"/changelog"}>
-              <a className="flex flex-wrap justify-between pt-5 font-semibold hover:underline">
-                <h4>v{VERSION}</h4>
-                <h4>See Changelog</h4>
-              </a>
+            <Link
+              href={"/changelog"}
+              className="flex flex-wrap justify-between pt-5 font-semibold hover:underline">
+
+              <h4>v{VERSION}</h4>
+              <h4>See Changelog</h4>
+
             </Link>
           </p>
         </div>

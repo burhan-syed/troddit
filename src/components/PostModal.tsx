@@ -400,7 +400,7 @@ const PostModal = ({
         ref={translateDiv}
         className={
           "fixed inset-0 z-30 w-screen min-w-full min-h-screen overscroll-y-contain bg-black/75 backdrop-filter " +
-          (!useMediaMode ? " overflow-y-auto " : " ") // scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full
+          (!useMediaMode ? " overflow-y-auto top-12 " : " ") // scrollbar-thin scrollbar-thumb-th-scrollbar scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full
         }
       >
         {useMediaMode ? (

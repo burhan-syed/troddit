@@ -1,5 +1,6 @@
-import Image from "next/image";
-import Link from "next/dist/client/link";
+import React from "react";
+import Image from "next/legacy/image";
+import Link from "next/link";
 import router from "next/router";
 import { useEffect, useState } from "react";
 import { numToString, secondsToDate } from "../../../lib/utils";
@@ -26,7 +27,7 @@ const SubCard = ({
 }) => {
   const context: any = useMainContext();
   const session = useSession();
-  const { invalidateKey, refreshCurrent, numFetching } = useRefresh();
+  const { invalidateKey, refreshCurrent } = useRefresh();
   const [thumbURL, setThumbURL] = useState("");
   const [subBanner, setBanner] = useState<any>({});
   const [hideNSFW, setHideNSFW] = useState(false);
@@ -172,6 +173,7 @@ const SubCard = ({
               ) : (
                 <>
                   <Link
+                    legacyBehavior
                     href={
                       data?.kind === "t2"
                         ? `/u/${data?.data?.name}`
@@ -183,7 +185,9 @@ const SubCard = ({
                       <h1
                         className={
                           "font-semibold hover:cursor-pointer hover:underline group-hover:underline" +
-                          (tall ? ` ${data?.kind ? "mb-[-0.075rem]" : ""} ` : " ")
+                          (tall
+                            ? ` ${data?.kind ? "mb-[-0.075rem]" : ""} `
+                            : " ")
                         }
                         onClick={() => {
                           !link && data?.kind === "t2"
@@ -223,7 +227,7 @@ const SubCard = ({
                       <BsBoxArrowInUpRight className="w-3 h-3 -ml-1 hover:scale-110 " />
                     </a>
                   )}
-                 
+
                   <h1 className="text-xs font-semibold pb-0.5">
                     {data?.kind === "t2" &&
                     (data?.data?.comment_karma || data?.data?.link_karma) ? (
@@ -354,13 +358,14 @@ const SubCard = ({
   if (link)
     return (
       <Link
+        legacyBehavior
         href={
           data?.kind === "t5"
             ? data?.data?.url
             : data?.data?.subreddit?.url?.replace("/user/", "/u/") ?? "/"
         }
       >
-        <a>{main}</a>
+        {main}
       </Link>
     );
 

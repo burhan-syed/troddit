@@ -1,6 +1,6 @@
 import React from "react";
 import Vote from "../Vote";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { BsBoxArrowInUpRight, BsCardText } from "react-icons/bs";
 import { AiOutlineLink } from "react-icons/ai";
 import TitleFlair from "../TitleFlair";
@@ -44,16 +44,16 @@ const MiniCard = ({ post }) => {
       </div>
       <div className="flex flex-col w-full px-2 ">
         <h2 className="inline-flex flex-wrap items-baseline gap-1 text-sm">
-          <Link href={post.permalink}>
-            <a
-              target={"_blank"}
-              className="flex-wrap font-semibold hover:underline"
-              style={{
-                wordBreak: "break-word",
-              }}
-            >
-              {post.title}
-            </a>
+          <Link
+            href={post.permalink}
+            target={"_blank"}
+            className="flex-wrap font-semibold hover:underline"
+            style={{
+              wordBreak: "break-word",
+            }}>
+
+            {post.title}
+
           </Link>
           <span className="text-xs font-medium">
             <TitleFlair post={post} />
@@ -81,14 +81,16 @@ const MiniCard = ({ post }) => {
           </span>
         </h2>
         <div className="flex flex-wrap gap-1 mt-auto text-xs text-th-textLight">
-          <Link href={`/r/${post.subreddit}`}>
-            <a target={"_blank"} className="text-th-text hover:underline">
-              r/{post.subreddit}
-            </a>
+          <Link
+            href={`/r/${post.subreddit}`}
+            target={"_blank"}
+            className="text-th-text hover:underline">
+            r/{post.subreddit}
+
           </Link>
           •
-          <Link href={`/u/${post.author}`}>
-            <a className="hover:underline">u/{post.author}</a>
+          <Link href={`/u/${post.author}`} className="hover:underline">
+            u/{post.author}
           </Link>
           <span
             className="ml-1"
@@ -112,13 +114,12 @@ const MiniCard = ({ post }) => {
               />
             </>
           )}
-          <Link href={`${post.permalink}`}>
-            <a
-              target={"_blank"}
-              className="ml-auto text-xs font-semibold hover:underline"
-            >
-              {post?.num_comments} comments
-            </a>
+          <Link
+            href={`${post.permalink}`}
+            target={"_blank"}
+            className="ml-auto text-xs font-semibold hover:underline">
+
+            {post?.num_comments}comments
           </Link>
         </div>
       </div>

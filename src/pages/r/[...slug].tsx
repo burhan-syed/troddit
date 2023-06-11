@@ -117,9 +117,9 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
         {wikiMode ? (
           <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
             <Link href={`/r/${subsArray[0]}/wiki`}>
-              <a>
-                <h1 className="text-lg font-bold">Wiki</h1>
-              </a>
+
+              <h1 className="text-lg font-bold">Wiki</h1>
+
             </Link>
             {wikiContent ? (
               <ParseBodyHTML html={wikiContent} newTabLinks={false} />

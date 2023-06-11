@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import React, { useState, useEffect } from "react";
 import { loadSubredditInfo } from "../RedditAPI";
 import FavoriteButton from "./FavoriteButton";

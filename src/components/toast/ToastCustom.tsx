@@ -11,12 +11,19 @@ import type { Toast } from "react-hot-toast";
 interface ToastCustomParams {
   t: Toast;
   message: string;
-  mode?: "loading" | "error" | "version" | "alert" | "success" | "new_posts" | "link";
+  mode?:
+    | "loading"
+    | "error"
+    | "version"
+    | "alert"
+    | "success"
+    | "new_posts"
+    | "link";
   action?: Function;
   action2?: Function;
   actionLabel?: string;
-  showAll?:boolean
-  link?:string;
+  showAll?: boolean;
+  link?: string;
 }
 
 const ToastCustom: React.FC<ToastCustomParams> = ({
@@ -26,8 +33,8 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
   action,
   action2,
   actionLabel = "",
-  showAll=false,
-  link
+  showAll = false,
+  link,
 }) => {
   const toastdiv = (
     <div
@@ -81,7 +88,15 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
                 : "flex items-center flex-grow"
             }
           >
-            <h1 className={mode === "new_posts" ? "md:text-xs" : showAll ? "block" : "hidden md:block"}>
+            <h1
+              className={
+                mode === "new_posts"
+                  ? "md:text-xs"
+                  : showAll
+                  ? "block"
+                  : "hidden md:block"
+              }
+            >
               {message}
             </h1>
             <h2
@@ -137,8 +152,8 @@ const ToastCustom: React.FC<ToastCustomParams> = ({
   );
   if (mode === "version" || (mode === "link" && link)) {
     return (
-      <Link href={link ? link : "/changelog"}>
-        <a>{toastdiv}</a>
+      <Link legacyBehavior href={link ? link : "/changelog"}>
+        {toastdiv}
       </Link>
     );
   }

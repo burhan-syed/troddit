@@ -1,8 +1,8 @@
 import { useMainContext } from "../../MainContext";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import { BiComment } from "react-icons/bi";
 import { numToString, secondsToTime } from "../../../lib/utils";
-import Image from "next/dist/client/image";
+import Image from "next/legacy/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { BiExit } from "react-icons/bi";
@@ -87,6 +87,7 @@ const Row1 = ({
     }
   }, [post?.score]);
 
+
   return (
     <>
       <div
@@ -108,7 +109,7 @@ const Row1 = ({
           {/* Votes */}
           <div
             className={
-              (post?.link_flair_richtext?.length > 0 && "mt-2") +
+              (post?.link_flair_richtext?.length > 0 ? "mt-2" : "") +
               " flex flex-row items-center justify-center "
             }
           >
@@ -155,7 +156,7 @@ const Row1 = ({
                 post?.thumbnail &&
                 post?.thumbnail !== "nsfw" &&
                 post?.thumbnail !== "spoiler" ? (
-                  <div className={hideNSFW && ""}>
+                  <div>
                     <Image
                       src={post?.thumbnail}
                       alt=""
@@ -164,7 +165,7 @@ const Row1 = ({
                       height={post?.thumbnail_height}
                       width={post?.thumbnail_width}
                       unoptimized={true}
-                      className={"rounded-md " + (hideNSFW && " blur")}
+                      className={"rounded-md " + (hideNSFW ? " blur" : "")}
                     ></Image>
                   </div>
                 ) : post?.thumbnail == "self" ? (
@@ -190,7 +191,10 @@ const Row1 = ({
                       <TitleFlair post={post} />
                     </span>
                   )}
-                  <a href={post?.permalink} onClick={(e) => e.preventDefault()}>
+                  <Link
+                    href={post?.permalink}
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <span
                       className={
                         " group-hover:underline font-normal text-base " +
@@ -204,7 +208,7 @@ const Row1 = ({
                         wordBreak: "break-word",
                       }}
                     >{`${post?.title ?? ""}`}</span>
-                  </a>
+                  </Link>
                   {newPost && (
                     <span className="text-xs italic font-light text-th-textLight">{`(new)`}</span>
                   )}
@@ -213,7 +217,7 @@ const Row1 = ({
             </div>
             {/* Info */}
             <div className="flex flex-row flex-wrap items-center pt-1 text-xs truncate text-th-textLight ">
-              <Link href={`/r/${post?.subreddit}`}>
+              <Link legacyBehavior href={`/r/${post?.subreddit}`}>
                 <a
                   className={"mr-1 "}
                   onClick={(e) => {
@@ -234,7 +238,7 @@ const Row1 = ({
               ) : (
                 <p>•</p>
               )}
-              <Link href={`/u/${post?.author}`}>
+              <Link legacyBehavior href={`/u/${post?.author}`}>
                 <a
                   onClick={(e) => {
                     e.stopPropagation();
@@ -335,9 +339,9 @@ const Row1 = ({
                   aria-label="expand"
                   className={
                     "hidden sm:flex flex-row items-center h-6 px-1 space-x-1 border rounded-md border-th-border hover:border-th-borderHighlight opacity-60 " +
-                    (!hasMedia &&
-                      !post?.selftext_html &&
-                      "opacity-0 cursor-default")
+                    (!hasMedia && !post?.selftext_html
+                      ? "opacity-0 cursor-default"
+                      : "")
                   }
                   onClick={(e) => {
                     e.preventDefault();
@@ -446,42 +450,55 @@ const Row1 = ({
           <div
             className={
               "block p-1 origin-top pb-2 " +
-              (hideNSFW && " overflow-hidden relative")
+              (hideNSFW ? " overflow-hidden relative" : "")
             }
           >
-            <a
-              href={post?.permalink}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleClick(e, { toMedia: true });
-              }}
-              onMouseDown={(e) => e.preventDefault()}
-              className="relative block"
-            >
-              <MediaWrapper
-                hideNSFW={hideNSFW}
-                post={post}
-                columns={columns}
-                forceMute={forceMute}
-                postMode={false}
-                imgFull={false}
-                handleClick={handleClick}
-                mediaDimensions={mediaDimensions}
-                checkCardHeight={checkCardHeight}
-                cardStyle={"row1"}
-                mediaOnly={false}
-              />
-            </a>
+            {post?.crosspost_parent_list?.[0] ? (
+              <div className="relative block">
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  columns={columns}
+                  forceMute={forceMute}
+                  postMode={false}
+                  imgFull={false}
+                  handleClick={handleClick}
+                  mediaDimensions={mediaDimensions}
+                  checkCardHeight={checkCardHeight}
+                  cardStyle={"row1"}
+                  mediaOnly={false}
+                />
+              </div>
+            ) : (
+              <a
+                href={post?.permalink}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClick(e, { toMedia: true });
+                }}
+                onMouseDown={(e) => e.preventDefault()}
+                className="relative block"
+              >
+                <MediaWrapper
+                  hideNSFW={hideNSFW}
+                  post={post}
+                  columns={columns}
+                  forceMute={forceMute}
+                  postMode={false}
+                  imgFull={false}
+                  handleClick={handleClick}
+                  mediaDimensions={mediaDimensions}
+                  checkCardHeight={checkCardHeight}
+                  cardStyle={"row1"}
+                  mediaOnly={false}
+                />
+              </a>
+            )}
+
             {(post.crosspost_parent_list?.[0]?.selftext_html ||
               post?.selftext_html) && (
               <div
-                //href={post?.permalink}
-                // onClick={(e) => {
-                //   e.preventDefault();
-                //   e.stopPropagation();
-                // }}
-                //onMouseDown={(e) => e.preventDefault()}
                 className={
                   "relative block mx-0" +
                   (post?.mediaInfo?.hasMedia ? " mt-2" : "")
