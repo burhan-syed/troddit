@@ -957,7 +957,7 @@ export const addToMulti = async (
     try {
       logApiRequest("cud", true);
       const res = await fetch(
-        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`,
+        `/api/reddit/multi/user/${user}/m/${multi}/r/${srname}?model=${encodeURIComponent(`{"name":"${srname}"}`)}`,
         {
           method: "PUT",
           headers: {
@@ -977,13 +977,14 @@ export const deleteFromMulti = async (
   user: string,
   srname: string
 ) => {
-  //console.log(multi, user, srname);
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("cud", true);
       const res = await fetch(
-        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}/r/${srname}?model={"name":"${srname}"}`,
+        `/api/reddit/multi/user/${user}/m/${multi}/r/${srname}?model=${encodeURIComponent(
+          `{"name":"${srname}"}`
+        )}`,
         {
           method: "DELETE",
           headers: {
@@ -1023,22 +1024,19 @@ export const createMulti = async (
     return `{"name": "${s}"}`;
   });
   const json = `{"description":"","display_name":"${display_name}","icon_img":"https://www.redditstatic.com/custom_feeds/custom_feed_default_4.png", "subreddits": [${subreddits}], "visibility":"${visibility}"}`;
-  //console.log(json);
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("cud", true);
-      const res = await fetch(
-        `https://oauth.reddit.com/api/multi/user/${user}/m/${display_name}/?model=${json}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `bearer ${token}`,
-          },
-        }
-      );
-      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
-      //console.log(res);
+      const uri = `/multi/user/${user}/m/${display_name}/?model=${encodeURIComponent(
+        json
+      )}`;
+      const res = await fetch(`/api/reddit${uri}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `bearer ${token}`,
+        },
+      });
       return res;
     } catch (err) {
       console.log("err", err);
