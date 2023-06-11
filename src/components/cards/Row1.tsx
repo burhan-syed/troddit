@@ -399,7 +399,7 @@ const Row1 = ({
                       )}
                   </button>
                 </a>
-                <div>
+                <div className="opacity-60">
                   <SaveButton
                     id={post?.name}
                     saved={post?.saved}

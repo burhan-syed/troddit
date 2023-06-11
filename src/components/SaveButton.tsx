@@ -70,7 +70,7 @@ const SaveButton = ({
         (menu
           ? " pl-2 pr-4 py-2.5  md:py-1 w-full "
           : row
-          ? " px-3 sm:px-2 py-1 h-8 sm:h-[26px] space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight opacity-60 hover:cursor-pointer w-full "
+          ? " px-3 sm:px-2 py-1 h-8 sm:h-[26px] space-x-1 border border-transparent rounded-md hover:border-th-borderHighlight hover:cursor-pointer w-full "
           : post
           ? " cursor-pointer p-2  border rounded-md border-th-border hover:border-th-borderHighlight w-full "
           : fullmedia
