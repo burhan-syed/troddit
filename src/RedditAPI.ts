@@ -9,7 +9,7 @@ import type { Route_Types } from "../types/logs";
 
 let ratelimit_remaining = 600;
 const LOG_REQUESTS = JSON.parse(
-  process.env.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
+  process?.env?.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
 );
 const REDDIT = "https://www.reddit.com";
 

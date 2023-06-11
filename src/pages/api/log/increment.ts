@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ROUTES_TYPES } from "../../../../types/logs";
 import { createClient } from "@supabase/supabase-js";
 const LOG_REQUESTS = JSON.parse(
-  process.env.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
+  process?.env?.NEXT_PUBLIC_ENABLE_API_LOG ?? "false"
 );
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
