@@ -3,16 +3,17 @@ import Head from "next/head";
 import Feed from "../components/Feed";
 import { useEffect, useState } from "react";
 import { getSession, useSession } from "next-auth/react";
-import { loadFront } from "../RedditAPI";
+import { loadFront, loadPost } from "../RedditAPI";
 import { getToken } from "next-auth/jwt";
 import React from "react";
+import Card1 from "../components/cards/Card1";
+import Modal from "../components/ui/Modal";
 
-const index = ({ postData, user }) => {
+const index = ({ postData, user, trodditPost }) => {
   const [initialData, setInitialData] = useState({});
   const [ready, setReady] = useState(false);
   const data = useSession();
   const isloading = data.status === "loading";
-
   useEffect(() => {
     if (!isloading) {
       const parseCookie = (str) =>
@@ -50,13 +51,39 @@ const index = ({ postData, user }) => {
           content="Browse Reddit better with Troddit. Grid views, single column mode, galleries, and a number of post styles. Login with Reddit to see your own subs, vote, and comment. Open source."
         ></meta>
       </Head>
-      <main>{ready && <Feed initialData={initialData} />}</main>
+      <main>
+        {trodditPost && (
+          <Modal toOpen={1}>
+            <Card1
+              columns={1}
+              post={trodditPost}
+              hasMedia={false}
+              hideNSFW={false}
+              forceMute={false}
+              handleClick={(e, options) => {
+                if (e.target?.nodeName !== "A") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = "/r/TrodditForReddit/comments/14745id/the_future_of_troddit" 
+                }
+              }}
+              newTabLinks={true}
+              origCommentCount={undefined}
+              postNum={-1}
+              read={false}
+            />
+          </Modal>
+        )}
+
+        {ready && <Feed initialData={initialData} />}
+      </main>
     </div>
   );
 };
 //can't use getServerSide Props because inner app navigation break...
 index.getInitialProps = async ({ req, query, res }) => {
   if (req) {
+    const trodditAnnouncement = await loadPost("/14745id");
     const session = await getSession({ req });
     let data: any = {};
     if (!session && req.cookies?.localSubs !== "true" && res) {
@@ -106,8 +133,9 @@ index.getInitialProps = async ({ req, query, res }) => {
       return {
         user: session?.user?.name ?? "",
         query: query,
+        trodditPost: trodditAnnouncement.post,
         postData: {
-          children: data.children.slice(0, 6), //only send the first n posts to limit page size
+          children: [...data.children.slice(0, 6)], //only send the first n posts to limit page size
         },
       };
     }

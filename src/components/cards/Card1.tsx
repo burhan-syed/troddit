@@ -39,6 +39,7 @@ const Card1 = ({
   read,
   handleClick,
   origCommentCount,
+  newTabLinks = false,
   uniformMediaMode = false,
   mediaDimensions = [0, 0] as [number, number],
   inView = true,
@@ -461,7 +462,7 @@ const Card1 = ({
                       mediaOnly={true}
                       checkCardHeight={checkCardHeight}
                     />
-                    {uniformMediaMode && windowWidth < 640 && mounted &&  (
+                    {uniformMediaMode && windowWidth < 640 && mounted && (
                       <div
                         onMouseEnter={() => setHovered(true)}
                         onTouchStart={() => setHovered(true)}
@@ -473,7 +474,8 @@ const Card1 = ({
                             : "bg-gradient-to-t from-black/40")
                         }
                       >
-                        {post?.mediaInfo?.isVideo && mounted &&
+                        {post?.mediaInfo?.isVideo &&
+                          mounted &&
                           (!hovered || windowWidth > 640) && (
                             <div className="absolute top-0 left-0 text-th-accent">
                               <BiPlay
@@ -630,6 +632,7 @@ const Card1 = ({
           {post?.selftext_html && !context.mediaOnly && (
             <div className={"flex items-center w-full"}>
               <PostBody
+                newTabLinks={newTabLinks}
                 rawHTML={post.selftext_html}
                 mode="card"
                 limitHeight={post?.mediaInfo?.isDual ? 128 : 384}
@@ -685,7 +688,8 @@ const Card1 = ({
         {/* </div> */}
         {context.mediaOnly &&
           hasMedia &&
-          (!uniformMediaMode || windowWidth >= 640) && mounted && (
+          (!uniformMediaMode || windowWidth >= 640) &&
+          mounted && (
             <div
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={(e) => {
