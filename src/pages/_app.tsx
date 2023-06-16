@@ -61,7 +61,6 @@ function MyApp({ Component, pageProps }) {
               <MyCollectionsProvider>
                   <QueryClientProvider client={queryClient}>
                     <NavBar />
-                    <div className="mb-14"></div>
                     <Component {...pageProps} />
                     <Toaster position="bottom-center" />
                     <Analytics />

@@ -203,12 +203,12 @@ const SubredditsPage = ({ query = undefined }) => {
 
   return (
     <>
-      <div className="flex flex-col justify-center gap-3 mx-4 md:gap-0 md:mx-auto md:flex-row ">
+      <div className="flex flex-col justify-center gap-3 mx-4 md:gap-0 md:mx-auto md:flex-row">
         <Tab.Group onChange={setSelectedIndex} selectedIndex={selectedIndex}>
           <Tab.List className={""}>
             <div
               className={
-                " sticky top-[4rem] flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg"
+                " sticky top-[7rem] md:fixed z-10 flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg"
               }
             >
               {categories.map((c) => (
@@ -450,7 +450,7 @@ const SubredditsPage = ({ query = undefined }) => {
           </div>
         </div>
       )}
-       {session &&
+      {session &&
         (categories[selectedIndex] === "mine" ||
           categories[selectedIndex] === "follows" ||
           categories[selectedIndex] === "feeds") && (
@@ -462,11 +462,16 @@ const SubredditsPage = ({ query = undefined }) => {
                 loadAllFromReddit();
               }}
               disabled={loadingSubs}
-              className={"flex justify-center w-full text-xs p-1 text-th-textLight " + (loadingSubs ? "" : "hover:text-th-text")}
+              className={
+                "flex justify-center w-full text-xs p-1 text-th-textLight " +
+                (loadingSubs ? "" : "hover:text-th-text")
+              }
             >
               <span className="hidden md:block">refresh</span>
               <IoMdRefresh
-                className={"w-6 h-6 md:w-4 md:h-4 " + (loadingSubs ? "animate-spin" : "")}
+                className={
+                  "w-6 h-6 md:w-4 md:h-4 " + (loadingSubs ? "animate-spin" : "")
+                }
               />
             </button>
           </div>

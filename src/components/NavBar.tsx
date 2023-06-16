@@ -6,7 +6,7 @@ import DropdownPane from "./DropdownPane";
 import { CgMenu } from "react-icons/cg";
 import SideNav from "./SideNav";
 import NavMenu from "./NavMenu";
-
+import NavMessage from "./NavMessage";
 import { useRouter } from "next/router";
 import SortMenu from "./SortMenu";
 
@@ -120,12 +120,16 @@ const NavBar = ({ toggleSideNav = 0 }) => {
       <header
         className={
           `${hidden ? "-translate-y-full" : " translate-y-0 "}` +
-          " z-50 fixed top-0 transition ease-in-out transform h-12 w-screen  " +
-          (hidden ? " duration-500" : " duration-0")
+          " z-50 fixed top-0 transition ease-in-out transform  w-screen  " +
+          (hidden ? " duration-500" : " duration-200")
         }
       >
+        <NavMessage
+          hide={router.asPath?.includes("/comments/")}
+          timeSinceNav={timeSinceNav}
+        />
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-        <nav className="flex flex-row items-center flex-grow h-full shadow-lg bg-th-background2 md:justify-between ">
+        <nav className="relative flex flex-row items-center flex-grow h-12 shadow-lg bg-th-background2 md:justify-between ">
           <CgMenu
             className="flex-none w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
@@ -157,7 +161,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             className={
               "flex-none  h-10 transition  duration-200 ease-in-out origin-top md:origin-top-right lg:origin-right " +
               (showSearch
-                ? " absolute top-[3.2rem] w-[90vw]  left-[5vw] md:left-[25vw] md:w-[50vw] lg:relative lg:top-auto lg:left-0  lg:w-[24rem] scale-x-100 "
+                ? ` absolute top-[3.2rem] w-[90vw]  left-[5vw] md:left-[25vw] md:w-[50vw] lg:relative lg:top-auto lg:left-0  lg:w-[24rem] scale-x-100 `
                 : " w-0 absolute lg:scale-x-0 scale-x-0 scale-y-0 lg:scale-y-100 opacity-0 ")
             }
           >
@@ -216,6 +220,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           </div>
         )}
       </header>
+      <div className={" h-[6.5rem]"}></div>
     </>
   );
 };

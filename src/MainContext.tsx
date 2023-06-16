@@ -1010,7 +1010,7 @@ export const MainProvider = ({ children }) => {
       };
       const loadVolume = async () => {
         let saved = await localForage.getItem("volume");
-        if (saved >= 0 && saved <= 1 && typeof saved === "number") {
+        if (typeof saved === "number" && saved >= 0 && saved <= 1) {
           setVolume(saved);
         } else {
           setVolume(0.5);

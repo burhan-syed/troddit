@@ -17,15 +17,24 @@ export function useScroll() {
   // the horizontal direction
   const [scrollX, setScrollX] = useState<number>();
   // scroll direction would be either up or down
-  const [scrollDirection, setScrollDirection] = useState<any>();
+  const [scrollDirection, setScrollDirection] = useState<
+    "down" | "up" | undefined
+  >();
 
   const listener = debounce(
     (e) => {
-      setBodyOffset(document.body.getBoundingClientRect());
-      setScrollY(-bodyOffset?.top);
+      let bodyOffset = document.body.getBoundingClientRect()
+      //setBodyOffset(document.body.getBoundingClientRect());
+      setScrollY(-(bodyOffset?.top ?? 0));
       setScrollX(bodyOffset?.left);
-      setScrollDirection(lastScrollTop > -bodyOffset?.top ? "down" : "up");
-      setLastScrollTop(-bodyOffset?.top);
+      setScrollDirection(
+        bodyOffset?.top === undefined ||  lastScrollTop === -(bodyOffset?.top ?? 0)
+          ? undefined
+          : lastScrollTop > -(bodyOffset?.top ?? 0)
+          ? "down"
+          : "up"
+      );
+      setLastScrollTop(-(bodyOffset?.top ?? 0));
     },
     10,
     false
