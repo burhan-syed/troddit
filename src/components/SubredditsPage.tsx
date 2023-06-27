@@ -240,6 +240,13 @@ const SubredditsPage = ({ query = undefined }) => {
                 </Tab>
               ))}
             </div>
+            <div
+              className={
+                " sticky top-[7rem]  -z-10 flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-transparent border border-transparent  rounded-lg"
+              }
+            >
+              
+            </div>
           </Tab.List>
           <Tab.Panels>
             {categories.map((c, i) => (
