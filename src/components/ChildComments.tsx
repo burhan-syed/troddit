@@ -506,7 +506,7 @@ const ChildComments = ({
                               e.preventDefault();
                               e.stopPropagation();
                               if (!session?.user?.name) {
-                                context.setLoginModal(true);
+                                context.toggleLoginModal(true);
                               } else {
                                 setShowOpts(true);
                               }

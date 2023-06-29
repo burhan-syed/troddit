@@ -11,6 +11,8 @@ import { CgLivePhoto, CgPlayListSearch } from "react-icons/cg";
 import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
 import DropdownSubCard from "./DropdownSubCard";
+import { useTAuth } from "../PremiumAuthContext";
+import { useMainContext } from "../MainContext";
 
 const MyLink = (props) => {
   let { href, children, ...rest } = props;
@@ -22,6 +24,8 @@ const MyLink = (props) => {
 };
 
 const DropDownItems = ({ show, hideExtra = false }) => {
+  const { premium } = useTAuth();
+  const context: any = useMainContext();
   const subsContext: any = useSubsContext();
   const {
     loadingSubs,
@@ -533,9 +537,13 @@ const DropDownItems = ({ show, hideExtra = false }) => {
                 "p-2 m-2  border rounded-md  border-th-border hover:border-th-borderHighlight " +
                 (hideExtra ? " w-full " : "")
               }
-              onClick={() => signIn("reddit")}
+              onClick={() => {
+                premium?.isPremium
+                  ? signIn("reddit")
+                  : context.setPremiumModal(true);
+              }}
             >
-              <span className="text-th-accent ">Login</span> to see your subs
+              <span className="text-th-accent ">Login</span> with Reddit
             </button>
           )}
         </>

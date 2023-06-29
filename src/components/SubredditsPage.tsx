@@ -13,8 +13,10 @@ import MyMultiCollections from "./collections/MyMultiCollections";
 import SelectedSubs from "./collections/SelectedSubs";
 import { MyCollectionsProvider } from "./collections/CollectionContext";
 import { IoMdRefresh } from "react-icons/io";
+import { useTAuth } from "../PremiumAuthContext";
 
-const SubredditsPage = ({ query = undefined }) => {
+const SubredditsPage = ({ query = undefined as any }) => {
+  const { isLoaded, premium } = useTAuth();
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const [waiting, setWaiting] = useState(false);
@@ -64,11 +66,11 @@ const SubredditsPage = ({ query = undefined }) => {
     }
   }, [query]);
 
-  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState([]);
-  const [myLocalFollows, setMyLocalFollows] = useState([]);
+  const [myLocalSubsFiltered, setMyLocalSubsFiltered] = useState<any[]>([]);
+  const [myLocalFollows, setMyLocalFollows] = useState<any[]>([]);
   useEffect(() => {
-    let subs = [];
-    let follows = [];
+    let subs = new Array<any>();
+    let follows = new Array<any>();
     if (myLocalSubs?.length > 0) {
       myLocalSubs.forEach((s) => {
         if (s.data.url.substring(0, 3) === "/u/") {
@@ -104,7 +106,11 @@ const SubredditsPage = ({ query = undefined }) => {
           name = sub?.data?.name?.substring(2);
           isUser = true;
         }
-        let s = await loadSubredditInfo(name, isUser);
+        let s = await loadSubredditInfo({
+          query: name,
+          loadUser: isUser,
+          isPremium: premium?.isPremium,
+        });
 
         //handle if sub is banned..
         if (!s) {
@@ -128,25 +134,35 @@ const SubredditsPage = ({ query = undefined }) => {
           : setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
       }
     };
-    if (!session && !loading && selectedIndex === 0) {
-      if (myLocalSubsFiltered.length > 0) {
-        myLocalSubs.forEach((sub) => {
-          fetchSubInfo(sub);
-        });
-      } else {
-        setLoadingLocalSubs(false);
+    if (isLoaded && premium?.isPremium) {
+      if (!session && !loading && selectedIndex === 0) {
+        if (myLocalSubsFiltered.length > 0) {
+          myLocalSubs.forEach((sub) => {
+            fetchSubInfo(sub);
+          });
+        } else {
+          setLoadingLocalSubs(false);
+        }
+      }
+      if (!session && !loading && selectedIndex === 1) {
+        if (myLocalFollows.length > 0) {
+          myLocalFollows.forEach((sub) => {
+            fetchSubInfo(sub);
+          });
+        } else {
+          setLoadingLocalFollows(false);
+        }
       }
     }
-    if (!session && !loading && selectedIndex === 1) {
-      if (myLocalFollows.length > 0) {
-        myLocalFollows.forEach((sub) => {
-          fetchSubInfo(sub);
-        });
-      } else {
-        setLoadingLocalFollows(false);
-      }
-    }
-  }, [myLocalSubsFiltered, myLocalFollows, session, loading, selectedIndex]);
+  }, [
+    myLocalSubsFiltered,
+    myLocalFollows,
+    session,
+    loading,
+    selectedIndex,
+    isLoaded,
+    premium?.isPremium,
+  ]);
 
   useEffect(() => {
     Object.keys(localSubsInfo)?.length > 0 && setLoadingLocalSubs(false);
@@ -154,7 +170,7 @@ const SubredditsPage = ({ query = undefined }) => {
   }, [localSubsInfo, localFollowsInfo]);
 
   //to persist subs in list after unsubbing
-  const [copyMySubs, setCopyMySubs] = useState([]);
+  const [copyMySubs, setCopyMySubs] = useState<any[]>([]);
   const [copyMyFollowsing, setCopyMyFollowing] = useState([]);
   useEffect(() => {
     //update local copy if adding subs but not if removing
@@ -166,27 +182,39 @@ const SubredditsPage = ({ query = undefined }) => {
       setCopyMyFollowing(myFollowing);
   }, [myFollowing, copyMyFollowsing]);
 
-  const [subreddits, setSubreddits] = useState([]);
+  const [subreddits, setSubreddits] = useState<any[]>([]);
   const [after, setAfter] = useState("");
   const [end, setEnd] = useState(false);
-  const [subredditsNew, setSubredditsNew] = useState([]);
+  const [subredditsNew, setSubredditsNew] = useState<any[]>([]);
   const [afterNew, setAfterNew] = useState("");
   const [endNew, setEndNew] = useState(false);
   const fetchSubreddits = async (after = "", type = "popular") => {
     setWaiting(true);
-    let data = await getSubreddits(after, type);
-    if (type === "popular") {
-      data?.children && setSubreddits((p) => [...p, ...data?.children]);
-      data?.after ? setAfter(data?.after) : setEnd(true);
-    } else if (type === "new") {
-      data?.children && setSubredditsNew((p) => [...p, ...data?.children]);
-      data?.after ? setAfterNew(data?.after) : setEndNew(true);
+    try {
+      let data = await getSubreddits({
+        after: after,
+        type: type,
+        isPremium: premium?.isPremium,
+      });
+      if (type === "popular") {
+        data?.children && setSubreddits((p) => [...p, ...data?.children]);
+        data?.after ? setAfter(data?.after) : setEnd(true);
+      } else if (type === "new") {
+        data?.children && setSubredditsNew((p) => [...p, ...data?.children]);
+        data?.after ? setAfterNew(data?.after) : setEndNew(true);
+      }
+      setWaiting(false);
+      return data;
+    } catch (err) {
+      if (err?.message === "PREMIUM REQUIRED") {
+        context.setPremiumModal(true);
+      } else {
+        throw err;
+      }
     }
-    setWaiting(false);
-    return data;
   };
   useEffect(() => {
-    fetchSubreddits();
+    isLoaded && fetchSubreddits();
     //fetchSubreddits("", "new");
 
     return () => {
@@ -199,7 +227,7 @@ const SubredditsPage = ({ query = undefined }) => {
       setLoadingLocalSubs(true);
       setLoadingLocalFollows(true);
     };
-  }, []);
+  }, [isLoaded]);
 
   return (
     <>
@@ -208,7 +236,7 @@ const SubredditsPage = ({ query = undefined }) => {
           <Tab.List className={""}>
             <div
               className={
-                " sticky top-[7rem] md:fixed z-10 flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg"
+                " sticky mt-3 md:mt-0 md:top-[3.5rem] md:fixed z-10 flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-th-post transition-colors border border-th-border2  shadow-md  rounded-lg"
               }
             >
               {categories.map((c) => (
@@ -242,11 +270,9 @@ const SubredditsPage = ({ query = undefined }) => {
             </div>
             <div
               className={
-                " sticky top-[7rem]  -z-10 flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-transparent border border-transparent  rounded-lg"
+                " hidden sticky top-[3.5rem]  -z-10 md:flex flex-row md:flex-col gap-2 w-full md:w-52 px-0 pb-0 md:py-2 mr-4 overflow-hidden bg-transparent border border-transparent  rounded-lg"
               }
-            >
-              
-            </div>
+            ></div>
           </Tab.List>
           <Tab.Panels>
             {categories.map((c, i) => (

@@ -1,5 +1,6 @@
 import localForage from "localforage";
 import React, { useState, useContext, useEffect, useReducer } from "react";
+import { useTAuth } from "./PremiumAuthContext";
 
 export const localRead = localForage.createInstance({ storeName: "readPosts" });
 export const localSeen = localForage.createInstance({ storeName: "seenPosts" });
@@ -21,6 +22,8 @@ export const useMainContext = () => {
 };
 
 export const MainProvider = ({ children }) => {
+  const { premium } = useTAuth();
+
   const [pauseAll, setPauseAll] = useState(false); //pauses all media when a post is opened
   const [loading, setLoading] = useState(false); //used in feed to display load bar
   const [ready, setReady] = useState(false); //prevents any feed load until settings are loaded
@@ -29,6 +32,7 @@ export const MainProvider = ({ children }) => {
   const [uniformHeights, setUniformHeights] = useState<boolean>();
   const [highRes, setHighRes] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
+  const [premiumModal, setPremiumModal] = useState(false);
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);
   const [postNum, setPostNum] = useState(0);
@@ -58,7 +62,7 @@ export const MainProvider = ({ children }) => {
   //card style
   const [mediaOnly, setMediaOnly] = useState<boolean>();
   const [cardStyle, setCardStyle] = useState<string>("");
-  
+
   //new settings..
 
   const [compactLinkPics, setCompactLinkPics] = useState<boolean>();
@@ -69,20 +73,20 @@ export const MainProvider = ({ children }) => {
   const [disableSideBySide, setDisableSideBySide] = useState<boolean>();
   const togglePreferSideBySide = () => {
     setPreferSideBySide((p) => {
-      if(!p) setDisableSideBySide(false); 
+      if (!p) setDisableSideBySide(false);
       return !p;
     });
   };
   const toggleDisableSideBySide = () => {
     setDisableSideBySide((p) => {
-      if(!p) setPreferSideBySide(false); 
-      return !p; 
-    })
-  }
+      if (!p) setPreferSideBySide(false);
+      return !p;
+    });
+  };
   const [autoCollapseComments, setAutoCollapseComments] = useState<boolean>();
   const toggleAutoCollapseComments = () => {
-    setAutoCollapseComments(a => !a);
-  } 
+    setAutoCollapseComments((a) => !a);
+  };
 
   const [collapseChildrenOnly, setCollapseChildrenOnly] = useState<boolean>();
   const [defaultCollapseChildren, setDefaultCollapseChildren] =
@@ -538,8 +542,14 @@ export const MainProvider = ({ children }) => {
   const toggleAutoplay = () => {
     setAutoplay((a) => !a);
   };
-  const toggleLoginModal = () => {
-    setLoginModal((m) => !m);
+  const toggleLoginModal = (forceOn?: boolean) => {
+    if (forceOn) {
+      premium?.isPremium ? setLoginModal(true) : setPremiumModal(true);
+    } else {
+      premium?.isPremium
+        ? setLoginModal((m) => !m)
+        : setPremiumModal((m) => !m);
+    }
   };
 
   useEffect(() => {
@@ -1038,12 +1048,12 @@ export const MainProvider = ({ children }) => {
       };
       const defaultSortComments = async () => {
         let saved = (await localForage.getItem(
-            "defaultSortComments"
+          "defaultSortComments"
         )) as string;
         if (typeof saved === "string") {
-            setDefaultSortComments(saved);
+          setDefaultSortComments(saved);
         } else {
-            setDefaultSortComments("top");
+          setDefaultSortComments("top");
         }
       };
       const autoPlayInterval = async () => {
@@ -1088,30 +1098,30 @@ export const MainProvider = ({ children }) => {
           setAutoHideNav(false);
         }
       };
-      const preferSideBySide = async() => {
+      const preferSideBySide = async () => {
         let saved = await localForage.getItem("preferSideBySide");
         if (saved === true) {
           setPreferSideBySide(saved);
         } else {
           setPreferSideBySide(false);
         }
-      }
-      const disableSideBySide = async() => {
+      };
+      const disableSideBySide = async () => {
         let saved = await localForage.getItem("disableSideBySide");
         if (saved === true) {
           setDisableSideBySide(saved);
         } else {
           setDisableSideBySide(false);
         }
-      }
-      const autoCollapseComments = async() => {
+      };
+      const autoCollapseComments = async () => {
         let saved = await localForage.getItem("autoCollapseComments");
         if (saved === false) {
           setAutoCollapseComments(saved);
         } else {
           setAutoCollapseComments(true);
         }
-      }
+      };
 
       //things we dont' really need loaded before posts are loaded
       loadRibbonCollapseOnly();
@@ -1121,9 +1131,9 @@ export const MainProvider = ({ children }) => {
       loadShowUserFlairs();
       loadExpandedSubPane();
       loadAutoRead();
-      preferSideBySide(); 
-      disableSideBySide(); 
-      autoCollapseComments(); 
+      preferSideBySide();
+      disableSideBySide();
+      autoCollapseComments();
 
       //things we need loaded before posts are rendered
       let autohidenav = autoHideNav();
@@ -1278,9 +1288,9 @@ export const MainProvider = ({ children }) => {
     }
   }, [fastRefreshInterval]);
   useEffect(() => {
-      if (defaultSortComments !== undefined) {
-          localForage.setItem("defaultSortComments", defaultSortComments);
-      }
+    if (defaultSortComments !== undefined) {
+      localForage.setItem("defaultSortComments", defaultSortComments);
+    }
   }, [defaultSortComments]);
   useEffect(() => {
     if (refreshOnFocus !== undefined) {
@@ -1508,6 +1518,8 @@ export const MainProvider = ({ children }) => {
         toggleNSFW,
         loginModal,
         toggleLoginModal,
+        premiumModal,
+        setPremiumModal,
         setLoginModal,
         autoplay,
         toggleAutoplay,
@@ -1663,7 +1675,7 @@ export const MainProvider = ({ children }) => {
         preferSideBySide,
         togglePreferSideBySide,
         autoCollapseComments,
-        toggleAutoCollapseComments
+        toggleAutoCollapseComments,
       }}
     >
       {children}

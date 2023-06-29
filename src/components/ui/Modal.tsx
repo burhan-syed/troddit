@@ -4,13 +4,22 @@ import { Dialog, Transition } from "@headlessui/react";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import React from "react";
 
-
-const Modal = ({ toOpen, children }) => {
+const Modal = ({
+  toOpen,
+  children,
+  onClose,
+  initialFocus,
+}: {
+  toOpen: number;
+  children: React.ReactElement;
+  onClose?: () => any;
+  initialFocus?: React.MutableRefObject<any>;
+}) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
   useEffect(() => {
-    toOpen > 0 && setOpen(true);
+    setOpen(toOpen > 0);
     return () => {
       setInput("");
     };
@@ -21,8 +30,8 @@ const Modal = ({ toOpen, children }) => {
       <Dialog
         as="div"
         className="fixed inset-0 z-50 overflow-y-auto"
-        initialFocus={cancelButtonRef}
-        onClose={() => setOpen(false)}
+        initialFocus={initialFocus ? initialFocus : cancelButtonRef}
+        onClose={() => (onClose ? onClose() : setOpen(false))}
       >
         <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -53,9 +62,10 @@ const Modal = ({ toOpen, children }) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl select-none sm:my-8 sm:align-middle sm:max-w-2xl">
+            {children}
+            {/* <div className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl select-none sm:my-8 sm:align-middle sm:max-w-2xl">
               <div className="relative">
-              <div
+                <div
                   className="flex items-center justify-center w-8 h-8 mb-4 ml-auto top-2 opacity-60 hover:opacity-100 right-2 hover:cursor-pointer"
                   onClick={() => {
                     setOpen(false);
@@ -65,7 +75,7 @@ const Modal = ({ toOpen, children }) => {
                 </div>
                 {children}
               </div>
-            </div>
+            </div> */}
           </Transition.Child>
         </div>
       </Dialog>

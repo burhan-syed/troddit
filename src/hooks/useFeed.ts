@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import { QueryFunctionContext, useInfiniteQuery } from "@tanstack/react-query";
 import { filterPosts } from "../../lib/utils";
@@ -13,6 +12,7 @@ import {
   loadUserSelf,
 } from "../RedditAPI";
 import useLocation from "./useLocation";
+import { useTAuth } from "../PremiumAuthContext";
 
 interface Params {
   initialPosts?: any;
@@ -20,11 +20,21 @@ interface Params {
 
 const useFeed = (params?: Params) => {
   const { data: session, status } = useSession();
+  const { isLoaded, premium } = useTAuth();
   const sessloading = status === "loading";
   const context: any = useMainContext();
 
-  const { key, ready, mode, sort, range, subreddits, userMode, searchQuery, domain } =
-    useLocation(params);
+  const {
+    key,
+    ready,
+    mode,
+    sort,
+    range,
+    subreddits,
+    userMode,
+    searchQuery,
+    domain,
+  } = useLocation(params);
 
   interface FeedParams {
     loggedIn: boolean;
@@ -61,85 +71,109 @@ const useFeed = (params?: Params) => {
 
     let data;
     //short circuiting with initialData here instead of using param in infinite query hook..
-    if (
-      params?.initialPosts?.children?.length > 0 &&
-      fetchParams?.pageParam === undefined
-    ) {
-      data = params?.initialPosts;
-      data["after"] = "";
-    } else if (feedParams.mode === "HOME") {
-      data = await loadFront(
-        feedParams.loggedIn,
-        context.token,
-        feedParams.sort,
-        feedParams.range,
-        feedParams.after,
-        feedParams.count,
-        context?.localSubs //home feed is invalidated on subs change
-      );
-    } else if (mode === "SUBREDDIT") {
-      data = await loadSubreddits(
-        feedParams.loggedIn,
-        context.token,
-        feedParams.subreddits,
-        feedParams.sort,
-        feedParams.range,
-        feedParams.after,
-        feedParams.count,
-        true
-      );
-    } else if (mode === "FLAIR") {
-      data = await getRedditSearch(
-        { q: feedParams.searchQuery },
-        feedParams.after,
-        feedParams.sort,
-        feedParams.loggedIn,
-        feedParams.subreddits,
-        feedParams.range,
-        context.token,
-        feedParams.safeSearch
-      );
-    } else if (mode === "SEARCH") {
-      data = await getRedditSearch(
-        { q: feedParams.searchQuery },
-        feedParams.after,
-        feedParams.sort,
-        feedParams.loggedIn,
-        undefined,
-        feedParams.range,
-        context.token,
-        feedParams.safeSearch
-      );
-    } else if (mode === "MULTI") {
-      data = await getUserMultiPosts(
-        feedParams.subreddits,
-        feedParams.userMode,
-        feedParams.sort,
-        feedParams.range,
-        feedParams.after
-      );
-    } else if (mode === "SELF") {
-      data = await loadUserSelf(
-        context.token,
-        feedParams.loggedIn,
-        feedParams.userMode?.toLowerCase(),
-        feedParams.sort,
-        feedParams.range,
-        feedParams.after,
-        session?.user?.name,
-        context.userPostType === "comments" ? "comments" : "links"
-      );
-    } else if (mode === "USER") {
-      data = await loadUserPosts(
-        context.token,
-        feedParams.loggedIn,
-        feedParams.subreddits as string,
-        feedParams.sort,
-        feedParams.range as string,
-        feedParams.after,
-        feedParams.count,
-        feedParams.userMode
-      );
+    try {
+      if (
+        params?.initialPosts?.children?.length > 0 &&
+        fetchParams?.pageParam === undefined
+      ) {
+        data = params?.initialPosts;
+        data["after"] = "";
+        console.log("DATA? SET??", data);
+      } else if (feedParams.mode === "HOME") {
+        data = await loadFront({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          localSubs: context?.localSubs, //home feed is invalidated on subs change
+          token: context?.token,
+          loggedIn: feedParams.loggedIn,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "SUBREDDIT") {
+        data = await loadSubreddits({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          subreddits: feedParams.subreddits,
+          token: context?.token,
+          loggedIn: feedParams.loggedIn,
+          sr_detail: true,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "FLAIR") {
+        data = await getRedditSearch({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          params: { q: feedParams.searchQuery },
+          include_over_18: feedParams.safeSearch,
+          subreddit: feedParams.subreddits,
+          token: context?.token,
+          loggedIn: feedParams.loggedIn,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "SEARCH") {
+        data = await getRedditSearch({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          params: { q: feedParams.searchQuery },
+          include_over_18: feedParams.safeSearch,
+          subreddit: undefined,
+          token: context?.token,
+          loggedIn: feedParams.loggedIn,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "MULTI") {
+        data = await getUserMultiPosts({
+          after: feedParams.after,
+          range: feedParams.range,
+          sort: feedParams.sort,
+          multiname: feedParams.userMode,
+          user: feedParams.subreddits,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "SELF") {
+        data = await loadUserSelf({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          username: session?.user?.name ?? "",
+          type: context.userPostType === "comments" ? "comments" : "links",
+          where: feedParams.userMode?.toLowerCase(),
+          token: context?.token,
+          loggedIn: feedParams.loggedIn,
+          isPremium: premium?.isPremium,
+        });
+      } else if (mode === "USER") {
+        data = await loadUserPosts({
+          after: feedParams.after,
+          range: feedParams.range,
+          count: feedParams.count,
+          sort: feedParams.sort,
+          username: feedParams.subreddits as string,
+          type: feedParams.userMode,
+          isPremium: premium?.isPremium,
+        });
+      }
+    } catch (error) {
+      if (error?.message === "PREMIUM REQUIRED") {
+        context.setPremiumModal(true);
+        return {
+          filtered: [],
+          after: null,
+          count: fetchParams.pageParam,
+          prevPosts: feedParams.prevPosts,
+          filterCount: 0,
+        };
+      } else {
+        throw error;
+      }
     }
 
     const manageData = async (
@@ -199,7 +233,7 @@ const useFeed = (params?: Params) => {
           return obj;
         }, {}),
       },
-      filterCount : filtercount
+      filterCount: filtercount,
     };
 
     //console.log("returnData?", returnData);
@@ -208,13 +242,16 @@ const useFeed = (params?: Params) => {
   };
 
   const feed = useInfiniteQuery(key, fetchFeed, {
-    enabled: ready && key?.[0] == "feed" && !!domain,
-    refetchOnWindowFocus: context?.refreshOnFocus ?? true ? true : false,
+    enabled: isLoaded && ready && key?.[0] == "feed" && !!domain,
+    refetchOnWindowFocus:
+      (premium?.isPremium && context?.refreshOnFocus) ?? true ? true : false,
     refetchOnMount: false,
     staleTime: 0,
     cacheTime: Infinity,
-    refetchInterval: context?.autoRefreshFeed
-      ? (sort === "new" || sort === "rising")
+    refetchInterval: premium?.isPremium
+      ? Infinity
+      : context?.autoRefreshFeed
+      ? sort === "new" || sort === "rising"
         ? context?.fastRefreshInterval ?? 10 * 1000
         : context?.slowRefreshInterval ?? 30 * 60 * 1000
       : Infinity,
@@ -229,6 +266,7 @@ const useFeed = (params?: Params) => {
       }
       return undefined;
     },
+
     // setting initial data directly in fetchFeed() instead
     // initialData: () => {
     //   return formatInitialData();

@@ -10,7 +10,7 @@
   --textBody: theme("colors.stone.700");
   --textStrong: theme("colors.rose.700");
   --textHeading: theme("colors.stone.900");
-  --accent: theme("colors.blue.400");
+  --troddit-accent: theme("colors.blue.400");
   --base: theme("colors.gray.200");
   --background: theme("colors.slate.100");
   --background2: theme("colors.white");
@@ -42,7 +42,7 @@
   --textBody: theme("colors.stone.100");
   --textStrong: theme("colors.rose.400");
   --textHeading: theme("colors.stone.200");
-  --accent: #2c8ebb; /*theme('colors.blue.600');*/
+  --troddit-accent: #2c8ebb; /*theme('colors.blue.600');*/
   --base: theme("colors.black");
   --background: #1a1a1b;
   --background2: #1a1a1b;
@@ -74,7 +74,7 @@
   --textBody: #d1d1d0;
   --textStrong: #dbb37d;
   --textHeading: #dbb37d;
-  --accent: #007acc;
+  --troddit-accent: #007acc;
   --base: #000c19;
   --background: #060623;
   --background2: #060623;
@@ -106,7 +106,7 @@
   --textBody: #ffffff;
   --textStrong: #04d2f7;
   --textHeading: #ffffff;
-  --accent: #04d2f7;
+  --troddit-accent: #04d2f7;
   --base: #000000;
   --background: #000000;
   --background2: #000000;
@@ -138,7 +138,7 @@
   --textBody: #f8f8f2;
   --textStrong: #f1fa8c;
   --textHeading: #ff79c6;
-  --accent: #ff79c6;
+  --troddit-accent: #ff79c6;
   --base: #21222d;
   --background: #44475a;
   --background2: #21222d;
@@ -170,7 +170,7 @@
   --textBody: #dbdfe5;
   --textStrong: #8fbcbb;
   --textHeading: #88c0d0;
-  --accent: #8fbcbb;
+  --troddit-accent: #8fbcbb;
   --base: #2e3440;
   --background: #434c5e;
   --background2: #434c5e;
@@ -202,7 +202,7 @@
   --textBody: #cccccc;
   --textStrong: #65cdc4;
   --textHeading: #77abff;
-  --accent: #65cdc4;
+  --troddit-accent: #65cdc4;
   --base: #0f111b;
   --background: #0f111b;
   --background2: #0f111b;
@@ -234,7 +234,7 @@
   --textBody: #b6c0cf;
   --textStrong: #8555c8;
   --textHeading: #77abff;
-  --accent: #8555c8;
+  --troddit-accent: #8555c8;
   --base: #23283a;
   --background: #24293b;
   --background2: #24293b;

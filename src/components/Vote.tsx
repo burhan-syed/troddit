@@ -35,7 +35,7 @@ const Vote = ({
     if (session && !archived) {
       castVote(v);
     } else if (!session) {
-      context.setLoginModal(true);
+      context.toggleLoginModal(true);
     }
   };
 

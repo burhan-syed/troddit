@@ -4,7 +4,6 @@ import { BiHide } from "react-icons/bi";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import useMutate from "../hooks/useMutate";
 import { useMainContext } from "../MainContext";
-import { hideLink } from "../RedditAPI";
 
 const HideButton = ({
   id,
@@ -39,7 +38,7 @@ const HideButton = ({
       setIsHidden((s) => !s);
       hideMutation.mutate({ id: id, isHidden: isHidden });
     } else if (!loading) {
-      context.setLoginModal(true);
+      context.toggleLoginModal(true);
     }
   };
 

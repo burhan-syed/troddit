@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useTAuth} from "../PremiumAuthContext"; 
 import { useMainContext } from "../MainContext";
 import { useSession } from "next-auth/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import { findDuplicates } from "../RedditAPI";
 import { findMediaInfo } from "../../lib/utils";
 
 const useDuplicates = ({ enabled, permalink }) => {
+  const {premium} = useTAuth(); 
   const { data: session, status } = useSession();
   const context: any = useMainContext();
   const loading = status === "loading";
@@ -16,13 +18,14 @@ const useDuplicates = ({ enabled, permalink }) => {
       after: fetchParams.pageParam?.after ?? "",
       count: fetchParams.pageParam?.count ?? 0,
     };
-    const res = await findDuplicates(
-      context.token,
-      feedParams.loggedIn,
-      permalink,
-      feedParams.after,
-      feedParams.count
-    );
+    const res = await findDuplicates({
+      permalink: permalink, 
+      after: feedParams.after, 
+      count: feedParams.count, 
+      loggedIn: feedParams.loggedIn, 
+      token: context.token, 
+      isPremium: premium?.isPremium
+    }); 
     const data = res?.res?.[1]?.data;
     const totalDuplicates =
       res?.res?.[0]?.data?.children?.[0]?.data?.num_duplicates;
@@ -51,7 +54,7 @@ const useDuplicates = ({ enabled, permalink }) => {
     ["duplicates", permalink],
     fetchDuplicates,
     {
-      enabled: !!enabled && !!permalink,
+      enabled: premium?.isPremium && !!enabled && !!permalink,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       staleTime: Infinity,

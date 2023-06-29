@@ -25,10 +25,7 @@ const DropdownItem = ({ sub, isUser = false, showFavorite = true }) => {
       }
     };
 
-    const findSubInfo = async (sub) => {
-      let subinfo = await loadSubredditInfo(sub?.data?.display_name);
-      findThumbnail({ data: subinfo?.data });
-    };
+
     if (sub?.kind == "t5" || sub?.kind == "t2" || sub?.data?.icon_url) {
       findThumbnail(sub);
     } else if (
