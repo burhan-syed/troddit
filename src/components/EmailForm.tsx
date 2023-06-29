@@ -7,7 +7,6 @@ const EmailForm = () => {
   const [error, setError] = useState("");
   const formSubmit = async (e) => {
     e.preventDefault();
-    console.log("E?", e.target?.email?.value);
     const email = e.target?.email?.value;
     if (!email) {
       setError("email required");

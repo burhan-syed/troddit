@@ -33,10 +33,8 @@ const index = ({ postData, user }) => {
         user !== (data?.data?.user?.name ?? "") ||
         (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false")
       ) {
-        console.log("CLEAR INITIAL DATA?")
         setInitialData({});
       } else {
-        console.log("SET INITIAL DATA?")
         setInitialData(JSON.parse(postData));
       }
       setReady(true);

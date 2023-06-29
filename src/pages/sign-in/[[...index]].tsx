@@ -1,5 +1,6 @@
 import React from "react";
 import { SignIn } from "@clerk/nextjs";
+import type { GetServerSideProps } from "next";
 
 export default function Page() {
   return (
@@ -24,9 +25,45 @@ export default function Page() {
             footerActionText: "text-th-textLight text-xs",
             footerActionLink:
               "text-th-linkHover text-xs hover:text-th-link hover:underline",
+            //
+            identityPreview: "bg-th-highlight border border-th-border2",
+            identityPreviewText: "text-th-text",
+            identityPreviewEditButtonIcon: "text-th-link",
+            formFieldAction__password:
+              "text-th-linkHover hover:text-th-link hover:underline text-xs",
+            formFieldInputShowPasswordIcon: "text-th-textLight",
+            formFieldInputShowPasswordButton: " ring-th-accent",
+            alternativeMethods:
+              "bg-th-highlight border border-th-border2 rounded-md",
+            alternativeMethodsBlockButton: "text-th-textLight",
+            alternativeMethodsBlockButtonText: "text-th-text",
+            alternativeMethodsBlockButtonArrow: "text-th-text",
+            headerBackLink: "text-th-link hover:text-th-linkHover",
+            headerBackIcon: "text-th-link hover:text-th-linkHover",
+            formHeaderTitle: "text-th-text", 
+            formHeaderSubtitle: "text-th-textLight", 
+            otpCodeFieldInput: "text-th-text border-th-textLight ",
+            otpCodeBox: "",
+            otpCodeField: "",
+            formResendCodeLink: "text-th-link hover:text-th-linkHover"
           },
         }}
       />
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const free = JSON.parse(process.env?.NEXT_PUBLIC_FREE_ACCESS ?? "true");
+  if (free) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};

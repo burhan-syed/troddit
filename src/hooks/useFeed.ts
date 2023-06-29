@@ -78,7 +78,6 @@ const useFeed = (params?: Params) => {
       ) {
         data = params?.initialPosts;
         data["after"] = "";
-        console.log("DATA? SET??", data);
       } else if (feedParams.mode === "HOME") {
         data = await loadFront({
           after: feedParams.after,

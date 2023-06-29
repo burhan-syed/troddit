@@ -32,8 +32,7 @@ export const PremiumAuthContextProvider = (props: { [prop: string]: any }) => {
     FREE_USE ? { isPremium: true } : undefined
   );
   useEffect(() => {
-    if (auth.isLoaded && !premiumInfo) {
-      console.log("auth loaded", auth, premiumInfo);
+    if (auth.isLoaded) {
       auth.getToken({ template: "withPublicMetadata" }).then((token) => {
         if (token) {
           const decoded = jwt_decode(token);
@@ -41,12 +40,7 @@ export const PremiumAuthContextProvider = (props: { [prop: string]: any }) => {
             decoded?.["pmd"]?.["isPremium"] ?? "false"
           );
           const expires = new Date(decoded?.["pmd"]?.["expires"] ?? "0");
-          console.log(
-            "T?",
-            decoded?.["pmd"]?.["isPremium"],
-            decoded?.["pmd"]?.["expires"]
-          );
-          console.log("T@?", { isPremium, expires });
+
           setPremiumInfo({
             isPremium,
             expires,
@@ -56,7 +50,7 @@ export const PremiumAuthContextProvider = (props: { [prop: string]: any }) => {
         }
       });
     }
-  }, [auth]);
+  }, [auth.isLoaded, auth.isSignedIn]);
 
   const value = {
     ...auth,

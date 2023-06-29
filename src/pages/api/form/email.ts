@@ -9,8 +9,6 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 export default async function handler(req, res) {
   const body = req.body;
 
-  console.log("body: ", body);
-
   if (!body.email) {
     // Sends a HTTP bad request error code
     return res.status(400).json({ data: "email not found" });
@@ -27,7 +25,6 @@ export default async function handler(req, res) {
       .insert([{ email: body.email }])
       .select();
 
-    console.log("D?", data);
 
     if (error && (error.code !== "23505")) {
       console.error("Err?", error);
