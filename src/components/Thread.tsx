@@ -1111,9 +1111,9 @@ const Thread = ({
                   )}
 
                   <div className="w-full mb-5 ">
-                    <span className="flex justify-center w-full mt-10 text-xs text-center text-th-textLight">
+                    <span className={"flex justify-center w-full  text-xs text-center text-th-textLight mt-2"}>
                       {!premium?.isPremium ? (
-                        <>
+                        <span className="mt-8 ">
                           <Link
                             className="pr-1 underline hover:text-th-text"
                             href={"/sign-in"}
@@ -1121,14 +1121,13 @@ const Thread = ({
                             {`Sign in with troddit+`}
                           </Link>
                           {` to view comments`}
-                        </>
+                        </span>
                       ) : (
                         <>
-                          {" "}
                           {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
                           thread.isFetched &&
                           !thread.isError
-                            ? "no comments :("
+                            ? <span className="mt-8">{"no comments :("}</span>
                             : ""}
                         </>
                       )}
