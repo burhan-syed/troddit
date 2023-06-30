@@ -70,10 +70,10 @@ const EmailForm = () => {
           disabled={loading}
           className="inline-flex items-center justify-center w-full h-12 px-4 text-base font-medium border border-transparent rounded-md shadow-sm bg-th-accent hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-accent sm:text-sm"
         >
-          {loading ? <ImSpinner2 className="animate-spin" /> : "Submit"}
+          {loading ? <ImSpinner2 className="animate-spin" /> : "submit"}
         </button>
       </div>
-      <div className="flex items-center justify-center h-4 text-xs text-center text-opacity-80">
+      <div className="flex items-center justify-center h-4 text-xs text-center md:text-sm text-opacity-80">
         {status && <span className="text-th-textLight">{status}</span>}
         {error && (
           <span className="inline-flex items-center text-th-red gap-x-1">

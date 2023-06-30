@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SignUp } from "@clerk/nextjs";
 import { GetServerSideProps } from "next";
 import EmailForm from "../../components/EmailForm";
 import Link from "next/link";
+import { useRouter } from "next/router";
+
+const OPEN = JSON.parse(process?.env?.NEXT_PUBLIC_FREE_ACCESS ?? "true"); 
 
 export default function Page() {
+  const router = useRouter(); 
+  useEffect(() => {
+    if(OPEN){
+      router.replace("/")
+    }
+  }, [])
+  
   return (
     <div className="min-h-[calc(100vh-3rem)] w-full flex items-center justify-center">
       <div className="w-full max-w-3xl mx-4 md:mx-10 lg:mx-0">
@@ -24,7 +34,7 @@ export default function Page() {
             <br />
             <br />
             If you are interested and would like to be notified when a sign up
-            is available please submit your contact information below!
+            is available please submit your contact information below.
           </p>
           <p>
             You can find more information or stay up to date with troddit
@@ -41,7 +51,7 @@ export default function Page() {
             <EmailForm />
           </div>
           <Link
-            className="w-full text-xs text-center text-th-textLight group "
+            className="w-full text-xs text-center md:text-sm text-th-textLight group "
             href="/sign-in"
           >
             Already have an account?{" "}
@@ -55,17 +65,3 @@ export default function Page() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const free = JSON.parse(process.env?.NEXT_PUBLIC_FREE_ACCESS ?? "true");
-  if (free) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
