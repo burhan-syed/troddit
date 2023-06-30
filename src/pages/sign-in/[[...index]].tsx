@@ -12,7 +12,7 @@ export default function Page() {
     }
   }, []);
   return (
-    <div className="min-h-[calc(100vh-3rem)] w-full flex items-center justify-center">
+    <div className="min-h-[calc(100vh-3.5rem)] h-full w-full flex items-center justify-center">
       <SignIn
         appearance={{
           elements: {
