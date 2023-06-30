@@ -7,7 +7,7 @@ import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/react";
 import Image from "next/legacy/image";
 // import { usePlausible } from "next-plausible";
-
+import { useTAuth } from "../PremiumAuthContext";
 import {
   AiOutlinePlus,
   AiOutlineSearch,
@@ -18,8 +18,8 @@ import { useCollectionContext } from "./collections/CollectionContext";
 import Checkbox from "./ui/Checkbox";
 import ItemsList from "./search/ItemsList";
 
-
 const Search = ({ id, setShowSearch = (a) => {} }) => {
+  const { isLoaded, premium } = useTAuth();
   const router = useRouter();
   const [error, seterror] = useState(false);
   const [value, setValue] = useState("");
@@ -30,10 +30,10 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
   const [lastsuggestion, setlastsuggestion] = useState("");
   const [morethanonesuggestion, setmorethanonesuggestion] = useState(false);
   const context: any = useMainContext();
-  const lastRequest = useRef(null);
+  const lastRequest = useRef<string>();
   const [updated, setUpdated] = useState(false);
   const [srRestrict, setSrRestrict] = useState(false);
-  const [currSub, setCurrSub] = useState("");
+  const [currSub, setCurrSub] = useState<string | undefined>("");
   const [addMode, setAddMode] = useState("");
   // const plausible = usePlausible();
 
@@ -125,68 +125,72 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
   const extractFields = (query) => {};
   const getSuggestions = async (value) => {
     //console.log(value);
-    let search = {
-      kind: "search",
-      data: {
-        restrict_sr: false,
-        q: value.value,
-        include_over_18: false,
-        display_name_prefixed: `r/${value.value}`,
-      },
-    };
-    let suggestions = [
-      {
-        kind: "t5",
+    if (premium?.isPremium) {
+      let search = {
+        kind: "search",
         data: {
+          restrict_sr: false,
+          q: value.value,
+          include_over_18: false,
           display_name_prefixed: `r/${value.value}`,
-          display_name: value.value,
-          over18: false,
-          default: true,
         },
-      },
-    ];
+      };
+      let suggestions = [
+        {
+          kind: "t5",
+          data: {
+            display_name_prefixed: `r/${value.value}`,
+            display_name: value.value,
+            over18: false,
+            default: true,
+          },
+        },
+      ];
 
-    setLoading(true);
-    let res: any = await searchSubreddits(
-      value.value,
-      context.nsfw,
-      !!session,
-      context?.token
-    );
-    let data = res?.data;
-    data?.token && context.setToken(data?.token);
-    //console.log(data);
-    if (data?.length > 0) {
-      let match = false;
-      if (lastRequest.current === value.value) {
-        seterror(false);
-        let filtered = data.filter((sub) => {
-          if (context.nsfw === true || sub?.data?.over18 !== true) {
-            if (
-              sub?.data?.display_name?.toLowerCase() ===
-              value.value.toLowerCase()
-            ) {
-              match = true;
+      setLoading(true);
+      let res: any = await searchSubreddits({
+        query: value.value,
+        over18: context.nsfw,
+        loggedIn: !!session,
+        token: context?.token,
+        isPremium: premium?.isPremium,
+      });
+      let data = res?.data;
+      data?.token && context.setToken(data?.token);
+      //console.log(data);
+      if (data?.length > 0) {
+        let match = false;
+        if (lastRequest.current === value.value) {
+          seterror(false);
+          let filtered = data.filter((sub) => {
+            if (context.nsfw === true || sub?.data?.over18 !== true) {
+              if (
+                sub?.data?.display_name?.toLowerCase() ===
+                value.value.toLowerCase()
+              ) {
+                match = true;
+              }
+              return sub;
             }
-            return sub;
+          });
+          if (match) {
+            suggestions = [...filtered];
+          } else {
+            suggestions = [...suggestions, ...filtered];
           }
-        });
-        if (match) {
-          suggestions = [...filtered];
+          setlastsuggestion(
+            suggestions[suggestions.length - 1]?.data?.display_name_prefixed
+          );
+          setmorethanonesuggestion(suggestions.length > 1);
+          //console.log("kept", lastRequest.current);
+          return [search, ...suggestions];
         } else {
-          suggestions = [...suggestions, ...filtered];
+          //console.log("discard", lastRequest.current, value.value);
+          // return {};
         }
-        setlastsuggestion(
-          suggestions[suggestions.length - 1]?.data?.display_name_prefixed
-        );
-        setmorethanonesuggestion(suggestions.length > 1);
-        //console.log("kept", lastRequest.current);
-        return [search, ...suggestions];
-      } else {
-        //console.log("discard", lastRequest.current, value.value);
-        // return {};
       }
     }
+
     // }
     return [];
   };
@@ -271,35 +275,41 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
     }
     if (suggestion?.kind === "search") {
       return (
-        (<Link
+        <Link
           href={
             srRestrict && currSub
               ? `/r/${currSub}/search?sort=relevance&t=all&q=${suggestion?.data?.q}`
               : `/search?q=${suggestion?.data?.q}&sort=relevance&t=all`
           }
-          aria-label={`Search for "${suggestion?.data?.q}"`}>
-
+          aria-label={`Search for "${suggestion?.data?.q}"`}
+        >
           <div className="flex flex-row flex-wrap items-center px-2 py-2 pl-4 overflow-hidden cursor-pointer select-none hover:bg-th-highlight">
             <AiOutlineSearch className="w-6 h-6" />
             <h1 className="ml-4">{`Search for "${suggestion?.data?.q}"`}</h1>
             {currSub !== "" && (
-              <Checkbox toggled={srRestrict} clickEvent={() => setSrRestrict(r => !r)} labelText={`Limit to r/${currSub}`}/>
+              <Checkbox
+                toggled={srRestrict}
+                clickEvent={() => setSrRestrict((r) => !r)}
+                labelText={`Limit to r/${currSub}`}
+              />
             )}
           </div>
-
-        </Link>)
+        </Link>
       );
     }
     return (
-      <div className="select-none " aria-label={`go to ${suggestion?.data?.display_name_prefixed}`}>
+      <div
+        className="select-none "
+        aria-label={`go to ${suggestion?.data?.display_name_prefixed}`}
+      >
         {/* <Link href={`r/${suggestion?.data?.display_name.replace('/r','')}`}>
           <a> */}
         <Link
           href={`/r/${suggestion?.data?.display_name}`}
           onClick={(e) => {
             e.preventDefault();
-          }}>
-
+          }}
+        >
           <div
             // onClick={(e) =>}
             className="flex flex-row items-center px-2 py-2 overflow-hidden cursor-pointer hover:bg-th-highlight "
@@ -383,7 +393,6 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
               </div>
             )}
           </div>
-
         </Link>
         {/* </a>
         </Link> */}
@@ -414,7 +423,7 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
         let curr = router?.query?.slug?.[0];
         let alreadyadded = false;
         curr
-          .split(" ")
+          ?.split(" ")
           .join("+")
           .split(",")
           .join("+")
@@ -443,7 +452,7 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     setValue("");
-    setShowSearch(false)
+    setShowSearch(false);
     // if (loading) {
     //   if (srRestrict && currSub !== "") {
     //     router.push(
@@ -467,7 +476,7 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
       if (
         suggestion?.data?.display_name
           ?.toLowerCase()
-          .includes(lastRequest.current.toLowerCase()) ||
+          .includes(lastRequest?.current?.toLowerCase()) ||
         updated
       ) {
         goToSub(event, suggestion?.data?.display_name ?? "popular");
@@ -488,9 +497,17 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
     placeholder: placeHolder,
     value: value,
     onChange: onChange,
-    onFocus: () => {context.setReplyFocus(true); if(router?.query?.q){setValue(router?.query?.q?.toString()); }},
-    onBlur: () => {context.setReplyFocus(false); setShowSearch(false)},
-    type: 'search',
+    onFocus: () => {
+      context.setReplyFocus(true);
+      if (router?.query?.q) {
+        setValue(router?.query?.q?.toString());
+      }
+    },
+    onBlur: () => {
+      context.setReplyFocus(false);
+      setShowSearch(false);
+    },
+    type: "search",
     autoFocus: true,
   };
 
@@ -503,13 +520,16 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         getSuggestionValue={getSuggestionValue}
         renderSuggestion={renderSuggestion}
-        renderSuggestionsContainer={({ containerProps: {role, ...otherContainerProps}, children }) => (
+        renderSuggestionsContainer={({
+          containerProps: { role, ...otherContainerProps },
+          children,
+        }) => (
           <div {...otherContainerProps}>
-          {React.Children.map(children, child => (
-              <ItemsList {...child.props}/>
-          ))}
+            {React.Children.map(children, (child) => (
+              <ItemsList {...child.props} />
+            ))}
           </div>
-      )}
+        )}
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         onSuggestionSelected={onSuggestionSelected}

@@ -19,6 +19,7 @@ import { useRouter } from "next/dist/client/router";
 import toast from "react-hot-toast";
 
 import ToastCustom from "./components/toast/ToastCustom";
+import { useTAuth } from "./PremiumAuthContext";
 
 export const SubsContext: any = React.createContext({});
 export const useSubsContext = () => {
@@ -27,7 +28,7 @@ export const useSubsContext = () => {
 
 export const MySubsProvider = ({ children }) => {
   const router = useRouter();
-
+  const user = useTAuth();
   const context: any = useMainContext();
   const [mySubs, setMySubs] = useState([]);
   const [myFollowing, setMyFollowing] = useState([]);
@@ -386,7 +387,12 @@ export const MySubsProvider = ({ children }) => {
         found = true;
     });
     if (!found) {
-      let res = await createMulti(multiname, username, subreddits);
+      let res = await createMulti({
+        display_name: multiname,
+        srnames: subreddits,
+        user: username,
+        isPremium: user.premium?.isPremium,
+      });
       if (res?.ok) {
         loadAllMultis();
         toast.custom(
@@ -437,7 +443,12 @@ export const MySubsProvider = ({ children }) => {
       ),
       { position: "bottom-center" }
     );
-    let res = await addToMulti(multi, username, subname);
+    let res = await addToMulti({
+      multi: multi,
+      srname: subname,
+      user: username,
+      isPremium: user.premium?.isPremium,
+    });
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
@@ -475,7 +486,12 @@ export const MySubsProvider = ({ children }) => {
       ),
       { position: "bottom-center" }
     );
-    let res = await deleteFromMulti(multi, username, subname);
+    let res = await deleteFromMulti({
+      multi: multi,
+      user: username,
+      srname: subname,
+      isPremium: user.premium?.isPremium,
+    });
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
@@ -509,7 +525,11 @@ export const MySubsProvider = ({ children }) => {
       ),
       { position: "bottom-center" }
     );
-    let res = await deleteMulti(multi, username);
+    let res = await deleteMulti({
+      multiname: multi,
+      username: username,
+      isPremium: user.premium?.isPremium,
+    });
     //console.log(res);
     if (res?.ok) {
       loadAllMultis();
@@ -643,64 +663,76 @@ export const MySubsProvider = ({ children }) => {
       if (cachedInfo) {
         asynccheck && setCurrSubInfo(cachedInfo);
       }
-      let info = await loadSubredditInfo(sub, isUser);
-      if (info) {
-        addToSubCache(info);
-        asynccheck && setCurrSubInfo(info);
+      if (user.premium?.isPremium) {
+        let info = await loadSubredditInfo({
+          query: sub,
+          loadUser: isUser,
+          isPremium: user.premium?.isPremium,
+        });
+        if (info) {
+          addToSubCache(info);
+          asynccheck && setCurrSubInfo(info);
 
-        return info;
+          return info;
+        }
       }
     };
 
-    if (router?.pathname === "/r/[...slug]" && router?.query?.slug?.[0]) {
-      let loc = router?.query?.slug?.[0]
-        .split(" ")
-        .join("+")
-        .split("%20")
-        .join("+")
-        .split("+");
-      setCurrSubs(
-        loc.sort((a, b) => {
-          let aUpper = a.toUpperCase();
-          let bUpper = b.toUpperCase();
-          if (aUpper < bUpper) return -1;
-          if (aUpper > bUpper) return 1;
-          return 0;
-        })
-      );
-      let curr = loc[0].toString()?.toUpperCase();
-      if (router?.query?.m) {
-        setCurrLocation(router?.query?.m?.[0]?.toString());
+    if (user.isLoaded) {
+      if (router?.pathname === "/r/[...slug]" && router?.query?.slug?.[0]) {
+        let loc = router?.query?.slug?.[0]
+          .split(" ")
+          .join("+")
+          .split("%20")
+          .join("+")
+          .split("+");
+        setCurrSubs(
+          loc.sort((a, b) => {
+            let aUpper = a.toUpperCase();
+            let bUpper = b.toUpperCase();
+            if (aUpper < bUpper) return -1;
+            if (aUpper > bUpper) return 1;
+            return 0;
+          })
+        );
+        let curr = loc[0].toString()?.toUpperCase();
+        if (router?.query?.m) {
+          setCurrLocation(router?.query?.m?.[0]?.toString());
+        } else {
+          setCurrLocation(curr);
+        }
+        if (curr.toUpperCase() !== "ALL" || curr.toUpperCase() !== "POPULAR") {
+          loadCurrSubInfo(curr);
+        }
+      } else if (router?.route === "/search") {
+        setCurrSubs([]);
+        setCurrLocation("SEARCH");
+      } else if (router?.pathname?.includes("/subreddits")) {
+        setCurrSubs([]);
+        setCurrLocation("SUBREDDITS");
+      } else if (
+        router?.pathname === "/" ||
+        !router?.pathname?.includes("/u")
+      ) {
+        setCurrSubs([]);
+        setCurrLocation("HOME");
+      } else if (router?.pathname === "/u/[...slug]") {
+        setCurrSubs([router?.query?.slug?.[0]]);
+        loadCurrSubInfo(`${router?.query?.slug?.[0]}`, true);
+        setCurrLocation(router?.query?.slug?.[0]?.toString());
       } else {
-        setCurrLocation(curr);
+        setCurrSubs([]);
+        setCurrLocation("");
+        setCurrSubInfo({});
       }
-      if (curr.toUpperCase() !== "ALL" || curr.toUpperCase() !== "POPULAR") {
-        loadCurrSubInfo(curr);
-      }
-    } else if (router?.route === "/search") {
-      setCurrSubs([]);
-      setCurrLocation("SEARCH");
-    } else if (router?.pathname?.includes("/subreddits")) {
-      setCurrSubs([]);
-      setCurrLocation("SUBREDDITS");
-    } else if (router?.pathname === "/" || !router?.pathname?.includes("/u")) {
-      setCurrSubs([]);
-      setCurrLocation("HOME");
-    } else if (router?.pathname === "/u/[...slug]") {
-      setCurrSubs([router?.query?.slug?.[0]]);
-      loadCurrSubInfo(`${router?.query?.slug?.[0]}`, true);
-      setCurrLocation(router?.query?.slug?.[0]?.toString());
-    } else {
-      setCurrSubs([]);
-      setCurrLocation("");
-      setCurrSubInfo({});
     }
+
     return () => {
       asynccheck = false;
       setCurrSubInfo({});
       setCurrSubs([]);
     };
-  }, [router?.query?.slug?.[0], router.route]);
+  }, [router?.query?.slug?.[0], router.route, user.isLoaded]);
 
   //removing loadallfast from initial page load. Only loadall when needed
   useEffect(() => {
@@ -713,7 +745,7 @@ export const MySubsProvider = ({ children }) => {
       loadLocalSubs();
       tryLoadAll();
     }
-  }, [router?.pathname, loadedSubs]);
+  }, [router?.pathname, loadedSubs, user.premium?.isPremium]);
   useEffect(() => {
     if (
       router?.pathname === "/r/[...slug]" &&
@@ -722,9 +754,9 @@ export const MySubsProvider = ({ children }) => {
     ) {
       tryLoadAll();
     }
-  }, [router, loadedSubs]);
+  }, [router, loadedSubs, user.premium?.isPremium]);
   const tryLoadAll = () => {
-    !loadedSubs && !loadingSubs && loadAllFast();
+    user?.premium?.isPremium && !loadedSubs && !loadingSubs && loadAllFast();
   };
 
   useEffect(() => {
@@ -807,8 +839,8 @@ export const MySubsProvider = ({ children }) => {
     try {
       //console.log('load subs');
       setLoadingSubs(true);
-      const multis = getMyMultis();
-      const all = getAllMyFollows();
+      const multis = getMyMultis({ isPremium: user.premium?.isPremium });
+      const all = getAllMyFollows({ isPremium: user.premium?.isPremium });
       let loadedMultis = await multis;
       setMyMultis(loadedMultis);
       setloadedMultis(true);
@@ -876,7 +908,7 @@ export const MySubsProvider = ({ children }) => {
 
   const loadAllMultis = async () => {
     try {
-      const multis = await getMyMultis();
+      const multis = await getMyMultis({ isPremium: user.premium?.isPremium });
       if (multis) {
         setMyMultis(multis);
         setloadedMultis(true);
@@ -892,7 +924,9 @@ export const MySubsProvider = ({ children }) => {
       try {
         //console.log('loadallsubs')
         setloadedSubs(false);
-        let data = await getAllMyFollows();
+        let data = await getAllMyFollows({
+          isPremium: user.premium?.isPremium,
+        });
         setMySubs(data.subs);
         await loadUserSubInfos(data.users);
         //setMyFollowing(data.users);
@@ -976,7 +1010,11 @@ export const MySubsProvider = ({ children }) => {
         });
       }
 
-      const res = await favoriteSub(makeFavorite, subname);
+      const res = await favoriteSub({
+        favorite: makeFavorite,
+        name: subname,
+        isPremium: user.premium?.isPremium,
+      });
       if (!res) {
         isUser ? setMyFollowing(pState) : setMySubs(pState);
       }
@@ -1081,7 +1119,11 @@ export const MySubsProvider = ({ children }) => {
       if (isUser) sub = sub.substring(2);
       let subInfo = await loadSubInfo(isUser ? `u_${sub}` : sub);
       if (isUser) {
-        let aboutUser = await loadSubredditInfo(sub, isUser);
+        let aboutUser = await loadSubredditInfo({
+          query: sub,
+          loadUser: isUser,
+          isPremium: user.premium?.isPremium,
+        });
         aboutUser["data"]["subreddit"] = subInfo.data;
         subInfo = aboutUser;
       }
@@ -1089,7 +1131,11 @@ export const MySubsProvider = ({ children }) => {
       sub = isUser ? subInfo?.data?.subreddit?.name : subInfo?.data?.name;
       //}
 
-      let status = await subToSub(action, sub);
+      let status = await subToSub({
+        action: action,
+        name: sub,
+        isPremium: user.premium?.isPremium,
+      });
       if (status) {
         //loadAllSubs(loggedIn);
         mutateLocalRedditSubs(action, subInfo, isUser);

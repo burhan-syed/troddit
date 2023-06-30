@@ -40,7 +40,7 @@ const SaveButton = ({
       setIsSaved((s) => !s);
       saveMutation.mutate({ id: id, isSaved: isSaved });
     } else if (!loading) {
-      context.setLoginModal(true);
+      context.toggleLoginModal(true);
     }
   };
 

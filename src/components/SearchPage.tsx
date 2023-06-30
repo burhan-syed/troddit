@@ -9,7 +9,9 @@ import SubCard from "./cards/SubCard";
 import SubCardPlaceHolder from "./cards/SubCardPlaceHolder";
 import Checkbox from "./ui/Checkbox";
 import React from "react";
+import { useTAuth } from "../PremiumAuthContext";
 const SearchPage = ({ query }) => {
+  const { isLoaded, premium } = useTAuth();
   const router = useRouter();
   const context: any = useMainContext();
   const [loading, setLoading] = useState(true);
@@ -19,25 +21,29 @@ const SearchPage = ({ query }) => {
   const [searchUsers, setSearchUsers] = useState(false);
   const { safeSearch, setSafeSearch } = context;
   const loadMore = async () => {
-    let subs = await getRedditSearch(
-      { q: query?.q },
-      after,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      safeSearch ? undefined : true,
-      router.query?.type === "user" ? "user" : "sr"
-    );
-    if (subs?.children) {
-      let filtered = subs?.children?.filter(
-        (c) => c?.data?.accept_followers === true
-      );
-      setSubs((p) => [...p, ...filtered]);
-    }
+    try {
+      let subs = await getRedditSearch({
+        params: { q: query?.q },
+        after,
+        include_over_18: safeSearch ? undefined : true,
+        searchtype: router.query?.type === "user" ? "user" : "sr",
+        isPremium: premium?.isPremium ?? false,
+      });
+      if (subs?.children) {
+        let filtered = subs?.children?.filter(
+          (c) => c?.data?.accept_followers === true
+        );
+        setSubs((p) => [...p, ...filtered]);
+      }
 
-    setAfter(subs?.after);
+      setAfter(subs?.after);
+    } catch (err) {
+      if (err?.message === "PREMIUM REQUIRED") {
+        context.setPremiumModal(true);
+      } else {
+        throw err;
+      }
+    }
   };
 
   useEffect(() => {
@@ -73,18 +79,13 @@ const SearchPage = ({ query }) => {
 
   useEffect(() => {
     const getSearch = async () => {
-      //console.log("findsubs", query?.q);
-      let subs = await getRedditSearch(
-        { q: query?.q },
-        "",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        safeSearch ? undefined : true,
-        router.query?.type === "user" || searchUsers ? "user" : "sr"
-      );
+      let subs = await getRedditSearch({
+        params: { q: query?.q },
+        after: "",
+        include_over_18: safeSearch ? undefined : true,
+        searchtype: router.query?.type === "user" ? "user" : "sr",
+        isPremium: premium?.isPremium ?? false,
+      });
       //console.log(subs);
       if (subs?.children) {
         let filtered = subs.children.filter(
@@ -97,13 +98,22 @@ const SearchPage = ({ query }) => {
 
       setLoading(false);
     };
-    getSearch();
+    if (isLoaded && premium?.isPremium) {
+      getSearch();
+    }
     return () => {
       setSubs([]);
       setAfter("");
       setLoading(true);
     };
-  }, [query?.q, safeSearch, router.query?.type, searchUsers]);
+  }, [
+    query?.q,
+    safeSearch,
+    router.query?.type,
+    searchUsers,
+    isLoaded,
+    premium?.isPremium,
+  ]);
   return (
     <div>
       <div className="flex flex-col items-center flex-none w-screen ">

@@ -13,7 +13,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
   const [input, setInput] = useState("");
-  const [subsForMulti, setSubsForMulti] = useState([]);
+  const [subsForMulti, setSubsForMulti] = useState<string[]>([]);
   const [err, setErr] = useState("");
   const [waiting, setWaiting] = useState(false);
 
@@ -59,7 +59,7 @@ const MultiManageModal = ({ toOpen, subreddits, multiname = "", mode }) => {
           let res = await createRedditMulti(
             input,
             subsForMulti,
-            session.user.name
+            session?.user?.name
           );
           if (!res) setErr("Feed Already Exists");
           else {

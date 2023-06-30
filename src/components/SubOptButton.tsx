@@ -5,7 +5,6 @@ import { useSubsContext } from "../MySubs";
 import DropdownItem from "./DropdownItem";
 import MultiManageModal from "./MultiManageModal";
 import { useSession } from "next-auth/react";
-import { addToMulti, createMulti, deleteFromMulti } from "../RedditAPI";
 import Link from "next/link";
 import useFilterSubs from "../hooks/useFilterSubs";
 import React from "react";

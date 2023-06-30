@@ -4,7 +4,6 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js";
 import { runMain } from "module";
 import { useSession } from "../../node_modules/next-auth/react";
-import { postComment } from "../RedditAPI";
 import { draftToMarkdown } from "markdown-draft-js"; // import { usePlausible } from "next-plausible";
 import { useMainContext } from "../MainContext";
 import { ImSpinner2 } from "react-icons/im";

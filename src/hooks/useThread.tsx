@@ -8,8 +8,10 @@ import {
 import { fixCommentFormat } from "../../lib/utils";
 import { useMainContext } from "../MainContext";
 import { loadMoreComments, loadPost } from "../RedditAPI";
+import { useTAuth } from "../PremiumAuthContext";
 
 const useThread = (permalink, sort, initialData?, withContext = false) => {
+  const { isLoaded, premium } = useTAuth();
   const { data: session, status } = useSession();
   const queryClient = useQueryClient();
   const context: any = useMainContext();
@@ -100,14 +102,14 @@ const useThread = (permalink, sort, initialData?, withContext = false) => {
   const loadChildComments = async (children: string[], link_id) => {
     let childrenstring = children.join(",");
     if (session) {
-      const data = await loadMoreComments(
-        childrenstring,
+      const data = await loadMoreComments({
+        children: childrenstring,
         link_id,
-        undefined,
-        session ? true : false,
-        context?.token,
-        sort
-      );
+        loggedIn: !!session,
+        token: context.token,
+        sort,
+        isPremium: premium?.isPremium,
+      });
       let morecomments = await fixCommentFormat(data?.data);
       return {
         post_comments: morecomments,
@@ -138,45 +140,54 @@ const useThread = (permalink, sort, initialData?, withContext = false) => {
   };
 
   const fetchThread = async (feedParams: QueryFunctionContext) => {
- 
-    if (feedParams?.pageParam?.children?.length > 0) {
-      const { post_comments, token } = await loadChildComments(
-        feedParams.pageParam.children,
-        feedParams?.pageParam?.link_id
-      );
+    try {
+      if (feedParams?.pageParam?.children?.length > 0) {
+        const { post_comments, token } = await loadChildComments(
+          feedParams.pageParam.children,
+          feedParams?.pageParam?.link_id
+        );
+        token && context.setToken(token);
+        const comments = processComments(post_comments)?.map((c) => ({
+          ...c,
+          data: { ...c?.data },
+        }));
+
+        return {
+          comments,
+        };
+      }
+
+      const { post, post_comments, token } = await loadPost({
+        permalink,
+        sort,
+        withcontext: withContext,
+        loggedIn: !!session,
+        token: context.token,
+        isPremium: premium?.isPremium,
+      });
       token && context.setToken(token);
-      const comments = processComments(post_comments)?.map((c) => ({
-        ...c,
-        data: { ...c?.data},
-      }));
+      if (!post) {
+        throw new Error("Error fetching post");
+      }
 
-      return {
-        comments,
-      };
+      const comments = processComments(post_comments);
+
+      return { post, comments };
+    } catch (err) {
+      if (err?.message === "PREMIUM REQUIRED") {
+        // context.setPremiumModal(true);
+        return { post: undefined, comments: [] };
+      } else {
+        throw err;
+      }
     }
-
-    const { post, post_comments, token } = await loadPost(
-      permalink,
-      sort,
-      status === "authenticated",
-      context?.token,
-      withContext
-    );
-    token && context.setToken(token);
-    if (!post) {
-      throw new Error("Error fetching post");
-    }
-
-    const comments = processComments(post_comments);
-
-    return { post, comments };
   };
 
   const thread = useInfiniteQuery(
     ["thread", threadId, sort, commentId, withContext, session?.user?.name],
     fetchThread,
     {
-      enabled: threadId && !loading,
+      enabled: isLoaded && threadId && !loading,
       staleTime: context?.autoRefreshComments ? 0 : Infinity, // 5 * 60 * 1000, //5 min
       getNextPageParam: (lastpage: any) => {
         const lastComment =

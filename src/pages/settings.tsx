@@ -3,7 +3,7 @@ import Settings from "../components/settings/Settings";
 
 const SettingsPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-7.5rem)] mx-auto ">
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] mx-auto ">
       <div className="">
         <Settings />
       </div>

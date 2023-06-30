@@ -16,7 +16,6 @@ import MediaWrapper from "../MediaWrapper";
 import Awardings from "../Awardings";
 import PostTitle from "../PostTitle";
 import SaveButton from "../SaveButton";
-import { hideLink } from "../../RedditAPI";
 import HideButton from "../HideButton";
 import PostOptButton from "../PostOptButton";
 import { GoRepoForked } from "react-icons/go";

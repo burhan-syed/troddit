@@ -4,7 +4,6 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
 import { useSubsContext } from "../MySubs";
 import { localSubInfoCache } from "../MainContext";
-import { loadSubredditInfo } from "../RedditAPI";
 import useRefresh from "../hooks/useRefresh";
 import React from "react";
 

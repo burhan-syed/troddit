@@ -3,7 +3,6 @@ import Image from "next/legacy/image";
 import Link from "next/link";
 
 import { useSubsContext } from "../../MySubs";
-import { loadSubredditInfo } from "../../RedditAPI";
 import SubButton from "../SubButton";
 import { AiOutlineCheck } from "react-icons/ai";
 import CollectionOptions from "./CollectionOptions";
@@ -36,7 +35,7 @@ const CheckBox = ({ toggled }) => {
 
 const Collection = ({
   name = "Name",
-  subreddits = [],
+  subreddits = [] as string[],
   icon = "",
   over_18 = false,
   owner = "",

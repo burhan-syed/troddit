@@ -52,6 +52,7 @@ import MiniCard from "./cards/MiniCard";
 import { CgSpinnerTwo } from "react-icons/cg";
 import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 import PostBody from "./PostBody";
+import { useTAuth } from "../PremiumAuthContext";
 
 const SIDEBYSIDE_THRESHOLD = 1000;
 
@@ -72,7 +73,7 @@ const Thread = ({
 }) => {
   const context: any = useMainContext();
   sort ??= context.defaultCommentSort;
-
+  const { premium } = useTAuth();
   const { data: session, status } = useSession();
   const { thread } = useThread(permalink, sort, undefined, withContext);
   const [showDuplicates, setShowDuplicates] = useState(() => duplicates);
@@ -358,7 +359,9 @@ const Thread = ({
     <>
       <div
         onClick={() => goBack(false, true)}
-        className={`flex flex-row flex-grow ${usePortrait ? "pt-0.5" : "pt-3"} justify-center `}
+        className={`flex flex-row flex-grow ${
+          usePortrait ? "pt-0.5" : "pt-3"
+        } justify-center `}
       >
         {/* Portrait Media */}
         {usePortrait && (
@@ -1108,12 +1111,26 @@ const Thread = ({
                   )}
 
                   <div className="w-full mb-5 ">
-                    <span className="flex justify-center w-full mt-4 text-xs text-center text-th-textLight">
-                      {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
-                      thread.isFetched &&
-                      !thread.isError
-                        ? "no comments :("
-                        : ""}
+                    <span className={"flex justify-center w-full  text-xs text-center text-th-textLight mt-2"}>
+                      {!premium?.isPremium ? (
+                        <span className="mt-8 ">
+                          <Link
+                            className="pr-1 underline hover:text-th-text"
+                            href={"/sign-in"}
+                          >
+                            {`Sign in with troddit+`}
+                          </Link>
+                          {` to view comments`}
+                        </span>
+                      ) : (
+                        <>
+                          {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
+                          thread.isFetched &&
+                          !thread.isError
+                            ? <span className="mt-8">{"no comments :("}</span>
+                            : ""}
+                        </>
+                      )}
                     </span>
                     {/* Open All Comments */}
 

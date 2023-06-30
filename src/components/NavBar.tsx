@@ -124,10 +124,10 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           (hidden ? " duration-500" : " duration-200")
         }
       >
-        <NavMessage
+        {/* <NavMessage
           hide={router.asPath?.includes("/comments/")}
           timeSinceNav={timeSinceNav}
-        />
+        /> */}
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
         <nav className="relative flex flex-row items-center flex-grow h-12 shadow-lg bg-th-background2 md:justify-between ">
           <CgMenu
@@ -220,7 +220,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
           </div>
         )}
       </header>
-      <div className={" h-[6.5rem]"}></div>
+      <div className={" h-[3.5rem]"}></div>
     </>
   );
 };

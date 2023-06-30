@@ -20,7 +20,9 @@ import useThread from "../../hooks/useThread";
 import { findMediaInfo } from "../../../lib/utils";
 import { getToken } from "next-auth/jwt";
 import { getSession } from "next-auth/react";
+import { useTAuth } from "../../PremiumAuthContext";
 const SubredditPage = ({ query, metaTags, post, postData }) => {
+  const user = useTAuth();
   const [subsArray, setSubsArray] = useState<string[]>([]);
   const [wikiContent, setWikiContent] = useState("");
   const [wikiMode, setWikiMode] = useState(false);
@@ -28,31 +30,34 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
   const [postThread, setPostThread] = useState(false);
   const [withCommentContext, setWithCommentContext] = useState(false);
   useEffect(() => {
-    const getWiki = async (wikiquery) => {
+    const getWiki = async (wikiquery: {wikiquery:string[];isPremium:boolean}) => {
       const data = await getWikiContent(wikiquery);
       setWikiContent(data?.data?.content_html ?? "nothing found");
     };
 
-    setSubsArray(
-      query?.slug?.[0]
-        .split(" ")
-        .join("+")
-        .split(",")
-        .join("+")
-        .split("%20")
-        .join("+")
-        .split("+")
-    );
-    if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
-      setPostThread(true);
-      query?.context && setWithCommentContext(true);
-      query?.slug?.[4] && setCommentThread(true);
-    } else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
-      setWikiMode(true);
-      let wikiquery = query.slug;
-      if (!wikiquery?.[2]) wikiquery[2] = "index";
-      getWiki(wikiquery);
+    if (user.isLoaded) {
+      setSubsArray(
+        query?.slug?.[0]
+          .split(" ")
+          .join("+")
+          .split(",")
+          .join("+")
+          .split("%20")
+          .join("+")
+          .split("+")
+      );
+      if (query?.slug?.[1]?.toUpperCase() === "COMMENTS") {
+        setPostThread(true);
+        query?.context && setWithCommentContext(true);
+        query?.slug?.[4] && setCommentThread(true);
+      } else if (query?.slug?.[1]?.toUpperCase() === "WIKI") {
+        setWikiMode(true);
+        let wikiquery = query.slug;
+        if (!wikiquery?.[2]) wikiquery[2] = "index";
+        getWiki({wikiquery, isPremium: user.premium?.isPremium ?? false});
+      }
     }
+
     return () => {
       setPostThread(false);
       setWithCommentContext(false);
@@ -60,7 +65,7 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
       setWikiMode(false);
       setSubsArray([]);
     };
-  }, [query]);
+  }, [query, user.isLoaded, user.premium?.isPremium]);
   return (
     <div
       className={
@@ -117,9 +122,7 @@ const SubredditPage = ({ query, metaTags, post, postData }) => {
         {wikiMode ? (
           <div className="flex flex-col flex-wrap mb-10 md:mx-10 lg:mx-20">
             <Link href={`/r/${subsArray[0]}/wiki`}>
-
               <h1 className="text-lg font-bold">Wiki</h1>
-
             </Link>
             {wikiContent ? (
               <ParseBodyHTML html={wikiContent} newTabLinks={false} />
@@ -154,104 +157,108 @@ SubredditPage.getInitialProps = async (d) => {
   const { query, req, res } = d;
   let subreddits = query?.slug?.[0];
   subreddits = query?.slug?.[0]?.split(" ")?.join("+")?.split("%2b")?.join("+");
-  if (
-    query?.slug?.length < 3 &&
-    req &&
-    !res?.["req"]?.["rawHeaders"]?.includes(
-      `https://${res?.["req"]?.["rawHeaders"]?.[1]}/r/${subreddits}`
-    )
-  ) {
-    const session = await getSession({ req });
-    let tokenData;
-    if (session?.user?.name) {
-      const token: any = await getToken({
-        req,
-        secret: process.env.NEXTAUTH_SECRET,
-      });
-      tokenData = {
-        accessToken: token.reddit.accessToken,
-        refreshToken: token.reddit.refreshToken,
-        expires: token.expires,
-      };
-    }
-    let posts;
-    let subInfo;
-    const loadPosts = async () => {
-      const data = await loadSubreddits(
-        session?.user?.name ? true : false,
-        tokenData,
-        subreddits,
-        query?.slug?.[1] ?? "hot",
-        query?.t ?? "all",
-        "",
-        0,
-        true
-      );
-      posts = data?.children;
-    };
-    const loadSub = async () => {
-      const data = await loadSubredditInfo(subreddits?.split("+")?.[0]);
-      subInfo = data?.data;
-    };
-    await Promise.all([loadPosts(), loadSub()]);
-    let metaTags = {
-      ogSiteName: "troddit",
-      ogDescription: `r/${subInfo?.display_name}: ${subInfo?.public_description}`,
-      ogImage: subInfo?.icon_img ?? subInfo?.header_img,
-      ogTitle: `${subInfo?.display_name ?? subreddits} on troddit`,
-      ogHeight: subInfo?.icon_size?.[0],
-      ogWidth: subInfo?.icon_size?.[1],
-    };
-    if (!session?.user?.name) {
-      res.setHeader(
-        "Cache-Control",
-        "max-age=0, s-maxage=1200, stale-while-revalidate=30"
-      );
-    }
+  //disable sr fetch
+  // if (
+  //   query?.slug?.length < 3 &&
+  //   req &&
+  //   !res?.["req"]?.["rawHeaders"]?.includes(
+  //     `https://${res?.["req"]?.["rawHeaders"]?.[1]}/r/${subreddits}`
+  //   )
+  // ) {
+  //   const session = await getSession({ req });
+  //   let tokenData;
+  //   if (session?.user?.name) {
+  //     const token: any = await getToken({
+  //       req,
+  //       secret: process.env.NEXTAUTH_SECRET,
+  //     });
+  //     tokenData = {
+  //       accessToken: token.reddit.accessToken,
+  //       refreshToken: token.reddit.refreshToken,
+  //       expires: token.expires,
+  //     };
+  //   }
+  //   let posts;
+  //   let subInfo;
+  //   const loadPosts = async () => {
+  //     const data = await loadSubreddits(
+  //       session?.user?.name ? true : false,
+  //       tokenData,
+  //       subreddits,
+  //       query?.slug?.[1] ?? "hot",
+  //       query?.t ?? "all",
+  //       "",
+  //       0,
+  //       true
+  //     );
+  //     posts = data?.children;
+  //   };
+  //   const loadSub = async () => {
+  //     const data = await loadSubredditInfo(subreddits?.split("+")?.[0]);
+  //     subInfo = data?.data;
+  //   };
+  //   await Promise.all([loadPosts(), loadSub()]);
+  //   let metaTags = {
+  //     ogSiteName: "troddit",
+  //     ogDescription: `r/${subInfo?.display_name}: ${subInfo?.public_description}`,
+  //     ogImage: subInfo?.icon_img ?? subInfo?.header_img,
+  //     ogTitle: `${subInfo?.display_name ?? subreddits} on troddit`,
+  //     ogHeight: subInfo?.icon_size?.[0],
+  //     ogWidth: subInfo?.icon_size?.[1],
+  //   };
+  //   if (!session?.user?.name) {
+  //     res.setHeader(
+  //       "Cache-Control",
+  //       "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+  //     );
+  //   }
 
-    return {
-      query,
-      postData: { children: posts?.slice(0, 6) },
-      metaTags,
-    };
-  } else if (req) {
-    let url = req?.url;
-    url = url?.split("?")?.[0];
-    if (url?.includes("/comments/")) {
-      try {
-        const { post } = await loadPost(url);
-        //const data = await fetch(`https://www.reddit.com${url}.json`)
-        //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
-        const media = await findMediaInfo(
-          post,
-          true,
-          d?.req?.headers?.host && d?.req?.headers?.host?.includes(":")
-            ? d?.req?.headers?.host?.split(":")?.[0]
-            : d?.req?.headers?.host
-        );
-        let metaTags = {
-          ogSiteName: "troddit",
-          ogDescription: `Post on r/${post.subreddit} by u/${
-            post.author
-          } • ${post.score?.toLocaleString(
-            "en-US"
-          )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
-          ogTitle: post.title,
-          ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
-          ogHeight: media?.dimensions?.[1],
-          ogWidth: media?.dimensions?.[0],
-          ogType: `image`,
-        };
-        res.setHeader(
-          "Cache-Control",
-          "max-age=0, s-maxage=3600, stale-while-revalidate=30"
-        );
-        return { query, metaTags, post: post?.preview ? post : undefined };
-      } catch (err) {
-        return { query };
-      }
-    }
-  }
+  //   return {
+  //     query,
+  //     postData: { children: posts?.slice(0, 6) },
+  //     metaTags,
+  //   };
+  // }
+
+  //disable post ssr
+  // else if (req) {
+  //   let url = req?.url;
+  //   url = url?.split("?")?.[0];
+  //   if (url?.includes("/comments/")) {
+  //     try {
+  //       const { post } = await loadPost(url);
+  //       //const data = await fetch(`https://www.reddit.com${url}.json`)
+  //       //let post = (await data.json())?.[0]?.data?.children?.[0]?.data;
+  //       const media = await findMediaInfo(
+  //         post,
+  //         true,
+  //         d?.req?.headers?.host && d?.req?.headers?.host?.includes(":")
+  //           ? d?.req?.headers?.host?.split(":")?.[0]
+  //           : d?.req?.headers?.host
+  //       );
+  //       let metaTags = {
+  //         ogSiteName: "troddit",
+  //         ogDescription: `Post on r/${post.subreddit} by u/${
+  //           post.author
+  //         } • ${post.score?.toLocaleString(
+  //           "en-US"
+  //         )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
+  //         ogTitle: post.title,
+  //         ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
+  //         ogHeight: media?.dimensions?.[1],
+  //         ogWidth: media?.dimensions?.[0],
+  //         ogType: `image`,
+  //       };
+  //       res.setHeader(
+  //         "Cache-Control",
+  //         "max-age=0, s-maxage=3600, stale-while-revalidate=30"
+  //       );
+  //       return { query, metaTags, post: post?.preview ? post : undefined };
+  //     } catch (err) {
+  //       return { query };
+  //     }
+  //   }
+  // }
 
   return { query };
 };

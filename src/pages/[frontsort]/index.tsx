@@ -79,53 +79,53 @@ const FrontSortPage = ({ query, metaTags, post }) => {
 
 FrontSortPage.getInitialProps = async (d) => {
   const { query, req, res } = d;
-  if (req) {
-    res.setHeader(
-      "Cache-Control",
-      "max-age=0, s-maxage=1200, stale-while-revalidate=30"
-    );
-  }
-  let url = query.frontsort;
-  if (
-    !(
-      query.frontsort === "best" ||
-      query.frontsort === "hot" ||
-      query.frontsort === "new" ||
-      query.frontsort === "top" ||
-      query.frontsort === "rising"
-    )
-  ) {
-    try {
-      let { post } = await loadPost(`/${url}`);
-      const media = await findMediaInfo(
-        post,
-        true,
-        d?.req?.headers.host?.split(":")?.[0]
-      );
-      post["mediaInfo"] = media;
-      let metaTags = {
-        ogSiteName: "troddit",
-        ogDescription: `Post on r/${post.subreddit} by u/${
-          post.author
-        } • ${post.score?.toLocaleString(
-          "en-US"
-        )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
-        ogTitle: post.title,
-        ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
-        ogHeight: media?.dimensions?.[1],
-        ogWidth: media?.dimensions?.[0],
-        ogType: `image`,
-      };
-      return {
-        query,
-        metaTags,
-        post: post?.preview ? post : undefined,
-        user: undefined,
-      };
-    } catch (err) {
-      return { query };
-    }
-  }
+  // if (req) {
+  //   res.setHeader(
+  //     "Cache-Control",
+  //     "max-age=0, s-maxage=1200, stale-while-revalidate=30"
+  //   );
+  // }
+  // let url = query.frontsort;
+  // if (
+  //   !(
+  //     query.frontsort === "best" ||
+  //     query.frontsort === "hot" ||
+  //     query.frontsort === "new" ||
+  //     query.frontsort === "top" ||
+  //     query.frontsort === "rising"
+  //   )
+  // ) {
+  //   try {
+  //     let { post } = await loadPost(`/${url}`);
+  //     const media = await findMediaInfo(
+  //       post,
+  //       true,
+  //       d?.req?.headers.host?.split(":")?.[0]
+  //     );
+  //     post["mediaInfo"] = media;
+  //     let metaTags = {
+  //       ogSiteName: "troddit",
+  //       ogDescription: `Post on r/${post.subreddit} by u/${
+  //         post.author
+  //       } • ${post.score?.toLocaleString(
+  //         "en-US"
+  //       )} points and ${post.num_comments?.toLocaleString("en-US")} comments`,
+  //       ogTitle: post.title,
+  //       ogImage: media?.imageInfo?.[media?.imageInfo?.length - 1]?.src,
+  //       ogHeight: media?.dimensions?.[1],
+  //       ogWidth: media?.dimensions?.[0],
+  //       ogType: `image`,
+  //     };
+  //     return {
+  //       query,
+  //       metaTags,
+  //       post: post?.preview ? post : undefined,
+  //       user: undefined,
+  //     };
+  //   } catch (err) {
+  //     return { query };
+  //   }
+  // }
   return { query };
 };
 

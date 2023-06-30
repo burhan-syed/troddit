@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.19.0
+### New
+- Reddit API use is now protected behind troddit+ authentication. This is in response to recent pricing changes made by Reddit. 
+  - Private instances are unaffected unless opted in. 
+- API use is now anonymously logged
+
 ## v0.18.0
 ### New
 - Troddit will now remember and resume your position in recent feeds

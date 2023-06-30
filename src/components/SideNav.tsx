@@ -1,6 +1,6 @@
 import Search from "./Search";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import DropDownItems from "./DropDownItems";
 import { Menu } from "@headlessui/react";

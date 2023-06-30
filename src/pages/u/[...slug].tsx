@@ -8,7 +8,9 @@ import { getUserMultiSubs } from "../../RedditAPI";
 import { getSession } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import React from "react";
+import { useTAuth } from "../../PremiumAuthContext";
 const Sort = ({ query }) => {
+  const {isLoaded, premium} = useTAuth(); 
   const router = useRouter();
   const { data: session, status } = useSession();
   const loading = status === "loading";
@@ -22,7 +24,7 @@ const Sort = ({ query }) => {
   const [feedQuery, setFeedQuery] = useState("");
 
   const getSubsArray = async () => {
-    let subs = await getUserMultiSubs(query?.slug?.[0], query?.slug?.[2]);
+    let subs = await getUserMultiSubs({user:query?.slug?.[0], multi:query?.slug?.[2], isPremium: premium?.isPremium});
     // subs?.length > 0 ? setSubsArray(subs) : setSubsArray([]);
 
     subs && subs?.length > 0 && router.push(`/r/${subs.join("+")}`);
@@ -131,12 +133,13 @@ const Sort = ({ query }) => {
                     <div className="flex justify-center w-full pb-2">{`Login to save this multi`}</div>
                   )}
                   {isMulti && session && (
-                    <div
-                      className="flex justify-center w-full pb-2 hover:cursor-pointer hover:font-semibold"
+                    <button
+                      disabled={!premium?.isPremium}
+                      className="flex justify-center w-full pb-2 hover:cursor-pointer hover:font-semibold disabled:opacity-50 disabled:pointer-events-none"
                       onClick={getSubsArray}
                     >
                       Click to Extract Subreddits
-                    </div>
+                    </button>
                   )}
                 </div>
               ) : (

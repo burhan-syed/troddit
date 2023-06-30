@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMainContext } from "../MainContext";
 import Toggles from "./settings/Toggles";
 import { useWindowWidth } from "@react-hook/window-size/throttled";
+import { useTAuth } from "../PremiumAuthContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -14,6 +15,7 @@ const subOptionStyle =
   "px-4 py-3 text-sm hover:bg-th-highlight  cursor-pointer";
 
 const NavMenu = ({ hide = false }) => {
+  const {isSignedIn, signOut} = useTAuth(); 
   const context: any = useMainContext();
   const [touched, setTouched] = useState(false);
   const windowWidth = useWindowWidth(); 
@@ -427,6 +429,20 @@ const NavMenu = ({ hide = false }) => {
                     
                   </Link>
                 </div>
+              )}
+            </Menu.Item>
+            <Menu.Item disabled={!isSignedIn}>
+              {({ disabled, active }) => (
+                <button
+                  className={classNames(
+                    disabled ? "hidden" : "",
+                    active ? "bg-th-highlight " : "",
+                    "block px-4  text-sm w-full py-2 text-center"
+                  )}
+                  onClick={() => {signOut && signOut()}}
+                >
+                 troddit sign out
+                </button>
               )}
             </Menu.Item>
           </div>
