@@ -11,6 +11,11 @@ export default function Page() {
       router.replace("/");
     }
   }, []);
+
+  if (OPEN) {
+    return <></>;
+  }
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] h-full w-full flex items-center justify-center">
       <SignIn

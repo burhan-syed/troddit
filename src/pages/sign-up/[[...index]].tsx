@@ -15,6 +15,10 @@ export default function Page() {
     }
   }, []);
 
+  if (OPEN) {
+    return <></>;
+  }
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] h-full w-full flex items-center justify-center">
       <div className="w-full max-w-3xl mx-4 md:mx-10 lg:mx-0">

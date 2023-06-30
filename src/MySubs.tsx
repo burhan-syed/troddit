@@ -738,15 +738,21 @@ export const MySubsProvider = ({ children }) => {
   useEffect(() => {
     if (
       user.isLoaded &&
+      status !== "loading" &&
       !loadedSubs &&
       (router?.pathname === "/r/[...slug]" ||
         router?.pathname === "/u/[...slug]" ||
         router?.pathname === "/search")
     ) {
-      loadLocalSubs();
-      tryLoadAll();
+      status === "unauthenticated" ? loadLocalSubs() : tryLoadAll();
     }
-  }, [router?.pathname, loadedSubs, user.isLoaded, user.premium?.isPremium]);
+  }, [
+    router?.pathname,
+    status,
+    loadedSubs,
+    user.isLoaded,
+    user.premium?.isPremium,
+  ]);
   useEffect(() => {
     if (
       user.isLoaded &&
@@ -768,9 +774,9 @@ export const MySubsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    user.isLoaded && loadLocalSubs();
+    user.isLoaded && status === "unauthenticated" && loadLocalSubs();
     return () => {};
-  }, [user.isLoaded && context.localSubs, context.localFavoriteSubs]);
+  }, [user.isLoaded, status, context.localSubs, context.localFavoriteSubs]);
 
   useEffect(() => {
     if (user.isLoaded) {
@@ -814,10 +820,10 @@ export const MySubsProvider = ({ children }) => {
     }
   };
   useEffect(() => {
-    if (!session && !loading && myLocalSubs.length > 0) {
+    if (user.isLoaded && !session && !loading && myLocalSubs.length > 0) {
       setloadedSubs(true);
     }
-  }, [myLocalSubs, session, loading]);
+  }, [myLocalSubs, session, loading, user.isLoaded]);
 
   const loadUserSubInfos = async (users) => {
     let follows = [];
@@ -850,7 +856,6 @@ export const MySubsProvider = ({ children }) => {
 
   const loadAllFromReddit = async () => {
     try {
-      //console.log('load subs');
       setLoadingSubs(true);
       const multis = getMyMultis({ isPremium: user.premium?.isPremium });
       const all = getAllMyFollows({ isPremium: user.premium?.isPremium });
