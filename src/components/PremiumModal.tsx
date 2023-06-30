@@ -18,7 +18,7 @@ const PremiumModal = () => {
     }
   }, [context.premiumModal]);
   return (
-    <Modal toOpen={open}>
+    <Modal toOpen={open} onClose={() => context.setPremiumModal(false)}>
       <div className="inline-block overflow-hidden text-left align-bottom transition-all transform rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full bg-th-post">
         <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4 bg-th-base">
           <div className="sm:flex sm:items-start">
