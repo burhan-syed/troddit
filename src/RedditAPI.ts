@@ -1006,6 +1006,7 @@ export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
       let d = await loadSubredditInfo({
         query: a?.data?.display_name?.substring(2),
         loadUser: true,
+        isPremium: isPremium
       });
       d && users.push(d);
     } else {

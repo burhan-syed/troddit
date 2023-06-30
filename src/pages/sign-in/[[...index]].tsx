@@ -17,6 +17,7 @@ export default function Page() {
         appearance={{
           elements: {
             rootBox: "w-full max-w-3xl mx-4 md:mx-10 lg:mx-0",
+            logoBox: "w-12 h-12",
             card: "flex flex-col w-full p-4 text-sm border rounded-lg shadow-md bg-th-post border-th-border2 gap-y-4 md:p-10 md:ml-[0rem]",
             header: "mb-4",
             headerTitle: "text-th-text",

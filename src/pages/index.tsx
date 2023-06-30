@@ -8,15 +8,16 @@ import { getToken } from "next-auth/jwt";
 import React from "react";
 import Card1 from "../components/cards/Card1";
 import Modal from "../components/ui/Modal";
+import { useTAuth } from "../PremiumAuthContext";
 
 const index = ({ postData, user }) => {
+  const { isLoaded, premium } = useTAuth();
   const [initialData, setInitialData] = useState({});
   const [ready, setReady] = useState(false);
   const data = useSession();
   const isloading = data.status === "loading";
   useEffect(() => {
-    if (!isloading) {
-      
+    if (!isloading && isLoaded && premium) {
       const parseCookie = (str) =>
         str
           .split(";")
@@ -30,8 +31,9 @@ const index = ({ postData, user }) => {
       const cookies = parseCookie(document.cookie);
       //can't use initial ssr props if login mismatch or local subs changed
       if (
-        user !== (data?.data?.user?.name ?? "") ||
-        (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false")
+        premium?.isPremium === true &&
+        (user !== (data?.data?.user?.name ?? "") ||
+          (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false"))
       ) {
         setInitialData({});
       } else {
@@ -42,7 +44,14 @@ const index = ({ postData, user }) => {
     return () => {
       setReady(false);
     };
-  }, [postData, isloading, user, data?.data?.user?.name]);
+  }, [
+    postData,
+    isloading,
+    isLoaded,
+    premium,
+    user,
+    data?.data?.user?.name,
+  ]);
   return (
     <div className="overflow-x-hidden ">
       <Head>
@@ -58,7 +67,6 @@ const index = ({ postData, user }) => {
 };
 
 export async function getStaticProps({ params }) {
-
   const data = await loadFront({
     sort: "hot",
     isPremium: true,
@@ -66,8 +74,8 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      postData: JSON.stringify({children: data?.children}),
-      user: ""
+      postData: JSON.stringify({ children: data?.children }),
+      user: "",
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
