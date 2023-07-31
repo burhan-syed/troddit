@@ -216,10 +216,12 @@ const FeedMasonry = ({ initItems, feed, curKey }: MyMasonicProps) => {
         entry.boundingClientRect.top < 0 &&
         Math.abs(entry?.boundingClientRect?.bottom) < (windowHeight * 1) / 2
       ) {
-        setGlobalData("lastScroll", post?.data?.name);
+        setGlobalData("lastScroll", post?.name);
         setGlobalData("lastClick", undefined);
-        context?.autoSeen &&
-          localSeen.setItem(post?.data?.name, { time: new Date() });
+        if(context?.autoSeen){
+          localSeen.setItem(post?.name, { time: new Date() });
+        } 
+          
       }
       //context.cardStyle === "row1" && setGlobalData("lastTop", window.scrollY);
     },

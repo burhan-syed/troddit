@@ -6,6 +6,7 @@ const withPWA = require("next-pwa")({
 });
 module.exports = withPlausibleProxy()(
   withPWA({
+    output: "standalone",
     reactStrictMode: false, //true
     swcMinify: true,
     compiler: {
