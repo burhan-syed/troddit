@@ -226,6 +226,7 @@ export const loadFront = async ({
       };
     } catch (err) {
       //console.log(err);
+      throw err; 
     }
   } else {
     let filteredsubs = localSubs?.filter((s) => s.substring(0, 2) !== "u_");
@@ -262,7 +263,7 @@ export const loadFront = async ({
           token: returnToken,
         };
       } catch (err) {
-        //console.log(err);
+        throw err; 
       }
     }
   }
@@ -327,6 +328,7 @@ export const loadSubreddits = async ({
       };
     } catch (err) {
       //console.log(err);
+      throw err; 
     }
   } else {
     try {
@@ -349,7 +351,7 @@ export const loadSubreddits = async ({
         token: returnToken,
       };
     } catch (err) {
-      return null;
+      throw err; 
     }
   }
 };
@@ -474,6 +476,7 @@ export const getRedditSearch = async ({
       };
     } catch (err) {
       //console.log(err);
+      throw err; 
     }
   } else {
     try {
@@ -491,8 +494,8 @@ export const getRedditSearch = async ({
         token: returnToken,
       };
     } catch (err) {
-      console.log(err);
-      return null;
+      // console.log(err);
+      throw err; 
     }
   }
 };
@@ -535,7 +538,7 @@ export const loadSubFlairPosts = async ({
       children: data?.data?.children,
     };
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 };
 export const getUserMultiPosts = async ({

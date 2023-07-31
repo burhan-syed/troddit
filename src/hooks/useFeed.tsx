@@ -13,6 +13,7 @@ import {
 } from "../RedditAPI";
 import useLocation from "./useLocation";
 import { useTAuth } from "../PremiumAuthContext";
+import { toast } from "react-hot-toast";
 
 interface Params {
   initialPosts?: any;
@@ -166,13 +167,50 @@ const useFeed = (params?: Params) => {
         return {
           filtered: [],
           after: null,
-          count: fetchParams.pageParam,
+          count: feedParams.count,
           prevPosts: feedParams.prevPosts,
           filterCount: 0,
         };
-      } else {
-        throw error;
+      } else if (error?.["response"]?.["status"] === 429) {
+        //rate limited
+        const timeout = parseInt(
+          error?.["response"]?.["headers"]?.["x-ratelimit-reset"] ?? "300"
+        );
+        toast.custom(
+          (t) => (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toast.remove("feed_rate_limited");
+              }}
+              className="max-w-lg p-2 border rounded-lg bg-th-postHover border-th-border2"
+            >
+              <p className="mb-2 text-center">
+                {"Error 429: Too many requests"}
+                <br />
+                <span className="text-sm text-th-textLight">{`Waiting ${timeout} seconds`}</span>
+              </p>
+            </button>
+          ),
+          {
+            position: "bottom-center",
+            duration: Infinity,
+            id: "feed_rate_limited",
+          }
+        );
+        await new Promise((resolve) =>
+          setTimeout(() => resolve("foo"), timeout * 1000)
+        );
+        return {
+          filtered: [],
+          after: feedParams.after,
+          count: feedParams.count,
+          prevPosts: feedParams.prevPosts,
+          filterCount: 0,
+        };
       }
+      throw error;
     }
 
     const manageData = async (
