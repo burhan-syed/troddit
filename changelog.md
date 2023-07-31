@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.19.1
+
+### Changes
+- Handle 429 Too Many Requests error from Reddit
+### Fixes
+- Seen posts now logged from feed scrolling
+
 ## v0.19.0
 ### New
 - Reddit API use is now protected behind troddit+ authentication. This is in response to recent pricing changes made by Reddit. 
