@@ -20,7 +20,7 @@ type PremiumAuthContextType = Partial<
   };
 };
 
-const FREE_USE = JSON.parse(process.env.NEXT_PUBLIC_FREE_ACCESS ?? "true");
+const FREE_USE = JSON.parse(process?.env?.NEXT_PUBLIC_FREE_ACCESS ?? "true");
 
 export const PremiumAuthContext = createContext<
   PremiumAuthContextType | undefined

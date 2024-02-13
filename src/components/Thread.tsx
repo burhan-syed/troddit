@@ -1111,25 +1111,17 @@ const Thread = ({
                   )}
 
                   <div className="w-full mb-5 ">
-                    <span className={"flex justify-center w-full  text-xs text-center text-th-textLight mt-2"}>
-                      {!premium?.isPremium ? (
-                        <span className="mt-8 ">
-                          <Link
-                            className="pr-1 underline hover:text-th-text"
-                            href={"/sign-in"}
-                          >
-                            {`Sign in with troddit+`}
-                          </Link>
-                          {` to view comments`}
-                        </span>
+                    <span
+                      className={
+                        "flex justify-center w-full  text-xs text-center text-th-textLight mt-2"
+                      }
+                    >
+                      {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
+                      thread.isFetched &&
+                      !thread.isError ? (
+                        <span className="mt-8">{"no comments :("}</span>
                       ) : (
-                        <>
-                          {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
-                          thread.isFetched &&
-                          !thread.isError
-                            ? <span className="mt-8">{"no comments :("}</span>
-                            : ""}
-                        </>
+                        null
                       )}
                     </span>
                     {/* Open All Comments */}

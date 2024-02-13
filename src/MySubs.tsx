@@ -827,7 +827,7 @@ export const MySubsProvider = ({ children }) => {
 
   const loadUserSubInfos = async (users) => {
     let follows = [];
-    await Promise.all([
+    await Promise.allSettled([
       ...users.map(async (user) => {
         const info = await loadSubInfo({
           subreddit: user?.data?.subreddit?.display_name,
