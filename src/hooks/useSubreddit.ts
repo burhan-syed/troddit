@@ -11,7 +11,7 @@ const useSubreddit = (subreddit, isUser = false) => {
   };
 
   const sub = useQuery(["subreddit",subreddit, isUser], subInfo, {
-    enabled: isLoaded && premium?.isPremium && subreddit?.length > 0,
+    enabled: isLoaded && subreddit?.length > 0,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

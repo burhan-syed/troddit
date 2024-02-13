@@ -663,18 +663,16 @@ export const MySubsProvider = ({ children }) => {
       if (cachedInfo) {
         asynccheck && setCurrSubInfo(cachedInfo);
       }
-      if (user.premium?.isPremium) {
-        let info = await loadSubredditInfo({
-          query: sub,
-          loadUser: isUser,
-          isPremium: user.premium?.isPremium,
-        });
-        if (info) {
-          addToSubCache(info);
-          asynccheck && setCurrSubInfo(info);
+      let info = await loadSubredditInfo({
+        query: sub,
+        loadUser: isUser,
+        isPremium: user.premium?.isPremium,
+      });
+      if (info) {
+        addToSubCache(info);
+        asynccheck && setCurrSubInfo(info);
 
-          return info;
-        }
+        return info;
       }
     };
 

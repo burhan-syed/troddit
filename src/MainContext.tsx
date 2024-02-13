@@ -1007,13 +1007,13 @@ export const MainProvider = ({ children }) => {
 
       const autoRefreshFeed = async () => {
         let saved = await localForage.getItem("autoRefreshFeed");
-        saved === false ? setAutoRefreshFeed(false) : setAutoRefreshFeed(true);
+        saved === true ? setAutoRefreshFeed(true) : setAutoRefreshFeed(false);
       };
       const autoRefreshComments = async () => {
         let saved = await localForage.getItem("autoRefreshComments");
-        saved === false
-          ? setAutoRefreshComments(false)
-          : setAutoRefreshComments(true);
+        saved === true
+          ? setAutoRefreshComments(true)
+          : setAutoRefreshComments(false);
       };
       const askToUpdateFeed = async () => {
         let saved = await localForage.getItem("askToUpdateFeed");
@@ -1021,7 +1021,7 @@ export const MainProvider = ({ children }) => {
       };
       const refreshOnFocus = async () => {
         let saved = await localForage.getItem("refreshOnFocus");
-        saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
+        saved === true ? setRefreshOnFocus(true) : setRefreshOnFocus(false);
       };
       const loadVolume = async () => {
         let saved = await localForage.getItem("volume");

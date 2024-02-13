@@ -98,7 +98,7 @@ const SearchPage = ({ query }) => {
 
       setLoading(false);
     };
-    if (isLoaded && premium?.isPremium) {
+    if (isLoaded) {
       getSearch();
     }
     return () => {

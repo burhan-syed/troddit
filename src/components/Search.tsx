@@ -124,8 +124,8 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
   ];
   const extractFields = (query) => {};
   const getSuggestions = async (value) => {
-    //console.log(value);
-    if (premium?.isPremium) {
+    //premium?.isPremium
+    if (true) {
       let search = {
         kind: "search",
         data: {

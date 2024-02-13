@@ -233,6 +233,7 @@ export const loadFront = async ({
           after: after,
           count: count,
           sr_detail: true,
+          limit: 100
         },
       });
       let res = await res1.data;
@@ -269,6 +270,7 @@ export const loadFront = async ({
             after: after,
             count: count,
             sr_detail: true,
+            limit: 100
           },
         });
 
@@ -331,6 +333,7 @@ export const loadSubreddits = async ({
             after: after,
             count: count,
             sr_detail: getSRDetail,
+            limit: 100
           },
         }
       );
@@ -355,6 +358,7 @@ export const loadSubreddits = async ({
             after: after,
             count: count,
             sr_detail: getSRDetail,
+            limit: 100
           },
         })
       ).data;
@@ -572,6 +576,7 @@ export const getUserMultiPosts = async ({
           sort: sort,
           t: range,
           after: after,
+          limit: 100,
         },
       })
     ).data;
@@ -790,6 +795,7 @@ export const loadUserPosts = async ({
               after: after,
               count: count,
               sr_detail: true,
+              limit: 100
             },
           }
         )
@@ -808,6 +814,7 @@ export const loadUserPosts = async ({
               after: after,
               count: count,
               sr_detail: true,
+              limit: 100
             },
           }
         )
@@ -871,6 +878,7 @@ export const loadUserSelf = async ({
             show: where,
             type: type,
             sr_detail: true,
+            limit: 100
           },
         }
       );

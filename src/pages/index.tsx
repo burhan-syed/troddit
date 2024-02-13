@@ -31,7 +31,6 @@ const index = ({ postData, user }) => {
       const cookies = parseCookie(document.cookie);
       //can't use initial ssr props if login mismatch or local subs changed
       if (
-        premium?.isPremium === true &&
         (user !== (data?.data?.user?.name ?? "") ||
           (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false"))
       ) {

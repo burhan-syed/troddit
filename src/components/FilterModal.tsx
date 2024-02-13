@@ -95,9 +95,11 @@ const FilterModal = ({ toOpen }) => {
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-between">
-                  <h4 className="text-xs italic text-th-textLight">
+                  <p className="text-xs italic text-th-textLight">
+                    Filters may cause high API usage
+                    <br/>
                     Press Apply to refresh feed with selected filters
-                  </h4>
+                  </p>
 
                   <button
                     aria-label="apply"
