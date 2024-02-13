@@ -33,6 +33,11 @@ export const MainProvider = ({ children }) => {
   const [highRes, setHighRes] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [premiumModal, setPremiumModal] = useState(false);
+  const [rateLimitModal, setRateLimitModal] = useState({
+    show: false,
+    timeout: 0,
+    start: new Date(),
+  });
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);
   const [postNum, setPostNum] = useState(0);
@@ -1520,6 +1525,8 @@ export const MainProvider = ({ children }) => {
         toggleLoginModal,
         premiumModal,
         setPremiumModal,
+        rateLimitModal,
+        setRateLimitModal,
         setLoginModal,
         autoplay,
         toggleAutoplay,

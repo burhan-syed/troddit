@@ -25,6 +25,7 @@ import { checkVersion } from "../../lib/utils";
 import ToastCustom from "../components/toast/ToastCustom";
 import { usePlausible } from "next-plausible";
 import PremiumModal from "../components/PremiumModal";
+import RateLimitModal from "../components/RateLimitModal";
 
 const NO_AUTH_FREE_ACCESS = JSON.parse(
   process?.env?.NEXT_PUBLIC_FREE_ACCESS ?? "true"
@@ -44,6 +45,7 @@ const App = ({ Component, pageProps }) => {
                 <NavBar />
                 <Component {...pageProps} />
                 <PremiumModal />
+                <RateLimitModal />
                 <Toaster position="bottom-center" />
                 <Analytics />
                 <ReactQueryDevtools initialIsOpen={false} />

@@ -35,26 +35,13 @@ export default function Page() {
             <br />
             <br />
             <strong>{" Troddit+ is priced at $6 a month."}</strong> This is to
-            cover new Reddit API pricing and fund future development. Pricing
-            may change in the future.
+            cover Reddit API service fees.
             <br />
             <br />
-            If you are interested and would like to be notified when a sign up
-            is available please submit your contact information below.
+            If you are interested and would like to be notified when sign ups
+            are available please submit your contact information below.
           </p>
-          <p>
-            You can find more information or stay up to date with troddit
-            development at{" "}
-            <a
-              target={"_blank"}
-              rel={"noreferrer"}
-              href="https://reddit.com/r/trodditforreddit"
-              className="text-th-link hover:text-th-linkHover hover:underline"
-            >
-              r/TrodditForReddit
-            </a>
-            .
-          </p>
+         
           <div className="pt-2 sm:py-6 sm:pb-2 md:py-10 md:pb-8">
             <EmailForm />
           </div>
