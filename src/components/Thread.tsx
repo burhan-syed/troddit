@@ -188,6 +188,8 @@ const Thread = ({
   }, []);
 
   useLayoutEffect(() => {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
     if (
       !context.disableSideBySide &&
       windowWidth >= SIDEBYSIDE_THRESHOLD &&
@@ -200,6 +202,11 @@ const Thread = ({
         setUsePortrait(
           mediaInfo?.isPortrait || context.preferSideBySide ? true : false
         );
+    } else if (
+      usePortrait === undefined
+      && mediaInfo !== undefined
+    ) {
+      setUsePortrait(false)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -27,9 +27,7 @@ const AboutPage = ({ changelog }) => {
           </p>
 
           <p className="">
-            For any feature requests, bug reports, or general conversation head
-            over to <Link href={"/r/TrodditForReddit"} className={link}>r/TrodditForReddit</Link>.
-            You can also create an issue on{" "}
+            For any feature requests, bug reports, please create an issue on{" "}
             <a
               href="https://www.github.com/burhan-syed/troddit"
               target="_blank"

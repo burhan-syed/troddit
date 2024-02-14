@@ -30,7 +30,7 @@ const SideNav = ({ visible, toggle }) => {
   //   }
   // };
   //prevent scrolling on main body when open
-  
+
   useEffect(() => {
     if (visible) {
       const width = document.body.clientWidth;
@@ -65,22 +65,13 @@ const SideNav = ({ visible, toggle }) => {
     >
       <div
         className={
-          "absolute h-screen inset-y-0 left-0  space-y-6 z-[99] transition duration-200 ease-in-out transform -translate-x-full sidebar py-7" +
+          "absolute h-[100dvh] inset-y-0 left-0  space-y-6 z-[99] transition duration-200 ease-in-out transform -translate-x-full sidebar py-7" +
           `${visible ? "relative translate-x-0 w-screen" : ""}`
         }
       >
-        <div className="flex flex-row flex-none h-screen overscroll-y-contain">
-          <nav className="flex flex-col justify-between flex-grow w-5/6 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-th-background2 border-th-border ">
-            <div className="flex flex-col justify-start w-full h-screen space-y-4 ">
-              <div className="flex flex-row items-center justify-between w-full ">
-                <div className="">
-                  <LoginProfile />
-                </div>
-                <RiArrowGoBackLine
-                  onClick={() => toggle()}
-                  className="flex-none w-6 h-6 cursor-pointer "
-                />
-              </div>
+        <div className="flex flex-row flex-none h-[100dvh] overscroll-y-contain">
+          <nav className="flex flex-col justify-between flex-grow w-3/5 px-2 pt-4 overflow-hidden border-r rounded-r-lg bg-th-background2 border-th-border ">
+            <div className="flex flex-col justify-start w-full h-full space-y-4 ">
               {/* <div
                 className="z-10 flex-none px-2 h-14"
                 onBlur={() => buttonRef?.current?.click()}
@@ -90,7 +81,6 @@ const SideNav = ({ visible, toggle }) => {
               <Menu
                 as="div"
                 className={`h-full px-2 overflow-x-hidden overflow-y-auto outline-none ${scrollStyle}`}
-
               >
                 {({ open }) => (
                   <>
@@ -100,34 +90,47 @@ const SideNav = ({ visible, toggle }) => {
                       className={"hidden"}
                       ref={buttonRef}
                     ></Menu.Button>
-                    {open ? (
-                      <>
-                        <Menu.Items
-                          as="div"
-                          static
-                          className="pb-10 outline-none"
+
+                    <Menu.Items
+                      as="div"
+                      static
+                      className="pb-10 outline-none"
+                      // onClick={() => toggle()}
+                    >
+                      <div className="flex flex-row items-center justify-between w-full ">
+                        <div className="" onClick={() => toggle()}>
+                          <LoginProfile />
+                        </div>
+                        <RiArrowGoBackLine
                           onClick={() => toggle()}
-                        >
-                          <DropDownItems show={vis} hideExtra={true} />
-                        </Menu.Items>
-                      </>
-                    ) : (
-                      <div
-                        className="flex items-center justify-center h-full select-none"
-                        onClick={() => buttonRef?.current?.click()}
-                      >
-                        <h1 className="opacity-50 text-th-textLight">
-                          (click for subs)
-                        </h1>
+                          className="flex-none w-6 h-6 cursor-pointer "
+                        />
                       </div>
-                    )}
+                      <div onClick={(e) => {
+                        //toggle close if click on inner link
+                        let element = e.target as HTMLElement;
+                        while (element !== document.body) {
+                          if ((element)?.tagName == "A") {
+                            toggle();
+                            return;
+                          }
+                          if (!element.parentElement) {
+                            return;
+                          }
+                          element = element.parentElement;
+                        }
+                       
+                      }}>
+                        <DropDownItems show={true} hideExtra={true} />
+                      </div>
+                    </Menu.Items>
                   </>
                 )}
               </Menu>
             </div>
           </nav>
           <div
-            className="w-1/6 bg-gray-800 opacity-30"
+            className="w-2/5"
             onClick={(e) => {
               e.stopPropagation();
               toggle();
@@ -135,6 +138,15 @@ const SideNav = ({ visible, toggle }) => {
           ></div>
         </div>
       </div>
+      {visible && (
+        <div
+          className="absolute w-screen h-screen bg-gray-800 opacity-30"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggle();
+          }}
+        ></div>
+      )}
     </div>
   );
 };

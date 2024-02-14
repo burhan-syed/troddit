@@ -822,7 +822,7 @@ const VideoHandler = ({
             ? "min-h-full min-w-full object-cover object-center "
             : postMode && !fullMediaMode && !containerDims?.[1]
             ? "min-w-full"
-            : "relative overflow-hidden flex  object-fill"
+            : "relative overflow-hidden flex items-center  object-fill"
         }
         style={
           uniformMediaMode

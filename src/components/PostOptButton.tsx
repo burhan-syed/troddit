@@ -73,12 +73,12 @@ const PostOptButton = ({
               <Menu.Button
                 aria-label="post options"
                 className={
-                  " flex justify-center items-center  border rounded-md  " +
+                  " flex justify-center items-center  border  " +
                   (mode == "row"
-                    ? " border-transparent hover:border-th-borderHighlight px-2 py-0.5 sm:p-0 "
+                    ? " border-transparent hover:border-th-borderHighlight px-2 py-0.5 sm:p-0 rounded-md  "
                     : mode == "fullmedia"
                     ? ` border-transparent hover:border-th-borderHighlight  bg-black/40 backdrop-blur-lg md:backdrop-blur-none rounded-full md:rounded-md md:bg-transparent md:hover:bg-black/20 hover:backdrop-blur-lg transition duration-200 ease-in-out w-10 h-10 md:w-auto md:h-auto ${buttonStyles} `
-                    : " border-th-border hover:border-th-borderHighlight ") +
+                    : " border-th-border hover:border-th-borderHighlight rounded-md ") +
                   (showUI === false ? " opacity-50 " : " ")
                 }
               >
