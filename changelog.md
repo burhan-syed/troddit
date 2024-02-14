@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20.0
+
+### Changes
+- Allow signed out use within rate limits
+
 ## v0.19.1
 
 ### Changes
