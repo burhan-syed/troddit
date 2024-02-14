@@ -53,6 +53,7 @@ import { CgSpinnerTwo } from "react-icons/cg";
 import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 import PostBody from "./PostBody";
 import { useTAuth } from "../PremiumAuthContext";
+import LoaderPuff from "./ui/LoaderPuff";
 
 const SIDEBYSIDE_THRESHOLD = 1000;
 
@@ -355,6 +356,15 @@ const Thread = ({
       { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
   }
+
+  if (usePortrait === undefined && !direct) {
+    return (
+      <div className="flex items-center justify-center w-full h-[80vh]">
+        <LoaderPuff />
+      </div>
+    );
+  }
+
   return (
     <>
       <div
@@ -1120,9 +1130,7 @@ const Thread = ({
                       thread.isFetched &&
                       !thread.isError ? (
                         <span className="mt-8">{"no comments :("}</span>
-                      ) : (
-                        null
-                      )}
+                      ) : null}
                     </span>
                     {/* Open All Comments */}
 

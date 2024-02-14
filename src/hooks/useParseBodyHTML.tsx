@@ -5,13 +5,13 @@ import ParseATag from "../components/ParseATag";
 import HtmlToReact from "html-to-react";
 
 const HtmlToReactParser = HtmlToReact.Parser;
-const htmlToReactParser = new HtmlToReactParser();
+const htmlToReactParser = HtmlToReactParser();
 const isValidNode = function () {
   return true;
 };
 
 // Order matters. Instructions are processed in the order they're defined
-const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
+const processNodeDefinitions = HtmlToReact.ProcessNodeDefinitions();
 const processingInstructions = [
   {
     shouldProcessNode: function (node) {
