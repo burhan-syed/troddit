@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.21.10",
+    "@clerk/nextjs": "^4.29.7",
     "@headlessui/react": "1.5",
     "@react-hook/resize-observer": "^1.2.5",
     "@react-hook/window-size": "^3.0.7",
