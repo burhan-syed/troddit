@@ -161,6 +161,7 @@ const useFeed = (params?: Params) => {
           isPremium: premium?.isPremium,
         });
       }
+      
     } catch (error) {
       if (error?.message === "PREMIUM REQUIRED") {
         context.setPremiumModal(true);
@@ -171,34 +172,16 @@ const useFeed = (params?: Params) => {
           prevPosts: feedParams.prevPosts,
           filterCount: 0,
         };
-      } else if (error?.["response"]?.["status"] === 429) {
+      } else if (error?.["response"]?.["status"] === 429 || true) {
         //rate limited
         const timeout = parseInt(
           error?.["response"]?.["headers"]?.["x-ratelimit-reset"] ?? "300"
         );
-        toast.custom(
-          (t) => (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toast.remove("feed_rate_limited");
-              }}
-              className="max-w-lg p-2 border rounded-lg bg-th-postHover border-th-border2"
-            >
-              <p className="mb-2 text-center">
-                {"Error 429: Too many requests"}
-                <br />
-                <span className="text-sm text-th-textLight">{`Waiting ${timeout} seconds`}</span>
-              </p>
-            </button>
-          ),
-          {
-            position: "bottom-center",
-            duration: Infinity,
-            id: "feed_rate_limited",
-          }
-        );
+        context.setRateLimitModal({
+          show: true, 
+          timeout,
+          start: new Date()
+        });
         await new Promise((resolve) =>
           setTimeout(() => resolve("foo"), timeout * 1000)
         );

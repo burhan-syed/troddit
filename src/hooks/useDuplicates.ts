@@ -54,7 +54,7 @@ const useDuplicates = ({ enabled, permalink }) => {
     ["duplicates", permalink],
     fetchDuplicates,
     {
-      enabled: premium?.isPremium && !!enabled && !!permalink,
+      enabled: !!enabled && !!permalink,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       staleTime: Infinity,

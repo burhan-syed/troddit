@@ -31,12 +31,11 @@ const index = ({ postData, user }) => {
       const cookies = parseCookie(document.cookie);
       //can't use initial ssr props if login mismatch or local subs changed
       if (
-        premium?.isPremium === true &&
         (user !== (data?.data?.user?.name ?? "") ||
           (cookies?.["localSubs"] && cookies?.["localSubs"] !== "false"))
       ) {
         setInitialData({});
-      } else {
+      } else if (postData) {
         setInitialData(JSON.parse(postData));
       }
       setReady(true);
@@ -68,19 +67,19 @@ const index = ({ postData, user }) => {
 
 export async function getStaticProps({ params }) {
 
-  const data = await loadFront({
-    sort: "hot",
-    isPremium: true,
-  });
+  // const data = await loadFront({
+  //   sort: "hot",
+  //   isPremium: true,
+  // });
 
   return {
     props: {
-      postData: JSON.stringify({ children: data?.children }),
+      // postData: JSON.stringify({ children: data?.children }),
       user: "",
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
-    revalidate: 14400, // In seconds
+    // revalidate: 14400, // In seconds
   };
 }
 

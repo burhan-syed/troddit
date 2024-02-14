@@ -53,6 +53,7 @@ import { CgSpinnerTwo } from "react-icons/cg";
 import { MdOutlineCompress, MdOutlineExpand } from "react-icons/md";
 import PostBody from "./PostBody";
 import { useTAuth } from "../PremiumAuthContext";
+import LoaderPuff from "./ui/LoaderPuff";
 
 const SIDEBYSIDE_THRESHOLD = 1000;
 
@@ -187,6 +188,8 @@ const Thread = ({
   }, []);
 
   useLayoutEffect(() => {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
     if (
       !context.disableSideBySide &&
       windowWidth >= SIDEBYSIDE_THRESHOLD &&
@@ -199,6 +202,11 @@ const Thread = ({
         setUsePortrait(
           mediaInfo?.isPortrait || context.preferSideBySide ? true : false
         );
+    } else if (
+      usePortrait === undefined
+      && mediaInfo !== undefined
+    ) {
+      setUsePortrait(false)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -355,6 +363,15 @@ const Thread = ({
       { position: "bottom-center", duration: Infinity, id: "feed_error" }
     );
   }
+
+  if (usePortrait === undefined && !direct) {
+    return (
+      <div className="flex items-center justify-center w-full h-[80vh]">
+        <LoaderPuff />
+      </div>
+    );
+  }
+
   return (
     <>
       <div
@@ -1111,26 +1128,16 @@ const Thread = ({
                   )}
 
                   <div className="w-full mb-5 ">
-                    <span className={"flex justify-center w-full  text-xs text-center text-th-textLight mt-2"}>
-                      {!premium?.isPremium ? (
-                        <span className="mt-8 ">
-                          <Link
-                            className="pr-1 underline hover:text-th-text"
-                            href={"/sign-in"}
-                          >
-                            {`Sign in with troddit+`}
-                          </Link>
-                          {` to view comments`}
-                        </span>
-                      ) : (
-                        <>
-                          {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
-                          thread.isFetched &&
-                          !thread.isError
-                            ? <span className="mt-8">{"no comments :("}</span>
-                            : ""}
-                        </>
-                      )}
+                    <span
+                      className={
+                        "flex justify-center w-full  text-xs text-center text-th-textLight mt-2"
+                      }
+                    >
+                      {!(thread.data?.pages?.[0]?.comments?.length > 0) &&
+                      thread.isFetched &&
+                      !thread.isError ? (
+                        <span className="mt-8">{"no comments :("}</span>
+                      ) : null}
                     </span>
                     {/* Open All Comments */}
 

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Autosuggest from "react-autosuggest";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { useMainContext } from "../MainContext";
 import { searchSubreddits } from "../RedditAPI";
 import { useSession, signIn } from "next-auth/react";
+import debounce from "lodash/debounce";
 import Image from "next/legacy/image";
 // import { usePlausible } from "next-plausible";
 import { useTAuth } from "../PremiumAuthContext";
@@ -92,6 +93,18 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
     };
   }, [router]);
 
+  const debounceSuggestionFetch = useCallback(
+    debounce(async (value) => {
+      const suggestions = await getSuggestions({ value });
+      if (suggestions?.length > 0) {
+        setSuggestions(suggestions);
+        setLoading(false);
+        setUpdated(true);
+      }
+    }, 600),
+    [premium?.isPremium, context?.token, context?.nsfw]
+  );
+
   const onSuggestionsFetchRequested = async ({ value }) => {
     lastRequest.current = value;
     setSuggestions([
@@ -112,20 +125,15 @@ const Search = ({ id, setShowSearch = (a) => {} }) => {
         },
       },
     ]);
-    const suggestions = await getSuggestions({ value });
-    if (suggestions?.length > 0) {
-      setSuggestions(suggestions);
-      setLoading(false);
-      setUpdated(true);
-    }
+    debounceSuggestionFetch(value);
   };
   const searchFields = [
     "author, flair, nsfw, self, selftext, site, subreddit, title, url",
   ];
   const extractFields = (query) => {};
   const getSuggestions = async (value) => {
-    //console.log(value);
-    if (premium?.isPremium) {
+    //premium?.isPremium
+    if (true) {
       let search = {
         kind: "search",
         data: {

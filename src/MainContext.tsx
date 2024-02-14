@@ -33,6 +33,11 @@ export const MainProvider = ({ children }) => {
   const [highRes, setHighRes] = useState(false);
   const [loginModal, setLoginModal] = useState(false);
   const [premiumModal, setPremiumModal] = useState(false);
+  const [rateLimitModal, setRateLimitModal] = useState({
+    show: false,
+    timeout: 0,
+    start: new Date(),
+  });
   const [columns, setColumns] = useState(3);
   const [posts, setPosts] = useState<[any?]>([]);
   const [postNum, setPostNum] = useState(0);
@@ -1002,13 +1007,13 @@ export const MainProvider = ({ children }) => {
 
       const autoRefreshFeed = async () => {
         let saved = await localForage.getItem("autoRefreshFeed");
-        saved === false ? setAutoRefreshFeed(false) : setAutoRefreshFeed(true);
+        saved === true ? setAutoRefreshFeed(true) : setAutoRefreshFeed(false);
       };
       const autoRefreshComments = async () => {
         let saved = await localForage.getItem("autoRefreshComments");
-        saved === false
-          ? setAutoRefreshComments(false)
-          : setAutoRefreshComments(true);
+        saved === true
+          ? setAutoRefreshComments(true)
+          : setAutoRefreshComments(false);
       };
       const askToUpdateFeed = async () => {
         let saved = await localForage.getItem("askToUpdateFeed");
@@ -1016,7 +1021,7 @@ export const MainProvider = ({ children }) => {
       };
       const refreshOnFocus = async () => {
         let saved = await localForage.getItem("refreshOnFocus");
-        saved === false ? setRefreshOnFocus(false) : setRefreshOnFocus(true);
+        saved === true ? setRefreshOnFocus(true) : setRefreshOnFocus(false);
       };
       const loadVolume = async () => {
         let saved = await localForage.getItem("volume");
@@ -1520,6 +1525,8 @@ export const MainProvider = ({ children }) => {
         toggleLoginModal,
         premiumModal,
         setPremiumModal,
+        rateLimitModal,
+        setRateLimitModal,
         setLoginModal,
         autoplay,
         toggleAutoplay,

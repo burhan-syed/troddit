@@ -37,10 +37,9 @@ const PremiumModal = () => {
               </Dialog.Title>
               <div className="mt-3">
                 <p className="text-sm text-th-text opacity-80">
-                  Free browsing is no longer available due to recent Reddit
-                  policy changes.
+                  You must sign in to do this.
                   <br />
-                  Sign up to become a troddit+ member for continued use.
+                  Sign up to become a troddit+ member to sign in with Reddit.
                 </p>
               </div>
             </div>

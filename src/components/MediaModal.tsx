@@ -312,486 +312,209 @@ const MediaModal = ({
     return <></>;
   }
 
-  return <>
-    {!(
-      (context.preferEmbeds &&
-        flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isIFrame) ||
-      flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
-    ) && (
-      <button
-        aria-label={"toggle full resolution"}
-        title={context?.highRes ? "" : "load full res"}
-        className={
-          "flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-14 md:left-auto md:right-36 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 " +
-          (showUI && !hideArrows
-            ? ` md:text-opacity-50 backdrop-blur-lg md:backdrop-blur-none ${
-                scale > 1 ? " md:text-opacity-50 " : " md:text-opacity-0 "
-              } `
-            : " text-opacity-0 hidden")
-        }
-        onClick={() => context.setHighRes((f) => !f)}
-      >
-        {context?.highRes ? (
-          <MdHighQuality className="w-5 h-5 md:w-8 md:h-8 " />
-        ) : (
-          <MdOutlineHighQuality className={"w-5 h-5 md:w-8 md:h-8  "} />
-        )}
-      </button>
-    )}
-    {scale > 1 && !flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf && (
-      <button
-        onClick={() => {
-          onReset();
-        }}
-        className="flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-24 md:left-auto md:right-24 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 md:text-opacity-50 "
-      >
-        <IoMdExpand className="w-5 h-5 md:w-8 md:h-8 " />
-      </button>
-    )}
-    <div
-      ref={translateDiv}
-      className={"absolute top-0 left-0 "}
-      onTouchStart={(e) => handleTouchStart(e)}
-      onTouchMove={(e) => handleTouchMove(e)}
-      onTouchEnd={(e) => handleTouchEnd(e)}
-      onDoubleClick={(e) => {
-        e.preventDefault();
-        if (
+  return (
+    <>
+      {!(
+        (context.preferEmbeds &&
+          flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isIFrame) ||
+        flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+      ) && (
+        <button
+          aria-label={"toggle full resolution"}
+          title={context?.highRes ? "" : "load full res"}
+          className={
+            "flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-14 md:left-auto md:right-36 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 " +
+            (showUI && !hideArrows
+              ? ` md:text-opacity-50 backdrop-blur-lg md:backdrop-blur-none ${
+                  scale > 1 ? " md:text-opacity-50 " : " md:text-opacity-0 "
+                } `
+              : " text-opacity-0 hidden")
+          }
+          onClick={() => context.setHighRes((f) => !f)}
+        >
+          {context?.highRes ? (
+            <MdHighQuality className="w-5 h-5 md:w-8 md:h-8 " />
+          ) : (
+            <MdOutlineHighQuality className={"w-5 h-5 md:w-8 md:h-8  "} />
+          )}
+        </button>
+      )}
+      {scale > 1 && !flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf && (
+        <button
+          onClick={() => {
+            onReset();
+          }}
+          className="flex items-center justify-center fixed outline-none text-white border border-transparent md:hover:border-th-accent  top-1 left-24 md:left-auto md:right-24 md:top-4 md:h-12 z-[98] hover:backdrop-blur-sm  hover:text-opacity-50 hover:bg-black/40 rounded-full bg-black/40 md:bg-transparent md:rounded-md w-10 h-10 md:text-opacity-50 "
+        >
+          <IoMdExpand className="w-5 h-5 md:w-8 md:h-8 " />
+        </button>
+      )}
+      <div
+        ref={translateDiv}
+        className={"absolute top-0 left-0 "}
+        onTouchStart={(e) =>
           !flattenedPosts[curPostNum]?.data?.mediaInfo?.isSelf &&
-          (!flattenedPosts[curPostNum]?.data?.mediaInfo?.isGallery ||
-            ((e.clientX > 48 ||
-              e.clientY > windowHeight / 2 + 48 ||
-              e.clientY < windowHeight / 2 - 48) &&
-              e.clientX < windowWidth - 48))
-        ) {
-          setTriggerVote((v) => (v += 1));
+          handleTouchStart(e)
         }
-      }}
-    >
-      {flattenedPosts &&
-        flattenedPosts.map((post, i) => (
-          <>
-            {Math.abs(curPostNum - i) < 2 && (
-              <div
-                className={
-                  "absolute left-0 z-[97] w-screen backdrop-blur-sm " +
-                  (i === curPostNum
-                    ? ""
-                    : "overflow-hidden pointer-events-none")
-                }
-                style={{
-                  //transform: `translate3d(0px,${translateAmount + (i * windowHeight)}px,0px)`,
-                  backgroundColor: `${
-                    post?.data?.mediaInfo?.isSelf ? `${bgColor}` : "#000000"
-                  }`,
-                  top: `${i * windowHeight}px`,
-                  height: `${windowHeight}px`,
-                }}
-                ref={i === curPostNum ? containerRef : null}
-                onMouseDown={(e) => {
-                  if (scale > 1 && !post?.data?.mediaInfo?.isSelf) {
-                    e.preventDefault();
-                    e.stopPropagation();
+        onTouchMove={(e) =>
+          !flattenedPosts[curPostNum]?.data?.mediaInfo?.isSelf &&
+          handleTouchMove(e)
+        }
+        onTouchEnd={(e) =>
+          !flattenedPosts[curPostNum]?.data?.mediaInfo?.isSelf &&
+          handleTouchEnd(e)
+        }
+        onDoubleClick={(e) => {
+          e.preventDefault();
+          if (
+            !flattenedPosts[curPostNum]?.data?.mediaInfo?.isSelf &&
+            (!flattenedPosts[curPostNum]?.data?.mediaInfo?.isGallery ||
+              ((e.clientX > 48 ||
+                e.clientY > windowHeight / 2 + 48 ||
+                e.clientY < windowHeight / 2 - 48) &&
+                e.clientX < windowWidth - 48))
+          ) {
+            setTriggerVote((v) => (v += 1));
+          }
+        }}
+      >
+        {flattenedPosts &&
+          flattenedPosts.map((post, i) => (
+            <>
+              {Math.abs(curPostNum - i) < 2 && (
+                <div
+                  className={
+                    "absolute left-0 z-[97] w-screen backdrop-blur-sm " +
+                    (i === curPostNum
+                      ? ""
+                      : "overflow-hidden pointer-events-none")
                   }
-                  setAnimate(false);
-                  i === curPostNum && scale > 1 && onMouseDown(e);
-                }}
-                onWheel={(e) => {
-                  setAnimate(false);
-                  i === curPostNum &&
-                    !post?.data?.mediaInfo?.isSelf &&
-                    onWheel(e);
-                }}
-              >
-                {post?.data?.mediaInfo?.isSelf ? (
-                  <div
-                    ref={scrollingRef}
-                    className={
-                      " w-full overflow-y-auto overflow-x-hidden " +
-                      (post?.data?.mediaInfo?.isDual ||
-                      post?.data?.crosspost_parent_list?.[0]
-                        ? ` ${
-                            post?.data?.mediaInfo?.isDual
-                              ? ""
-                              : " flex flex-col items-center "
-                          } `
-                        : "flex item-center justify-center")
+                  style={{
+                    //transform: `translate3d(0px,${translateAmount + (i * windowHeight)}px,0px)`,
+                    backgroundColor: `${
+                      post?.data?.mediaInfo?.isSelf ? `${bgColor}` : "#000000"
+                    }`,
+                    top: `${i * windowHeight}px`,
+                    height: `${windowHeight}px`,
+                  }}
+                  ref={i === curPostNum ? containerRef : null}
+                  onMouseDown={(e) => {
+                    if (scale > 1 && !post?.data?.mediaInfo?.isSelf) {
+                      e.preventDefault();
+                      e.stopPropagation();
                     }
-                    style={{ height: `${windowHeight}px` }}
-                  >
+                    setAnimate(false);
+                    i === curPostNum && scale > 1 && onMouseDown(e);
+                  }}
+                  onWheel={(e) => {
+                    setAnimate(false);
+                    i === curPostNum &&
+                      !post?.data?.mediaInfo?.isSelf &&
+                      onWheel(e);
+                  }}
+                >
+                  {post?.data?.mediaInfo?.isSelf ? (
                     <div
-                      className="max-w-2xl px-1 my-auto "
-                      onTouchMove={(e) => {
-                        // console.log(
-                        //   scrollingRef?.current?.scrollHeight,
-                        //   scrollingRef?.current?.scrollTop,
-                        //   containerRef?.current?.scrollHeight,
-                        //   containerRef?.current?.scrollTop
-                        // );
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setHideArrows(false);
-                      }}
-                      onTouchEnd={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <div className="min-w-full p-1 mx-2 my-12 md:my-4 md:mx-4">
-                        <div
-                          className={
-                            " flex flex-col flex-wrap group-hover:text-opacity-100 "
-                          }
-                        >
-                          <div
-                            className={
-                              "flex flex-row flex-wrap items-center gap-1 py-0 text-xs  pr-14 md:pr-0 md:pb-1 text-opacity-50 group-hover:text-opacity-100" +
-                              (flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                                ?.isSelf
-                                ? " text-th-text "
-                                : " text-white ")
-                            }
-                            style={{
-                              wordBreak: "break-word",
-                              textShadow: `0px 1px ${
-                                flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                                  ?.isSelf
-                                  ? "#00000000"
-                                  : "#00000050"
-                              }`,
-                            }}
-                          >
-                            <Link
-                              href={`/u/${post?.data?.author}`}
-                              className={touched ? " " : "hover:underline"}
-                              onClick={(e) => {
-                                if (touched) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }
-                              }}>
-                              u/{post?.data?.author}
-
-                            </Link>
-                            <span>on</span>
-                            <Link
-                              href={`/r/${post?.data?.subreddit}`}
-                              className={touched ? "" : "hover:underline"}
-                              onClick={(e) => {
-                                if (touched) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }
-                              }}>
-                              r/{post?.data?.subreddit}
-
-                            </Link>
-
-                            {post.data?.crosspost_parent_list?.[0] && (
-                              <span className="flex items-center ml-1 gap-x-0.5">
-                                cross post{" "}
-                                <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
-                              </span>
-                            )}
-
-                            <span
-                              className={"ml-1"}
-                              title={new Date(
-                                post?.data?.created_utc * 1000
-                              )?.toString()}
-                            >
-                              {secondsToTime(post?.data?.created_utc, [
-                                "s ago",
-                                "m ago",
-                                "h ago",
-                                "d ago",
-                                "mo ago",
-                                "yr ago",
-                              ])}
-                            </span>
-                          </div>
-                        </div>
-                        <h2 className="flex flex-wrap items-center gap-2 py-2 text-xl font-semibold">
-                          {post?.data?.title}{" "}
-                          <span className="text-xs font-medium ">
-                            <TitleFlair post={post.data} />
-                          </span>
-                        </h2>
-
-                        <div
-                          className={
-                            "flex flex-row items-center justify-start w-full gap-5 my-2 text-xs text-opacity-50 md:my-0 md:mb-0 sm:gap-3 group-hover:text-opacity-100 " +
-                            (flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                              ?.isSelf
-                              ? " text-th-text "
-                              : " text-white ")
-                          }
-                          style={{
-                            textShadow: `0px 1px ${
-                              flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                                ?.isSelf
-                                ? "#00000000"
-                                : "#00000050"
-                            }`,
-                          }}
-                        >
-                          <div className="flex-row items-center  gap-2 sm:gap-1 -ml-0.5 text-xs flex ">
-                            <Vote
-                              key={post?.data?.name}
-                              name={post?.data?.name}
-                              likes={post?.data?.likes}
-                              score={post?.data?.score}
-                              size={5}
-                              postMode={true}
-                              triggerVote={triggerVote}
-                            />
-                          </div>
-                          <div className="md:block">
-                            <SaveButton
-                              id={post?.data?.name}
-                              saved={post?.data?.saved}
-                              row={true}
-                              useKeys={true}
-                            />
-                          </div>
-                          <button
-                            title="see comments (f)"
-                            onClick={() => setUseMediaMode(false)}
-                            className="flex items-center gap-1 ml-0 mr-2 text-xs border border-transparent outline-none hover:underline"
-                          >
-                            <BiComment className="flex-none w-4 h-4 " />
-                            <span>
-                              {post?.data?.num_comments}{" "}
-                              {post?.data?.num_comments === 1
-                                ? "comment"
-                                : "comments"}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div className={""}>
-                        <PostBody
-                          withBG={
-                            post.data?.crosspost_parent_list?.[0]
-                              ? true
-                              : false
-                          }
-                          rawHTML={
-                            post.data?.crosspost_parent_list?.[0]
-                              ?.selftext_html ?? post?.data?.selftext_html
-                          }
-                          mode="post"
-                        />
-                      </div>
-                    </div>
-                    <div
+                      ref={scrollingRef}
                       className={
-                        "relative " +
-                        (post.data?.crosspost_parent_list?.[0]
-                          ? ""
-                          : "max-w-screen")
+                        " w-full overflow-y-auto overflow-x-hidden " +
+                        (post?.data?.mediaInfo?.isDual ||
+                        post?.data?.crosspost_parent_list?.[0]
+                          ? ` ${
+                              post?.data?.mediaInfo?.isDual
+                                ? ""
+                                : " flex flex-col items-center "
+                            } `
+                          : "flex item-center justify-center")
                       }
-                      onTouchMove={(e) => {
-                        // console.log(
-                        //   scrollingRef?.current?.scrollHeight,
-                        //   scrollingRef?.current?.scrollTop
-                        // );
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setHideArrows(false);
-                      }}
-                      // onTouchEnd={(e) => {
-                      //   e.preventDefault();
-                      //   e.stopPropagation();
-                      // }}
+                      style={{ height: `${windowHeight}px` }}
                     >
-                      {Media(post?.data, i !== curPostNum, true)}
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    onTouchMove={(e) => {
-                      if (
-                        post?.data?.mediaInfo?.iFrameHTML &&
-                        context?.preferEmbeds
-                      ) {
-                        setHideArrows(false);
-                      }
-                    }}
-                    className={
-                      "flex items-center justify-center max-h-full min-h-full overflow-y-none overscroll-contain  " +
-                      ((animate || scale === 1) && i === curPostNum
-                        ? " transition-transform duration-200 ease-in-out "
-                        : " ") +
-                      (scale > 1 ? " cursor-grab" : "")
-                    }
-                    style={
-                      i === curPostNum
-                        ? {
-                            transform: `translate3d(${translateX}px, ${translateY}px,${0}px) scale(${scale})`,
-                          }
-                        : {}
-                    }
-                  >
-                    <div className={"relative min-w-full min-h-full "}>
-                      {Media(post?.data, i !== curPostNum)}
-                    </div>
-                  </div>
-                )}
-                {i === curPostNum && (
-                  <>
-                    <div
-                      className={
-                        "absolute right-1.5 z-[98] bottom-24 md:hidden " +
-                        (showUI ? "" : "hidden") +
-                        (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
-                          ? " text-th-text "
-                          : " text-white ")
-                      }
-                    >
-                      <SaveButton
-                        id={post?.data?.name}
-                        saved={post?.data?.saved}
-                        fullmedia={true}
-                        useKeys={true}
-                      />
-                    </div>
-                    <button
-                      onClick={() => setUseMediaMode(false)}
-                      className={
-                        "outline-none select-none md:hidden flex items-center justify-center absolute right-1.5 z-[98] bottom-10 backdrop-blur-lg bg-black/40 w-10 h-10 rounded-full text-white " +
-                        (showUI ? "" : "hidden")
-                      }
-                    >
-                      <BiComment className="flex-none w-4 h-4 " />
-                    </button>
-                    {post?.data?.mediaInfo?.iFrameHTML &&
-                      context?.preferEmbeds && (
-                        <div className="absolute top-20 w-screen bg-transparent bottom-14 z-[99] md:invisible"></div>
-                      )}
-                    {!post?.data?.mediaInfo?.isSelf && (
                       <div
-                        className={
-                          "absolute flex flex-row items-start justify-start gap-2  left-0 p-2 md:pl-2 md:pr-4 md:left-2 w-screen md:w-auto  hover:bg-black/20 md:rounded-md group md:hover:backdrop-blur-sm bg-gradient-to-t " +
-                          " md:top-2 md:bottom-auto " +
-                          " transition ease-in-out duration-200 " +
-                          (flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                            ?.isSelf
-                            ? " text-th-text "
-                            : " text-white ") +
-                          (post?.data?.mediaInfo?.iFrameHTML &&
-                          context?.preferEmbeds
-                            ? " bottom-14 from-black/0 via-black/10 to-black/10 "
-                            : " top-auto bottom-1 pb-10 md:pb-3 from-black/40 md:from-black/0 ") +
-                          (showUI
-                            ? " opacity-100 "
-                            : " opacity-0 hover:opacity-100") +
-                          " "
-                        }
+                        className="max-w-2xl px-1 my-auto "
+                        onTouchMove={(e) => {
+                          setHideArrows(false);
+                        }}
                       >
-                        <div
-                          className={
-                            " flex flex-col flex-wrap group-hover:text-opacity-100 "
-                          }
-                        >
+                        <div className="min-w-full p-1 mx-2 my-12 md:my-4 md:mx-4">
                           <div
                             className={
-                              "flex flex-row flex-wrap items-center gap-1 py-0 text-xs  pr-14 md:pr-0 md:pb-1 text-opacity-50 group-hover:text-opacity-100" +
-                              (flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                                ?.isSelf
-                                ? " text-th-text "
-                                : " text-white ")
+                              " flex flex-col flex-wrap group-hover:text-opacity-100 "
                             }
-                            style={{
-                              wordBreak: "break-word",
-                              textShadow: `0px 1px ${
-                                flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                          >
+                            <div
+                              className={
+                                "flex flex-row flex-wrap items-center gap-1 py-0 text-xs  pr-14 md:pr-0 md:pb-1 text-opacity-50 group-hover:text-opacity-100" +
+                                (flattenedPosts?.[curPostNum]?.data?.mediaInfo
                                   ?.isSelf
-                                  ? "#00000000"
-                                  : "#00000050"
-                              }`,
-                            }}
-                          >
-                            <Link
-                              href={`/u/${post?.data?.author}`}
-                              className={touched ? " " : "hover:underline"}
-                              onClick={(e) => {
-                                if (touched) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }
-                              }}>
-                              u/{post?.data?.author}
-
-                            </Link>
-                            <span>on</span>
-                            <Link
-                              href={`/r/${post?.data?.subreddit}`}
-                              className={touched ? "" : "hover:underline"}
-                              onClick={(e) => {
-                                if (touched) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }
-                              }}>
-                              r/{post?.data?.subreddit}
-
-                            </Link>
-
-                            <span
-                              className={"ml-1"}
-                              title={new Date(
-                                post?.data?.created_utc * 1000
-                              )?.toString()}
-                            >
-                              {secondsToTime(post?.data?.created_utc, [
-                                "s ago",
-                                "m ago",
-                                "h ago",
-                                "d ago",
-                                "mo ago",
-                                "yr ago",
-                              ])}
-                            </span>
-                          </div>
-                          <div
-                            className={
-                              "flex flex-row items-center justify-start gap-2 pt-2 text-sm text-left outline-none md:pt-0 md:flex-col md:items-start md:py-1 md:gap-2 md:mr-0 text-opacity-80 group-hover:text-opacity-100 mr-14 md:max-w-sm " +
-                              (flattenedPosts?.[curPostNum]?.data?.mediaInfo
-                                ?.isSelf
-                                ? " text-th-text "
-                                : " text-white ")
-                            }
-                          >
-                            <button
-                              disabled={touched}
-                              onClick={() =>
-                                !touched && setUseMediaMode(false)
+                                  ? " text-th-text "
+                                  : " text-white ")
                               }
-                              className="flex text-left "
                               style={{
                                 wordBreak: "break-word",
                                 textShadow: `0px 1px ${
-                                  flattenedPosts?.[curPostNum]?.data
-                                    ?.mediaInfo?.isSelf
+                                  flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                    ?.isSelf
                                     ? "#00000000"
                                     : "#00000050"
                                 }`,
                               }}
                             >
-                              {post?.data?.title}
-                            </button>
-                            {(post?.data?.link_flair_text?.length > 0 ||
-                              post?.data?.link_flair_richtext?.length > 0) &&
-                              windowWidth < 768 && (
-                                <span className="py-1 text-xs font-medium md:mt-1">
-                                  <TitleFlair
-                                    post={post.data}
-                                    noClick={true}
-                                  />
+                              <Link
+                                href={`/u/${post?.data?.author}`}
+                                className={touched ? " " : "hover:underline"}
+                                onClick={(e) => {
+                                  if (touched) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                u/{post?.data?.author}
+                              </Link>
+                              <span>on</span>
+                              <Link
+                                href={`/r/${post?.data?.subreddit}`}
+                                className={touched ? "" : "hover:underline"}
+                                onClick={(e) => {
+                                  if (touched) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                r/{post?.data?.subreddit}
+                              </Link>
+
+                              {post.data?.crosspost_parent_list?.[0] && (
+                                <span className="flex items-center ml-1 gap-x-0.5">
+                                  cross post{" "}
+                                  <GoRepoForked className="flex-none w-4 h-4 rotate-90" />
                                 </span>
                               )}
+
+                              <span
+                                className={"ml-1"}
+                                title={new Date(
+                                  post?.data?.created_utc * 1000
+                                )?.toString()}
+                              >
+                                {secondsToTime(post?.data?.created_utc, [
+                                  "s ago",
+                                  "m ago",
+                                  "h ago",
+                                  "d ago",
+                                  "mo ago",
+                                  "yr ago",
+                                ])}
+                              </span>
+                            </div>
                           </div>
+                          <h2 className="flex flex-wrap items-center gap-2 py-2 text-xl font-semibold">
+                            {post?.data?.title}{" "}
+                            <span className="text-xs font-medium ">
+                              <TitleFlair post={post.data} />
+                            </span>
+                          </h2>
 
                           <div
                             className={
@@ -821,7 +544,7 @@ const MediaModal = ({
                                 triggerVote={triggerVote}
                               />
                             </div>
-                            <div className="hidden md:block">
+                            <div className="md:block">
                               <SaveButton
                                 id={post?.data?.name}
                                 saved={post?.data?.saved}
@@ -843,24 +566,302 @@ const MediaModal = ({
                               </span>
                             </button>
                           </div>
-                          {(post?.data?.link_flair_text?.length > 0 ||
-                            post?.data?.link_flair_richtext?.length > 0) &&
-                            windowWidth >= 768 && (
-                              <span className="py-1 text-xs font-medium md:mt-1">
-                                <TitleFlair post={post.data} />
-                              </span>
-                            )}
+                        </div>
+                        <div className={""}>
+                          <PostBody
+                            withBG={
+                              post.data?.crosspost_parent_list?.[0]
+                                ? true
+                                : false
+                            }
+                            rawHTML={
+                              post.data?.crosspost_parent_list?.[0]
+                                ?.selftext_html ?? post?.data?.selftext_html
+                            }
+                            mode="post"
+                          />
                         </div>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </>
-        ))}
-    </div>
-  </>;
+                      <div
+                        className={
+                          "relative " +
+                          (post.data?.crosspost_parent_list?.[0]
+                            ? ""
+                            : "max-w-screen")
+                        }
+                        onTouchMove={(e) => {
+                          // console.log(
+                          //   scrollingRef?.current?.scrollHeight,
+                          //   scrollingRef?.current?.scrollTop
+                          // );
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setHideArrows(false);
+                        }}
+                        // onTouchEnd={(e) => {
+                        //   e.preventDefault();
+                        //   e.stopPropagation();
+                        // }}
+                      >
+                        {Media(post?.data, i !== curPostNum, true)}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onTouchMove={(e) => {
+                        if (
+                          post?.data?.mediaInfo?.iFrameHTML &&
+                          context?.preferEmbeds
+                        ) {
+                          setHideArrows(false);
+                        }
+                      }}
+                      className={
+                        "flex items-center justify-center max-h-full min-h-full overflow-y-none overscroll-contain  " +
+                        ((animate || scale === 1) && i === curPostNum
+                          ? " transition-transform duration-200 ease-in-out "
+                          : " ") +
+                        (scale > 1 ? " cursor-grab" : "")
+                      }
+                      style={
+                        i === curPostNum
+                          ? {
+                              transform: `translate3d(${translateX}px, ${translateY}px,${0}px) scale(${scale})`,
+                            }
+                          : {}
+                      }
+                    >
+                      <div className={"relative min-w-full min-h-full "}>
+                        {Media(post?.data, i !== curPostNum)}
+                      </div>
+                    </div>
+                  )}
+                  {i === curPostNum && (
+                    <>
+                      <div
+                        className={
+                          "absolute right-1.5 z-[98] bottom-24 md:hidden " +
+                          (showUI ? "" : "hidden") +
+                          (flattenedPosts?.[curPostNum]?.data?.mediaInfo?.isSelf
+                            ? " text-th-text "
+                            : " text-white ")
+                        }
+                      >
+                        <SaveButton
+                          id={post?.data?.name}
+                          saved={post?.data?.saved}
+                          fullmedia={true}
+                          useKeys={true}
+                        />
+                      </div>
+                      <button
+                        onClick={() => setUseMediaMode(false)}
+                        className={
+                          "outline-none select-none md:hidden flex items-center justify-center absolute right-1.5 z-[98] bottom-10 backdrop-blur-lg bg-black/40 w-10 h-10 rounded-full text-white " +
+                          (showUI ? "" : "hidden")
+                        }
+                      >
+                        <BiComment className="flex-none w-4 h-4 " />
+                      </button>
+                      {post?.data?.mediaInfo?.iFrameHTML &&
+                        context?.preferEmbeds && (
+                          <div className="absolute top-20 w-screen bg-transparent bottom-14 z-[99] md:invisible"></div>
+                        )}
+                      {!post?.data?.mediaInfo?.isSelf && (
+                        <div
+                          className={
+                            "absolute flex flex-row items-start justify-start gap-2  left-0 p-2 md:pl-2 md:pr-4 md:left-2 w-screen md:w-auto  hover:bg-black/20 md:rounded-md group md:hover:backdrop-blur-sm pointer-events-none bg-gradient-to-t " +
+                            " md:top-2 md:bottom-auto " +
+                            " transition ease-in-out duration-200 " +
+                            (flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                              ?.isSelf
+                              ? " text-th-text "
+                              : " text-white ") +
+                            (post?.data?.mediaInfo?.iFrameHTML &&
+                            context?.preferEmbeds
+                              ? " bottom-14 from-black/0 via-black/10 to-black/10 "
+                              : " top-auto bottom-1 pb-10 md:pb-3 from-black/40 md:from-black/0 ") +
+                            (showUI
+                              ? " opacity-100 "
+                              : " opacity-0 hover:opacity-100") +
+                            " "
+                          }
+                        >
+                          <div
+                            className={
+                              " flex flex-col flex-wrap group-hover:text-opacity-100 "
+                            }
+                          >
+                            <div
+                              className={
+                                "flex pointer-events-auto flex-row flex-wrap items-center gap-1 py-0 text-xs  pr-14 md:pr-0 md:pb-1 text-opacity-50 group-hover:text-opacity-100" +
+                                (flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                  ?.isSelf
+                                  ? " text-th-text "
+                                  : " text-white ")
+                              }
+                              style={{
+                                wordBreak: "break-word",
+                                textShadow: `0px 1px ${
+                                  flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                    ?.isSelf
+                                    ? "#00000000"
+                                    : "#00000050"
+                                }`,
+                              }}
+                            >
+                              <Link
+                                href={`/u/${post?.data?.author}`}
+                                className={
+                                  "" + touched ? " " : "hover:underline"
+                                }
+                                onClick={(e) => {
+                                  if (touched) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                u/{post?.data?.author}
+                              </Link>
+                              <span>on</span>
+                              <Link
+                                href={`/r/${post?.data?.subreddit}`}
+                                className={touched ? "" : "hover:underline"}
+                                onClick={(e) => {
+                                  if (touched) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                r/{post?.data?.subreddit}
+                              </Link>
+
+                              <span
+                                className={"ml-1"}
+                                title={new Date(
+                                  post?.data?.created_utc * 1000
+                                )?.toString()}
+                              >
+                                {secondsToTime(post?.data?.created_utc, [
+                                  "s ago",
+                                  "m ago",
+                                  "h ago",
+                                  "d ago",
+                                  "mo ago",
+                                  "yr ago",
+                                ])}
+                              </span>
+                            </div>
+                            <div
+                              className={
+                                "flex pointer-events-auto flex-row items-center justify-start gap-2 pt-2 text-sm text-left outline-none md:pt-0 md:flex-col md:items-start md:py-1 md:gap-2 md:mr-0 text-opacity-80 group-hover:text-opacity-100 mr-14 md:max-w-sm " +
+                                (flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                  ?.isSelf
+                                  ? " text-th-text "
+                                  : " text-white ")
+                              }
+                            >
+                              <button
+                                disabled={touched}
+                                onClick={() =>
+                                  !touched && setUseMediaMode(false)
+                                }
+                                className="flex text-left "
+                                style={{
+                                  wordBreak: "break-word",
+                                  textShadow: `0px 1px ${
+                                    flattenedPosts?.[curPostNum]?.data
+                                      ?.mediaInfo?.isSelf
+                                      ? "#00000000"
+                                      : "#00000050"
+                                  }`,
+                                }}
+                              >
+                                {post?.data?.title}
+                              </button>
+                              {(post?.data?.link_flair_text?.length > 0 ||
+                                post?.data?.link_flair_richtext?.length > 0) &&
+                                windowWidth < 768 && (
+                                  <span className="py-1 text-xs font-medium md:mt-1">
+                                    <TitleFlair
+                                      post={post.data}
+                                      noClick={true}
+                                    />
+                                  </span>
+                                )}
+                            </div>
+
+                            <div
+                              className={
+                                "flex pointer-events-auto flex-row items-center justify-start w-full gap-5 my-2 text-xs text-opacity-50 md:my-0 md:mb-0 sm:gap-3 group-hover:text-opacity-100 " +
+                                (flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                  ?.isSelf
+                                  ? " text-th-text "
+                                  : " text-white ")
+                              }
+                              style={{
+                                textShadow: `0px 1px ${
+                                  flattenedPosts?.[curPostNum]?.data?.mediaInfo
+                                    ?.isSelf
+                                    ? "#00000000"
+                                    : "#00000050"
+                                }`,
+                              }}
+                            >
+                              <div className="flex-row items-center  gap-2 sm:gap-1 -ml-0.5 text-xs flex ">
+                                <Vote
+                                  key={post?.data?.name}
+                                  name={post?.data?.name}
+                                  likes={post?.data?.likes}
+                                  score={post?.data?.score}
+                                  size={5}
+                                  postMode={true}
+                                  triggerVote={triggerVote}
+                                />
+                              </div>
+                              <div className="hidden md:block">
+                                <SaveButton
+                                  id={post?.data?.name}
+                                  saved={post?.data?.saved}
+                                  row={true}
+                                  useKeys={true}
+                                />
+                              </div>
+                              <button
+                                title="see comments (f)"
+                                onClick={() => setUseMediaMode(false)}
+                                className="flex items-center gap-1 ml-0 mr-2 text-xs border border-transparent outline-none hover:underline"
+                              >
+                                <BiComment className="flex-none w-4 h-4 " />
+                                <span>
+                                  {post?.data?.num_comments}{" "}
+                                  {post?.data?.num_comments === 1
+                                    ? "comment"
+                                    : "comments"}
+                                </span>
+                              </button>
+                            </div>
+                            {(post?.data?.link_flair_text?.length > 0 ||
+                              post?.data?.link_flair_richtext?.length > 0) &&
+                              windowWidth >= 768 && (
+                                <span className="py-1 text-xs font-medium md:mt-1">
+                                  <TitleFlair post={post.data} />
+                                </span>
+                              )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          ))}
+      </div>
+    </>
+  );
 };
 
 export default MediaModal;

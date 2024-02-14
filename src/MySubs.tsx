@@ -663,18 +663,16 @@ export const MySubsProvider = ({ children }) => {
       if (cachedInfo) {
         asynccheck && setCurrSubInfo(cachedInfo);
       }
-      if (user.premium?.isPremium) {
-        let info = await loadSubredditInfo({
-          query: sub,
-          loadUser: isUser,
-          isPremium: user.premium?.isPremium,
-        });
-        if (info) {
-          addToSubCache(info);
-          asynccheck && setCurrSubInfo(info);
+      let info = await loadSubredditInfo({
+        query: sub,
+        loadUser: isUser,
+        isPremium: user.premium?.isPremium,
+      });
+      if (info) {
+        addToSubCache(info);
+        asynccheck && setCurrSubInfo(info);
 
-          return info;
-        }
+        return info;
       }
     };
 
@@ -827,7 +825,7 @@ export const MySubsProvider = ({ children }) => {
 
   const loadUserSubInfos = async (users) => {
     let follows = [];
-    await Promise.all([
+    await Promise.allSettled([
       ...users.map(async (user) => {
         const info = await loadSubInfo({
           subreddit: user?.data?.subreddit?.display_name,

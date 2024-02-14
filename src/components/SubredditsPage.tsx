@@ -134,7 +134,7 @@ const SubredditsPage = ({ query = undefined as any }) => {
           : setLocalSubsInfo((p) => ({ ...p, ...{ [sub?.data?.name]: s } }));
       }
     };
-    if (isLoaded && premium?.isPremium) {
+    if (isLoaded) {
       if (!session && !loading && selectedIndex === 0) {
         if (myLocalSubsFiltered.length > 0) {
           myLocalSubs.forEach((sub) => {

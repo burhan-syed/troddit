@@ -54,7 +54,7 @@ const GalleryCarousel = ({
         }}
         wrapAround={true}
         disableAnimation={!animate}
-        swiping={mediaMode === true ? false : true}
+        swiping={true}
         disableEdgeSwiping={true}
         dragThreshold={0.2}
         dragging={false}

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 import type { Route_Types } from "../types/logs";
 // let subUrl         = (sub == "" ) ? "" : "/r/"+sub;
@@ -50,6 +50,26 @@ const checkAccess = (bypass?: boolean) => {
   if (!bypass && !FREE_ACCESS) {
     throw new Error("PREMIUM REQUIRED");
   }
+};
+
+const oauthGet = async (
+  accessToken: string,
+  isPremium: boolean,
+  method: string,
+  config: AxiosRequestConfig<any>
+) => {
+  checkAccess(isPremium);
+  const res = await axios.get(`https://oauth.reddit.com${method}`, {
+    ...config,
+    headers: {
+      ...(config?.headers ?? {}),
+      authorization: `bearer ${accessToken}`,
+    },
+  });
+  if (res.headers["x-ratelimit-remaining"] !== undefined) {
+    ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
+  }
+  return res;
 };
 
 //trim child data esp for initial SSG
@@ -179,6 +199,7 @@ type GenericListingPropType = {
 type PremiumAccessPropType = {
   isPremium?: boolean;
 };
+
 export const loadFront = async ({
   loggedIn = false,
   token,
@@ -194,7 +215,6 @@ export const loadFront = async ({
     skipCheck?: boolean;
     localSubs?: string[];
   }) => {
-  checkAccess(isPremium);
   let { returnToken, accessToken } = await checkToken(
     loggedIn,
     token,
@@ -203,7 +223,7 @@ export const loadFront = async ({
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       logApiRequest("home", true);
-      const res1 = await axios.get(`https://oauth.reddit.com/${sort}`, {
+      const res1 = await oauthGet(accessToken, isPremium, `/${sort}`, {
         headers: {
           authorization: `bearer ${accessToken}`,
         },
@@ -213,10 +233,10 @@ export const loadFront = async ({
           after: after,
           count: count,
           sr_detail: true,
+          limit: 100
         },
       });
       let res = await res1.data;
-      ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
 
       return {
         after: res.data.after,
@@ -225,8 +245,7 @@ export const loadFront = async ({
         token: returnToken,
       };
     } catch (err) {
-      //console.log(err);
-      throw err; 
+      throw err;
     }
   } else {
     let filteredsubs = localSubs?.filter((s) => s.substring(0, 2) !== "u_");
@@ -244,26 +263,26 @@ export const loadFront = async ({
     } else {
       try {
         logApiRequest("home", false);
-        const res = await (
-          await axios.get(`${REDDIT}/${sort}/.json?`, {
-            params: {
-              raw_json: 1,
-              t: range,
-              after: after,
-              count: count,
-              sr_detail: true,
-            },
-          })
-        ).data;
+        const res = await axios.get(`${REDDIT}/${sort}/.json?`, {
+          params: {
+            raw_json: 1,
+            t: range,
+            after: after,
+            count: count,
+            sr_detail: true,
+            limit: 100
+          },
+        });
 
+        const data = res.data;
         return {
-          after: res.data.after,
-          before: res.data.before,
-          children: filterPostChildren(res.data.children),
+          after: data.data.after,
+          before: data.data.before,
+          children: filterPostChildren(data.data.children),
           token: returnToken,
         };
       } catch (err) {
-        throw err; 
+        throw err;
       }
     }
   }
@@ -281,7 +300,6 @@ export const loadSubreddits = async ({
   isPremium,
 }: GenericListingPropType &
   PremiumAccessPropType & { subreddits: string; sr_detail?: boolean }) => {
-  checkAccess(isPremium);
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
@@ -300,10 +318,11 @@ export const loadSubreddits = async ({
 
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
-      //console.log("WITH LOGIN", token);
       logApiRequest("r/", true);
-      const res1 = await axios.get(
-        `https://oauth.reddit.com/r/${subreddits}/${sort}`,
+      const res1 = await oauthGet(
+        accessToken,
+        isPremium,
+        `/r/${subreddits}/${sort}`,
         {
           headers: {
             authorization: `bearer ${accessToken}`,
@@ -314,12 +333,11 @@ export const loadSubreddits = async ({
             after: after,
             count: count,
             sr_detail: getSRDetail,
+            limit: 100
           },
         }
       );
       let res = await res1.data;
-      ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
-
       return {
         after: res.data.after,
         before: res.data.before,
@@ -327,8 +345,7 @@ export const loadSubreddits = async ({
         token: returnToken,
       };
     } catch (err) {
-      //console.log(err);
-      throw err; 
+      throw err;
     }
   } else {
     try {
@@ -341,6 +358,7 @@ export const loadSubreddits = async ({
             after: after,
             count: count,
             sr_detail: getSRDetail,
+            limit: 100
           },
         })
       ).data;
@@ -351,7 +369,7 @@ export const loadSubreddits = async ({
         token: returnToken,
       };
     } catch (err) {
-      throw err; 
+      throw err;
     }
   }
 };
@@ -374,8 +392,6 @@ export const getRedditSearch = async ({
     subreddit?: string;
     searchtype?: string;
   }) => {
-  checkAccess(isPremium);
-
   let p = {
     ...params,
     after: after,
@@ -385,7 +401,7 @@ export const getRedditSearch = async ({
     sr_detail: true,
   } as { q?: string; [x: string]: string | number | boolean };
 
-  let oathsearch = `https://oauth.reddit.com/search`;
+  let oathsearch = `/search`;
   let noauthsearch = `${REDDIT}/search.json`;
   if (p?.q?.substring(0, 5)?.toUpperCase() === "FLAIR") {
     p.q = p.q.replaceAll(" ", "%2B").replaceAll("+", "%2B");
@@ -396,7 +412,7 @@ export const getRedditSearch = async ({
     p["include_over_18"] = "0";
   }
   if (subreddit !== "all") {
-    oathsearch = `https://oauth.reddit.com/r/${subreddit}/search/.json?q=${
+    oathsearch = `/r/${subreddit}/search/.json?q=${
       p.q
     }&sort=${sort}&restrict_sr=on&include_over_18=${
       include_over_18 ? "on" : "0"
@@ -439,15 +455,13 @@ export const getRedditSearch = async ({
       let before = "";
       do {
         logApiRequest("search", true);
-        const res1 = await axios.get(oathsearch, {
+        const res1 = await oauthGet(accessToken, isPremium, oathsearch, {
           headers: {
             authorization: `bearer ${accessToken}`,
           },
           params: p,
         });
         let res = await res1.data;
-        //console.log(oathsearch, p);
-        ratelimit_remaining = parseInt(res1.headers["x-ratelimit-remaining"]);
         after = res?.data?.after;
         p["after"] = after;
         before = res?.data?.before;
@@ -475,8 +489,7 @@ export const getRedditSearch = async ({
         token: returnToken,
       };
     } catch (err) {
-      //console.log(err);
-      throw err; 
+      throw err;
     }
   } else {
     try {
@@ -495,7 +508,7 @@ export const getRedditSearch = async ({
       };
     } catch (err) {
       // console.log(err);
-      throw err; 
+      throw err;
     }
   }
 };
@@ -514,7 +527,6 @@ export const loadSubFlairPosts = async ({
   range?: string;
   after?: string;
 }) => {
-  checkAccess(isPremium);
   let f = flair.replaceAll(" ", "%2B").replaceAll("+", "%2B");
   try {
     logApiRequest("search", false);
@@ -555,7 +567,6 @@ export const getUserMultiPosts = async ({
   range?: string;
   after?: string;
 }) => {
-  checkAccess(isPremium);
   try {
     logApiRequest("u/", false);
     const res = await (
@@ -565,6 +576,7 @@ export const getUserMultiPosts = async ({
           sort: sort,
           t: range,
           after: after,
+          limit: 100,
         },
       })
     ).data;
@@ -581,7 +593,6 @@ export const loadSubFlairs = async ({
   subreddit,
   isPremium,
 }: PremiumAccessPropType & { subreddit: string }) => {
-  checkAccess(isPremium);
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
@@ -606,13 +617,12 @@ export const loadSubInfo = async ({
   subreddit,
   isPremium,
 }: PremiumAccessPropType & { subreddit: string }) => {
-  checkAccess(isPremium);
   let token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("r/", true);
       const res = await (
-        await axios.get(`https://oauth.reddit.com/r/${subreddit}/about`, {
+        await oauthGet(token, isPremium, `/r/${subreddit}/about`, {
           headers: {
             authorization: `bearer ${token}`,
           },
@@ -621,7 +631,7 @@ export const loadSubInfo = async ({
       ).data;
       return res;
     } catch (err) {
-      return false;
+      throw err;
     }
   }
   return false;
@@ -635,7 +645,6 @@ export const loadSubredditInfo = async ({
   query: string;
   loadUser?: boolean;
 }) => {
-  checkAccess(isPremium);
   if (query) {
     try {
       logApiRequest(loadUser ? "u/" : "r/", false);
@@ -670,7 +679,6 @@ export const getWikiContent = async ({
 }: PremiumAccessPropType & {
   wikiquery: string[];
 }) => {
-  checkAccess(isPremium);
   try {
     logApiRequest("r/", false);
     const content = await (
@@ -767,17 +775,16 @@ export const loadUserPosts = async ({
   isPremium,
 }: PremiumAccessPropType &
   GenericListingPropType & { username: string; type?: string }) => {
-  checkAccess(isPremium);
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   try {
     let res;
     if (loggedIn && accessToken) {
       logApiRequest("u/", true);
       res = await (
-        await axios.get(
-          `https://oauth.reddit.com/user/${username}/${
-            type ? type.toLowerCase() : ""
-          }?sort=${sort}`,
+        await oauthGet(
+          accessToken,
+          isPremium,
+          `/user/${username}/${type ? type.toLowerCase() : ""}?sort=${sort}`,
           {
             headers: {
               authorization: `bearer ${accessToken}`,
@@ -788,6 +795,7 @@ export const loadUserPosts = async ({
               after: after,
               count: count,
               sr_detail: true,
+              limit: 100
             },
           }
         )
@@ -806,6 +814,7 @@ export const loadUserPosts = async ({
               after: after,
               count: count,
               sr_detail: true,
+              limit: 100
             },
           }
         )
@@ -819,8 +828,7 @@ export const loadUserPosts = async ({
       token: returnToken,
     };
   } catch (err) {
-    //console.log(err);
-    return { after: null };
+    throw err;
   }
 };
 
@@ -840,7 +848,6 @@ export const loadUserSelf = async ({
     where: string;
     type?: string;
   }) => {
-  checkAccess(isPremium);
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
@@ -854,8 +861,10 @@ export const loadUserSelf = async ({
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       logApiRequest("u/", true);
-      const res = await axios.get(
-        `https://oauth.reddit.com/user/${username}/${where}`,
+      const res = await oauthGet(
+        accessToken,
+        isPremium,
+        `/user/${username}/${where}`,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,
@@ -869,11 +878,10 @@ export const loadUserSelf = async ({
             show: where,
             type: type,
             sr_detail: true,
+            limit: 100
           },
         }
       );
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-
       const data = await res.data;
 
       return {
@@ -883,8 +891,7 @@ export const loadUserSelf = async ({
         token: returnToken,
       };
     } catch (err) {
-      console.log(err);
-      return undefined;
+      throw err;
     }
   }
   return undefined;
@@ -896,10 +903,8 @@ export const getSubreddits = async ({
   isPremium,
 }: PremiumAccessPropType & {
   after?: string;
-  type?:string;
-  
+  type?: string;
 }) => {
-  checkAccess(isPremium);
   try {
     logApiRequest("r/", false);
     let res = await axios.get(`${REDDIT}/subreddits/${type}.json`, {
@@ -922,39 +927,33 @@ export const getMySubs = async ({
   after?: string;
   count?: boolean;
 }) => {
-  checkAccess(isPremium);
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("cud", true);
-      let res = await axios.get(
-        "https://oauth.reddit.com/subreddits/mine/subscriber",
-        {
-          headers: {
-            authorization: `bearer ${token}`,
-          },
-          params: {
-            after: after,
-            before: "",
-            count: count,
-            limit: 100,
-          },
-        }
-      );
+      let res = await oauthGet(token, isPremium, "/subreddits/mine/subscriber", {
+        headers: {
+          authorization: `bearer ${token}`,
+        },
+        params: {
+          after: after,
+          before: "",
+          count: count,
+          limit: 100,
+        },
+      });
       let data = await res.data;
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       if (data?.data?.children ?? false) {
         return { after: data.data.after, children: data.data.children };
       }
     } catch (err) {
-      //console.log(err);
+      throw err;
     }
   }
   return null;
 };
 
 export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
-  checkAccess(isPremium);
   let alldata = [];
   let after = "";
   let count = 0;
@@ -964,8 +963,10 @@ export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
     if (token && ratelimit_remaining > 1) {
       try {
         logApiRequest("cud", true);
-        let res = await axios.get(
-          "https://oauth.reddit.com/subreddits/mine/subscriber",
+        let res = await oauthGet(
+          token,
+          isPremium,
+          "/subreddits/mine/subscriber",
           {
             headers: {
               authorization: `bearer ${token}`,
@@ -979,7 +980,6 @@ export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
           }
         );
         let data = await res.data;
-        ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
         if (data?.data?.children ?? false) {
           alldata = [...alldata, ...data.data.children];
           if (data?.data?.after ?? false) {
@@ -992,7 +992,7 @@ export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
         }
       } catch (err) {
         done = true;
-        //console.log(err);
+        throw err;
       }
     } else {
       done = true;
@@ -1009,7 +1009,7 @@ export const getAllMyFollows = async ({ isPremium }: PremiumAccessPropType) => {
       let d = await loadSubredditInfo({
         query: a?.data?.display_name?.substring(2),
         loadUser: true,
-        isPremium: isPremium
+        isPremium: isPremium,
       });
       d && users.push(d);
     } else {
@@ -1027,20 +1027,20 @@ export const getUserMultiSubs = async ({
   user: string;
   multi: string;
 }) => {
-  checkAccess(isPremium);
   const token = await (await getToken())?.accessToken;
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("cud", true);
-      const res = await axios.get(
-        `https://oauth.reddit.com/api/multi/user/${user}/m/${multi}`,
+      const res = await oauthGet(
+        token,
+        isPremium,
+        `/api/multi/user/${user}/m/${multi}`,
         {
           headers: {
             Authorization: `bearer ${token}`,
           },
         }
       );
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       const data = await res.data;
       let subs = [];
       data?.data?.subreddits?.forEach((s) => {
@@ -1049,19 +1049,18 @@ export const getUserMultiSubs = async ({
       //console.log(subs);
       return subs;
     } catch (err) {
-      console.log("err", err);
+      throw err;
     }
   }
 };
 
 export const getMyMultis = async ({ isPremium }: PremiumAccessPropType) => {
-  checkAccess(isPremium);
   const token = await (await getToken())?.accessToken;
   //console.log(token);
   if (token && ratelimit_remaining > 1) {
     try {
       logApiRequest("cud", true);
-      let res = await axios.get("https://oauth.reddit.com/api/multi/mine", {
+      let res = await oauthGet(token, isPremium, "/api/multi/mine", {
         headers: {
           authorization: `bearer ${token}`,
         },
@@ -1069,10 +1068,9 @@ export const getMyMultis = async ({ isPremium }: PremiumAccessPropType) => {
       });
       //console.log(res);
       let data = await res.data;
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       return data;
     } catch (err) {
-      console.log(err);
+      throw err;
     }
   } else {
     //console.log(ratelimit_remaining, 'huh');
@@ -1105,7 +1103,6 @@ export const addToMulti = async ({
           },
         }
       );
-      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return res;
     } catch (err) {
       console.log("err", err);
@@ -1138,7 +1135,6 @@ export const deleteFromMulti = async ({
           },
         }
       );
-      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
       return res;
     } catch (err) {
       console.log("err", err);
@@ -1217,8 +1213,6 @@ export const deleteMulti = async ({
           },
         }
       );
-      //ratelimit_remaining = res.headers["x-ratelimit-remaining"];
-      //console.log(res);
       return res;
     } catch (err) {
       console.log("err", err);
@@ -1236,8 +1230,6 @@ export const searchSubreddits = async ({
   query: string;
   over18?: boolean;
 } & RedditSessionPropsType) => {
-  checkAccess(isPremium);
-  //const token = await (await getToken())?.accessToken;
   let accessToken = token?.accessToken;
   let returnToken = token;
   if (
@@ -1250,8 +1242,10 @@ export const searchSubreddits = async ({
   if (loggedIn && accessToken && ratelimit_remaining > 1) {
     try {
       logApiRequest("search", true);
-      let res = await axios.get(
-        "https://oauth.reddit.com/api/subreddit_autocomplete_v2",
+      let res = await oauthGet(
+        accessToken,
+        isPremium,
+        "/api/subreddit_autocomplete_v2",
         {
           headers: {
             authorization: `bearer ${accessToken}`,
@@ -1265,12 +1259,9 @@ export const searchSubreddits = async ({
         }
       );
       let data = await res.data;
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
-      //console.log(res);
       return { data: data?.data?.children, token: returnToken };
     } catch (err) {
-      console.log(err);
-      return [];
+      throw err;
     }
   } else {
     try {
@@ -1300,7 +1291,6 @@ export const loadComments = async ({
   permalink: string;
   sort?: string;
 }) => {
-  checkAccess(isPremium);
   try {
     //console.log(permalink);
     logApiRequest("thread", false);
@@ -1334,10 +1324,8 @@ export const loadMoreComments = async ({
   permalink?: string;
   sort?: string;
   depth?: number;
-  id?:string;
-
+  id?: string;
 } & RedditSessionPropsType) => {
-  checkAccess(isPremium);
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (accessToken && ratelimit_remaining > 1) {
     try {
@@ -1381,7 +1369,6 @@ export const loadPost = async ({
   withcontext?: boolean;
   withDetail?: boolean;
 } & RedditSessionPropsType) => {
-  checkAccess(isPremium);
   let accessToken = token?.accessToken;
   let returnToken = token;
   //const token = await (await getToken())?.accessToken;
@@ -1409,7 +1396,7 @@ export const loadPost = async ({
 
     try {
       logApiRequest("thread", true);
-      let res = await axios.get(`https://oauth.reddit.com${path}`, {
+      let res = await oauthGet(accessToken, isPremium, path, {
         headers: {
           authorization: `bearer ${accessToken}`,
         },
@@ -1430,7 +1417,6 @@ export const loadPost = async ({
         },
       });
       let data = await res.data;
-      ratelimit_remaining = parseInt(res.headers["x-ratelimit-remaining"]);
       const post = {
         post: data?.[0]?.data?.children?.[0]?.data,
         post_comments: data?.[1]?.data?.children,
@@ -1704,17 +1690,15 @@ export const findDuplicates = async ({
   after?: string;
   count?: number;
 } & RedditSessionPropsType) => {
-  checkAccess(isPremium);
   let { returnToken, accessToken } = await checkToken(loggedIn, token);
   if (loggedIn && accessToken) {
     try {
       logApiRequest("thread", false);
       let res = await (
-        await axios.get(
-          `https://oauth.reddit.com${permalink?.replace(
-            "/comments/",
-            "/duplicates/"
-          )}`,
+        await oauthGet(
+          accessToken,
+          isPremium,
+          `${permalink?.replace("/comments/", "/duplicates/")}`,
 
           {
             headers: {
@@ -1731,7 +1715,7 @@ export const findDuplicates = async ({
       //console.log("Dup:", res);
       return { res, returnToken };
     } catch (err) {
-      console.log("err", err);
+      throw err;
     }
   } else {
     try {
