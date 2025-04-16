@@ -63,7 +63,15 @@ const useParseBodyHTML = ({ rawHTML, newTabLinks = false }) => {
     const blankTargets = (str) => {
       if (str?.includes("<a ")) {
         str = str?.replaceAll("<a ", '<a target="_blank" rel="noreferrer" ');
+      
+        // Check for links referencing https://preview.redd.it or https://preview.reddit.com and replace with img tags
+        const previewRedditRegex = /<a [^>]*href="https:\/\/preview\.(redd\.it|reddit\.com)\/([^"]+)"[^>]*>(.*?)<\/a>/g;
+
+        str = str.replace(previewRedditRegex, (match, domain, path) => {
+          return `<img src="https://preview.${domain}/${path}" alt="Image from preview.${domain}" />`;
+        });
       }
+
       return str;
     };
 
