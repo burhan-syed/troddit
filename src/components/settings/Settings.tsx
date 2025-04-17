@@ -119,6 +119,7 @@ const Settings = () => {
           "disableEmbeds",
           "preferEmbeds",
           "embedsEverywhere",
+          "expandImages",
           "autoplay",
           "hoverplay",
           "audioOnHover",

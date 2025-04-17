@@ -2,11 +2,13 @@
 import Image from "next/legacy/image";
 import React, { useEffect, useState } from "react";
 import { CgArrowsExpandDownRight, CgArrowsExpandUpLeft } from "react-icons/cg";
+import { useMainContext } from "../MainContext";
 
 const ParseATag = (props) => {
+  const context: any = useMainContext();
   const [link, setLink] = useState("");
   const [expandable, setExpandable] = useState(false);
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(context.expandImages);
   const [linkText, setLinkText] = useState(props?.children?.data);
   useEffect(() => {
     const checkSupport = (link: string) => {
