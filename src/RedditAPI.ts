@@ -821,7 +821,7 @@ export const loadUserPosts = async ({
       ).data;
     }
     return {
-      count: count + res?.data?.children?.length ?? 0,
+      count: count + (res?.data?.children?.length ?? 0),
       after: res.data?.after ?? null,
       before: res.data?.before,
       children: res?.data?.children ?? [],
