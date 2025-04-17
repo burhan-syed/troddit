@@ -308,7 +308,7 @@ const Toggles = ({
           !label && setSwitchLabel("Expand Images");
           !subtext &&
             setSwitchSubtext(
-              "Automatically expand images on comments"
+              "Automatically expand images in comments"
             );
           break;
       case "userPostType":
