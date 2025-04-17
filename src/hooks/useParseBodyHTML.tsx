@@ -44,8 +44,8 @@ const checkSupport = (link: string, node: any) => {
 
   let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
   let redditRegex =
-    /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg))\./gm;
-  let greedyRegex = /(\.(png|jpg))/gm;
+    /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg|jpeg))\./gm;
+  let greedyRegex = /(\.(png|jpg|jpeg))/gm;
   return !!(
     link.match(imgurRegex) ||
     link.match(redditRegex) ||
@@ -63,13 +63,6 @@ const useParseBodyHTML = ({ rawHTML, newTabLinks = false }) => {
     const blankTargets = (str) => {
       if (str?.includes("<a ")) {
         str = str?.replaceAll("<a ", '<a target="_blank" rel="noreferrer" ');
-      
-        // Check for links referencing https://preview.redd.it or https://preview.reddit.com and replace with img tags
-        const previewRedditRegex = /<a [^>]*href="https:\/\/preview\.(redd\.it|reddit\.com)\/([^"]+)"[^>]*>(.*?)<\/a>/g;
-
-        str = str.replace(previewRedditRegex, (match, domain, path) => {
-          return `<img src="https://preview.${domain}/${path}" alt="Image from preview.${domain}" />`;
-        });
       }
 
       return str;

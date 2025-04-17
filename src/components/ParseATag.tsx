@@ -17,8 +17,8 @@ const ParseATag = (props) => {
 
       let imgurRegex = /([A-z.]+\.)?(imgur(\.com))+(\/)+([A-z0-9]){7}\./gm;
       let redditRegex =
-        /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg))\./gm;
-      let greedyRegex = /(\.(png|jpg))/gm;
+        /(preview+\.)+(reddit(\.com)|redd(\.it))+(\/[A-z0-9]+)+(\.(png|jpg|jpeg))\./gm;
+      let greedyRegex = /(\.(png|jpg|jpeg))/gm;
       return !!(
         link.match(imgurRegex) ||
         link.match(redditRegex) ||
