@@ -43,6 +43,7 @@ interface ToggleProps {
     | "disableEmbeds"
     | "preferEmbeds"
     | "embedsEverywhere"
+    | "expandImages"
     | "userPostType"
     | "autoRefreshFeed"
     | "autoRefreshComments"
@@ -303,6 +304,13 @@ const Toggles = ({
             "By default embeds will only show in single column view or in a post thread. Enable this to show embeds in multi-column mode. Note, this is disabled by default for better performance."
           );
         break;
+      case "expandImages":
+          !label && setSwitchLabel("Expand Images");
+          !subtext &&
+            setSwitchSubtext(
+              "Automatically expand images on comments"
+            );
+          break;
       case "userPostType":
         setIsChecked(context?.[setting] === "links");
         setCheckedIcon(<BiDetail />);
@@ -460,6 +468,9 @@ const Toggles = ({
         break;
       case "embedsEverywhere":
         context.toggleEmbedsEverywhere();
+        break;
+      case "expandImages":
+        context.toggleExpandImages();
         break;
       case "userPostType":
         context.toggleUserPostType();
