@@ -110,6 +110,7 @@ export const MainProvider = ({ children }) => {
   const [disableEmbeds, setDisableEmbeds] = useState<boolean>();
   const [preferEmbeds, setPreferEmbeds] = useState<boolean>();
   const [embedsEverywhere, setEmbedsEveryWhere] = useState<boolean>();
+  const [expandImages, setExpandImages] = useState<boolean>();
 
   const [autoRefreshFeed, setAutoRefreshFeed] = useState<boolean>();
   const [autoRefreshComments, setAutoRefreshComments] = useState<boolean>();
@@ -186,6 +187,9 @@ export const MainProvider = ({ children }) => {
       }
       return !e;
     });
+  };
+  const toggleExpandImages = () => {
+    setExpandImages((i) => !i);
   };
   const toggleAutoHideNav = () => {
     setAutoHideNav((p) => !p);
@@ -1004,7 +1008,10 @@ export const MainProvider = ({ children }) => {
         let saved = await localForage.getItem("embedsEverywhere");
         saved === true ? setEmbedsEveryWhere(true) : setEmbedsEveryWhere(false);
       };
-
+      const loadExpandImages = async () => {
+        let saved = await localForage.getItem("expandImages");
+        saved === true ? setExpandImages(true) : setExpandImages(false);
+      };
       const autoRefreshFeed = async () => {
         let saved = await localForage.getItem("autoRefreshFeed");
         saved === true ? setAutoRefreshFeed(true) : setAutoRefreshFeed(false);
@@ -1183,6 +1190,7 @@ export const MainProvider = ({ children }) => {
       let disableembeds = loadDisableEmbeds();
       let preferembeds = loadPreferEmbeds();
       let loadembedseverywhere = loadEmbedsEverywhere();
+      let expandImages = loadExpandImages();
       await Promise.all([
         autoplayinterval,
         waitforvidinterval,
@@ -1225,6 +1233,7 @@ export const MainProvider = ({ children }) => {
         disableembeds,
         preferembeds,
         loadembedseverywhere,
+        expandImages,
         autohidenav,
       ]);
 
@@ -1332,6 +1341,11 @@ export const MainProvider = ({ children }) => {
       localForage.setItem("embedsEverywhere", embedsEverywhere);
     }
   }, [embedsEverywhere]);
+  useEffect(() => {
+    if (expandImages !== undefined) {
+      localForage.setItem("expandImages", expandImages);
+    }
+  }, [expandImages]);
   useEffect(() => {
     if (autoSeen !== undefined) {
       localForage.setItem("autoSeen", autoSeen);
@@ -1637,6 +1651,8 @@ export const MainProvider = ({ children }) => {
         togglePreferEmbeds,
         embedsEverywhere,
         toggleEmbedsEverywhere,
+        expandImages,
+        toggleExpandImages,
         updateFilters,
         setUpdateFilters,
         applyFilters,
