@@ -25,7 +25,7 @@ on:
 jobs:
   # This job pushes a new image on every new commit to the docker hub with the tag 'nightly' and is called 'nightly'
   nightly:
-    if: github.event.repository.fork == false
+    if: github.ref == 'refs/heads/main' && github.event.repository.fork == false
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -42,6 +42,7 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v3
 
+      # Only login and push if on main branch
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
