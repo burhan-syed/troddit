@@ -1128,17 +1128,18 @@ export const MySubsProvider = ({ children }) => {
     );
     if (session || loggedIn) {
       let sub = subname;
+      const { isPremium } = user.premium;
       // let cachedInfo: any = await checkSubCache(sub);
       // if (cachedInfo) {
       //   sub = cachedInfo?.data?.name;
       // } else {
       if (isUser) sub = sub.substring(2);
-      let subInfo = await loadSubInfo(isUser ? `u_${sub}` : sub);
+      let subInfo = await loadSubInfo({ subreddit: isUser ? `u_${sub}` : sub, isPremium });
       if (isUser) {
         let aboutUser = await loadSubredditInfo({
           query: sub,
           loadUser: isUser,
-          isPremium: user.premium?.isPremium,
+          isPremium,
         });
         aboutUser["data"]["subreddit"] = subInfo.data;
         subInfo = aboutUser;
