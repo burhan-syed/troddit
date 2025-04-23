@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.21.0
+### New
+- Option to automatically expand images in threads
+
+### Fixes
+- Fixed subscription joining/leaving bug
+- Fixed Reddit preview image regex so more imaegs are recognized
+
 ## v0.20.0
 
 ### Changes
