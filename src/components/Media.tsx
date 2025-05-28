@@ -257,14 +257,6 @@ const Media = ({
 
       if (post?.mediaInfo?.isGallery) {
         setGalleryInfo(post.mediaInfo.galleryInfo);
-        post.mediaInfo.galleryInfo.forEach((img) => {
-          img.media?.[0]?.src &&
-            checkImageInCache(img.media?.[0]?.src, (isCached) => {
-              if (!isCached) {
-                logApiRequest("media");
-              }
-            });
-        });
         setIsGallery(true);
         return true;
       } else if (
@@ -302,17 +294,6 @@ const Media = ({
           width: post.thumbnail_width,
         });
         setIsImage(true);
-        if (imgSrc?.includes("redd") && document) {
-          checkImageInCache(imgSrc, (isCached) => {
-            if (!isCached) {
-              logApiRequest("media");
-              if (post.mediaInfo?.isVideo) {
-                //account for video here as proxy for cache
-                logApiRequest("media");
-              }
-            }
-          });
-        }
         return true;
         // }
       }
