@@ -19,6 +19,8 @@ import useNavBarScrollHelper from "../hooks/useNavBarScrollHelper";
 import { useWindowWidth } from "@react-hook/window-size";
 import { AiOutlineSearch } from "react-icons/ai";
 
+const withNavMessage = !!(process.env.NEXT_PUBLIC_NEW_APP && process.env.NEXT_PUBLIC_NEW_URL);
+
 const NavBar = ({ toggleSideNav = 0 }) => {
   const context: any = useMainContext();
   const { invalidateKey, refreshCurrent, fetchingCount } = useRefresh();
@@ -31,6 +33,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
   const [allowHide, setallowHide] = useState(true);
   const [allowShow, setAllowShow] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [showNavMessage, setShowNavMessage] = useState(withNavMessage);
   //add some delay before navbar can be hidden again.. resolves some issues with immediate hide after navigation
   const [timeSinceNav, setTimeSinceNav] = useState(() => new Date().getTime());
 
@@ -115,21 +118,25 @@ const NavBar = ({ toggleSideNav = 0 }) => {
     router?.route === "/" && invalidateKey(["feed", "HOME"], false); // setForceRefresh((p) => p + 1);
   };
 
+  const navMessageShown = !router.asPath?.includes("/comments/") && showNavMessage;
+  const messageHeightOffset = showNavMessage;
+
   return (
     <>
       <header
         className={
-          `${hidden ? "-translate-y-full" : " translate-y-0 "}` +
+          `${hidden ? "-translate-y-full" : "translate-y-0"}` +
           " z-50 fixed top-0 transition ease-in-out transform  w-screen  " +
           (hidden ? " duration-500" : " duration-200")
         }
       >
-        {/* <NavMessage
-          hide={router.asPath?.includes("/comments/")}
+        <NavMessage
+          hide={!navMessageShown}
+          onHide={() => setShowNavMessage(false)}
           timeSinceNav={timeSinceNav}
-        /> */}
+        />
         <SideNav visible={sidebarVisible} toggle={setSidebarVisible} />
-        <nav className="relative flex flex-row items-center flex-grow h-12 shadow-lg bg-th-background2 md:justify-between ">
+        <nav className="flex relative flex-row flex-grow items-center h-12 shadow-lg bg-th-background2 md:justify-between">
           <CgMenu
             className="flex-none w-10 h-10 cursor-pointer md:hidden"
             onClick={() => {
@@ -137,7 +144,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               // plausible("sidenav");
             }}
           />
-          <div className="flex flex-row items-center justify-start h-full mr-2 space-x-2">
+          <div className="flex flex-row justify-start items-center mr-2 space-x-2 h-full">
             <Link href="/" passHref>
               <h1
                 className="ml-2 text-2xl align-middle cursor-pointer select-none"
@@ -177,7 +184,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               disabled={mounted && windowWidth > 768}
               aria-label="show search"
               className={
-                "flex md:hidden items-center justify-center flex-none w-10 h-full border border-transparent rounded-md outline-none hover:border-th-border "
+                "flex flex-none justify-center items-center w-10 h-full rounded-md border border-transparent outline-none md:hidden hover:border-th-border"
               }
               onClick={(e) => {
                 e.preventDefault();
@@ -191,14 +198,14 @@ const NavBar = ({ toggleSideNav = 0 }) => {
               <SortMenu hide={hidden} />
             </div>
             <div
-              className="flex flex-row items-center w-10 h-full mr-2 "
+              className="flex flex-row items-center mr-2 w-10 h-full"
               onClick={() => plausible("filters")}
             >
               <FilterMenu hide={hidden} />
             </div>
             <div
               className={
-                "hidden w-20 h-full border  hover:border-th-border border-transparent rounded-md md:block"
+                "hidden w-20 h-full rounded-md border border-transparent hover:border-th-border md:block"
               }
               //onClick={() => plausible("login")}
             >
@@ -206,7 +213,7 @@ const NavBar = ({ toggleSideNav = 0 }) => {
             </div>
 
             <div
-              className="flex flex-row items-center w-10 h-full mr-2 "
+              className="flex flex-row items-center mr-2 w-10 h-full"
               onClick={() => plausible("options")}
             >
               <NavMenu hide={hidden} />
@@ -215,12 +222,12 @@ const NavBar = ({ toggleSideNav = 0 }) => {
         </nav>
         {fetchingCount > 0 && (
           <div className="relative">
-            <div className="absolute top-0 z-40 w-screen h-1 bg-th-accent animate-pulse"></div>
+            <div className="absolute top-0 z-40 w-screen h-1 animate-pulse bg-th-accent"></div>
             <div className="absolute top-0 z-30 w-screen h-1 bg-th-base"></div>
           </div>
         )}
       </header>
-      <div className={" h-[3.5rem]"}></div>
+      <div className={messageHeightOffset ? "h-[7rem]" : "h-[3.5rem]"}></div>
     </>
   );
 };
